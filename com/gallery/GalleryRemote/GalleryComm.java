@@ -56,6 +56,11 @@ public class GalleryComm {
 	
 	public void setURLString (String val) {
 		mURLString = val;
+		
+		//-- needs to have a trailing slash ---
+		if (!mURLString.endsWith("/")) {
+			mURLString = mURLString + "/";
+		}	
 		mLoggedIn = false;
 	}
 	public String getURLString () {
