@@ -8,11 +8,11 @@ What we are looking for:
 
 * Icons: 16x16 (small icon), 32x32 (normal icon), 128x128 (Mac OS X icon), in full color, to be used as the executable file icon
 
-* Banner/Splash-screen/about box: any size, use your jugement
+* Banner/Splash-screen/about box: any size, use your judgement
 
 * Web Buttons: any standard size
 
-Of course, the more complete proposals will be all the more attractive, but a great proposal that we can adapt ourselves to other uses is fine too. I'm personally biased toward colorful and dynamic, yet legible when it comes to icons and buttons :-)
+Of course, the more complete a proposal, the more attractive it will be, but we will attempt to use the best pieces of any proposal. I'm personally biased toward colorful and dynamic, yet legible when it comes to icons and buttons :-)
 
 All submissions will be posted on the community site for visitors to comment on, and will remain there. The winning submission will be used ruthlessly for Gallery Remote and the web site.
 
@@ -26,7 +26,7 @@ The Gallery Remote team.
 
 Details:
 - the competition will run until September 15th 2002 at Midnight (California time)
-- in order to stimulate competing proposals, all submissions will be posted to this community web site and can be viewed by all as they come in
+- in order to stimulate competition, all submissions will be posted to this community web site and can be viewed by all as they come in
 - submitters can propose multiple proposals each, and can revise them
 - as always in Open Source, drawing inspiration from another author is encouraged; blatantly ripping off someone else's work is not admissible
 - the winner will be determined by the Gallery team, which will itself be heavily influenced by the comments of the community
