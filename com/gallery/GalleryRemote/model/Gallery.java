@@ -83,6 +83,11 @@ public class Gallery implements ComboBoxModel
 		getComm().fetchAlbums( su, true );
 	}
 	
+	public void newAlbum( Album a, StatusUpdate su) {
+		// TIM: Go crazy
+		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
+	}
+	
 	/**
 	 *  Sets the url attribute of the Gallery object
 	 *
