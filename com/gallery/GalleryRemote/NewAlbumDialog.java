@@ -93,6 +93,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 
 		Vector albums = new Vector(gallery.getAlbumList());
 		rootAlbum = new Album(gallery);
+		rootAlbum.setSuppressEvents(true);
 		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
@@ -170,9 +171,12 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			setVisible(false);
 		} else if (command.equals("OK")) {
 			Album a = new Album(gallery);
+			a.setSuppressEvents(true);
 			a.setName(jName.getText());
 			a.setTitle(jTitle.getText());
 			a.setCaption(jDescription.getText());
+
+			a.setSuppressEvents(false);
 
 			Album selectedAlbum = (Album) jAlbum.getSelectedItem();
 			if (selectedAlbum == rootAlbum) {

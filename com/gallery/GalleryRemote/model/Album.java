@@ -84,6 +84,7 @@ public class Album extends Picture implements ListModel, Serializable {
 
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
+	transient private boolean suppressEvents = false;
 
 	public static List extraFieldsNoShow = Arrays.asList(new String[]{GRI18n.getString(MODULE, "upDate"), GRI18n.getString(MODULE, "captDate")});
 
@@ -121,12 +122,25 @@ public class Album extends Picture implements ListModel, Serializable {
 			}
 
 			try {
+				removeRemotePictures();
+
 				gallery.getComm(su).fetchAlbumImages(su, this, recursive, true, maxPictures);
 			} catch (RuntimeException e) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-fetch-images");
 				Log.logException(Log.LEVEL_INFO, MODULE, e);
 			}
 		}
+	}
+
+	public void removeRemotePictures() {
+		for (Iterator it = pictures.iterator(); it.hasNext();) {
+			Picture picture = (Picture) it.next();
+			if (picture.isOnline()) {
+				it.remove();
+			}
+		}
+
+		notifyListeners();
 	}
 
 	public void moveAlbumTo(StatusUpdate su, Album newParent) {
@@ -458,7 +472,9 @@ public class Album extends Picture implements ListModel, Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 
-		gallery.albumChanged(this);
+		if (!suppressEvents) {
+			gallery.albumChanged(this);
+		}
 	}
 
 	/**
@@ -737,8 +753,12 @@ public class Album extends Picture implements ListModel, Serializable {
 	}
 
 	void notifyListeners() {
-		fireContentsChanged(this, 0, pictures.size());
-		gallery.albumChanged(this);
+		if (!suppressEvents) {
+			fireContentsChanged(this, 0, pictures.size());
+			if (gallery != null) {
+				gallery.albumChanged(this);
+			}
+		}
 	}
 
 	public ArrayList getSubAlbums() {
@@ -816,6 +836,10 @@ public class Album extends Picture implements ListModel, Serializable {
 
 	public void setHasFetchedImages(boolean hasFetchedImages) {
 		this.hasFetchedImages = hasFetchedImages;
+	}
+
+	public void setSuppressEvents(boolean suppressEvents) {
+		this.suppressEvents = suppressEvents;
 	}
 
 	/*public void checkTransients() {

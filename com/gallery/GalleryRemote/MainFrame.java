@@ -34,6 +34,7 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
@@ -108,7 +109,7 @@ public class MainFrame extends JFrame
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
 	JPanel jAlbumPanel = new JPanel();
 	JScrollPane jAlbumScroll = new JScrollPane();
-	DroppableTree jAlbumTree = new DroppableTree();
+	public DroppableTree jAlbumTree = new DroppableTree();
 
 	JComboBox jGalleryCombo = new JComboBox();
 	JButton jNewGalleryButton = new JButton();
@@ -749,29 +750,30 @@ public class MainFrame extends JFrame
 		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbumName + "' created.");
 		// there is probably a better way... this is needed to give the UI time to catch up
 		// and load the combo up with the reloaded album list
-		new Thread() {
-			public void run() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				}
+		//new Thread() {
+		//	public void run() {
+		//		try {
+		//			Thread.sleep(1000);
+		//		} catch (InterruptedException e) {
+		//			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		//		}
 
 				//SwingUtilities.invokeLater(new Runnable() {
 				//	public void run() {
-				// todo: none of the calls below seem to have any effect
 				Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbumName);
 
 				TreePath path = getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName));
-				//jAlbumTree.expandPath(path);
-				//jAlbumTree.makeVisible(path);
+				//jAlbumTree.expandPath(path.getParentPath());
+				// todo: this call doesn't seem to have any effect
+				jAlbumTree.makeVisible(path);
+
 				jAlbumTree.setSelectionPath(path);
 
 				//jAlbumTree.repaint();
 				//	}
 				//});
-			}
-		}.start();
+		//	}
+		//}.start();
 
 		// We've been modified, we are now dirty.
 		setDirtyFlag(true);
@@ -1671,6 +1673,7 @@ public class MainFrame extends JFrame
 	 * @param e the event that characterizes the change.
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
+		//jAlbumTree.treeDidChange();
 		updateAlbumCombo();
 
 		jAlbumInspector.setAlbum(getCurrentAlbum());
@@ -1866,7 +1869,10 @@ public class MainFrame extends JFrame
 
 	/*** TreeModelListener implementation ***/
 	public void treeNodesChanged(TreeModelEvent e) {
-		albumChanged((Album) e.getTreePath().getLastPathComponent());
+		TreePath treePath = e.getTreePath();
+		if (treePath != null && getCurrentGallery().getRoot() != treePath.getLastPathComponent()) {
+			albumChanged((Album) treePath.getLastPathComponent());
+		}
 	}
 
 	public void treeNodesInserted(TreeModelEvent e) {
@@ -1882,6 +1888,8 @@ public class MainFrame extends JFrame
 	}
 
 	class AlbumTreeRenderer extends DefaultTreeCellRenderer {
+		Album album = null;
+
 		public Component getTreeCellRendererComponent(
 				JTree tree,
 				Object value,
@@ -1891,14 +1899,21 @@ public class MainFrame extends JFrame
 				int row,
 				boolean hasFocus) {
 
+			// Swing incorrectly passes selection state in some cases
+			TreePath selectionPath = tree.getSelectionPath();
+			if (selectionPath != null && selectionPath.getLastPathComponent() == value) {
+				sel = true;
+			}
+
 			super.getTreeCellRendererComponent(
 					tree, value, sel,
 					expanded, leaf, row,
 					hasFocus);
-			Album album = null;
 
 			if (value instanceof Album) {
 				album = (Album) value;
+			} else {
+				album = null;
 			}
 
 			Font font = getFont();
@@ -1922,6 +1937,15 @@ public class MainFrame extends JFrame
 			setToolTipText(name);
 
 			return this;
+		}
+
+		public Dimension getPreferredSize() {
+		Dimension        retDimension = super.getPreferredSize();
+
+		if(retDimension != null)
+			retDimension = new Dimension((int) (retDimension.width * 1.5 + 15),
+						 retDimension.height);
+		return retDimension;
 		}
 	}
 

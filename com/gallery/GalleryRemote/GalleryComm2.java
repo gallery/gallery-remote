@@ -695,8 +695,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		void runTask() {
-			Object[] params = {g.toString()};
-			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, 10, GRI18n.getString(MODULE, "albmFtchng", params), true);
+			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, 10, GRI18n.getString(MODULE, "albmFtchng", new Object[] {g.toString()}), true);
 
 			try {
 				long startTime = System.currentTimeMillis();
@@ -745,6 +744,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				HashMap ref2album = new HashMap();
 				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
+					a.setSuppressEvents(true);
 
 					String nameKey = "album.name." + i;
 					String titleKey = "album.title." + i;
@@ -766,6 +766,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setName(p.getProperty(nameKey));
 					a.setTitle(HTMLEscaper.unescape(p.getProperty(titleKey)));
 
+					a.setSuppressEvents(false);
 					mAlbumList.add(a);
 
 					// map album ref nums to albums
@@ -822,6 +823,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				HashMap name2album = new HashMap();
 				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
+					a.setSuppressEvents(true);
 
 					String nameKey = "album.name." + i;
 					String titleKey = "album.title." + i;
@@ -843,6 +845,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setName(name);
 					a.setTitle(HTMLEscaper.unescape(p.getProperty(titleKey)));
 					a.setExtraFieldsString(HTMLEscaper.unescape(p.getProperty(infoExtraFieldKey)));
+
+					a.setSuppressEvents(false);
 
 					albums.add(a);
 
@@ -1019,8 +1023,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		void runTask() {
-			Object[] params = {g.toString()};
-			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo", params));
+			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "newAlbm", new Object[] { albumName, g.toString() }));
 
 			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
 			// by Gallery. Using an empty string doesn't work, because then the HTTP parameter is not

@@ -22,18 +22,15 @@ public class GRI18n implements PreferenceNames {
 
 	private static Locale grLocale;
 	private static ResourceBundle grResBundle;
-	private static MessageFormat grMsgFrmt;
+	private static HashMap formats = new HashMap();
 
 	private static List lAvailLoc = null;
 
 	static {
-		String myLocale;
-		myLocale =
-				GalleryRemote._().properties.getProperty(UI_LOCALE);
+		String myLocale = GalleryRemote._().properties.getProperty(UI_LOCALE);
 
 		grLocale = parseLocaleString(myLocale);
 
-		grMsgFrmt = new MessageFormat("");
 		Log.log(Log.LEVEL_INFO, MODULE, grLocale.toString());
 
 		setResBundle();
@@ -83,9 +80,12 @@ public class GRI18n implements PreferenceNames {
 		String template, msg;
 		String extKey = className + "." + key;
 		try {
-			template = grResBundle.getString(extKey);
-			grMsgFrmt.applyPattern(template);
-			msg = grMsgFrmt.format(params);
+			MessageFormat format = (MessageFormat) formats.get(extKey);
+			if (format == null) {
+				format = new MessageFormat(fixQuotes(grResBundle.getString(extKey)), grLocale);
+				formats.put(extKey, format);
+			}
+			msg = format.format(params);
 		} catch (NullPointerException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Key null error");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -97,6 +97,20 @@ public class GRI18n implements PreferenceNames {
 		}
 
 		return msg;
+	}
+
+	public static String fixQuotes(String s) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c == '\'') {
+				sb.append("''");
+			} else {
+				sb.append(c);
+			}
+		}
+
+		return sb.toString();
 	}
 
 	public static Locale getCurrentLocale() {
@@ -111,8 +125,6 @@ public class GRI18n implements PreferenceNames {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Resource bundle error");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
-
-		grMsgFrmt.setLocale(grLocale);
 	}
 
 

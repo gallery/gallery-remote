@@ -325,6 +325,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 
 							if (colT.countTokens() == 2) {
 								Album a = new Album(g);
+								a.setSuppressEvents(true);
 
 								a.setName(colT.nextToken());
 								a.setTitle(HTMLEscaper.unescape(colT.nextToken()));
@@ -332,6 +333,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 								mAlbumList.add(a);
 
 								a.setParentAlbum(null);
+								a.setSuppressEvents(false);
 							}
 						}
 

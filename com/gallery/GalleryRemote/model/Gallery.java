@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.awt.*;
 
 /**
  * Gallery model
@@ -112,8 +113,15 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 				a.getTitle(), a.getCaption(), false);
 
 		// refresh album list asynchronously
-        fetchAlbums(su);
-        //getComm(su).fetchAlbums(su, false);
+        //fetchAlbums(su);
+
+		if (!newAlbumName.equals(a.getName())) {
+			//Log.log(Log.LEVEL_INFO, MODULE, "Album name probably conflicted on the server, need to reload album list");
+			//getComm(su).fetchAlbums(su, false);
+			a.setName(newAlbumName);
+		}
+
+		addAlbum(a);
 
 		return newAlbumName;
 	}
@@ -214,7 +222,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			selectedAlbum = (Album) this.albumList.get(0);
 		}
 
-		notifyListeners();
+		//notifyListeners();
+		if (a.getParentAlbum() == null) {
+			fireTreeNodesInserted(this, getObjectArrayForAlbum(root), null, new Object[] { a });
+		} else {
+			fireTreeNodesInserted(this, getObjectArrayForAlbum(a.getParentAlbum()), null, new Object[] { a });
+		}
 	}
 
 	public ArrayList getAlbumList() {
@@ -778,14 +791,24 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public void albumChanged(Album a) {
-		// this doesn't seem to be effective
+		// this doesn't seem to be effective to get the JTree itself to update
+		// but it's useful to get the MainFrame to update the album inspector...
+		fireTreeNodesChanged(this, getObjectArrayForAlbum(a), null, null);
+
+		// this should update the JTree itself, but clears the tree selection
+		// so we have to save and restore the selection, which sucks
+		/*Frame mf = GalleryRemote._().getMainFrame();
+		if (mf instanceof MainFrame) {
+			TreePath sel = ((MainFrame) mf).jAlbumTree.getSelectionPath();
+
+			fireTreeStructureChanged(this, new TreePath(root));
+
+			((MainFrame) mf).jAlbumTree.setSelectionPath(sel);
+		}*/
+	}
+
+	public void albumStructureChanged(Album a) {
 		fireTreeStructureChanged(this, getPathForAlbum(a));
-
-		// this either...
-		//GalleryRemote.getInstance().mainFrame.jAlbumTree.treeDidChange();
-
-		// todo: ugly... didn't want to have to implement TreeModelListener in MainFrame
-		//GalleryRemote.getInstance().getMainFrame().albumChanged(a);
 	}
 
 
@@ -969,7 +992,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		//To change body of implemented methods use Options | File Templates.
 	}
 
-	public TreePath getPathForAlbum(Album album) {
+	public Object[] getObjectArrayForAlbum(Album album) {
 		LinkedList path = new LinkedList();
 
 		path.addFirst(album);
@@ -982,6 +1005,9 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		path.addFirst(root);
 
-		return new TreePath(path.toArray());
+		return path.toArray();
+	}
+	public TreePath getPathForAlbum(Album album) {
+		return new TreePath(getObjectArrayForAlbum(album));
 	}
 }

@@ -87,6 +87,7 @@ public class MoveAlbumDialog extends JDialog
 
 		Vector albums = new Vector(gallery.getAlbumList());
 		rootAlbum = new Album(gallery);
+		rootAlbum.setSuppressEvents(true);
 		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);

@@ -1,3 +1,21 @@
+2004-02-25  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b6)
+
+	* Solved a very long-standing problem where I didn't know how
+	  to get the albums tree to draw correctly when adding images
+	  (the album name would be truncated).
+	* When adding an album, no longer refreshing the list of albums
+	  (this makes it faster and doesn't lose the album tree's
+	  disclosure status)
+	* When downloading pictures from the server, flush any previously
+	  downloaded pictures first.
+	* Made fetching list of albums from the server slightly faster
+	  by disabling events during the download, so the window is
+	  only refreshed when the download completes.
+	* Fixed a bug in GRI18n where quote characters in strings that
+	  are subjected to pattern-matching to replace some of the text at
+	  runtime would cause the pattern-matching algorithm to barf.
+	  Also created a cache for patterns.
+
 2004-02-25  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b5)
 
 	* Updated French translation by Alex Lemaresquier.
