@@ -144,8 +144,12 @@ public class CoreUtils {
 				boolean selected, boolean hasFocus) {
 			super.getListCellRendererComponent(list, value, index, selected, hasFocus);
 
-			if (value != null && index != -1) {
-				Picture p = core.getCurrentAlbum().getPicture(index);
+            Album currentAlbum = core.getCurrentAlbum();
+			if (   null != currentAlbum 
+                && null != value 
+                && -1 != index) {
+
+				Picture p = currentAlbum.getPicture(index);
 
 				if (p.isOnline()) {
 					if (p.getAlbum() != p.getAlbumOnServer()
