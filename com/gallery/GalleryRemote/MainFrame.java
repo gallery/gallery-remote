@@ -20,18 +20,7 @@
 */
 package com.gallery.GalleryRemote;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -481,9 +470,9 @@ public class MainFrame extends javax.swing.JFrame
 
 				if ( GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null ) {
 					if ( sel != -1 ) {
-						previewFrame.displayPicture( currentAlbum.getPicture( sel ) );
+						previewFrame.displayPicture( currentAlbum.getPicture( sel ), true);
 					} else {
-						previewFrame.displayPicture( null );
+						previewFrame.displayPicture( null, true);
 					}
 
 					if ( !previewFrame.isVisible() ) {
@@ -751,6 +740,10 @@ public class MainFrame extends javax.swing.JFrame
 
         // We've been modified, we are now dirty.
         m_isDirty = true;
+	}
+
+	public void slideshow() {
+		new SlideshowFrame().start(getCurrentAlbum().getPicturesList());
 	}
 
 

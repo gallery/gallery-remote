@@ -1,3 +1,14 @@
+2003-12-08  Pierre-Luc Paour <gallery@paour.com> (1.3-b8)
+
+	* Load/save improvements by Scott Gartner.
+	* Made it possible to run GR (in much-degraded mode) with no libraries
+	  and no icons, with java -jar GalleryRemote.jar
+	* Fixed StackOverflow with corrupted Galleries that caused GR to hang while
+	  logging in.
+	* Initial support for client-side or applet slideshow.
+	* Pruned .java files from JSX library, making it lighter and resolving a
+	  conflict with recent versions of IntelliJ.
+
 2003-12-03  Pierre-Luc Paour <gallery@paour.com> (1.3-b7)
 
 	* Merged changes from the recently released GR 1.2.

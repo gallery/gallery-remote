@@ -38,6 +38,7 @@ import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
@@ -383,8 +384,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			String password = g.getPassword();
 
 			if (username == null || username.length() == 0) {
-				username = (String)JOptionPane.showInputDialog(
-                    (JFrame) su,
+				username = (String) JOptionPane.showInputDialog(
+                    GalleryRemote.getInstance().mainFrame,
                     GRI18n.getString(MODULE, "usernameLbl"),
                     GRI18n.getString(MODULE, "username"),
                     JOptionPane.PLAIN_MESSAGE,
@@ -392,12 +393,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
                     null,
                     null);
 
-				g.setUsername(username);
+				if (username != null) {
+					g.setUsername(username);
+				}
 			}
 
-			if (password == null || password.length() == 0) {
-				password = (String)JOptionPane.showInputDialog(
-                    (JFrame) su,
+			if (username != null && (password == null || password.length() == 0)) {
+				password = (String) JOptionPane.showInputDialog(
+                    GalleryRemote.getInstance().mainFrame,
                     GRI18n.getString(MODULE, "passwdLbl"),
                     GRI18n.getString(MODULE, "passwd"),
                     JOptionPane.PLAIN_MESSAGE,
@@ -411,16 +414,24 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			NVPair form_data[] = {
 				new NVPair("cmd", "login"),
 				new NVPair("protocol_version", PROTOCOL_VERSION),
-				new NVPair("uname", username),
-				new NVPair("password", password)
+				null,
+				null
 			};
-			Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+
+			if (username != null) {
+				form_data[2] = new NVPair("uname", username);
+				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+				form_data[3] = new NVPair("password", password);
+			} else {
+				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+			}
 
 			// make the request
 			try	{
 				// load and validate the response
 				Properties p = requestResponse( form_data, g.getGalleryUrl(SCRIPT_NAME) );
-				if ( GR_STAT_SUCCESS.equals( p.getProperty( "status" ) ) ) {
+				if ( GR_STAT_SUCCESS.equals( p.getProperty( "status" ) )
+						|| GR_STAT_LOGIN_MISSING.equals( p.getProperty( "status" ))) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "loggedIn"));
 					try {
 						String serverVersion = p.getProperty( "server_version" );

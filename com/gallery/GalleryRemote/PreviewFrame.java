@@ -31,7 +31,7 @@ import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.io.File;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 public class PreviewFrame extends javax.swing.JFrame {
 	public static final String MODULE = "PreviewFrame";
@@ -63,8 +63,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 		g.clearRect(0, 0, getSize().width, getSize().height);
 
 		if (currentImage != null) {
-			ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, currentPicture.getAngle(), currentPicture.isFlipped(), this);
-			tmpImage.paintIcon(getContentPane(), g, getRootPane().getLocation().x, getRootPane().getLocation().y);
+			ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, currentPicture.getAngle(),
+					currentPicture.isFlipped(), this);
+			JRootPane rootPane = getRootPane();
+			tmpImage.paintIcon(getContentPane(), g,
+					rootPane.getLocation().x + (rootPane.getWidth() - tmpImage.getIconWidth()) / 2,
+					rootPane.getLocation().y + (rootPane.getHeight() - tmpImage.getIconHeight()) / 2);
 		}
 	}
 
@@ -73,14 +77,14 @@ public class PreviewFrame extends javax.swing.JFrame {
 		flushMemory();
 		super.hide();
 
-		displayPicture(null);
+		displayPicture(null, true);
 	}
 
 	public void flushMemory() {
 		imageIcons.clear();
 	}
 
-	public void displayPicture(Picture picture) {
+	public void displayPicture(Picture picture, boolean async) {
 		if (picture == null) {
 			currentImage = null;
 			//currentImageFile = null;
@@ -101,7 +105,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 					repaint();
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
-					previewLoader.loadPreview(picture);
+					if (async) {
+						previewLoader.loadPreview(picture);
+					} else {
+						currentImage = getSizedIconForce(picture);
+						repaint();
+					}
 				}
 			}
 		}

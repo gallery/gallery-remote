@@ -67,6 +67,7 @@ public class AlbumInspector extends JPanel
 	JTextArea jSummary = new JTextArea();
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JButton jFetch = new JButton();
+	JButton jSlideshow = new JButton();
 	JButton jNew = new JButton();
 	JButton jApply = new JButton();
 	JCheckBox jResizeBeforeUpload = new JCheckBox();
@@ -113,6 +114,7 @@ public class AlbumInspector extends JPanel
 		jPanel1.setLayout(new GridBagLayout());
 		jPanelProps.setLayout(new GridBagLayout());
 
+		jSlideshow.setText(GRI18n.getString(MODULE, "Slideshow"));
 		jFetch.setText(GRI18n.getString(MODULE, "Fetch"));
 		jNew.setText(GRI18n.getString(MODULE, "New"));
 		jApply.setText(GRI18n.getString(MODULE, "Apply"));
@@ -177,9 +179,11 @@ public class AlbumInspector extends JPanel
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jFetch,    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
-		//this.add(jNew,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+		this.add(jSlideshow,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		//this.add(jNew,    new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 		//		,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
-		add( jSpacer,              new GridBagConstraints(0, 4, 1, 1, 1.0, 0.1
+		add( jSpacer,              new GridBagConstraints(0, 5, 1, 1, 1.0, 0.1
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
 
 		buttonGroup1.add(jResizeToDefault);
@@ -207,6 +211,7 @@ public class AlbumInspector extends JPanel
 
 	private void jbInitEvents() {
 		jFetch.addActionListener(this);
+		jSlideshow.addActionListener(this);
 		jNew.addActionListener(this);
 		jApply.addActionListener(this);
 
@@ -236,6 +241,8 @@ public class AlbumInspector extends JPanel
 			mf.newAlbum();
 		} else if (source == jApply) {
 			// todo
+		} else if (source == jSlideshow) {
+			mf.slideshow();
 		} else {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Unknown source " + source);
 		}
@@ -376,6 +383,7 @@ public class AlbumInspector extends JPanel
 		jSummary.setEnabled(enabled);
 		jPictures.setEnabled(enabled);
 		jFetch.setEnabled(enabled);
+		jSlideshow.setEnabled(enabled);
 		jNew.setEnabled(enabled);
 		jApply.setEnabled(enabled);
 		jResizeBeforeUpload.setEnabled(enabled);

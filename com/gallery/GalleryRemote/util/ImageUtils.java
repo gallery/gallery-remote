@@ -26,11 +26,6 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.StatusUpdate;
 import com.gallery.GalleryRemote.model.Picture;
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Directory;
-import com.drew.metadata.exif.ExifDirectory;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -39,6 +34,7 @@ import java.util.*;
 import java.util.List;
 import java.net.URL;
 import java.net.URLConnection;
+import java.lang.reflect.Method;
 
 import javax.swing.ImageIcon;
 
@@ -304,102 +300,6 @@ public class ImageUtils {
 		}
 
 		return thumb;
-	}
-
-	public static AngleFlip getExifTargetOrientation(String filename) {
-		if (GalleryFileFilter.canManipulateJpeg(filename)) {
-			File jpegFile = new File(filename);
-			try {
-				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
-
-				Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
-				String orientation = exifDirectory.getString(ExifDirectory.TAG_ORIENTATION);
-
-				if (orientation == null) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no EXIF ORIENTATION tag");
-					return null;
-				} else {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " EXIF ORIENTATION: " + orientation);
-
-					int or = 0;
-					AngleFlip af = null;
-					try {
-						or = Integer.parseInt(orientation);
-					} catch (NumberFormatException e) {
-						Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
-						return null;
-					}
-
-					switch (or) {
-						case 1:
-							af = new AngleFlip(0, false);
-							break;
-
-						case 2:
-							af = new AngleFlip(0, true);
-							break;
-
-						case 3:
-							af = new AngleFlip(2, false);
-							break;
-
-						case 4:
-							af = new AngleFlip(2, true);
-							break;
-
-						case 5:
-							af = new AngleFlip(1, true);
-							break;
-
-						case 6:
-							af = new AngleFlip(1, false);
-							break;
-
-						case 7:
-							af = new AngleFlip(3, true);
-							break;
-
-						case 8:
-							af = new AngleFlip(3, false);
-							break;
-
-						default:
-							Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
-							return null;
-					}
-
-					Log.log(Log.LEVEL_TRACE, MODULE, "Angle: " + af.angle + " Flipped: " + af.flip);
-					return af;
-				}
-			} catch (FileNotFoundException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				return null;
-			} catch (JpegProcessingException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	public static void resetExifOrientation(String filename) {
-		if (GalleryFileFilter.canManipulateJpeg(filename)) {
-			File jpegFile = new File(filename);
-			try {
-				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
-
-				Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
-				exifDirectory.setString(ExifDirectory.TAG_ORIENTATION, "1");
-
-				// todo: this doesn't do anything at present: the library can only READ
-				// EXIF, not write to it...
-			} catch (FileNotFoundException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			} catch (JpegProcessingException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			}
-		}
 	}
 
 	public static LocalInfo getLocalFilenameForPicture(Picture p, boolean full) {
@@ -725,6 +625,17 @@ public class ImageUtils {
 		}
 
 		return 1;
+	}
+
+	public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
+		try {
+			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+			Method m =c.getMethod("getExifTargetOrientation", new Class[] {String.class});
+			return (AngleFlip) m.invoke(null, new Object[] {filename});
+		} catch (Throwable e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		}
 	}
 
 	/* ********* Utilities ********** */

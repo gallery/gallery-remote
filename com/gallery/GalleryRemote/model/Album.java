@@ -539,6 +539,15 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *@param  ldl  Description of Parameter
 	 */
 	public void setParentAlbum( Album a ) {
+		// take care of a Gallery bug...
+		if (a == this) {
+			Log.log(Log.LEVEL_ERROR, MODULE, "Gallery error: the album " + name +
+					" is its own parent. You should delete it, the album database " +
+					"is corrupted because of it.");
+
+			a = null;
+		}
+
 		parent = a;
 
 		if (a != null) {
@@ -626,14 +635,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		this.summary = summary;
 	}
 
-	/* -------------------------------------------------------------------------
-	 *NON-PUBLIC INSTANCE METHODS
-	 */
-	 
-	/**
-	 *	Package access to get the whole picture list at once.
-	 */
-	ArrayList getPicturesList() {
+	public ArrayList getPicturesList() {
 		return pictures;
 	}
 
@@ -669,7 +671,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	}
 
 	int depthHelper(int depth) {
-		if ( getParentAlbum() != null ) {
+		if ( getParentAlbum() != null && getParentAlbum() != this) {
 			return getParentAlbum().depthHelper( depth + 1 );
 		} else {
 			return depth;
