@@ -179,7 +179,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "res_rot")));
 		jPanel2.setLayout(new GridBagLayout());
-		setCaptionNone.setToolTipText(GRI18n.getString(MODULE, "captNoneTip"));
+		//setCaptionNone.setToolTipText(GRI18n.getString(MODULE, "captNoneTip"));
 		setCaptionNone.setText(GRI18n.getString(MODULE, "captNone"));
 		setCaptionWithFilename.setToolTipText(GRI18n.getString(MODULE, "captTip"));
 		setCaptionWithFilename.setText(GRI18n.getString(MODULE, "capt"));

@@ -1,3 +1,7 @@
+2004-09-22  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b5)
+
+	* Changed wording (thanks JPMullan).
+
 2004-09-08  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b4)
 
 	* Redesigned the EXIF manipulation to make it more easily
