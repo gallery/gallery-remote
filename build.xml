@@ -6,6 +6,7 @@
 	<property name="src" location="."/>
 	<property name="build" location="build"/>
 	<property name="lib" location="lib"/>
+	<property name="img" location="img"/>
 	<property name="dist"  location="dist"/>
 	<property name="install"  location="gallery_remote_Build_Output/Web_Installers/InstData"/>
 
@@ -57,6 +58,14 @@
 		<jar destfile="GalleryRemote.jar">
 			<fileset dir="${build}" />
 			<fileset dir="." includes="*.properties" />
+		</jar>
+	</target>
+
+	<target name="img_jar"
+		description="create a jar of the images">
+
+		<jar destfile="img.jar">
+			<fileset dir="${img}" />
 		</jar>
 	</target>
 
@@ -114,12 +123,16 @@
 		</exec>
 	</target>
 
-	<target name="installer_macosx">
+	<target name="installer_macosx" depends="jar, img_jar"
+		description="Build a MacOSX executable" >
+
+		<delete dir="Gallery Remote.app" />
+
 		<jarbundler dir="."
 			name="Gallery Remote"
 			mainclass="com.gallery.GalleryRemote.GalleryRemote"
 			icon="rar_icon_128_gr1.icns"
-			jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar"
+			jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar ./img.jar"
 			version="1.1"
 			infostring="Gallery Remote 1.1, (c) 2003"
 			aboutmenuname="Gallery Remote"
