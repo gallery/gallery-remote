@@ -64,9 +64,11 @@ public abstract class GalleryComm implements PreferenceNames {
 		 * invokation */
 		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
 			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
+				Log.log(Log.TRACE, MODULE, "Accepting cookie: " + cookie);
 				return true;
 			}
 			public boolean sendCookie(Cookie cookie, RoRequest req) {
+				Log.log(Log.TRACE, MODULE, "Sending cookie: " + cookie);
 				return true;
 			}
 		});
@@ -119,6 +121,7 @@ public abstract class GalleryComm implements PreferenceNames {
 	
 	public void logOut() {
 		isLoggedIn = false;
+		CookieModule.discardAllCookies();
 	}
 	
 	public boolean isLoggedIn() {

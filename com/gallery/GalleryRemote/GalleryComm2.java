@@ -174,12 +174,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		doTask( new NewAlbumTask( su, parentAlbum, newAlbumName,
 			newAlbumTitle, newAlbumDesc ), async );
 	}
-	
-	public void logOut() {
-		isLoggedIn = false;
-	}
-	
-	
+		
 	/* -------------------------------------------------------------------------
 	 * UTILITY METHODS
 	 */ 
@@ -354,7 +349,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			String username = g.getUsername();
 			String password = g.getPassword();
 
-			if (username == null) {
+			if (username == null || username.length() == 0) {
 				username = (String)JOptionPane.showInputDialog(
                     (JFrame) su,
                     "Username:",
@@ -367,7 +362,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				g.setUsername(username);
 			}
 
-			if (password == null) {
+			if (password == null || password.length() == 0) {
 				password = (String)JOptionPane.showInputDialog(
                     (JFrame) su,
                     "Password:",
