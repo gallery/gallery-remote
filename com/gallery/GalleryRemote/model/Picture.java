@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Picture model
@@ -327,6 +328,26 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 		}
 
 		return (String) extraFields.get(name);
+	}
+
+	public String getExtraFieldsString() {
+		if (extraFields == null) {
+			return "";
+		}
+
+		StringBuffer sb = new StringBuffer();
+		String sep = System.getProperty("line.separator");
+
+		for (Iterator it = album.getExtraFields().iterator(); it.hasNext();) {
+			String name = (String) it.next();
+			String value = (String) extraFields.get(name);
+
+			if (value != null) {
+				sb.append(name).append(": ").append(value).append(sep);
+			}
+		}
+
+		return sb.toString();
 	}
 
 	public void setExtraField(String name, String value) {

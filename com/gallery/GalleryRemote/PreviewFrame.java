@@ -39,10 +39,11 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 	SmartHashtable imageIcons = new SmartHashtable();
 	ImageIcon currentImage = null;
-	//String currentImageFile = null;
+	Picture loadPicture = null;
 	Picture currentPicture = null;
 	PreviewLoader previewLoader = new PreviewLoader();
 	int previewCacheSize = 10;
+	//JPanel imagePane = new ImageContentPane();
 
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
@@ -50,6 +51,9 @@ public class PreviewFrame extends javax.swing.JFrame {
 		setIconImage(MainFrame.iconImage);
 
 		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
+		setContentPane(new ImageContentPane());
+		//getContentPane().setLayout(new BorderLayout());
+		//getContentPane().add("Center", imagePane);
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
@@ -58,19 +62,6 @@ public class PreviewFrame extends javax.swing.JFrame {
 		});
 
 		previewCacheSize = GalleryRemote.getInstance().properties.getIntProperty("previewCacheSize");
-	}
-
-	public void paint(Graphics g) {
-		g.clearRect(0, 0, getSize().width, getSize().height);
-
-		if (currentImage != null) {
-			ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, currentPicture.getAngle(),
-					currentPicture.isFlipped(), this);
-			JRootPane rootPane = getRootPane();
-			tmpImage.paintIcon(getContentPane(), g,
-					rootPane.getLocation().x + (rootPane.getWidth() - tmpImage.getIconWidth()) / 2,
-					rootPane.getLocation().y + (rootPane.getHeight() - tmpImage.getIconHeight()) / 2);
-		}
 	}
 
 	public void hide() {
@@ -87,30 +78,32 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 	public void displayPicture(Picture picture, boolean async) {
 		if (picture == null) {
-			currentImage = null;
-			//currentImageFile = null;
-			currentPicture = null;
+			//currentImage = null;
+			loadPicture = null;
+			//currentPicture = null;
 
-			repaint();
+			imageLoaded(null, null);
 		} else {
 			//String filename = picture.getSource().getPath();
 			
-			if (picture != currentPicture) {
+			if (picture != loadPicture) {
 				//currentImageFile = filename;
-				currentPicture = picture;
+				loadPicture = picture;
 
 				ImageIcon r = (ImageIcon) imageIcons.get(picture);
 				if (r != null) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
-					currentImage = r;
-					repaint();
+					//currentImage = r;
+					//currentPicture = picture;
+					imageLoaded(r, picture);
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
 					if (async) {
 						previewLoader.loadPreview(picture);
 					} else {
-						currentImage = getSizedIconForce(picture);
-						repaint();
+						//currentImage = getSizedIconForce(picture);
+						//currentPicture = picture;
+						imageLoaded(getSizedIconForce(picture), picture);
 					}
 				}
 			}
@@ -141,24 +134,44 @@ public class PreviewFrame extends javax.swing.JFrame {
 		return r;
 	}
 
+	class ImageContentPane extends JPanel {
+		public void paintComponent(Graphics g) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Painting ImageContentPane...");
+			Log.logStack(Log.LEVEL_TRACE, MODULE);
+
+			g.clearRect(0, 0, getSize().width, getSize().height);
+
+			if (currentImage != null) {
+				ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, loadPicture.getAngle(),
+						loadPicture.isFlipped(), this);
+
+				tmpImage.paintIcon(getContentPane(), g,
+						getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
+						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2);
+			}
+		}
+	}
+
 	class PreviewLoader implements Runnable {
 		Picture picture;
 		boolean stillRunning = false;
 
 		public void run() {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Starting " + picture);
+			Picture tmpPicture = null;
+			ImageIcon tmpImage = null;
 			while (picture != null) {
-				Picture tmpPicture;
 				synchronized (picture) {
 					tmpPicture = picture;
 					picture = null;
 				}
 
-				currentImage = getSizedIconForce(tmpPicture);
+				tmpImage = getSizedIconForce(tmpPicture);
+				//currentPicture = tmpPicture;
 			}
 			stillRunning = false;
 
-			repaint();
+			imageLoaded(tmpImage, tmpPicture);
 			Log.log(Log.LEVEL_TRACE, MODULE, "Ending");
 		}
 
@@ -264,5 +277,11 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "Shrunk " + key);
 		}
+	}
+
+	public void imageLoaded(ImageIcon image, Picture picture) {
+		currentImage = image;
+		currentPicture = picture;
+		repaint();
 	}
 }
