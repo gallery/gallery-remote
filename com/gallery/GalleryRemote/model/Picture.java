@@ -65,6 +65,10 @@ public class Picture {
     public void setSource( File source ) {
         this.source = source;
         
+		if (GalleryRemote.getInstance().properties.getBooleanProperty("setCaptionsWithFilenames")) {
+			setCaption(source.getName());
+		}
+		
         fileSize = -1;
     }
     
@@ -108,7 +112,21 @@ public class Picture {
 		if ( GalleryRemote.getInstance().properties.getBooleanProperty("resizeBeforeUpload") ) {
 			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty("resizeTo");
 			
-			return ImageUtils.resize( getSource().getPath(), d );
+			if ( d == null || d.equals( new Dimension( 0, 0 ) ) ) {
+				d = null;
+				album.fetchAlbumProperties(null);
+				int l = album.getServerAutoResize();
+				
+				if ( l != 0 ) {
+					d = new Dimension( l, l );
+				}
+			}
+			
+			if ( d != null ) {
+				return ImageUtils.resize( getSource().getPath(), d );
+			} else {
+				return getSource();
+			}
 		} else {
 			return getSource();
 		}
