@@ -54,9 +54,9 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      */
     
     public DroppableList() {
-        dropTarget = new DropTarget(this, this);
-        dragSource = new DragSource();
-        dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
+	dropTarget = new DropTarget(this, this);
+	dragSource = new DragSource();
+	dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
     }
     
     
@@ -67,8 +67,8 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@since
      */
     public void setMainFrame( MainFrame daddy ) {
-        //setModel( new DefaultListModel() );
-        mDaddy = daddy;
+	//setModel( new DefaultListModel() );
+	mDaddy = daddy;
     }
     
     
@@ -79,10 +79,10 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@since
      */
     public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
-        Log.log(Log.TRACE, "DROPLIST","dragEnter - dtde");
-        dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
-        isDrag = true;
-        repaint();
+	Log.log(Log.TRACE, "DROPLIST","dragEnter - dtde");
+	dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
+	isDrag = true;
+	repaint();
     }
     
     /**
@@ -92,8 +92,8 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@since
      */
     public void dragExit( DropTargetEvent dropTargetEvent ) {
-        Log.log(Log.TRACE, "DROPLIST","dragExit - dtde");
-        isDrag = false;
+	Log.log(Log.TRACE, "DROPLIST","dragExit - dtde");
+	isDrag = false;
     }
     
     
@@ -104,9 +104,9 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@since
      */
     public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
-        //Log.log(Log.TRACE, "DROPLIST","dragOver - dtde");
-        p = dropTargetDragEvent.getLocation();
-        repaint();
+	//Log.log(Log.TRACE, "DROPLIST","dragOver - dtde");
+	p = dropTargetDragEvent.getLocation();
+	repaint();
     }
     
     
@@ -124,33 +124,33 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     }
     
     public void dragEnter(DragSourceDragEvent dragSourceDragEvent) {
-        Log.log(Log.TRACE, "DROPLIST","dragEnter - dsde");
-        
+	Log.log(Log.TRACE, "DROPLIST","dragEnter - dsde");
+	
     }
     
     public void dragExit(DragSourceEvent dragSourceEvent) {
-        Log.log(Log.TRACE, "DROPLIST","dragExit - dse");
+	Log.log(Log.TRACE, "DROPLIST","dragExit - dse");
     }
     
     public void dragGestureRecognized( DragGestureEvent event) {
-        Log.log(Log.TRACE, "DROPLIST","dragGestureRecognized");
-        //Object selected = getSelectedValue();
-        int ind = this.getSelectedIndex();
-        if ( ind != -1 ){
-            Picture pic = (Picture) this.getModel().getElementAt(ind);
-            // as the name suggests, starts the dragging
-            
-            dragSource.startDrag(event, DragSource.DefaultMoveDrop, pic, this);
-            mDaddy.deleteSelectedPictures();
-            
-        } else {
-            Log.log(Log.TRACE, "DROPLIST", "nothing was selected");
-        }
+	Log.log(Log.TRACE, "DROPLIST","dragGestureRecognized");
+	//Object selected = getSelectedValue();
+	int ind = this.getSelectedIndex();
+	if ( ind != -1 ){
+	    Picture pic = (Picture) this.getModel().getElementAt(ind);
+	    // as the name suggests, starts the dragging
+	    
+	    dragSource.startDrag(event, DragSource.DefaultMoveDrop, pic, this);
+	    mDaddy.deleteSelectedPictures();
+	    
+	} else {
+	    Log.log(Log.TRACE, "DROPLIST", "nothing was selected");
+	}
     }
     
     public void dragOver(DragSourceDragEvent dragSourceDragEvent) {
-        //Log.log(Log.TRACE, "DROPLIST","dragOver - dsde");
-        repaint();
+	//Log.log(Log.TRACE, "DROPLIST","dragOver - dsde");
+	repaint();
     }
     
     public void dropActionChanged(DragSourceDragEvent dragSourceDragEvent) {
@@ -165,58 +165,56 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@since
      */
     public synchronized void drop( DropTargetDropEvent dropTargetDropEvent ) {
-        try {
-            Transferable tr = dropTargetDropEvent.getTransferable();
-            if ( tr.isDataFlavorSupported( DataFlavor.javaFileListFlavor ) && this.isEnabled() ) {
-                dropTargetDropEvent.acceptDrop(
-                DnDConstants.ACTION_COPY_OR_MOVE );
-                java.util.List fileList = (java.util.List)
-                tr.getTransferData( DataFlavor.javaFileListFlavor );
-                
-                /* recursively add contents of directories */
-                java.util.List allFilesList = null;
-                try {
-                    allFilesList = expandDirectories( fileList );
-                } catch ( IOException ioe ) {
-                    Log.log( Log.ERROR, MODULE, "i/o exception listing dirs in a drop");
-                    Log.logStack( Log.ERROR, MODULE );
-                    JOptionPane.showMessageDialog(
-                    null,
-                    "It was not possible to accept the images due to an error.",
-                    "Error Accepting Dragged Images",
-                    JOptionPane.ERROR_MESSAGE);
-                }
-                
-                //thanks John Zukowski
-                Point dropLocation = dropTargetDropEvent.getLocation();
-                //adjust for height of image (fixed for time being, needs to be dynamic according to thumbnail)
-                Log.log(Log.TRACE, MODULE,"drop location X: " + dropLocation.getX() + "  Y: " + dropLocation.getY());
-                double lineY = dropLocation.getY();
-                dropLocation.setLocation(dropLocation.getX(),lineY - 1.0 );
-                Log.log(Log.TRACE, MODULE,"adjusted location X: " + dropLocation.getX() + "  Y: " + dropLocation.getY());
-                int listIndex = this.locationToIndex(dropLocation);
-                //add below selected, otherwise add to end
-                if (listIndex == -1){
-                    listIndex = this.getModel().getSize();
-                }
-                
-                Log.log(Log.TRACE, "DROPLIST", "Adding new image(s) to list at index:" + listIndex);
-                
-                mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
-                
-                dropTargetDropEvent.getDropTargetContext().dropComplete( true );
-                
-            } else {
-                Log.log(Log.TRACE, MODULE, "rejecting drop: javaFileListFlavor is not supported for this data");
-                dropTargetDropEvent.rejectDrop();
-            }
-        } catch ( IOException io ) {
-            io.printStackTrace();
-            dropTargetDropEvent.rejectDrop();
-        } catch ( UnsupportedFlavorException ufe ) {
-            ufe.printStackTrace();
-            dropTargetDropEvent.rejectDrop();
-        }
+	try {
+	    Transferable tr = dropTargetDropEvent.getTransferable();
+	    if ( tr.isDataFlavorSupported( DataFlavor.javaFileListFlavor ) && this.isEnabled() ) {
+		dropTargetDropEvent.acceptDrop(
+		DnDConstants.ACTION_COPY_OR_MOVE );
+		java.util.List fileList = (java.util.List)
+		tr.getTransferData( DataFlavor.javaFileListFlavor );
+		
+		/* recursively add contents of directories */
+		java.util.List allFilesList = null;
+		try {
+		    allFilesList = expandDirectories( fileList );
+		} catch ( IOException ioe ) {
+		    Log.log( Log.ERROR, MODULE, "i/o exception listing dirs in a drop");
+		    Log.logStack( Log.ERROR, MODULE );
+		    JOptionPane.showMessageDialog(
+		    null,
+		    "It was not possible to accept the images due to an error.",
+		    "Error Accepting Dragged Images",
+		    JOptionPane.ERROR_MESSAGE);
+		}
+		
+		//thanks John Zukowski
+		Point dropLocation = dropTargetDropEvent.getLocation();
+		//adjust for height of image (otherwise can never drop into 1st slot)
+		dropLocation.setLocation(dropLocation.getX(),dropLocation.getY() - 1.0 );
+		//Log.log(Log.TRACE, MODULE,"adjusted location X: " + dropLocation.getX() + "  Y: " + dropLocation.getY());
+		int listIndex = this.locationToIndex(dropLocation);
+		//add below selected, otherwise add to end
+		if (listIndex == -1){
+		    listIndex = this.getModel().getSize();
+		}
+		
+		Log.log(Log.TRACE, "DROPLIST", "Adding new image(s) to list at index:" + listIndex);
+		
+		mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
+		
+		dropTargetDropEvent.getDropTargetContext().dropComplete( true );
+		
+	    } else {
+		Log.log(Log.TRACE, MODULE, "rejecting drop: javaFileListFlavor is not supported for this data");
+		dropTargetDropEvent.rejectDrop();
+	    }
+	} catch ( IOException io ) {
+	    io.printStackTrace();
+	    dropTargetDropEvent.rejectDrop();
+	} catch ( UnsupportedFlavorException ufe ) {
+	    ufe.printStackTrace();
+	    dropTargetDropEvent.rejectDrop();
+	}
     }
     
     /**
@@ -226,20 +224,20 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *	@param filesAndFolders	Files and/or directories.
      */
     java.util.List expandDirectories( java.util.List filesAndFolders ) throws IOException {
-        
-        java.util.ArrayList allFilesList = new ArrayList();
-        
-        Iterator iter = filesAndFolders.iterator();
-        while ( iter.hasNext() ){
-            File f = (File)iter.next();
-            if ( f.isDirectory() ) {
-                allFilesList.addAll( listFilesRecursive( f ) );
-            } else {
-                allFilesList.add( f );
-            }
-        }
-        
-        return allFilesList;
+	
+	java.util.ArrayList allFilesList = new ArrayList();
+	
+	Iterator iter = filesAndFolders.iterator();
+	while ( iter.hasNext() ){
+	    File f = (File)iter.next();
+	    if ( f.isDirectory() ) {
+		allFilesList.addAll( listFilesRecursive( f ) );
+	    } else {
+		allFilesList.add( f );
+	    }
+	}
+	
+	return allFilesList;
     }
     
     /**
@@ -251,64 +249,64 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *		directory, an empty list is returned.
      */
     static java.util.List listFilesRecursive( File dir ) throws IOException {
-        ArrayList ret = new ArrayList();
-        
-                /* File.listFiles: stupid call returns null if there's an
-                   i/o exception *or* if the file is not a directory, making a mess.
-                   http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
-        File [] fileArray = dir.listFiles();
-        if ( fileArray == null ) {
-            if ( dir.isDirectory() ) {
-                /* convert to exception */
-                throw new IOException( "i/o exception listing directory: " + dir.getPath() );
-            } else {
-                /* this method should only be called on a directory */
-                Log.log(Log.CRITICAL, MODULE, "assertion failed: listFilesRecursive called on a non-dir file");
-                return ret;
-            }
-        }
-        java.util.List files = Arrays.asList( fileArray );
-        
-        Iterator iter = files.iterator();
-        while( iter.hasNext() ) {
-            File f = (File)iter.next();
-            if ( f.isDirectory() ) {
-                ret.addAll( listFilesRecursive( f ) );
-            } else {
-                ret.add( f );
-            }
-        }
-        
-        return ret;
+	ArrayList ret = new ArrayList();
+	
+		/* File.listFiles: stupid call returns null if there's an
+		   i/o exception *or* if the file is not a directory, making a mess.
+		   http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
+	File [] fileArray = dir.listFiles();
+	if ( fileArray == null ) {
+	    if ( dir.isDirectory() ) {
+		/* convert to exception */
+		throw new IOException( "i/o exception listing directory: " + dir.getPath() );
+	    } else {
+		/* this method should only be called on a directory */
+		Log.log(Log.CRITICAL, MODULE, "assertion failed: listFilesRecursive called on a non-dir file");
+		return ret;
+	    }
+	}
+	java.util.List files = Arrays.asList( fileArray );
+	
+	Iterator iter = files.iterator();
+	while( iter.hasNext() ) {
+	    File f = (File)iter.next();
+	    if ( f.isDirectory() ) {
+		ret.addAll( listFilesRecursive( f ) );
+	    } else {
+		ret.add( f );
+	    }
+	}
+	
+	return ret;
     }
     
     final static BasicStroke stroke = new BasicStroke(1.0f);
+    final static Color red = new Color(255,0,0);
     
     
     public void paintComponent( Graphics g ){
-        super.paintComponent(g);
-        Log.log(Log.TRACE, MODULE, "painting component -- isDrag: " + isDrag);
-        
-        if (this.getModel().getSize() > 0 && isDrag){
-            //Log.log(Log.TRACE, MODULE, "adding line");
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setStroke( stroke );
-            //Log.log(Log.TRACE, MODULE, "p:" + p);
-            //get index of drop spot
-            int curEl = this.locationToIndex(p);
-            //Log.log(Log.TRACE, MODULE, "curEl:" + curEl);
-            double lineY = 0.0;
-            if (curEl == -1){
-                curEl = this.getModel().getSize();
-            }
-            lineY = (double) curEl * this.getFixedCellHeight();
-
-            //start x, y   end x, y
-            Line2D line = new Line2D.Double(10.0, lineY, this.getVisibleRect().getWidth() - 10.0, lineY);
-            //make the line red
-            g2.setColor(new Color(255,0,0));
-            g2.draw(line);
-        }
+	super.paintComponent(g);
+	//Log.log(Log.TRACE, MODULE, "painting component -- isDrag: " + isDrag);
+	
+	if (this.getModel().getSize() > 0 && isDrag){
+	    //Log.log(Log.TRACE, MODULE, "adding line");
+	    Graphics2D g2 = (Graphics2D)g;
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    g2.setStroke( stroke );
+	    //make the line red
+	    g2.setColor( red );
+	    //Log.log(Log.TRACE, MODULE, "p:" + p);
+	    //get index of drop spot
+	    int curEl = this.locationToIndex(p);
+	    //Log.log(Log.TRACE, MODULE, "curEl:" + curEl);
+	    double lineY = 0.0;
+	    if (curEl == -1){
+		curEl = this.getModel().getSize();
+	    }
+	    lineY = (double) curEl * this.getFixedCellHeight();
+	    //start x, y   end x, y
+	    Line2D line = new Line2D.Double(10.0, lineY, this.getVisibleRect().getWidth() - 10.0, lineY);
+	    g2.draw(line);
+	}
     }
 }
