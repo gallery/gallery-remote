@@ -113,7 +113,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 			DialogUtil.center(this);
 
-			setIconImage(GalleryRemote.iconImage);
+			setIconImage(MainFrame.iconImage);
 			
 			setVisible( true );
 		} catch ( Exception e ) {

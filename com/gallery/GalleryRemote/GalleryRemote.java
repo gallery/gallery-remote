@@ -40,9 +40,7 @@ public class GalleryRemote {
 	public MainFrame mainFrame = null;
 	public PropertiesFile properties = null;
 	public PropertiesFile defaults = null;
-	
-	public static Image iconImage = new ImageIcon(GalleryRemote.class.getResource( "/rar_icon_16.gif" )).getImage();
-	
+		
 	private GalleryRemote() {
 		defaults = new PropertiesFile("defaults");
 		

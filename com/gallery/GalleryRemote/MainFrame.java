@@ -129,6 +129,7 @@ public class MainFrame extends javax.swing.JFrame
 	public static ImageIcon iFlip;
 	public static ImageIcon iComputer;
 	public static ImageIcon iUploading;
+	public static Image iconImage = new ImageIcon(GalleryRemote.class.getResource( "/rar_icon_16.gif" )).getImage();
 
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
 	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -166,7 +167,7 @@ public class MainFrame extends javax.swing.JFrame
 			galleries.addElement( g );
 		}*/
 
-		setIconImage(GalleryRemote.iconImage);
+		setIconImage(MainFrame.iconImage);
 
 		if ( System.getProperty("os.name").toLowerCase().startsWith("mac") ) {
 			// Install shutdown handler only on Mac

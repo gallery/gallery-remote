@@ -46,7 +46,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 	public void initComponents() {
 		setTitle(GRI18n.getInstance().getString(MODULE, "title"));
 
-		setIconImage(GalleryRemote.iconImage);
+		setIconImage(MainFrame.iconImage);
 
 		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
 
