@@ -355,7 +355,7 @@ public class PictureInspector extends JPanel
 
 		jIcon.setPreferredSize(
 				new Dimension(0,
-						GalleryRemote.getInstance().properties.getThumbnailSize().height
+						GalleryRemote._().properties.getThumbnailSize().height
 				+ emptyIconHeight
 				+ jIcon.getIconTextGap()));
 

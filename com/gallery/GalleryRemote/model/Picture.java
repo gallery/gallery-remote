@@ -119,10 +119,10 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	public void setSource(File source) {
 		this.source = source;
 
-		if (GalleryRemote.getInstance().properties.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES)) {
+		if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES)) {
 			String filename = source.getName();
 
-			if (GalleryRemote.getInstance().properties.getBooleanProperty(CAPTION_STRIP_EXTENSION)) {
+			if (GalleryRemote._().properties.getBooleanProperty(CAPTION_STRIP_EXTENSION)) {
 				int i = filename.lastIndexOf(".");
 
 				if (i != -1) {
@@ -191,7 +191,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 					d = new Dimension(l, l);
 				} else {
 					// server can't tell us how to resize, try default
-					d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO_DEFAULT);
+					d = GalleryRemote._().properties.getDimensionProperty(RESIZE_TO_DEFAULT);
 
 					if (d.equals(new Dimension(0, 0))) {
 						d = null;

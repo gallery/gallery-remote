@@ -56,7 +56,6 @@ public class MoveAlbumDialog extends JDialog
 	JPanel jPanel2 = new JPanel();
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
-	GridLayout gridLayout1 = new GridLayout();
 
 
 	/**
@@ -113,9 +112,7 @@ public class MoveAlbumDialog extends JDialog
 		this.getContentPane().add(jPanel2, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
 
-		jPanel2.setLayout(gridLayout1);
-		gridLayout1.setColumns(2);
-		gridLayout1.setHgap(5);
+		jPanel2.setLayout(new GridLayout(1, 2, 5, 0));
 		jPanel2.add(jCancel, null);
 		jPanel2.add(jOk, null);
 
@@ -138,7 +135,7 @@ public class MoveAlbumDialog extends JDialog
 		if (command.equals("Cancel")) {
 			setVisible(false);
 		} else if (command.equals("OK")) {
-			album.moveAlbumTo(GalleryRemote.getInstance().getCore().getMainStatusUpdate(), (Album) jAlbum.getSelectedItem());
+			album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), (Album) jAlbum.getSelectedItem());
 
 			setVisible(false);
 		}

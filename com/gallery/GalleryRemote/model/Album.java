@@ -285,7 +285,7 @@ public class Album extends Picture implements ListModel, Serializable {
 
 	private void addPictureInternal(int index, Picture p) {
 		// handle EXIF
-		if (GalleryRemote.getInstance().properties.getBooleanProperty(EXIF_AUTOROTATE)) {
+		if (GalleryRemote._().properties.getBooleanProperty(EXIF_AUTOROTATE)) {
 			ImageUtils.AngleFlip af = ImageUtils.getExifTargetOrientation(p.getSource().getPath());
 
 			if (af != null) {
@@ -762,7 +762,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		if (overrideResize != null) {
 			return overrideResize.booleanValue();
 		} else {
-			return GalleryRemote.getInstance().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD);
+			return GalleryRemote._().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD);
 		}
 	}
 
@@ -770,7 +770,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		if (overrideResizeDefault != null) {
 			return overrideResizeDefault.booleanValue();
 		} else {
-			return new Dimension(0, 0).equals(GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO));
+			return new Dimension(0, 0).equals(GalleryRemote._().properties.getDimensionProperty(RESIZE_TO));
 		}
 	}
 
@@ -778,7 +778,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		if (overrideResizeDimension != null) {
 			return overrideResizeDimension;
 		} else {
-			return GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO);
+			return GalleryRemote._().properties.getDimensionProperty(RESIZE_TO);
 		}
 	}
 

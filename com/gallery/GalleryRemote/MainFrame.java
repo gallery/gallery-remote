@@ -163,11 +163,11 @@ public class MainFrame extends JFrame
 	public MainFrame() {
 		macOSXRegistration();
 
-		PropertiesFile p = GalleryRemote.getInstance().properties;
+		PropertiesFile p = GalleryRemote._().properties;
 
 		// load galleries
 		galleries = new DefaultComboBoxModel();
-		if (! GalleryRemote.getInstance().isAppletMode()) {
+		if (! GalleryRemote._().isAppletMode()) {
 			int i = 0;
 			while (true) {
 				try {
@@ -185,7 +185,7 @@ public class MainFrame extends JFrame
 		} else {
 			Gallery g = new Gallery(jStatusBar);
 			g.addTreeModelListener(this);
-			Applet applet = GalleryRemote.getInstance().getApplet();
+			Applet applet = GalleryRemote._().getApplet();
 			String url = applet.getParameter("gr_url");
 			String cookieName = applet.getParameter("gr_cookie_name");
 			String cookieValue = applet.getParameter("gr_cookie_value");
@@ -237,7 +237,7 @@ public class MainFrame extends JFrame
 			Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
 		}
 
-		setBounds(GalleryRemote.getInstance().properties.getMainBounds());
+		setBounds(GalleryRemote._().properties.getMainBounds());
 		setJMenuBar(jMenuBar1);
 
 		jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
@@ -253,15 +253,15 @@ public class MainFrame extends JFrame
 		jAlbumTree.setEnabled(true);
 		jAlbumTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		jAlbumTree.setCellRenderer(new AlbumTreeRenderer());
-		((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote.getInstance().properties.getIntProperty("albumPictureDividerLocation"), -1));
+		((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote._().properties.getIntProperty("albumPictureDividerLocation"), -1));
 
 		jPictureInspector.setMainFrame(this);
 		jAlbumInspector.setMainFrame(this);
 
 		setGalleries(galleries);
 
-		jInspectorDivider.setDividerLocation(GalleryRemote.getInstance().properties.getIntProperty("inspectorDividerLocation"));
-		jAlbumPictureDivider.setDividerLocation(GalleryRemote.getInstance().properties.getIntProperty("albumPictureDividerLocation"));
+		jInspectorDivider.setDividerLocation(GalleryRemote._().properties.getIntProperty("inspectorDividerLocation"));
+		jAlbumPictureDivider.setDividerLocation(GalleryRemote._().properties.getIntProperty("albumPictureDividerLocation"));
 
 		setVisible(true);
 
@@ -274,15 +274,15 @@ public class MainFrame extends JFrame
 					}
 				});
 
-		if (GalleryRemote.getInstance().properties.getShowPreview()) {
+		if (GalleryRemote._().properties.getShowPreview()) {
 			previewFrame.setVisible(true);
 		}
 
 		toFront();
 
-		readPreferences(GalleryRemote.getInstance().properties);
+		readPreferences(GalleryRemote._().properties);
 
-		if (GalleryRemote.getInstance().isAppletMode()) {
+		if (GalleryRemote._().isAppletMode()) {
 			/*Gallery g = getCurrentGallery();
 			g.getComm(jStatusBar).isLoggedIn = true;*/
 
@@ -292,8 +292,8 @@ public class MainFrame extends JFrame
 		resetUIState();
 
 		// Load a test file
-		if (GalleryRemote.getInstance().properties.getLoadLastMRU()) {
-			String lastMRUFile = GalleryRemote.getInstance().properties.getMRUItem(1);
+		if (GalleryRemote._().properties.getLoadLastMRU()) {
+			String lastMRUFile = GalleryRemote._().properties.getMRUItem(1);
 
 			if (null != lastMRUFile) {
 				openState(lastMRUFile);
@@ -354,7 +354,7 @@ public class MainFrame extends JFrame
 			Log.log(Log.LEVEL_INFO, MODULE, "Shutting down GR");
 
 			try {
-				PropertiesFile p = GalleryRemote.getInstance().properties;
+				PropertiesFile p = GalleryRemote._().properties;
 
 				p.setMainBounds(getBounds());
 				p.setPreviewBounds(previewFrame.getBounds());
@@ -367,6 +367,9 @@ public class MainFrame extends JFrame
 					// in halt mode, this crashes the VM
 					setVisible(false);
 					dispose();
+
+					previewFrame.setVisible(false);
+					previewFrame.dispose();
 				}
 
 				ImageUtils.purgeTemp();
@@ -381,7 +384,7 @@ public class MainFrame extends JFrame
 			Log.log(Log.LEVEL_INFO, MODULE, "Shutting down log");
 			Log.shutdown();
 
-			if (! GalleryRemote.getInstance().isAppletMode()) {
+			if (! GalleryRemote._().isAppletMode()) {
 				if (!halt) {
 					// no need for this in halt mode
 					Runtime.getRuntime().exit(0);
@@ -389,7 +392,7 @@ public class MainFrame extends JFrame
 				Runtime.getRuntime().exit(0);
 				}*/
 			} else {
-				((GRApplet) GalleryRemote.getInstance().getApplet()).hasShutdown();
+				((GRApplet) GalleryRemote._().getApplet()).hasShutdown();
 			}
 		}
 	}
@@ -484,7 +487,7 @@ public class MainFrame extends JFrame
 					sel = -1;
 				}
 
-				if (GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null) {
+				if (GalleryRemote._().properties.getShowPreview() && previewFrame != null) {
 					if (sel != -1) {
 						previewFrame.displayPicture(currentAlbum.getPicture(sel), true);
 					} else {
@@ -773,14 +776,14 @@ public class MainFrame extends JFrame
 	 * @param show The new showThumbmails value
 	 */
 	public void setShowThumbnails(boolean show) {
-		GalleryRemote.getInstance().properties.setShowThumbnails(show);
+		GalleryRemote._().properties.setShowThumbnails(show);
 
 		if (show) {
 			if (getCurrentAlbum() != null) {
 				preloadThumbnails(getCurrentAlbum().getPictures());
 			}
 
-			jPicturesList.setFixedCellHeight(GalleryRemote.getInstance().properties.getThumbnailSize().height + 4);
+			jPicturesList.setFixedCellHeight(GalleryRemote._().properties.getThumbnailSize().height + 4);
 		} else {
 			thumbnailCache.cancelLoad();
 			jPicturesList.setFixedCellHeight(-1);
@@ -794,7 +797,7 @@ public class MainFrame extends JFrame
 	 * @param show The new showPreview value
 	 */
 	public void setShowPreview(boolean show) {
-		GalleryRemote.getInstance().properties.setShowPreview(show);
+		GalleryRemote._().properties.setShowPreview(show);
 		if (show) {
 			previewFrame.show();
 		} else {
@@ -978,7 +981,7 @@ public class MainFrame extends JFrame
 		setupKeyboardHandling(jPictureScroll);
 		setupKeyboardHandling(jAlbumScroll);
 
-		if (! GalleryRemote.getInstance().isAppletMode()) {
+		if (! GalleryRemote._().isAppletMode()) {
 			this.getContentPane().add(jTopPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 					, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
 		}
@@ -1257,7 +1260,7 @@ public class MainFrame extends JFrame
 	}
 
 	private void showPreferencesDialog(String panel) {
-		PropertiesFile oldProperties = (PropertiesFile) GalleryRemote.getInstance().properties.clone();
+		PropertiesFile oldProperties = (PropertiesFile) GalleryRemote._().properties.clone();
 		PreferencesDialog pd = new PreferencesDialog(this);
 
 		if (panel != null) {
@@ -1274,7 +1277,7 @@ public class MainFrame extends JFrame
 	}
 
 	public void readPreferences(PropertiesFile op) {
-		PropertiesFile p = GalleryRemote.getInstance().properties;
+		PropertiesFile p = GalleryRemote._().properties;
 		p.write();
 
 		jCheckBoxMenuThumbnails.setSelected(p.getShowThumbnails());
@@ -1407,11 +1410,11 @@ public class MainFrame extends JFrame
 		// in the properties file, but we only display the top x files in the
 		// menu.
 		m_MRUFileList.clear();
-		int mruCount = GalleryRemote.getInstance().properties.getMRUCountProperty();
+		int mruCount = GalleryRemote._().properties.getMRUCountProperty();
 
 		for (int i = 1; i <= 20 && m_MRUFileList.size() < mruCount; i++) {
 			// Get the file name (if any) from the properties file
-			String fileName = GalleryRemote.getInstance().properties.getMRUItem(i);
+			String fileName = GalleryRemote._().properties.getMRUItem(i);
 
 			if (null == fileName) {
 				// If the MRU item doesn't exist, skip this one
@@ -1458,10 +1461,10 @@ public class MainFrame extends JFrame
 	 */
 	private void saveMRUItem(File mruFile) {
 		// Wait to here to see if we succeed in loading the file.
-		GalleryRemote.getInstance().properties.addMRUItem(mruFile);
+		GalleryRemote._().properties.addMRUItem(mruFile);
 
 		// Save the properties file so we don't lose the MRU
-		GalleryRemote.getInstance().properties.write();
+		GalleryRemote._().properties.write();
 
 		// Update the MRU list
 		updateMRUItemList();
@@ -1554,10 +1557,10 @@ public class MainFrame extends JFrame
 		for (int i = 0; i < galleries.getSize(); i++) {
 			Gallery gg = (Gallery) galleries.getElementAt(i);
 			gg.setPrefsIndex(i);
-			gg.writeToProperties(GalleryRemote.getInstance().properties);
+			gg.writeToProperties(GalleryRemote._().properties);
 		}
 
-		Gallery.removeFromProperties(GalleryRemote.getInstance().properties, galleries.getSize());
+		Gallery.removeFromProperties(GalleryRemote._().properties, galleries.getSize());
 	}
 
 
@@ -1575,7 +1578,7 @@ public class MainFrame extends JFrame
 		} else if (item == jCheckBoxMenuPreview) {
 			setShowPreview(e.getStateChange() == ItemEvent.SELECTED);
 		} else if (item == jCheckBoxMenuPath) {
-			GalleryRemote.getInstance().properties.setShowPath((e.getStateChange() == ItemEvent.SELECTED) ? true : false);
+			GalleryRemote._().properties.setShowPath((e.getStateChange() == ItemEvent.SELECTED) ? true : false);
 			jPicturesList.repaint();
 		} /*else if ( item == album ) {
 		updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());

@@ -18,13 +18,13 @@ public class GRApplet extends JApplet {
 	}
 
 	public void start() {
-		GalleryRemote.getInstance(true, this);
+		GalleryRemote.createInstance(true, this);
 
 		GalleryRemote.main(null);
 	}
 
 	public void stop() {
-		GalleryRemote.getInstance().getCore().shutdown();
+		GalleryRemote._().getCore().shutdown();
 	}
 
 	public void hasShutdown() {

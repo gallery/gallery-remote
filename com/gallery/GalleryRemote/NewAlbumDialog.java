@@ -182,7 +182,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 				a.setParentAlbum(selectedAlbum);
 			}
 
-			newAlbumName = gallery.newAlbum(a, GalleryRemote.getInstance().getCore().getMainStatusUpdate());
+			newAlbumName = gallery.newAlbum(a, GalleryRemote._().getCore().getMainStatusUpdate());
 
 			if (newAlbumName == null) {
 				newAlbumName = jName.getText();

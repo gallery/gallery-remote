@@ -51,7 +51,7 @@ public class ThumbnailCache implements Runnable {
 	public void run() {
 		Thread.yield();
 		int loaded = 0;
-		GalleryRemote.getInstance().getCore().getMainStatusUpdate().startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), GRI18n.getString(MODULE, "loadThmb"), false);
+		GalleryRemote._().getCore().getMainStatusUpdate().startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), GRI18n.getString(MODULE, "loadThmb"), false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while (!toLoad.isEmpty()) {
 			Picture p = (Picture) toLoad.pop();
@@ -64,7 +64,7 @@ public class ThumbnailCache implements Runnable {
 					Image scaled = null;
 					Dimension newD = ImageUtils.getSizeKeepRatio(
 							new Dimension(i.getIconWidth(), i.getIconHeight()),
-							GalleryRemote.getInstance().properties.getThumbnailSize());
+							GalleryRemote._().properties.getThumbnailSize());
 					scaled = i.getImage().getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
 
 					i.getImage().flush();
@@ -72,7 +72,7 @@ public class ThumbnailCache implements Runnable {
 				} else {
 					i = ImageUtils.load(
 							p.getSource().getPath(),
-							GalleryRemote.getInstance().properties.getThumbnailSize(),
+							GalleryRemote._().properties.getThumbnailSize(),
 							ImageUtils.THUMB);
 				}
 
@@ -81,13 +81,13 @@ public class ThumbnailCache implements Runnable {
 				loaded++;
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
-				GalleryRemote.getInstance().getCore().getMainStatusUpdate().updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
-				GalleryRemote.getInstance().getCore().thumbnailLoadedNotify();
+				GalleryRemote._().getCore().getMainStatusUpdate().updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
+				GalleryRemote._().getCore().thumbnailLoadedNotify();
 			}
 		}
 		stillRunning = false;
 
-		GalleryRemote.getInstance().getCore().getMainStatusUpdate().stopProgress(StatusUpdate.LEVEL_CACHE, GRI18n.getString(MODULE, "thmbLoaded"));
+		GalleryRemote._().getCore().getMainStatusUpdate().stopProgress(StatusUpdate.LEVEL_CACHE, GRI18n.getString(MODULE, "thmbLoaded"));
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}
@@ -161,7 +161,7 @@ public class ThumbnailCache implements Runnable {
 	}
 
 	void rerun() {
-		if (!stillRunning && GalleryRemote.getInstance().properties.getShowThumbnails()) {
+		if (!stillRunning && GalleryRemote._().properties.getShowThumbnails()) {
 			stillRunning = true;
 			Log.log(Log.LEVEL_TRACE, MODULE, "Calling Start");
 			new Thread(this).start();

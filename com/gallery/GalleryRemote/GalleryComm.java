@@ -151,7 +151,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
-			GalleryProperties p = GalleryRemote.getInstance().properties;
+			GalleryProperties p = GalleryRemote._().properties;
 			// set proxy info
 			if (p.getBooleanProperty(USE_PROXY)) {
 				String hostname = p.getProperty(PROXY_HOST);

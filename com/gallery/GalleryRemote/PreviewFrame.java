@@ -48,9 +48,9 @@ public class PreviewFrame extends javax.swing.JFrame {
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
 
-		setIconImage(GalleryRemote.getInstance().getMainFrame().getIconImage());
+		setIconImage(GalleryRemote._().getMainFrame().getIconImage());
 
-		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
+		setBounds(GalleryRemote._().properties.getPreviewBounds());
 		setContentPane(new ImageContentPane());
 		//getContentPane().setLayout(new BorderLayout());
 		//getContentPane().add("Center", imagePane);
@@ -61,7 +61,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			}
 		});
 
-		previewCacheSize = GalleryRemote.getInstance().properties.getIntProperty("previewCacheSize");
+		previewCacheSize = GalleryRemote._().properties.getIntProperty("previewCacheSize");
 	}
 
 	public void hide() {
@@ -115,7 +115,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 		if (r == null) {
 			if (picture.isOnline()) {
-				File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote.getInstance().getCore().getMainStatusUpdate());
+				File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate());
 
 				r = ImageUtils.load(
 						f.getPath(),

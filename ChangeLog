@@ -1,3 +1,8 @@
+2003-01-16  Pierre-Luc Paour <gallery@paour.com> (1.3-b17)
+
+	* More refactoring to make the mini applet more modular.
+	  Shaved 100KB+ from the total applet weight.
+
 2003-01-15  Pierre-Luc Paour <gallery@paour.com> (1.3-b16)
 
 	* MASSIVE refactoring to make GR more modular to prepare

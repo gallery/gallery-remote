@@ -74,7 +74,7 @@
 	<target name="applet_jar" depends="compile,applet_img_jar" description="create a jar for the applet version of GR">
 
 		<jar destfile="GalleryRemoteApplet.jar" index="true" >
-			<fileset dir="${build}" />
+			<fileset dir="${build}" includesfile="AppletMiniExcludes.txt"/>
 			<fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -87,7 +87,7 @@
 	<target name="applet_mini_jar" depends="compile" description="create a jar for the applet version of GR">
 
 		<jar destfile="GalleryRemoteAppletMini.jar" index="true" >
-			<fileset dir="${build}" excludes="rar_*" />
+			<fileset dir="${build}" excludes="rar_*, HTTPClient/*" excludesfile="AppletMiniExcludes.txt" />
 			<fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
@@ -95,6 +95,18 @@
 		</jar>
 
 		<signjar jar="GalleryRemoteAppletMini.jar" alias="gallery" storepass="gallery" />
+	</target>
+
+	<target name="httpclient_jar" depends="compile" description="create a jar for the HTTP library">
+
+		<jar destfile="GalleryRemoteHTTPClient.jar" index="true" >
+			<fileset dir="${build}" includes="HTTPClient/*" />
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+			</manifest>
+		</jar>
+
+		<signjar jar="GalleryRemoteHTTPClient.jar" alias="gallery" storepass="gallery" />
 	</target>
 
 	<target name="zip" depends="jar"

@@ -396,7 +396,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			if ((username == null || username.length() == 0)
 					&& ! g.cookieLogin) {
 				username = (String) JOptionPane.showInputDialog(
-						GalleryRemote.getInstance().getMainFrame(),
+						GalleryRemote._().getMainFrame(),
 						GRI18n.getString(MODULE, "usernameLbl"),
 						GRI18n.getString(MODULE, "username"),
 						JOptionPane.PLAIN_MESSAGE,
@@ -411,7 +411,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			if (username != null && (password == null || password.length() == 0)) {
 				password = (String) JOptionPane.showInputDialog(
-						GalleryRemote.getInstance().getMainFrame(),
+						GalleryRemote._().getMainFrame(),
 						GRI18n.getString(MODULE, "passwdLbl"),
 						GRI18n.getString(MODULE, "passwd"),
 						JOptionPane.PLAIN_MESSAGE,
@@ -562,11 +562,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				if (su instanceof UploadProgress) {
 					if (((UploadProgress) su).isShutdown()) {
-						GalleryRemote.getInstance().getCore().shutdown(true);
+						GalleryRemote._().getCore().shutdown(true);
 					}
 				}
 
-				GalleryRemote.getInstance().getCore().flushMemory();
+				GalleryRemote._().getCore().flushMemory();
 			} else {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upFailed"));
 			}
@@ -574,7 +574,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		boolean uploadPicture(Picture p) {
 			try {
-				boolean escapeCaptions = GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
+				boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 
 				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upPrep"));
 
@@ -884,7 +884,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 									GRI18n.getString(MODULE, "fixCorruptedTitle"),
 									JOptionPane.ERROR_MESSAGE);*/
 
-							if (! GalleryRemote.getInstance().properties.getBooleanProperty(SUPPRESS_WARNING_CORRUPTED)) {
+							if (! GalleryRemote._().properties.getBooleanProperty(SUPPRESS_WARNING_CORRUPTED)) {
 								UrlMessageDialog md = new UrlMessageDialog(
 										GRI18n.getString(MODULE, "fixCorrupted", new String[] {
 											a.getTitle(),
@@ -894,7 +894,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 										null);
 
 								if (md.dontShow()) {
-									GalleryRemote.getInstance().properties.setBooleanProperty(SUPPRESS_WARNING_CORRUPTED, true);
+									GalleryRemote._().properties.setBooleanProperty(SUPPRESS_WARNING_CORRUPTED, true);
 								}
 							}
 
@@ -1001,7 +1001,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			// parsed, and the session album is kept the same as before (from the cookie).
 			String parentAlbumName = (parentAlbum == null) ? "hack_null_albumName" : parentAlbum.getName();
 
-			if (GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
+			if (GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
 				albumTitle = HTMLEscaper.escape(albumTitle);
 				albumDesc = HTMLEscaper.escape(albumDesc);
 			}
@@ -1131,7 +1131,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					a.setHasFetchedImages(true);
 					a.addPictures(newPictures);
-					GalleryRemote.getInstance().getCore().preloadThumbnails(newPictures.iterator());
+					GalleryRemote._().getCore().preloadThumbnails(newPictures.iterator());
 				} else {
 					error(su, "Error: " + p.getProperty("status_text"));
 				}

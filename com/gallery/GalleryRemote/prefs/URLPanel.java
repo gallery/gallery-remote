@@ -116,9 +116,9 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				Gallery.uncacheAmbiguousUrl();
 			}
 		} else if (cmd.equals("New")) {
-			Gallery newG = new Gallery(GalleryRemote.getInstance().getCore().getMainStatusUpdate());
-			if (GalleryRemote.getInstance().getCore() instanceof TreeModelListener) {
-				newG.addTreeModelListener((TreeModelListener) GalleryRemote.getInstance().getCore());
+			Gallery newG = new Gallery(GalleryRemote._().getCore().getMainStatusUpdate());
+			if (GalleryRemote._().getCore() instanceof TreeModelListener) {
+				newG.addTreeModelListener((TreeModelListener) GalleryRemote._().getCore());
 			}
 
 			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, newG);

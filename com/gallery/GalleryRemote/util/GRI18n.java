@@ -29,7 +29,7 @@ public class GRI18n implements PreferenceNames {
 	static {
 		String myLocale;
 		myLocale =
-				GalleryRemote.getInstance().properties.getProperty(UI_LOCALE);
+				GalleryRemote._().properties.getProperty(UI_LOCALE);
 
 		grLocale = parseLocaleString(myLocale);
 

@@ -74,8 +74,8 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 	public int check(boolean showImmediate) {
 		int result = 0;
 
-		if (GalleryRemote.getInstance().properties.getBooleanProperty(UPDATE_CHECK)) {
-			release = new Info(GalleryRemote.getInstance().properties.getProperty(UPDATE_URL));
+		if (GalleryRemote._().properties.getBooleanProperty(UPDATE_CHECK)) {
+			release = new Info(GalleryRemote._().properties.getProperty(UPDATE_URL));
 
 			if (release.check()) {
 				result = 1;
@@ -83,8 +83,8 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 			}
 		}
 
-		if (result == 0 && GalleryRemote.getInstance().properties.getBooleanProperty(UPDATE_CHECK_BETA)) {
-			beta = new Info(GalleryRemote.getInstance().properties.getProperty(UPDATE_URL_BETA));
+		if (result == 0 && GalleryRemote._().properties.getBooleanProperty(UPDATE_CHECK_BETA)) {
+			beta = new Info(GalleryRemote._().properties.getProperty(UPDATE_URL_BETA));
 
 			if (beta.check()) {
 				result = 2;
@@ -109,7 +109,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 			DialogUtil.center(this);
 
-			setIconImage(GalleryRemote.getInstance().getMainFrame().getIconImage());
+			setIconImage(GalleryRemote._().getMainFrame().getIconImage());
 
 			setVisible(true);
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 					releaseUrlMac = releaseUrl;
 				}
 
-				Date myReleaseDate = GalleryRemote.getInstance().properties.getDateProperty("releaseDate");
+				Date myReleaseDate = GalleryRemote._().properties.getDateProperty("releaseDate");
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Local release date: " + myReleaseDate + " new: " + releaseDate);
 
@@ -245,7 +245,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		}
 
 		String laxClasspath = lax.getProperty("lax.class.path");
-		String classpath = GalleryRemote.getInstance().properties.getProperty("classpath");
+		String classpath = GalleryRemote._().properties.getProperty("classpath");
 
 		if (classpath != null && !classpath.equals(laxClasspath)) {
 			Log.log(Log.LEVEL_INFO, MODULE, "Patching LAX classpath");

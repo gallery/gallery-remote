@@ -136,7 +136,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		cp.add(new JLabel(), new GridBagConstraints(2, 20, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-		PropertiesFile pf = GalleryRemote.getInstance().properties;
+		PropertiesFile pf = GalleryRemote._().properties;
 		addComponent(cp, jProgress, 1, pf.getIntProperty(SLIDESHOW_PROGRESS));
 		addComponent(cp, jCaption, 2, pf.getIntProperty(SLIDESHOW_CAPTION));
 		addComponent(cp, jExtra, 3, pf.getIntProperty(SLIDESHOW_EXTRA));

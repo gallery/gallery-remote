@@ -198,15 +198,15 @@ public class Log extends Thread implements PreferenceNames {
 	}
 
 	public static void setMaxLevel() {
-		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty(LOG_LEVEL)) {
-			maxLevel = GalleryRemote.getInstance().properties.getIntProperty(LOG_LEVEL);
+		if (maxLevel != GalleryRemote._().properties.getIntProperty(LOG_LEVEL)) {
+			maxLevel = GalleryRemote._().properties.getIntProperty(LOG_LEVEL);
 			singleton.logLines.add(emptyTime + "|"
 					+ levelName[LEVEL_TRACE] + "|"
 					+ emptyModule + "|"
 					+ "Setting Log level to " + levelName[maxLevel]);
 		}
 
-		toSysOut = GalleryRemote.getInstance().properties.getBooleanProperty("toSysOut");
+		toSysOut = GalleryRemote._().properties.getBooleanProperty("toSysOut");
 	}
 
 	static {

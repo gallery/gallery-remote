@@ -5,6 +5,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.DialogUtil;
 
 import javax.swing.*;
 import java.applet.Applet;
@@ -42,9 +43,15 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 	private boolean inProgress = false;
 
 	public void init() {
-		GalleryRemote.getInstance(true, this);
+		GalleryRemote.setProperties();
 
-		GalleryRemote.main(null);
+		if (GalleryRemote.createInstance(true, this) == null) {
+			JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this),
+					"Only one instance of the Gallery Remote can run at the same time...",
+					"Error", JOptionPane.ERROR_MESSAGE);
+
+			return;
+		}
 
 		jbInit();
 
@@ -91,7 +98,7 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 	}
 
 	public void stop() {
-		GalleryRemote.getInstance().getCore().shutdown();
+		GalleryRemote._().getCore().shutdown();
 	}
 
 	public void shutdown() {}
@@ -203,7 +210,7 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 				addPictures(files, -1, false);
 			}
 		} else if (e.getSource() == jUpload) {
-			gallery.uploadFiles(new UploadProgress(null));
+			gallery.uploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));
 		}
 	}
 }

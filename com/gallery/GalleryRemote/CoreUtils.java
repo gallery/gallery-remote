@@ -14,7 +14,7 @@ import java.io.File;
  * Date: Jan 15, 2004
  */
 public class CoreUtils {
-	static GalleryRemoteCore core = GalleryRemote.getInstance().getCore();
+	static GalleryRemoteCore core = GalleryRemote._().getCore();
 
 	public static void deleteSelectedPictures() {
 		JList jPicturesList = core.getPicturesList();
@@ -158,11 +158,11 @@ public class CoreUtils {
 					setForeground(Color.BLACK);
 				}
 
-				if (GalleryRemote.getInstance().properties.getShowThumbnails()) {
+				if (GalleryRemote._().properties.getShowThumbnails()) {
 					ImageIcon icon = core.getThumbnail(p);
 					if (icon != null) {
 						setIcon(icon);
-						setIconTextGap(4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth());
+						setIconTextGap(4 + GalleryRemote._().properties.getThumbnailSize().width - icon.getIconWidth());
 					}
 				}
 
@@ -174,7 +174,7 @@ public class CoreUtils {
 				} else {
 					File f = p.getSource();
 					text.append(f.getName());
-					if (GalleryRemote.getInstance().properties.getShowPath()) {
+					if (GalleryRemote._().properties.getShowPath()) {
 						text.append(" [").append(f.getParent()).append("]</p>");
 					}
 				}

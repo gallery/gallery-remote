@@ -580,10 +580,10 @@ public class ImageUtils {
 		}
 
 		defaultThumbnail = javaLoad(ImageUtils.class.getResource(DEFAULT_RESOURCE),
-				GalleryRemote.getInstance().properties.getThumbnailSize());
+				GalleryRemote._().properties.getThumbnailSize());
 
 		unrecognizedThumbnail = javaLoad(ImageUtils.class.getResource(UNRECOGNIZED_RESOURCE),
-				GalleryRemote.getInstance().properties.getThumbnailSize());
+				GalleryRemote._().properties.getThumbnailSize());
 
 		// Making sure jpegtran works
 		try {
@@ -810,9 +810,9 @@ public class ImageUtils {
 	static void stopUsingIM() {
 		useIM = false;
 
-		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM)) {
-			if (GalleryRemote.getInstance().getMainFrame() != null
-					&& GalleryRemote.getInstance().getMainFrame().isVisible()) {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM)) {
+			if (GalleryRemote._().getMainFrame() != null
+					&& GalleryRemote._().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextIM"),
 						GRI18n.getString(MODULE, "warningUrlIM"),
@@ -820,7 +820,7 @@ public class ImageUtils {
 				);
 
 				if (md.dontShow()) {
-					GalleryRemote.getInstance().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM, true);
+					GalleryRemote._().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM, true);
 				}
 			} else {
 				deferredStopUsingIM = true;
@@ -831,9 +831,9 @@ public class ImageUtils {
 	static void stopUsingJpegtran() {
 		useJpegtran = false;
 
-		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN)) {
-			if (GalleryRemote.getInstance().getMainFrame() != null
-					&& GalleryRemote.getInstance().getMainFrame().isVisible()) {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN)) {
+			if (GalleryRemote._().getMainFrame() != null
+					&& GalleryRemote._().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextJpegtran"),
 						GRI18n.getString(MODULE, "warningUrlJpegtran"),
@@ -841,7 +841,7 @@ public class ImageUtils {
 				);
 
 				if (md.dontShow()) {
-					GalleryRemote.getInstance().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN, true);
+					GalleryRemote._().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN, true);
 				}
 			} else {
 				deferredStopUsingJpegtran = true;

@@ -65,7 +65,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 		synchronized (getClass()) {
 			if (inp == null) {
 
-				inp = new BasicAuthBox(GalleryRemote.getInstance().getMainFrame());
+				inp = new BasicAuthBox(GalleryRemote._().getMainFrame());
 			}
 		}
 
@@ -81,7 +81,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 	 * @version 0.3-3 06/05/2001
 	 * @created February 2, 2003
 	 */
-	private static class BasicAuthBox extends JDialog {
+	private static class BasicAuthBox extends JDialog implements ActionListener {
 		private final static String title = GRI18n.getString(MODULE, "authReq");
 		private JLabel line1, line2, line3;
 		private JTextField user, pass;
@@ -98,7 +98,8 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			super(container, title, true);
 
 			addNotify();
-			addWindowListener(new Close());
+			setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
 			getContentPane().setLayout(new BorderLayout());
 
 			JPanel p = new JPanel(new GridLayout(3, 1));
@@ -114,7 +115,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			p = new JPanel(new GridLayout(2, 1));
 			p.add(user = new JTextField(30));
 			p.add(pass = new JPasswordField(30));
-			pass.addActionListener(new Ok());
+			pass.addActionListener(this);
 			getContentPane().add("East", p);
 
 			GridBagLayout gb = new GridBagLayout();
@@ -126,19 +127,27 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			gb.setConstraints(pp, constr);
 			constr.gridwidth = 1;
 			constr.weightx = 1.0;
+
 			JButton b;
 			p.add(b = new JButton(GRI18n.getString(MODULE, "ok")));
-			b.addActionListener(new Ok());
+			b.addActionListener(this);
+			b.setActionCommand("ok");
+			getRootPane().setDefaultButton(b);
 			constr.weightx = 1.0;
 			gb.setConstraints(b, constr);
+
 			p.add(b = new JButton(GRI18n.getString(MODULE, "clear")));
-			b.addActionListener(new Clear());
+			b.addActionListener(this);
+			b.setActionCommand("clear");
 			constr.weightx = 2.0;
 			gb.setConstraints(b, constr);
+
 			p.add(b = new JButton(GRI18n.getString(MODULE, "cancel")));
-			b.addActionListener(new Cancel());
+			b.addActionListener(this);
+			b.setActionCommand("cancel");
 			constr.weightx = 1.0;
 			gb.setConstraints(b, constr);
+
 			getContentPane().add("South", p);
 
 			pack();
@@ -203,84 +212,28 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			}
 		}
 
-
 		/**
-		 * our event handlers
-		 * 
-		 * @author paour
-		 * @created February 2, 2003
+		 * Invoked when an action occurs.
 		 */
-		private class Ok implements ActionListener {
-			/**
-			 * Description of the Method
-			 * 
-			 * @param ae Description of Parameter
-			 */
-			public void actionPerformed(ActionEvent ae) {
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == pass) {
 				done = OK;
 				hide();
-				// synchronized (BasicAuthBox.this)
-				//    { BasicAuthBox.this.notifyAll(); }
-			}
-		}
-
-
-		/**
-		 * Description of the Class
-		 * 
-		 * @author paour
-		 * @created February 2, 2003
-		 */
-		private class Clear implements ActionListener {
-			/**
-			 * Description of the Method
-			 * 
-			 * @param ae Description of Parameter
-			 */
-			public void actionPerformed(ActionEvent ae) {
+			} else if ("ok".equals(e.getActionCommand())) {
 				user.setText("");
 				pass.setText("");
 				user.requestFocus();
-			}
-		}
-
-
-		/**
-		 * Description of the Class
-		 * 
-		 * @author paour
-		 * @created February 2, 2003
-		 */
-		private class Cancel implements ActionListener {
-			/**
-			 * Description of the Method
-			 * 
-			 * @param ae Description of Parameter
-			 */
-			public void actionPerformed(ActionEvent ae) {
+			} else if ("cancel".equals(e.getActionCommand())) {
 				done = CANCEL;
 				hide();
-				//synchronized (BasicAuthBox.this)
-				//    { BasicAuthBox.this.notifyAll(); }
+			} else if ("close".equals(e.getActionCommand())) {
 			}
 		}
 
-
-		/**
-		 * Description of the Class
-		 * 
-		 * @author paour
-		 * @created February 2, 2003
-		 */
-		private class Close extends WindowAdapter {
-			/**
-			 * Description of the Method
-			 * 
-			 * @param we Description of Parameter
-			 */
+		/*private class Close extends WindowAdapter {
 			public void windowClosing(WindowEvent we) {
 				new Cancel().actionPerformed(null);
 			}
-		}
+		}*/
 	}
 }

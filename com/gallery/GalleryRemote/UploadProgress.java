@@ -13,8 +13,6 @@ import java.awt.event.ActionListener;
 public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
 	public static final String MODULE = "UploadProgress";
 
-
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
 	JLabel jComputer1 = new JLabel();
 	JLabel jUploading = new JLabel();
@@ -50,7 +48,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	private void jbInit() {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
-		jPanel1.setLayout(gridBagLayout1);
+		jPanel1.setLayout(new GridBagLayout());
 
 		jComputer1.setIcon(GalleryRemote.iComputer);
 		jComputer2.setIcon(GalleryRemote.iComputer);
@@ -82,8 +80,12 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jPanel1.add(jPanel2, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		if (OsShutdown.canShutdown()) {
-			jPanel2.add(jShutdown, null);
+		try {
+			if (OsShutdown.canShutdown()) {
+				jPanel2.add(jShutdown, null);
+			}
+		} catch (NoClassDefFoundError e) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "OsShutdown not supported, hiding checkbox");
 		}
 
 		jPanel2.add(jCancel, null);
@@ -149,7 +151,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 	/* level-independant methods */
 	public void setInProgress(boolean inProgress) {
-		GalleryRemote.getInstance().getCore().setInProgress(inProgress);
+		GalleryRemote._().getCore().setInProgress(inProgress);
 	}
 
 	public void error(String message) {

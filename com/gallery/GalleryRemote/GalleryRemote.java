@@ -24,12 +24,8 @@ import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
-import java.io.File;
 import java.awt.event.ActionEvent;
-import java.awt.*;
 import java.applet.Applet;
-import java.util.Iterator;
-import java.util.Collections;
 import java.util.Enumeration;
 
 /**
@@ -128,20 +124,35 @@ public abstract class GalleryRemote {
 
 	public abstract GalleryRemoteCore getCore();
 
-	public static GalleryRemote getInstance() {
-		return getInstance(false, null);
+	public static GalleryRemote _() {
+		return singleton;
 	}
 
-	public static GalleryRemote getInstance(boolean appletMode, Applet applet) {
+	public static GalleryRemote createInstance(boolean appletMode, Applet applet) {
 		if (singleton == null) {
-			if (applet instanceof GRAppletMini) {
-				singleton = new GalleryRemoteMini();
-			} else {
-				singleton = new GalleryRemoteMainFrame();
+			try {
+				if (applet != null && applet.getClass().getName().equals("com.gallery.GalleryRemote.GRAppletMini")) {
+					singleton = (GalleryRemote) Class.forName("com.gallery.GalleryRemote.GalleryRemoteMini").newInstance();
+				} else {
+					singleton = (GalleryRemote) Class.forName("com.gallery.GalleryRemote.GalleryRemoteMainFrame").newInstance();
+				}
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
 			}
 
 			singleton.appletMode = appletMode;
 			singleton.applet = applet;
+
+			singleton.run();
+		} else {
+			System.err.println("Trying to instanciate Gallery Remote more than once...");
+			Thread.dumpStack();
+
+			return null;
 		}
 
 		return singleton;
@@ -149,6 +160,12 @@ public abstract class GalleryRemote {
 
 	// Main entry point
 	public static void main(String[] args) {
+		setProperties();
+
+		createInstance(false, null);
+	}
+
+	public static void setProperties() {
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Gallery Remote");
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.showGrowBox", "false");
@@ -156,8 +173,6 @@ public abstract class GalleryRemote {
 
 		// todo: this should not remain this way
 		System.setProperty("apple.awt.fakefullscreen", "true");
-		
-		getInstance().run();
 	}
 
 	protected void loadIcons() {

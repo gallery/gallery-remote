@@ -11,7 +11,7 @@ public class DialogUtil {
 	public static void center(Window window, Window owner) {
 		Rectangle sr = window.getGraphicsConfiguration().getBounds();
 		Rectangle or;
-		if (owner != null) {
+		if (owner != null && owner.isVisible()) {
 			or = owner.getBounds();
 		} else {
 			or = sr;

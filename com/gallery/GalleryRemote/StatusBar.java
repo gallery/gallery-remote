@@ -169,7 +169,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	public void setInProgress(boolean inProgress) {
-		GalleryRemote.getInstance().getCore().setInProgress(inProgress);
+		GalleryRemote._().getCore().setInProgress(inProgress);
 	}
 
 	public void error(String message) {
