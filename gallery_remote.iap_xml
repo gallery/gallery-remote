@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This script was automatically generated using Zero G's InstallAnywhere 6.0 Enterprise, Build 2262
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Wed Feb 11 11:08:04 PST 2004 -->
+     DATE:   Thu Feb 12 15:40:53 PST 2004 -->
 <InstallAnywhere_Deployment_Project increments="3447">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
@@ -10,7 +10,7 @@
 		<scriptID>12,42,11,90,81,52,54,53,54,68,86,83,81,54,80,74</scriptID>
 		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,51,46,49,95,48,56,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,83,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,-16,-93,-2,-128,32,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,9,11,90,101,10,0,0,0</authorizationID>
+		<authorizationID>1,0,0,-16,-93,30,-96,-64,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,6,11,90,108,10,0,0,0</authorizationID>
 	</essentialScriptInfo>
 	<installationObjects uniqueObjects="175">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="b96f811ba519">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="bf9badc3be49">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -1637,7 +1637,7 @@ If the commands above do not work, you should download and install these package
 				<object class="java.util.Properties">
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[February 11, 2004 11:08:03 AM PST]]></string>
+						<string><![CDATA[February 12, 2004 3:40:52 PM PST]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
@@ -1900,7 +1900,7 @@ If the commands above do not work, you should download and install these package
 						<int>3</int>
 					</property>
 					<property name="productVersionRevision">
-						<int>0</int>
+						<int>1</int>
 					</property>
 					<property name="productVersionSubRevision">
 						<int>0</int>
@@ -3348,7 +3348,7 @@ and any path to a file to read from that file]]></string>
 												<boolean>false</boolean>
 											</property>
 											<property name="totalSize">
-												<long>76723</long>
+												<long>0</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
