@@ -43,6 +43,7 @@ import javax.swing.border.BevelBorder;
 
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.util.DialogUtil;
 
 /**
  *  Description of the Class
@@ -98,8 +99,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		}
 
 		pack();
-		Dimension s = owner.getSize();
-		setLocation( (int) ( s.getWidth() - getWidth() ) / 2, (int) ( s.getHeight() - getHeight() ) / 2 );
+		DialogUtil.center(this, owner);
 
 		setVisible( true );
 	}
