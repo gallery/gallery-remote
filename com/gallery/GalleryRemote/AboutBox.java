@@ -25,6 +25,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.util.*;
+import java.net.*;
 
 /**
  *  Gallery Remote About Box
@@ -33,6 +34,7 @@ import java.util.*;
  *@created    August 18, 2002
  */
 public class AboutBox extends JDialog {
+	public static final String MODULE = "About";
     public static int TOP = 60;
     public static int BOTTOM = 30;
     
@@ -110,9 +112,9 @@ public class AboutBox extends JDialog {
             setFont( UIManager.getFont( "Label.font" ) );
             fm = getFontMetrics( getFont() );
             
-            //setForeground(new Color(96, 96, 96));
-            image = new ImageIcon( getClass().getResource(
-            "/remoteAbout.gif" ) );
+			URL imu = getClass().getResource( "/remoteAbout.gif" );
+			Log.log(Log.TRACE, MODULE, "Looking for splash screen in " + imu.toString());
+            image = new ImageIcon( imu );
             
             setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );
             
