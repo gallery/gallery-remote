@@ -12,7 +12,7 @@ import java.awt.event.ActionEvent;
 
 public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
 	public static final String MODULE= "UploadProgress";
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -58,14 +58,14 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jComputer2.setIcon(MainFrame.iComputer);
 		jUploading.setIcon(MainFrame.iUploading);
 
-		jLabelGlobal.setText(grRes.getString(MODULE, "upImgNM"));
-		jLabelDetail.setText(grRes.getString(MODULE, "upImgGif"));
+		jLabelGlobal.setText(GRI18n.getString(MODULE, "upImgNM"));
+		jLabelDetail.setText(GRI18n.getString(MODULE, "upImgGif"));
 
-		jCancel.setText(grRes.getString(MODULE, "Cancel"));
+		jCancel.setText(GRI18n.getString(MODULE, "Cancel"));
 		jCancel.addActionListener(this);
         jCancel.setActionCommand("Cancel");
-		jShutdown.setToolTipText(grRes.getString(MODULE, "shutDownTip"));
-		jShutdown.setText(grRes.getString(MODULE, "shutDown"));
+		jShutdown.setToolTipText(GRI18n.getString(MODULE, "shutDownTip"));
+		jShutdown.setText(GRI18n.getString(MODULE, "shutDown"));
 
 		jPanel1.add(jComputer1,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
@@ -152,7 +152,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	}
 
 	public void error(String message) {
-		JOptionPane.showMessageDialog(this, message, grRes.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, message, GRI18n.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void setStatus(String message) {

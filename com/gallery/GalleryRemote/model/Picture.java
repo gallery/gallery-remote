@@ -60,8 +60,12 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	URL urlThumbnail = null;
 	Dimension sizeThumbnail = null;
 
+	Album albumOnServer = null;
+	int indexOnServer = -1;
+
 	transient double fileSize = 0;
 	transient String escapedCaption = null;
+	transient int indexCache = -1;
 
 	/**
 	 *  Constructor for the Picture object
@@ -442,6 +446,40 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 		}
 
 		return path;
+	}
+
+	public Album getAlbumOnServer() {
+		if (! online) {
+			throw new RuntimeException("Can't get dimension for a local file!");
+		}
+
+		return albumOnServer;
+	}
+
+	public void setAlbumOnServer(Album albumOnServer) {
+		this.albumOnServer = albumOnServer;
+	}
+
+	public int getIndexOnServer() {
+		if (! online) {
+			throw new RuntimeException("Can't get dimension for a local file!");
+		}
+
+		return indexOnServer;
+	}
+
+	public int getIndex() {
+		if (indexCache == -1
+				|| indexCache >= album.pictures.size()
+				|| album.pictures.get(indexCache) != this) {
+			return album.pictures.indexOf(this);
+		} else {
+			return indexCache;
+		}
+	}
+
+	public void setIndexOnServer(int indexOnServer) {
+		this.indexOnServer = indexOnServer;
 	}
 }
 

@@ -21,23 +21,13 @@ public class GRI18n implements PreferenceNames {
             "com.gallery.GalleryRemote.resources.GRResources";
     private static final String MODULE = "GRI18n";
 
-    private static GRI18n ourInstance;
-
-    private Locale grLocale;
-    private ResourceBundle grResBundle;
-    private MessageFormat grMsgFrmt;
+    private static Locale grLocale;
+    private static ResourceBundle grResBundle;
+    private static MessageFormat grMsgFrmt;
 
     private static List lAvailLoc = null;
 
-
-    public static GRI18n getInstance() {
-        if (ourInstance == null) {
-            ourInstance = new GRI18n();
-        }
-        return ourInstance;
-    }
-
-    private GRI18n() {
+	static {
         String myLocale;
         myLocale =
                 GalleryRemote.getInstance().properties.getProperty(UI_LOCALE);
@@ -65,13 +55,13 @@ public class GRI18n implements PreferenceNames {
 	}
 
 
-	public void setLocale(String language, String country) {
+	public static void setLocale(String language, String country) {
         grLocale = new Locale(language, country);
         setResBundle();
     }
 
 
-    public String getString(String className, String key) {
+    public static String getString(String className, String key) {
         String msg;
         String extKey = className + "." + key;
         try {
@@ -90,7 +80,7 @@ public class GRI18n implements PreferenceNames {
     }
 
 
-    public String getString(String className, String key, Object[] params) {
+    public static String getString(String className, String key, Object[] params) {
         String template, msg;
         String extKey = className + "." + key;
         try {
@@ -111,12 +101,12 @@ public class GRI18n implements PreferenceNames {
     }
 
 
-	public Locale getCurrentLocale() {
+	public static Locale getCurrentLocale() {
 		return grLocale;
 	}
 
 
-    private void setResBundle() {
+    private static void setResBundle() {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
         } catch (MissingResourceException e) {

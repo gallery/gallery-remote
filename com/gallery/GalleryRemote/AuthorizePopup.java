@@ -36,7 +36,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter
 	private static BasicAuthBox inp = null;
     public static final String MODULE = "AuthorizePopup";
 
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 
 	/**
@@ -62,15 +62,15 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter
 		String line3;
 
 		if ( challenge.getScheme().equalsIgnoreCase( "SOCKS5" ) ) {
-			line1 = grRes.getString(MODULE, "enterUsrPwd");
+			line1 = GRI18n.getString(MODULE, "enterUsrPwd");
 			line2 = challenge.getHost();
-			line3 = grRes.getString(MODULE, "authMthd");
+			line3 = GRI18n.getString(MODULE, "authMthd");
 		} else {
-			line1 = grRes.getString(MODULE, "enterUsrPwdRealm") +
+			line1 = GRI18n.getString(MODULE, "enterUsrPwdRealm") +
 					challenge.getRealm() + "'";
-			line2 = grRes.getString(MODULE, "onHost") + challenge.getHost() + ":" +
+			line2 = GRI18n.getString(MODULE, "onHost") + challenge.getHost() + ":" +
 					challenge.getPort();
-			line3 = grRes.getString(MODULE, "authScheme") + challenge.getScheme();
+			line3 = GRI18n.getString(MODULE, "authScheme") + challenge.getScheme();
 		}
 
 		synchronized ( getClass() ) {
@@ -95,7 +95,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter
 	 */
 	private static class BasicAuthBox extends javax.swing.JDialog
 	{
-		private final static String title = GRI18n.getInstance().getString(MODULE, "authReq");
+		private final static String title = GRI18n.getString(MODULE, "authReq");
 		private Dimension screen;
 		private JLabel line1, line2, line3;
 		private JTextField user, pass;
@@ -127,8 +127,8 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter
 			getContentPane().add( "North", p );
 
 			p = new JPanel( new GridLayout( 2, 1 ) );
-			p.add( new JLabel( grRes.getString(MODULE, "username") ) );
-			p.add( new JLabel( grRes.getString(MODULE, "passwd") ) );
+			p.add( new JLabel( GRI18n.getString(MODULE, "username") ) );
+			p.add( new JLabel( GRI18n.getString(MODULE, "passwd") ) );
 			getContentPane().add( "West", p );
 			p = new JPanel( new GridLayout( 2, 1 ) );
 			p.add( user = new JTextField( 30 ) );
@@ -146,15 +146,15 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter
 			constr.gridwidth = 1;
 			constr.weightx = 1.0;
 			JButton b;
-			p.add( b = new JButton( grRes.getString(MODULE, "ok") ) );
+			p.add( b = new JButton( GRI18n.getString(MODULE, "ok") ) );
 			b.addActionListener( new Ok() );
 			constr.weightx = 1.0;
 			gb.setConstraints( b, constr );
-			p.add( b = new JButton( grRes.getString(MODULE, "clear") ) );
+			p.add( b = new JButton( GRI18n.getString(MODULE, "clear") ) );
 			b.addActionListener( new Clear() );
 			constr.weightx = 2.0;
 			gb.setConstraints( b, constr );
-			p.add( b = new JButton( grRes.getString(MODULE, "cancel") ) );
+			p.add( b = new JButton( GRI18n.getString(MODULE, "cancel") ) );
 			b.addActionListener( new Cancel() );
 			constr.weightx = 1.0;
 			gb.setConstraints( b, constr );

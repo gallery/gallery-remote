@@ -41,7 +41,7 @@ import com.gallery.GalleryRemote.util.GRI18n;
 public class ThumbnailCache implements Runnable
 {
 	public static final String MODULE = "ThumbCache";
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
@@ -64,7 +64,7 @@ public class ThumbnailCache implements Runnable
 	public void run() {
 		Thread.yield();
 		int loaded = 0;
-		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), grRes.getString(MODULE, "loadThmb"), false);
+		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), GRI18n.getString(MODULE, "loadThmb"), false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			Picture p = (Picture) toLoad.pop();
@@ -100,7 +100,7 @@ public class ThumbnailCache implements Runnable
 		}
 		stillRunning = false;
 		
-		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, grRes.getString(MODULE, "thmbLoaded"));
+		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, GRI18n.getString(MODULE, "thmbLoaded"));
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}

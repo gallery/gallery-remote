@@ -45,7 +45,7 @@ public class AddFileDialog
 			fc.setCurrentDirectory(currentDirectory);
 		}
 
-		int retval = fc.showDialog(parent, GRI18n.getInstance().getString("AddFileDialog", "Add"));
+		int retval = fc.showDialog(parent, GRI18n.getString("AddFileDialog", "Add"));
 		if (retval != JFileChooser.CANCEL_OPTION)
 		{
 			GalleryRemote.getInstance().properties.setCurrentDirectory(fc.getCurrentDirectory());

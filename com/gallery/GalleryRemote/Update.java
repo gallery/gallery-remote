@@ -51,7 +51,7 @@ import com.gallery.GalleryRemote.util.DialogUtil;
 
 public class Update extends JFrame implements ActionListener, PreferenceNames {
 	public static final String MODULE = "Update";
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	public static final int NO_UPDATE = 0;
 	public static final int RELEASE = 1;
@@ -158,15 +158,15 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 	}
 	
 	private void jbInit() throws Exception {
-		this.setTitle(grRes.getString(MODULE, "title"));
+		this.setTitle(GRI18n.getString(MODULE, "title"));
 		this.getContentPane().setLayout(gridBagLayout1);
 
 		jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
-		jLabel1.setText(grRes.getString(MODULE, "newVerAvail"));
-		jLabel2.setText(grRes.getString(MODULE, "ver"));
-		jLabel3.setText(grRes.getString(MODULE, "relDate"));
-		jLabel4.setText(grRes.getString(MODULE, "relNotes"));
-		jLabel5.setText(grRes.getString(MODULE, "dnURL"));
+		jLabel1.setText(GRI18n.getString(MODULE, "newVerAvail"));
+		jLabel2.setText(GRI18n.getString(MODULE, "ver"));
+		jLabel3.setText(GRI18n.getString(MODULE, "relDate"));
+		jLabel4.setText(GRI18n.getString(MODULE, "relNotes"));
+		jLabel5.setText(GRI18n.getString(MODULE, "dnURL"));
 
 		jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -175,7 +175,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		jDate.setFont(new java.awt.Font("SansSerif", 0, 11));
 		if (which.releaseDate != null) jDate.setText(DateFormat.getDateInstance().format(which.releaseDate));
 
-		jBrowse.setText(grRes.getString(MODULE, "openInBrwsr"));
+		jBrowse.setText(GRI18n.getString(MODULE, "openInBrwsr"));
 		jBrowse.addActionListener(this);
 
 		jReleaseNotes.setEditable(false);
@@ -273,7 +273,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 				laxFile.renameTo(origFile);
 				patchFile.renameTo(laxFile);
 
-				JOptionPane.showMessageDialog(null, GRI18n.getInstance().getString(MODULE, "restart.text"), GRI18n.getInstance().getString(MODULE, "restart.title"), JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(null, GRI18n.getString(MODULE, "restart.text"), GRI18n.getString(MODULE, "restart.title"), JOptionPane.WARNING_MESSAGE);
 
 				return true;
 			} catch (FileNotFoundException e) {

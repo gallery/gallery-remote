@@ -1,3 +1,13 @@
+2003-11-18  Pierre-Luc Paour <gallery@paour.com> (1.3-b5)
+
+	* Changed GRI18n to make it a static class and simplified all the classes using
+	  GRI18n.
+	* Finalized Album tree and Album inspector (although changing album settings
+	  is not implemented because protocol support is not yet ready).
+	* Implemented drag and drop of pictures to the album tree.
+	* Implemented preview of pictures already on server. This will also be used for
+	  the slideshow mode.
+
 2003-11-14  Pierre-Luc Paour <gallery@paour.com> (1.3-b4)
 
 	* Changed default URL for PHPNuke (removed the /nuke path, thanks ozgreg).

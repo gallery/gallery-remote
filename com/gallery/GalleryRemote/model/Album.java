@@ -45,7 +45,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	 * CONSTANTS
 	 */
 	public static final String MODULE="Album";
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 
 	/* -------------------------------------------------------------------------
@@ -61,7 +61,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	ArrayList subAlbums = new ArrayList();
 
 	Album parent; // parent Album
-	String title = grRes.getString(MODULE, "title");
+	String title = GRI18n.getString(MODULE, "title");
 	String name;
 	ArrayList extraFields;
 	String summary;
@@ -71,21 +71,22 @@ public class Album extends Picture implements ListModel, Serializable {
 	Dimension overrideResizeDimension = null;
 	Boolean overrideAddToBeginning = null;
 
-	transient int autoResize = 0;
+	int autoResize = 0;
 	// permissions -- default to true for the sake of old protocols ...
-	transient boolean canRead = true;
-	transient boolean canAdd = true;
-	transient boolean canWrite = true;
-	transient boolean canDeleteFrom = true;
-	transient boolean canDeleteThisAlbum = true;
-	transient boolean canCreateSubAlbum = true;
+	boolean canRead = true;
+	boolean canAdd = true;
+	boolean canWrite = true;
+	boolean canDeleteFrom = true;
+	boolean canDeleteThisAlbum = true;
+	boolean canCreateSubAlbum = true;
 
-	transient boolean hasFetchedInfo = false;
+	boolean hasFetchedInfo = false;
+	boolean hasFetchedImages = false;
 
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
 
-	public static List extraFieldsNoShow = Arrays.asList(new String[] {grRes.getString(MODULE, "upDate"), grRes.getString(MODULE, "captDate")});
+	public static List extraFieldsNoShow = Arrays.asList(new String[] {GRI18n.getString(MODULE, "upDate"), GRI18n.getString(MODULE, "captDate")});
 
 
 	public Album(Gallery gallery) {
@@ -484,7 +485,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		// currently.  eventually, when we start changing things
 		// on the server, permission support will get more ... interesting.
 		if ( ! canAdd ) {
-			ret.append(" ").append( grRes.getString(MODULE, "ro") );
+			ret.append(" ").append( GRI18n.getString(MODULE, "ro") );
 		}
 		
 		return ret.toString();
@@ -756,6 +757,14 @@ public class Album extends Picture implements ListModel, Serializable {
 			// todo
 			return false;
 		}
+	}
+
+	public boolean isHasFetchedImages() {
+		return hasFetchedImages;
+	}
+
+	public void setHasFetchedImages(boolean hasFetchedImages) {
+		this.hasFetchedImages = hasFetchedImages;
 	}
 
 	/*public void checkTransients() {

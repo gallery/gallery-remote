@@ -76,8 +76,6 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public static final int TOSTRING_MAXLEN = 40;
 
-	public static GRI18n grRes = GRI18n.getInstance();
-
 	public Gallery(StatusUpdate su) {
 		this.su = su;
 
@@ -119,8 +117,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		boolean logout = true;
 
 		if (hasPictures()) {
-			if (JOptionPane.showConfirmDialog(null, grRes.getString(MODULE, "logoutQuestion"),
-					grRes.getString(MODULE, "logoutQuestion.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+			if (JOptionPane.showConfirmDialog(null, GRI18n.getString(MODULE, "logoutQuestion"),
+					GRI18n.getString(MODULE, "logoutQuestion.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 				logout = false;
 			}
 		}

@@ -61,7 +61,6 @@ public class DroppableTree
 		extends JTree implements DropTargetListener {
 
 	protected final static String MODULE = "Droptree";
-	protected static GRI18n grRes = GRI18n.getInstance();
 	MainFrame mf = null;
 
 	DropTarget dropTarget;
@@ -223,8 +222,8 @@ public class DroppableTree
 					Log.logStack( Log.LEVEL_ERROR, MODULE );
 					JOptionPane.showMessageDialog(
 							null,
-							grRes.getString(MODULE, "imgError"),
-							grRes.getString(MODULE, "dragError"),
+							GRI18n.getString(MODULE, "imgError"),
+							GRI18n.getString(MODULE, "dragError"),
 							JOptionPane.ERROR_MESSAGE );
 				}
 

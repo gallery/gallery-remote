@@ -61,7 +61,6 @@ public class DroppableList
 		extends JList implements DropTargetListener, DragSourceListener, DragGestureListener {
 
 	protected final static String MODULE = "Droplist";
-	protected static GRI18n grRes = GRI18n.getInstance();
 	MainFrame mf = null;
 
 	DragSource dragSource;
@@ -197,8 +196,8 @@ public class DroppableList
 					Log.logStack( Log.LEVEL_ERROR, MODULE );
 					JOptionPane.showMessageDialog(
 							null,
-							grRes.getString(MODULE, "imgError"),
-							grRes.getString(MODULE, "dragError"),
+							GRI18n.getString(MODULE, "imgError"),
+							GRI18n.getString(MODULE, "dragError"),
 							JOptionPane.ERROR_MESSAGE );
 				}
 

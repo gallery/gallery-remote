@@ -49,7 +49,6 @@ import javax.swing.border.TitledBorder;
 public class AlbumInspector extends JPanel
 		implements ActionListener, ItemListener, DocumentListener {
 	public static final String MODULE = "AlbmInspec";
-	public static GRI18n grRes = GRI18n.getInstance();
 
 	JLabel jLabelName = new JLabel();
 	JLabel jLabelTitle = new JLabel();
@@ -93,10 +92,10 @@ public class AlbumInspector extends JPanel
 
 	private void jbInit() {
 		setLayout( new GridBagLayout() );
-		jLabelName.setText(grRes.getString(MODULE, "Name") );
-		jLabelTitle.setText(grRes.getString(MODULE, "Title") );
-		jLabelPictures.setText(grRes.getString(MODULE, "Pictures") );
-		jLabelSummary.setText(grRes.getString(MODULE, "Summary") );
+		jLabelName.setText(GRI18n.getString(MODULE, "Name") );
+		jLabelTitle.setText(GRI18n.getString(MODULE, "Title") );
+		jLabelPictures.setText(GRI18n.getString(MODULE, "Pictures") );
+		jLabelSummary.setText(GRI18n.getString(MODULE, "Summary") );
 
 		jName.setFont(new Font("SansSerif", 0, 11));
 		jName.setLineWrap(true);
@@ -114,27 +113,27 @@ public class AlbumInspector extends JPanel
 		jPanel1.setLayout(new GridBagLayout());
 		jPanelProps.setLayout(new GridBagLayout());
 
-		jFetch.setText(grRes.getString(MODULE, "Fetch"));
-		jNew.setText(grRes.getString(MODULE, "New"));
-		jApply.setText(grRes.getString(MODULE, "Apply"));
+		jFetch.setText(GRI18n.getString(MODULE, "Fetch"));
+		jNew.setText(GRI18n.getString(MODULE, "New"));
+		jApply.setText(GRI18n.getString(MODULE, "Apply"));
 
 		jResizeToWidth.setMinimumSize(new Dimension(25, 21));
 		jResizeToWidth.setPreferredSize(new Dimension(25, 21));
-		jResizeToWidth.setToolTipText(grRes.getString(MODULE, "res2W"));
+		jResizeToWidth.setToolTipText(GRI18n.getString(MODULE, "res2W"));
 		jLabel7.setText("x");
 		jResizeToHeight.setMinimumSize(new Dimension(25, 21));
 		jResizeToHeight.setPreferredSize(new Dimension(25, 21));
-		jResizeToHeight.setToolTipText(grRes.getString(MODULE, "res2H"));
-		jResizeBeforeUpload.setToolTipText(grRes.getString(MODULE, "resBfrUpldTip"));
-		jResizeBeforeUpload.setText(grRes.getString(MODULE, "resBfrUpld"));
-		jResizeToDefault.setToolTipText(grRes.getString(MODULE, "res2Def"));
-		jResizeToDefault.setText(grRes.getString(MODULE, "res2Def"));
-		jResizeToForce.setToolTipText(grRes.getString(MODULE, "res2FrcTip"));
-		jResizeToForce.setText(grRes.getString(MODULE, "res2Frc"));
+		jResizeToHeight.setToolTipText(GRI18n.getString(MODULE, "res2H"));
+		jResizeBeforeUpload.setToolTipText(GRI18n.getString(MODULE, "resBfrUpldTip"));
+		jResizeBeforeUpload.setText(GRI18n.getString(MODULE, "resBfrUpld"));
+		jResizeToDefault.setToolTipText(GRI18n.getString(MODULE, "res2Def"));
+		jResizeToDefault.setText(GRI18n.getString(MODULE, "res2Def"));
+		jResizeToForce.setToolTipText(GRI18n.getString(MODULE, "res2FrcTip"));
+		jResizeToForce.setText(GRI18n.getString(MODULE, "res2Frc"));
 
-		jBeginning.setText(grRes.getString(MODULE, "Beginning"));
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "Override")));
-		jPanelProps.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "Props")));
+		jBeginning.setText(GRI18n.getString(MODULE, "Beginning"));
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "Override")));
+		jPanelProps.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "Props")));
 
     	jPanelProps.add( jLabelName,               new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
             ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0) );

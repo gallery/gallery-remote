@@ -21,11 +21,11 @@ import java.util.Iterator;
 public class QuickConfigPanel extends PreferencePanel implements ActionListener {
 	public static final String MODULE = "QuickCPa";
 
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	GalleryProperties newProps = null;
 
-	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
+	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel jLabel1 = new JLabel();
 	JTextField jURL = new JTextField();
@@ -51,11 +51,11 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 	}
 
 	private void jbInit() {
-		jLabel1.setText(grRes.getString(MODULE, "URL"));
+		jLabel1.setText(GRI18n.getString(MODULE, "URL"));
 		this.setLayout(gridBagLayout1);
 
-		jSetup.setText(grRes.getString(MODULE, "setup"));
-		jLabel2.setText(grRes.getString(MODULE, "info"));
+		jSetup.setText(GRI18n.getString(MODULE, "setup"));
+		jLabel2.setText(GRI18n.getString(MODULE, "info"));
 		jLabel2.setVerticalAlignment(SwingConstants.TOP);
 		jLabel2.setPreferredSize(new Dimension(200, 100));
 		this.add(jLabel1,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
@@ -108,14 +108,14 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 
 				overridden.append("</ul>");
 
-				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "confLoaded")+ overridden.toString() + "</html>", grRes.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, GRI18n.getString(MODULE, "confLoaded")+ overridden.toString() + "</html>", GRI18n.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
 
 				dialog.setVisible(false);
 			} else {
-				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "emptyConfFile"), "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, GRI18n.getString(MODULE, "emptyConfFile"), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Could not find configuration file.", grRes.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Could not find configuration file.", GRI18n.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
 			Log.log(Log.LEVEL_ERROR, MODULE, "Fetching configuration failed");
 			Log.logException( Log.LEVEL_ERROR, MODULE, ex );
 		}

@@ -27,7 +27,7 @@ import java.io.IOException;
 public class PreferencesDialog extends JDialog implements ListSelectionListener, ActionListener {
 	public static final String MODULE = "PrefsDlog";
 
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	DefaultListModel panels = new DefaultListModel();
 	HashMap panelNames = new HashMap();
@@ -104,15 +104,15 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		jScrollPane1.setAlignmentY((float) 0.5);
 		jScrollPane1.setPreferredSize(new Dimension(100, 200));
 		jPanels.setLayout(jPanelsLayout);
-		this.setTitle(grRes.getString(MODULE, "title"));
+		this.setTitle(GRI18n.getString(MODULE, "title"));
 		jOK.setMnemonic('0');
-		jOK.setText(grRes.getString(MODULE, "OK"));
+		jOK.setText(GRI18n.getString(MODULE, "OK"));
         jOK.setActionCommand("OK");
 		jPanel2.setLayout(gridLayout1);
-		jRevert.setToolTipText(grRes.getString(MODULE, "revertTip"));
-		jRevert.setText(grRes.getString(MODULE, "revert"));
+		jRevert.setToolTipText(GRI18n.getString(MODULE, "revertTip"));
+		jRevert.setText(GRI18n.getString(MODULE, "revert"));
         jRevert.setActionCommand("revert");
-		jCancel.setText(grRes.getString(MODULE, "cancel"));
+		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
         jCancel.setActionCommand("cancel");
 		gridLayout1.setHgap(5);
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);

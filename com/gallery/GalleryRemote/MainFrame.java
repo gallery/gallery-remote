@@ -150,7 +150,6 @@ public class MainFrame extends javax.swing.JFrame
 
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
 
-	public static GRI18n grRes = GRI18n.getInstance();
 	public static final String CARD_PICTURE = "picture";
 	public static final String CARD_ALBUM = "album";
 
@@ -296,7 +295,7 @@ public class MainFrame extends javax.swing.JFrame
 			}
 
 			if (hasGalleryWithData) {
-				if (JOptionPane.showConfirmDialog((JFrame) this, grRes.getString(MODULE, "quitQuestion"),
+				if (JOptionPane.showConfirmDialog((JFrame) this, GRI18n.getString(MODULE, "quitQuestion"),
 						"Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
@@ -373,9 +372,9 @@ public class MainFrame extends javax.swing.JFrame
 						&& currentGallery.getUsername() != null
 						&& currentGallery.hasComm()
 						&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
-					jLoginButton.setText(grRes.getString(MODULE, "Log_out"));
+					jLoginButton.setText(GRI18n.getString(MODULE, "Log_out"));
 				} else {
-					jLoginButton.setText(grRes.getString(MODULE, "Log_in"));
+					jLoginButton.setText(GRI18n.getString(MODULE, "Log_in"));
 				}
 
 				jAlbumTree.setEnabled( ! inProgress && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
@@ -399,9 +398,9 @@ public class MainFrame extends javax.swing.JFrame
 
 				if ( GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null ) {
 					if ( sel != -1 ) {
-						previewFrame.displayFile( getCurrentAlbum().getPicture( sel ) );
+						previewFrame.displayPicture( getCurrentAlbum().getPicture( sel ) );
 					} else {
-						previewFrame.displayFile( null );
+						previewFrame.displayPicture( null );
 					}
 
 					if ( !previewFrame.isVisible() ) {
@@ -413,7 +412,7 @@ public class MainFrame extends javax.swing.JFrame
 				if ( getCurrentAlbum() == null) {
 					jPictureInspector.setPictures( null );
 
-					jStatusBar.setStatus(grRes.getString(MODULE, "notLogged") );
+					jStatusBar.setStatus(GRI18n.getString(MODULE, "notLogged") );
 				} else if ( getCurrentAlbum().sizePictures() > 0 ) {
 					jPictureInspector.setPictures( jPicturesList.getSelectedValues() );
 
@@ -423,19 +422,23 @@ public class MainFrame extends javax.swing.JFrame
 					if ( sel == -1 ) {
 						Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
 											new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
-						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarNoSel", params ));
+						jStatusBar.setStatus(GRI18n.getString(MODULE, "statusBarNoSel", params ));
 					} else {
 						Object [] params = {new Integer(selN),
-											grRes.getString(MODULE, (selN==1)?"oneSel":"manySel"),
+											GRI18n.getString(MODULE, (selN==1)?"oneSel":"manySel"),
 											new Integer((int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 )};
 
-						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarSel", params));
+						jStatusBar.setStatus(GRI18n.getString(MODULE, "statusBarSel", params));
 					}
 				} else {
 					jPictureInspector.setPictures( null );
 
-					jStatusBar.setStatus(grRes.getString(MODULE, "noSelection"));
+					jStatusBar.setStatus(GRI18n.getString(MODULE, "noSelection"));
 				}
+
+				jAlbumInspector.setAlbum(getCurrentAlbum());
+
+				jAlbumTree.repaint();
 			}});
 	}
 
@@ -493,7 +496,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Open a file selection dialog and load the corresponding files
 	 */
 	public void browseAddPictures() {
-		jStatusBar.setStatus(grRes.getString(MODULE, "selPicToAdd") );
+		jStatusBar.setStatus(GRI18n.getString(MODULE, "selPicToAdd") );
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
@@ -889,88 +892,88 @@ public class MainFrame extends javax.swing.JFrame
 		gridLayout1.setHgap( 5 );
 		jAlbumPanel.setLayout(new BorderLayout());
 
-		jLabel1.setText( grRes.getString(MODULE, "Gallery_URL") );
+		jLabel1.setText( GRI18n.getString(MODULE, "Gallery_URL") );
 
-		jLoginButton.setText( grRes.getString(MODULE, "Log_in") );
-		jLoginButton.setToolTipText(grRes.getString(MODULE, "loginButtonTip") );
+		jLoginButton.setText( GRI18n.getString(MODULE, "Log_in") );
+		jLoginButton.setToolTipText(GRI18n.getString(MODULE, "loginButtonTip") );
 		jLoginButton.setActionCommand( "Fetch" );
 		jLoginButton.setIcon(iLogin);
 
-		jNewAlbumButton.setText(grRes.getString(MODULE, "newAlbmBtnTxt"));
-		jNewAlbumButton.setToolTipText(grRes.getString(MODULE, "newAlbmBtnTip"));
+		jNewAlbumButton.setText(GRI18n.getString(MODULE, "newAlbmBtnTxt"));
+		jNewAlbumButton.setToolTipText(GRI18n.getString(MODULE, "newAlbmBtnTip"));
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
 		jNewAlbumButton.setIcon(iNewAlbum);
 
-		jUploadButton.setText( grRes.getString(MODULE, "upldBtnTxt") );
+		jUploadButton.setText( GRI18n.getString(MODULE, "upldBtnTxt") );
 		jUploadButton.setActionCommand( "Upload" );
-		jUploadButton.setToolTipText( grRes.getString(MODULE, "upldBtnTip") );
+		jUploadButton.setToolTipText( GRI18n.getString(MODULE, "upldBtnTip") );
 		jInspectorDivider.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "inspDvdr") ) );
+		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), GRI18n.getString(MODULE, "inspDvdr") ) );
 		jInspectorDivider.setOneTouchExpandable(true);
 		jInspectorDivider.setResizeWeight(.66);
 		jAlbumPictureDivider.setOneTouchExpandable(true);
 		jAlbumPictureDivider.setResizeWeight(.5);
-		jTopPanel.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
-		jBrowseButton.setText( grRes.getString(MODULE, "brwsBtnTxt"));
+		jTopPanel.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), GRI18n.getString(MODULE, "panel1")) );
+		jBrowseButton.setText( GRI18n.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand( "Browse" );
-		jBrowseButton.setToolTipText(grRes.getString(MODULE, "brwsBtnTip"));
-		jSortButton.setText(grRes.getString(MODULE, "sortBtnTxt"));
+		jBrowseButton.setToolTipText(GRI18n.getString(MODULE, "brwsBtnTip"));
+		jSortButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
 		jSortButton.setActionCommand( "Sort" );
-		jSortButton.setToolTipText(grRes.getString(MODULE, "sortBtnTip"));
+		jSortButton.setToolTipText(GRI18n.getString(MODULE, "sortBtnTip"));
 		jGalleryCombo.setActionCommand("Url");
-		jGalleryCombo.setToolTipText(grRes.getString(MODULE, "gllryCombo"));
+		jGalleryCombo.setToolTipText(GRI18n.getString(MODULE, "gllryCombo"));
 
-		jMenuFile.setText( grRes.getString(MODULE, "menuFile" ));
-		jMenuItemSave.setText( grRes.getString(MODULE, "menuSave" ));
+		jMenuFile.setText( GRI18n.getString(MODULE, "menuFile" ));
+		jMenuItemSave.setText( GRI18n.getString(MODULE, "menuSave" ));
 		jMenuItemSave.setActionCommand( "File.Save" );
 		jMenuItemSave.setIcon(iSave);
 		jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-		jMenuItemOpen.setText( grRes.getString(MODULE, "menuOpen"));
+		jMenuItemOpen.setText( GRI18n.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuItemOpen.setIcon(iOpen);
 		jMenuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-		jMenuItemQuit.setText( grRes.getString(MODULE, "menuQuit" ));
+		jMenuItemQuit.setText( GRI18n.getString(MODULE, "menuQuit" ));
 		jMenuItemQuit.setActionCommand( "File.Quit" );
 		jMenuItemQuit.setIcon(iQuit);
 		jMenuItemQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 
-		jMenuEdit.setText( grRes.getString(MODULE, "menuEdit" ));
-		jMenuItemCut.setText( grRes.getString(MODULE, "menuCut" ));
+		jMenuEdit.setText( GRI18n.getString(MODULE, "menuEdit" ));
+		jMenuItemCut.setText( GRI18n.getString(MODULE, "menuCut" ));
 		jMenuItemCut.setActionCommand( "Edit.Cut" );
 		jMenuItemCut.setIcon(iCut);
 		jMenuItemCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-		jMenuItemCopy.setText( grRes.getString(MODULE, "menuCopy" ));
+		jMenuItemCopy.setText( GRI18n.getString(MODULE, "menuCopy" ));
 		jMenuItemCopy.setActionCommand( "Edit.Copy" );
 		jMenuItemCopy.setIcon(iCopy);
 		jMenuItemCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-		jMenuItemPaste.setText( grRes.getString(MODULE, "menuPaste" ));
+		jMenuItemPaste.setText( GRI18n.getString(MODULE, "menuPaste" ));
 		jMenuItemPaste.setActionCommand( "Edit.Paste" );
 		jMenuItemPaste.setIcon(iPaste);
 		jMenuItemPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 
-		jMenuOptions.setText( grRes.getString(MODULE, "menuOptions") );
+		jMenuOptions.setText( GRI18n.getString(MODULE, "menuOptions") );
 		jCheckBoxMenuThumbnails.setActionCommand( "Options.Thumbnails" );
-		jCheckBoxMenuThumbnails.setText( grRes.getString(MODULE, "cbmenuThumb") );
+		jCheckBoxMenuThumbnails.setText( GRI18n.getString(MODULE, "cbmenuThumb") );
 		jCheckBoxMenuPreview.setActionCommand( "Options.Preview" );
-		jCheckBoxMenuPreview.setText( grRes.getString(MODULE, "cbmenuPreview") );
+		jCheckBoxMenuPreview.setText( GRI18n.getString(MODULE, "cbmenuPreview") );
 		jCheckBoxMenuPath.setActionCommand( "Options.Path" );
-		jCheckBoxMenuPath.setText( grRes.getString(MODULE, "cbmenuPath") );
-		jMenuItemPrefs.setText( grRes.getString(MODULE, "menuPref"));
+		jCheckBoxMenuPath.setText( GRI18n.getString(MODULE, "cbmenuPath") );
+		jMenuItemPrefs.setText( GRI18n.getString(MODULE, "menuPref"));
 		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
 		jMenuItemPrefs.setIcon(iPreferences);
 
-		jMenuHelp.setText( grRes.getString(MODULE, "menuHelp") );
+		jMenuHelp.setText( GRI18n.getString(MODULE, "menuHelp") );
 		jMenuItemAbout.setActionCommand( "Help.About" );
-		jMenuItemAbout.setText( grRes.getString(MODULE, "menuAbout") );
+		jMenuItemAbout.setText( GRI18n.getString(MODULE, "menuAbout") );
 		jMenuItemAbout.setIcon(iAbout);
 
-		jNewGalleryButton.setText(grRes.getString(MODULE, "newGalleryBtn"));
+		jNewGalleryButton.setText(GRI18n.getString(MODULE, "newGalleryBtn"));
 		jNewGalleryButton.setActionCommand("NewGallery");
 		jNewGalleryButton.setIcon(iNewGallery);
 		jInspectorPanel.setLayout(jInspectorCardLayout);
 		jPictureScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "pictures")));
-		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "albums")));
+		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),GRI18n.getString(MODULE, "pictures")));
+		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),GRI18n.getString(MODULE, "albums")));
 
 		this.getContentPane().add( jTopPanel, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
@@ -1483,9 +1486,14 @@ public class MainFrame extends javax.swing.JFrame
 				Picture p = getCurrentAlbum().getPicture( index );
 
 				if (p.isOnline()) {
-					setBackground(Color.GREEN);
+					if (p.getAlbum() != p.getAlbumOnServer()
+							|| p.getIndex() != p.getIndexOnServer()) {
+						setForeground(Color.RED);
+					} else {
+						setForeground(Color.GREEN);
+					}
 				} else {
-					setBackground(Color.WHITE);
+					setForeground(Color.BLACK);
 				}
 
 				if ( GalleryRemote.getInstance().properties.getShowThumbnails() ) {
@@ -1546,6 +1554,12 @@ public class MainFrame extends javax.swing.JFrame
 				setFont(getFont().deriveFont(Font.BOLD));
 			} else {
 				setFont(getFont().deriveFont(Font.PLAIN));
+			}
+
+			if (album != null && album.isHasFetchedImages()) {
+				setForeground(Color.GREEN);
+			} else {
+				setForeground(Color.BLACK);
 			}
 
 			setIcon(null);

@@ -17,9 +17,9 @@ import javax.swing.border.*;
 public class UploadPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "UploadPa";
 
-    public static GRI18n grRes = GRI18n.getInstance();
 
-	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
+
+	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -126,33 +126,33 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 	private void jbInit() {
 		border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
-        titledBorder1 = new TitledBorder(border1,grRes.getString(MODULE, "res_rot"));
+        titledBorder1 = new TitledBorder(border1,GRI18n.getString(MODULE, "res_rot"));
         this.setLayout(gridBagLayout1);
 		jPanel1.setLayout(gridBagLayout4);
 		resizeToWidth.setMinimumSize(new Dimension(25, 21));
 		resizeToWidth.setPreferredSize(new Dimension(25, 21));
-		resizeToWidth.setToolTipText(grRes.getString(MODULE, "res2W"));
+		resizeToWidth.setToolTipText(GRI18n.getString(MODULE, "res2W"));
 		jLabel2.setText("x");
 		resizeToHeight.setMinimumSize(new Dimension(25, 21));
 		resizeToHeight.setPreferredSize(new Dimension(25, 21));
-		resizeToHeight.setToolTipText(grRes.getString(MODULE, "res2H"));
+		resizeToHeight.setToolTipText(GRI18n.getString(MODULE, "res2H"));
 		jPanel1.setBorder(titledBorder1);
 		jPanel2.setLayout(gridBagLayout2);
-		setCaptionsWithFilenames.setToolTipText(grRes.getString(MODULE, "captTip"));
-		setCaptionsWithFilenames.setText(grRes.getString(MODULE, "capt"));
-		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "captions")));
-		resizeBeforeUpload.setToolTipText(grRes.getString(MODULE, "resBfrUpldTip"));
-		resizeBeforeUpload.setText(grRes.getString(MODULE, "resBfrUpld"));
-		resizeToDefault.setToolTipText(grRes.getString(MODULE, "res2Def"));
-		resizeToDefault.setText(grRes.getString(MODULE, "res2Def"));
-		resizeToForce.setToolTipText(grRes.getString(MODULE, "res2FrcTip"));
-		resizeToForce.setText(grRes.getString(MODULE, "res2Frc"));
-		htmlEscapeCaptionsNot.setToolTipText(grRes.getString(MODULE, "escCaptTip"));
-		htmlEscapeCaptionsNot.setText(grRes.getString(MODULE, "escCapt"));
-		captionStripExtension.setToolTipText(grRes.getString(MODULE, "stripExtTip"));
-		captionStripExtension.setText(grRes.getString(MODULE, "stripExt"));
-		exifAutorotate.setToolTipText(grRes.getString(MODULE, "autoRotTip"));
-        exifAutorotate.setText(grRes.getString(MODULE, "autoRot"));
+		setCaptionsWithFilenames.setToolTipText(GRI18n.getString(MODULE, "captTip"));
+		setCaptionsWithFilenames.setText(GRI18n.getString(MODULE, "capt"));
+		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "captions")));
+		resizeBeforeUpload.setToolTipText(GRI18n.getString(MODULE, "resBfrUpldTip"));
+		resizeBeforeUpload.setText(GRI18n.getString(MODULE, "resBfrUpld"));
+		resizeToDefault.setToolTipText(GRI18n.getString(MODULE, "res2Def"));
+		resizeToDefault.setText(GRI18n.getString(MODULE, "res2Def"));
+		resizeToForce.setToolTipText(GRI18n.getString(MODULE, "res2FrcTip"));
+		resizeToForce.setText(GRI18n.getString(MODULE, "res2Frc"));
+		htmlEscapeCaptionsNot.setToolTipText(GRI18n.getString(MODULE, "escCaptTip"));
+		htmlEscapeCaptionsNot.setText(GRI18n.getString(MODULE, "escCapt"));
+		captionStripExtension.setToolTipText(GRI18n.getString(MODULE, "stripExtTip"));
+		captionStripExtension.setText(GRI18n.getString(MODULE, "stripExt"));
+		exifAutorotate.setToolTipText(GRI18n.getString(MODULE, "autoRotTip"));
+        exifAutorotate.setText(GRI18n.getString(MODULE, "autoRot"));
         this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(resizeToWidth,         new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0

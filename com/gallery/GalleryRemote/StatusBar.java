@@ -175,7 +175,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	public void error(String message ) {
-		JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this), message, GRI18n.getInstance().getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this), message, GRI18n.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void jbInit() {

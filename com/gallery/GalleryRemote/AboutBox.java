@@ -51,7 +51,7 @@ public class AboutBox extends JDialog {
     public static int TOP = 5;
     public static int BOTTOM = 105;
 
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
     /**
      *  Constructor for the AboutBox object
@@ -76,7 +76,7 @@ public class AboutBox extends JDialog {
     private void init() {
         setModal( true );
         getContentPane().add( new AboutPanel(), BorderLayout.CENTER );
-        setTitle( grRes.getString(MODULE, "title") );
+        setTitle( GRI18n.getString(MODULE, "title") );
         		
         pack();
         
@@ -224,7 +224,7 @@ public class AboutBox extends JDialog {
             
             
             AnimationThread() {
-                super( grRes.getString(MODULE, "aboutAnim") );
+                super( GRI18n.getString(MODULE, "aboutAnim") );
                 setPriority( Thread.MIN_PRIORITY );
             }
             

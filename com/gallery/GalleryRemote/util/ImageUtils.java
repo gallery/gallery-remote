@@ -24,6 +24,8 @@ import com.gallery.GalleryRemote.GalleryFileFilter;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.StatusUpdate;
+import com.gallery.GalleryRemote.model.Picture;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Metadata;
@@ -35,6 +37,8 @@ import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.swing.ImageIcon;
 
@@ -396,6 +400,139 @@ public class ImageUtils {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
+	}
+
+	public static LocalInfo getLocalFilenameForPicture(Picture p, boolean full) {
+		URL u = null;
+		Dimension d = null;
+
+		if (full == false && p.getSizeResized() == null) {
+			// no resized version
+			return null;
+		}
+
+		if (full) {
+			u = p.getUrlFull();
+			d = p.getSizeFull();
+		} else {
+			u = p.getUrlResized();
+			d = p.getSizeResized();
+		}
+
+		String name = u.getPath();
+		String ext;
+
+		int i = name.lastIndexOf('/');
+		name = name.substring(i + 1);
+
+		i = name.lastIndexOf('.');
+		ext = name.substring(i + 1);
+		name = name.substring(0, i);
+		String filename = name + "." + ext;
+
+		return new LocalInfo(name, ext, filename,
+				deterministicTempFile("server", "." + ext, tmpDir, p.getAlbumOnServer().getName() + name + d));
+	}
+
+	static class LocalInfo {
+		String name;
+		String ext;
+		String filename;
+		File file;
+
+		public LocalInfo(String name, String ext, String filename, File file) {
+			this.name = name;
+			this.ext = ext;
+			this.filename = filename;
+			this.file = file;
+		}
+	}
+
+	public static File download(Picture p, Dimension d, StatusUpdate su) {
+		URL pictureUrl = null;
+		//Dimension pictureDimension = null;
+		File f;
+		String filename;
+		LocalInfo fullInfo = getLocalFilenameForPicture(p, true);
+
+		if (p.getSizeResized() != null) {
+			LocalInfo resizedInfo = getLocalFilenameForPicture(p, false);
+
+			if (d.width > p.getSizeResized().width || d.height > p.getSizeResized().height
+					|| fullInfo.file.exists()) {
+				pictureUrl = p.getUrlFull();
+				//pictureDimension = p.getSizeFull();
+				f = fullInfo.file;
+				filename = fullInfo.filename;
+			} else {
+				pictureUrl = p.getUrlResized();
+				//pictureDimension = p.getSizeResized();
+				f = resizedInfo.file;
+				filename = resizedInfo.filename;
+			}
+		} else {
+			pictureUrl = p.getUrlFull();
+			//pictureDimension = p.getSizeFull();
+			f = fullInfo.file;
+			filename = fullInfo.filename;
+		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Going to download " + pictureUrl);
+
+		try {
+			URLConnection conn = pictureUrl.openConnection();
+			int size = conn.getContentLength();
+
+			if (f.exists()) {
+				Log.log(Log.LEVEL_TRACE, MODULE, filename + " already existed: no need to download it again");
+				return f;
+			}
+
+			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
+					GRI18n.getString(MODULE, "down.start", new Object[] {filename}), false);
+
+			Log.log(Log.LEVEL_TRACE, MODULE, "Saving to " + f.getPath());
+
+			BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
+			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+
+			byte[] buffer = new byte[2000];
+			int l;
+			int dl = 0;
+			long t = -1;
+			long start = System.currentTimeMillis();
+			while ((l = in.read(buffer)) != -1) {
+				out.write(buffer, 0, l);
+				dl += l;
+
+				long now = System.currentTimeMillis();
+				if (t != -1 && now - t > 1000) {
+					su.updateProgressValue(StatusUpdate.LEVEL_BACKGROUND, dl);
+					su.updateProgressStatus(StatusUpdate.LEVEL_BACKGROUND,
+							GRI18n.getString(MODULE, "down.progress",
+							new Object[] {filename, new Integer(dl / 1024), new Integer(size / 1024), new Integer((int) (dl / (now - start) * 1000/1024))}));
+
+					t = now;
+				}
+
+				if (t == -1) {
+					t = now;
+				}
+			}
+
+			in.close();
+			out.close();
+
+			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND,
+					GRI18n.getString(MODULE, "down.end", new Object[] {filename} ));
+		} catch (IOException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			f = null;
+
+			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Downloading failed");
+		}
+
+		return f;
 	}
 
 	static {

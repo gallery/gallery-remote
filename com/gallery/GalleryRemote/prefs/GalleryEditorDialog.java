@@ -18,7 +18,7 @@ import java.awt.event.ActionEvent;
 public class GalleryEditorDialog extends JDialog implements ActionListener {
 	public static final String MODULE = "GEdiDlog";
 
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	Gallery gallery;
 	boolean isOK = false;
@@ -79,47 +79,47 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 	private void jbInit() {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.setTitle(grRes.getString(MODULE, "title"));
+		this.setTitle(GRI18n.getString(MODULE, "title"));
 
 		jMainPanel.setLayout(new GridBagLayout());
-		jUsernameLabel.setText(grRes.getString(MODULE, "username"));
-		jPasswordLabel.setText(grRes.getString(MODULE, "passwd"));
-		jTypeLabel.setText(grRes.getString(MODULE, "type"));
+		jUsernameLabel.setText(GRI18n.getString(MODULE, "username"));
+		jPasswordLabel.setText(GRI18n.getString(MODULE, "passwd"));
+		jTypeLabel.setText(GRI18n.getString(MODULE, "type"));
 		jStylePanel.setLayout(jStyleLayout);
 
-		jType.setToolTipText(grRes.getString(MODULE, "typeTip"));
+		jType.setToolTipText(GRI18n.getString(MODULE, "typeTip"));
 		jType.setEditable(false);
 		jType.setModel(new DefaultComboBoxModel(Gallery.types));
 
-		jOk.setText(grRes.getString(MODULE, "OK"));
+		jOk.setText(GRI18n.getString(MODULE, "OK"));
         jOk.setActionCommand("OK");
-		jCancel.setText(grRes.getString(MODULE, "cancel"));
+		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
         jCancel.setActionCommand("Cancel");
 		jButtonPanel.setLayout(gridLayout1);
 		gridLayout1.setHgap(5);
 
 		jStandalone.setLayout(new GridBagLayout());
-		jStandaloneUrlLabel.setText(grRes.getString(MODULE, "stndAln"));
-		jStandaloneHelpLabel.setText(grRes.getString(MODULE, "stndAlnHlp"));
+		jStandaloneUrlLabel.setText(GRI18n.getString(MODULE, "stndAln"));
+		jStandaloneHelpLabel.setText(GRI18n.getString(MODULE, "stndAlnHlp"));
 		jStandaloneHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 		jStandaloneHelpLabel.setVerticalTextPosition(SwingConstants.CENTER);
 
 		jPostNuke.setLayout(new GridBagLayout());
-		jPnLoginUrlLabel.setText(grRes.getString(MODULE, "pnLogin"));
+		jPnLoginUrlLabel.setText(GRI18n.getString(MODULE, "pnLogin"));
 		jPnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
 		jPnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
-		jPnGalleryUrlLabel.setText(grRes.getString(MODULE, "gllryUrl"));
+		jPnGalleryUrlLabel.setText(GRI18n.getString(MODULE, "gllryUrl"));
 		jPnHelpLabel.setPreferredSize(new Dimension(300, 80));
-		jPnHelpLabel.setText(grRes.getString(MODULE, "pnHelp"));
+		jPnHelpLabel.setText(GRI18n.getString(MODULE, "pnHelp"));
 		jPnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		jPHPNuke.setLayout(new GridBagLayout());
-		jPhpnLoginUrlLabel.setText(grRes.getString(MODULE, "phpNukeLogin"));
+		jPhpnLoginUrlLabel.setText(GRI18n.getString(MODULE, "phpNukeLogin"));
 		jPhpnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
 		jPhpnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
-		jPhpnGalleryUrlLabel.setText(grRes.getString(MODULE, "gllryUrl"));
+		jPhpnGalleryUrlLabel.setText(GRI18n.getString(MODULE, "gllryUrl"));
 		jPhpnHelpLabel.setPreferredSize(new Dimension(300, 80));
-		jPhpnHelpLabel.setText(grRes.getString(MODULE, "phpNukeHelp"));
+		jPhpnHelpLabel.setText(GRI18n.getString(MODULE, "phpNukeHelp"));
 		jPhpnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);

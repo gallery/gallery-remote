@@ -56,7 +56,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		 implements ActionListener
 {
 	public final static String MODULE = "NewAlbum";
-    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	Gallery gallery = null;
 	Album defaultAlbum = null;
@@ -106,11 +106,11 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	private void jbInit() {
 		this.getContentPane().setLayout( new GridBagLayout() );
 		this.setModal( true );
-		this.setTitle( grRes.getString(MODULE, "title") );
+		this.setTitle( GRI18n.getString(MODULE, "title") );
 		
 		Vector albums = new Vector(gallery.getAlbumList());
 		rootAlbum = new Album(gallery);
-		rootAlbum.setTitle(grRes.getString(MODULE, "rootAlbmTitle"));
+		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
 
@@ -123,7 +123,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			jAlbum.setSelectedItem(defaultAlbum);
 		}
 
-		jCancel.setText( grRes.getString(MODULE, "cancel") );
+		jCancel.setText( GRI18n.getString(MODULE, "cancel") );
         jCancel.setActionCommand("Cancel");
 		jDescription.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray ) );
 		jDescription.setLineWrap(true);
@@ -131,19 +131,19 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		jDescription.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 		jGalleryName.setText( gallery.toString() );
 		jName.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
-		jName.setToolTipText(grRes.getString(MODULE, "albmNameTip"));
-		jOk.setText( grRes.getString(MODULE, "OK") );
+		jName.setToolTipText(GRI18n.getString(MODULE, "albmNameTip"));
+		jOk.setText( GRI18n.getString(MODULE, "OK") );
         jOk.setActionCommand("OK");
 		jTitle.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 
 		flowLayout1.setAlignment( FlowLayout.LEFT );
 		gridLayout1.setColumns( 2 );
 		gridLayout1.setHgap( 5 );
-		jLabel1.setText( grRes.getString(MODULE, "createAlbm") );
-		jLabel2.setText( grRes.getString(MODULE, "parentAlbm") );
-		jLabel3.setText( grRes.getString(MODULE, "albmTitle") );
-		jLabel4.setText( grRes.getString(MODULE, "albmName") );
-		jLabel5.setText( grRes.getString(MODULE, "albmDesc") );
+		jLabel1.setText( GRI18n.getString(MODULE, "createAlbm") );
+		jLabel2.setText( GRI18n.getString(MODULE, "parentAlbm") );
+		jLabel3.setText( GRI18n.getString(MODULE, "albmTitle") );
+		jLabel4.setText( GRI18n.getString(MODULE, "albmName") );
+		jLabel5.setText( GRI18n.getString(MODULE, "albmDesc") );
 		jPanel1.setLayout( flowLayout1 );
 		jPanel2.setLayout( gridLayout1 );
 
