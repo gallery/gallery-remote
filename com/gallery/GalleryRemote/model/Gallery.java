@@ -29,7 +29,7 @@ import javax.swing.event.*;
  *  Album model
  *
  *@author     paour
- *@created    11 août 2002
+ *@created    17 août 2002
  */
 
 public class Gallery

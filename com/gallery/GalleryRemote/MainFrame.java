@@ -468,8 +468,8 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void showAboutBox() {
 		try {
-			AboutBox ab = new AboutBox();
-			ab.initComponents();
+			AboutBox ab = new AboutBox(this);
+			//ab.initComponents();
 			//ab.setVersionString( APP_VERSION_STRING );
 			ab.setVisible( true );
 		} catch ( Exception err ) {
