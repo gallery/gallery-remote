@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package com.gallery.GalleryRemote.model;
 
 import java.io.*;
@@ -31,34 +30,101 @@ import java.io.*;
  */
 public class Picture
 {
-	File source;
-	String caption;
-	
-	public Picture() {}
+	File source = null;
+	String caption = null;
+	double fileSize = -1;
+	Album album = null;
 
-	public Picture(File source)
-	{
-		this.source = source;
+
+	/**
+	 *  Constructor for the Picture object
+	 */
+	public Picture() { }
+
+
+	/**
+	 *  Constructor for the Picture object
+	 *
+	 *@param  source  File the Picture is based on
+	 */
+	public Picture( File source ) {
+		setSource( source );
 	}
 
-	public void setSource( File source )
-	{
+
+	/**
+	 *  Sets the source file the Picture is based on
+	 *
+	 *@param  source  The new file
+	 */
+	public void setSource( File source ) {
 		this.source = source;
+
+		fileSize = -1;
 	}
 
-	public void setCaption( String caption )
-	{
+
+	/**
+	 *  Sets the caption attribute of the Picture object
+	 *
+	 *@param  caption  The new caption value
+	 */
+	public void setCaption( String caption ) {
 		this.caption = caption;
 	}
 
-	public File getSource()
-	{
+
+	/**
+	 *  Sets the album this Picture is inside of
+	 *
+	 *@param  album  The new album value
+	 */
+	public void setAlbum( Album album ) {
+		this.album = album;
+	}
+
+
+	/**
+	 *  Gets the source file the Picture is based on
+	 *
+	 *@return    The source value
+	 */
+	public File getSource() {
 		return source;
 	}
 
-	public String getCaption()
-	{
+
+	/**
+	 *  Gets the caption attribute of the Picture object
+	 *
+	 *@return    The caption value
+	 */
+	public String getCaption() {
 		return caption;
+	}
+
+
+	/**
+	 *  Gets the size of the file
+	 *
+	 *@return    The size value
+	 */
+	public double getFileSize() {
+		if ( fileSize == -1 && source != null && source.exists() ) {
+			fileSize = source.length();
+		}
+
+		return fileSize;
+	}
+
+
+	/**
+	 *  Gets the album this Picture is inside of
+	 *
+	 *@return    The album
+	 */
+	public Album getAlbum() {
+		return album;
 	}
 }
 

@@ -36,10 +36,11 @@ import javax.swing.event.*;
 public class Album extends Picture implements ListModel
 {
 	Vector pictures = new Vector();
-	String name;
+	String name = "Not yet connected to Gallery";
 	String url;
 	String username;
 	String password;
+	long pictureFileSize = -1;
 
 	// ListModel
 	Vector listeners = new Vector( 1 );
@@ -51,6 +52,7 @@ public class Album extends Picture implements ListModel
 
 	public void addPicture( Picture p )
 	{
+		p.setAlbum(this);
 		pictures.addElement( p );
 		
 		notifyListeners();
@@ -58,7 +60,9 @@ public class Album extends Picture implements ListModel
 
 	public void addPicture( File file )
 	{
-		pictures.addElement( new Picture( file ) );
+		Picture p = new Picture( file );
+		p.setAlbum(this);
+		pictures.addElement( p );
 		
 		notifyListeners();
 	}
@@ -67,7 +71,9 @@ public class Album extends Picture implements ListModel
 	{
 		for ( int i = 0; i < files.length; i++ )
 		{
-			pictures.addElement( new Picture( files[i] ) );
+			Picture p = new Picture( files[i] );
+			p.setAlbum(this);
+			pictures.addElement( p );
 		}
 		
 		notifyListeners();
@@ -167,6 +173,27 @@ public class Album extends Picture implements ListModel
 		return password;
 	}
 	
+	public long getPictureFileSize()
+	{
+		if (pictureFileSize == -1)
+		{
+			pictureFileSize = getPictureFileSize((Picture[]) pictures.toArray(new Picture[0]));
+		}
+		
+		return pictureFileSize;
+	}
+	
+	public static long getPictureFileSize(Picture[] pictures)
+	{
+		long total = 0;
+		
+		for (int i = 0; i < pictures.length; i++) {
+			total += pictures[i].getFileSize();
+		}
+		
+		return total;
+	}
+	
 	// ListModel
 	public int getSize()
 	{
@@ -190,6 +217,8 @@ public class Album extends Picture implements ListModel
 
 	void notifyListeners()
 	{
+		pictureFileSize = -1;
+		
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, pictures.size() );
 
 		Enumeration e = listeners.elements();
