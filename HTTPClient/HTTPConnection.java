@@ -26,7 +26,7 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
@@ -935,27 +935,56 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	return Post(file, (byte []) null, null);
     }
 
-    /**
-     * POSTs form-data to the specified file. The data is first urlencoded
-     * and then turned into a string of the form "name1=value1&name2=value2".
-     * A <var>Content-type</var> header with the value
-     * <var>application/x-www-form-urlencoded</var> is added.
-     *
-     * @param     file      the absolute path of the file
-     * @param     form_data an array of Name/Value pairs
-     * @return    an HTTPResponse structure containing the response
-     * @exception java.io.IOException when an exception is returned from
-     *                                the socket.
-     * @exception ModuleException if an exception is encountered in any module.
-     */
-    public HTTPResponse Post(String file, NVPair form_data[])
+	/**
+	public HTTPResponse Post(String file, NVPair form_data[])
+				throws IOException, ModuleException
+	{
+	  return Post(file,form_data,(TransferListener)null);
+	}
+	 * POSTs form-data to the specified file. The data is first urlencoded
+	 * and then turned into a string of the form "name1=value1&name2=value2".
+	 * A <var>Content-type</var> header with the value
+	 * <var>application/x-www-form-urlencoded</var> is added.
+	 *
+	 * @param     file      the absolute path of the file
+	 * @param     form_data an array of Name/Value pairs
+	 * @return    an HTTPResponse structure containing the response
+	 * @exception java.io.IOException when an exception is returned from
+	 *                                the socket.
+	 * @exception ModuleException if an exception is encountered in any module.
+	 */
+	public HTTPResponse Post(String file, NVPair form_data[])
 		throws IOException, ModuleException
-    {
-	NVPair[] headers =
-	    { new NVPair("Content-type", "application/x-www-form-urlencoded") };
+	{
+		return Post(file, form_data, (TransferListener) null);
+	}
 
-	return Post(file, Codecs.nv2query(form_data), headers);
-    }
+	/**
+	public HTTPResponse Post(String file, NVPair form_data[])
+				throws IOException, ModuleException
+	{
+	  return Post(file,form_data,(TransferListener)null);
+	}
+	 * POSTs form-data to the specified file. The data is first urlencoded
+	 * and then turned into a string of the form "name1=value1&name2=value2".
+	 * A <var>Content-type</var> header with the value
+	 * <var>application/x-www-form-urlencoded</var> is added.
+	 *
+	 * @param     file      the absolute path of the file
+	 * @param     form_data an array of Name/Value pairs
+	 * @return    an HTTPResponse structure containing the response
+	 * @exception java.io.IOException when an exception is returned from
+	 *                                the socket.
+	 * @exception ModuleException if an exception is encountered in any module.
+	 */
+	public HTTPResponse Post(String file, NVPair form_data[], TransferListener listener)
+		throws IOException, ModuleException
+	{
+	NVPair[] headers =
+		{ new NVPair("Content-type", "application/x-www-form-urlencoded") };
+
+	return Post(file, Codecs.nv2query(form_data), headers, listener);
+	}
 
     /**
      * POST's form-data to the specified file using the specified headers.
@@ -1007,6 +1036,11 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	return Post(file, data, null);
     }
 
+    public HTTPResponse Post(String file, String data, NVPair[] headers)
+                throws IOException, ModuleException
+    {
+      return Post(file,data,headers,(TransferListener)null);
+    }
     /**
      * POSTs the data to the specified file using the specified headers.
      *
@@ -1019,7 +1053,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      * @exception ModuleException if an exception is encountered in any module.
      * @see java.lang.String#getBytes()
      */
-    public HTTPResponse Post(String file, String data, NVPair[] headers)
+    public HTTPResponse Post(String file, String data, NVPair[] headers, TransferListener listener)
 		throws IOException, ModuleException
     {
 	byte tmp[] = null;
@@ -1027,7 +1061,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	if (data != null  &&  data.length() > 0)
 	    tmp = data.getBytes();
 
-	return Post(file, tmp, headers);
+	return Post(file, tmp, headers,listener);
     }
 
     /**
@@ -1047,6 +1081,11 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	return Post(file, data, null);
     }
 
+    public HTTPResponse Post(String file, byte data[], NVPair[] headers)
+		throws IOException, ModuleException
+    {
+      return Post(file,data,headers,(TransferListener)null);
+    }
     /**
      * POSTs the raw data to the specified file using the specified headers.
      *
@@ -1058,11 +1097,11 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      *                                the socket.
      * @exception ModuleException if an exception is encountered in any module.
      */
-    public HTTPResponse Post(String file, byte data[], NVPair[] headers)
+    public HTTPResponse Post(String file, byte data[], NVPair[] headers, TransferListener listener)
 		throws IOException, ModuleException
     {
 	if (data == null)  data = new byte[0];	// POST must always have a CL
-	return setupRequest("POST", stripRef(file), headers, data, null);
+	return setupRequest("POST", stripRef(file), headers, data, null,listener);
     }
 
 
@@ -2531,6 +2570,13 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
     // private helper methods
 
+    protected final HTTPResponse setupRequest(String method, String resource,
+                                              NVPair[] headers, byte[] entity,
+                                              HttpOutputStream stream)
+        throws IOException, ModuleException
+    {
+      return setupRequest(method,resource,headers,entity,stream,null);
+    }
     /**
      * Sets up the request, creating the list of headers to send and
      * creating instances of the modules. This may be invoked by subclasses
@@ -2549,12 +2595,12 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      */
     protected final HTTPResponse setupRequest(String method, String resource,
 					      NVPair[] headers, byte[] entity,
-					      HttpOutputStream stream)
+					      HttpOutputStream stream, TransferListener listener)
 		throws IOException, ModuleException
     {
 	Request req = new Request(this, method, resource,
 				  mergedHeaders(headers), entity, stream,
-				  allowUI);
+				  allowUI, listener);
 	RequestList.addToEnd(req);
 
 	try
@@ -3017,12 +3063,16 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
                         }
 
                         if (input_demux.available(null) == 0)
-			    sock_out.write(req.getData()); // he's still waiting
+                            // Markus Cozowicz 2003/08/24
+                            writeDataToStream(sock_out,req);
+			    //sock_out.write(req.getData()); // he's still waiting
 			else
 			    keep_alive = false;		// Uh oh!
 		    }
 		    else
-			sock_out.write(req.getData());
+                      // Markus Cozowicz 2003/08/24
+                      writeDataToStream(sock_out,req);
+			// sock_out.write(req.getData());
 		}
 
 		if (req.getStream() != null)
@@ -3046,8 +3096,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 		closeDemux(ioe, true);
 
 		if (try_count == 0  ||  ioe instanceof UnknownHostException  ||
-		    ioe instanceof ConnectException  ||  
-		    ioe instanceof NoRouteToHostException  ||  
+		    ioe instanceof ConnectException  ||
+		    ioe instanceof NoRouteToHostException  ||
 		    ioe instanceof InterruptedIOException  ||  req.aborted)
 		    throw ioe;
 
@@ -3122,6 +3172,72 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	return resp;
     }
 
+    /**
+     * Markus Cozowicz (mc@austrian-mint.at)
+     * Writes data to stream if TransferListener is provided
+     * @param out
+     * @param req
+     * @throws IOException
+     */
+	private void writeDataToStream(final OutputStream out, final Request req) throws IOException
+	{
+		final byte[] data = req.getData();
+		final TransferListener listener = req.getTransferListener();
+
+		if(data.length > 0 && listener != null)
+		{
+			new Thread(new Runnable(){
+				public void run()
+				{
+					try
+					{
+						long last = 0;
+						long now;
+						double lastKbPerSecond = 0;
+						int lastOff = 0;
+						int LENGTH = 2048;
+
+						if(data.length < LENGTH)
+							LENGTH = data.length;
+
+						listener.transferStart(data.length);
+
+						int off = 0;
+						for (; off + LENGTH < data.length; off += LENGTH) {
+							out.write(data, off, LENGTH);
+
+							// check if 1/2 sec passed by since last status update
+							// so we don't use up to much cpu time
+							now = System.currentTimeMillis();
+							if (last == -1 || last + 250 < now) {
+								double kbPerSecond = (off - lastOff) / (double)(now - last) * 1000.0;
+
+								listener.dataTransferred(off, data.length, (kbPerSecond + lastKbPerSecond) / (lastKbPerSecond==0?1.0:2.0));
+
+								lastKbPerSecond = kbPerSecond;
+								last = now;
+								lastOff = off;
+							}
+						}
+
+						// write out the end
+						if(off < data.length) {
+							out.write(data, off, data.length - off);
+						}
+
+						if (lastKbPerSecond != 0) {
+							// don't write if we transfered in one go
+							listener.dataTransferred(data.length, data.length, lastKbPerSecond);
+						}
+
+						listener.transferEnd();
+					} catch(IOException ioe) {}
+				}
+			}).start();
+		} else {
+			out.write(req.getData());
+		}
+	}
 
     /**
      * Gets a socket. Creates a socket to the proxy if set, or else to the

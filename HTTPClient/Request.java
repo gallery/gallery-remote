@@ -26,7 +26,7 @@
  *
  *  The HTTPClient's home page is located at:
  *
- *  http://www.innovation.ch/java/HTTPClient/ 
+ *  http://www.innovation.ch/java/HTTPClient/
  *
  */
 
@@ -82,24 +82,32 @@ public final class Request implements RoRequest, Cloneable
     /** is this an internally generated subrequest? */
             boolean        internal_subrequest = false;
 
+            TransferListener listener;
 
     // Constructors
 
-    /**
-     * Creates a new request structure.
-     *
-     * @param con      the current HTTPConnection
-     * @param method   the request method
-     * @param req_uri  the request-uri
-     * @param headers  the request headers
-     * @param data     the entity as a byte[]
-     * @param stream   the entity as a stream
-     * @param allow_ui allow user interaction
-     */
     public Request(HTTPConnection con, String method, String req_uri,
-		   NVPair[] headers, byte[] data, HttpOutputStream stream,
-		   boolean allow_ui)
+                   NVPair[] headers, byte[] data, HttpOutputStream stream,
+                   boolean allow_ui)
     {
+      this(con,method,req_uri,headers,data,stream,allow_ui,null);
+    }
+
+	/**
+	 * Creates a new request structure.
+	 *
+	 * @param con      the current HTTPConnection
+	 * @param method   the request method
+	 * @param req_uri  the request-uri
+	 * @param headers  the request headers
+	 * @param data     the entity as a byte[]
+	 * @param stream   the entity as a stream
+	 * @param allow_ui allow user interaction
+	 */
+	public Request(HTTPConnection con, String method, String req_uri,
+		   NVPair[] headers, byte[] data, HttpOutputStream stream,
+		   boolean allow_ui, TransferListener listener)
+	{
 	this.connection = con;
 	this.method     = method;
 	setRequestURI(req_uri);
@@ -107,10 +115,17 @@ public final class Request implements RoRequest, Cloneable
 	this.data       = data;
 	this.stream     = stream;
 	this.allow_ui   = allow_ui;
-    }
+
+		this.listener = listener;
+	}
 
 
     // Methods
+
+    public TransferListener getTransferListener()
+    {
+      return listener;
+    }
 
     /**
      * @return the HTTPConnection this request is associated with

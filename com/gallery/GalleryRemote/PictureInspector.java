@@ -394,7 +394,7 @@ public class PictureInspector extends JPanel
 			jIcon.setIcon( mf.getThumbnail( p ) );
 			jPath.setText( p.getSource().getParent() );
 			jAlbum.setText( p.getAlbum().getTitle() );
-			if (p.getAlbum().getGallery().getComm( mf ).hasCapability(GalleryCommCapabilities.CAPA_UPLOAD_CAPTION)) {
+			if (p.getAlbum().getGallery().getComm( mf.jStatusBar ).hasCapability(GalleryCommCapabilities.CAPA_UPLOAD_CAPTION)) {
 				jCaption.setText( p.getCaption() );
 				jCaption.setEditable(true);
 				jCaption.setBackground(UIManager.getColor("TextField.background"));

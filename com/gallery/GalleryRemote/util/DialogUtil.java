@@ -9,7 +9,7 @@ import java.awt.*;
  */
 public class DialogUtil {
 	public static void center(Window window, Window owner) {
-		Rectangle sr = owner.getGraphicsConfiguration().getBounds();
+		Rectangle sr = window.getGraphicsConfiguration().getBounds();
 		Rectangle or;
 		if (owner != null) {
 			or = owner.getBounds();
@@ -36,5 +36,17 @@ public class DialogUtil {
 
 	public static void center(Window window) {
 		center(window, null);
+	}
+
+	public static Frame findParentWindow(Component c) {
+		if (c instanceof Frame) {
+			return (Frame) c;
+		}
+
+		if (c.getParent() == null) {
+			return null;
+		}
+
+		return findParentWindow(c.getParent());
 	}
 }

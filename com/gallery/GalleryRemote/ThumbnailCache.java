@@ -63,7 +63,7 @@ public class ThumbnailCache implements Runnable
 	public void run() {
 		Thread.yield();
 		int loaded = 0;
-		int pId = mf.startProgress(0, toLoad.size(), "Loading thumbnails", false);
+		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), "Loading thumbnails", false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
@@ -78,13 +78,13 @@ public class ThumbnailCache implements Runnable
 				loaded++;
 				
 				Log.log(Log.TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
-				mf.updateProgressValue(pId, loaded, loaded + toLoad.size());
+				mf.jStatusBar.updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
 				mf.thumbnailLoadedNotify();
 			}
 		}
 		stillRunning = false;
 		
-		mf.stopProgress(pId, "Thumbnails loaded");
+		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, "Thumbnails loaded");
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}

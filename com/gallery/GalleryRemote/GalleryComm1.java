@@ -46,8 +46,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	public static final String SCRIPT_NAME = "gallery_remote.php";
 	
 	protected Gallery g = null;
-	int pId = -1;
-	
+
 	protected GalleryComm1(Gallery g) {
 		this.g = g;
 		
@@ -113,7 +112,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		abstract void runTask();
 
 		private boolean login() {
-			status("Logging in to " + g.toString());
+			status(StatusUpdate.LEVEL_GENERIC, "Logging in to " + g.toString());
 			
 			try	{
 				URL url = g.getGalleryUrl(SCRIPT_NAME);
@@ -133,7 +132,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				
 				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
+					status(StatusUpdate.LEVEL_GENERIC, "Received redirect, following...");
 					
 					rsp = mConnection.Post(urlPath, form_data);
 				}
@@ -146,7 +145,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					Log.log(Log.TRACE, MODULE, response);
 					
 					if (response.indexOf("SUCCESS") >= 0) {
-						status("Logged in");
+						status(StatusUpdate.LEVEL_GENERIC, "Logged in");
 						return true;
 					} else {
 						error("Login Error: " + response);
@@ -155,27 +154,23 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				}
 			} catch (IOException ioe) {
 				Log.logException(Log.ERROR, MODULE, ioe);
-				status("Error: " + ioe.toString());
+				status(StatusUpdate.LEVEL_GENERIC, "Error: " + ioe.toString());
 			} catch (ModuleException me) {
 				Log.logException(Log.ERROR, MODULE, me);
-				status("Error handling request: " + me.getMessage());
+				status(StatusUpdate.LEVEL_GENERIC, "Error handling request: " + me.getMessage());
 			}
 	
 			return false;
 		}
 		
-		void status(String message) {
+		void status(int level, String message) {
 			Log.log(Log.INFO, MODULE, message);
-			if (pId != -1) {
-				su.setStatus(message);
-			} else {
-				su.updateProgressStatus(pId, message);
-			}
+			su.updateProgressStatus(level, message);
 		}
 		
 		void error(String message) {
 			su.error( message );
-			status(message);
+			status(StatusUpdate.LEVEL_GENERIC, message);
 		}
 		
 		void trace(String message) {
@@ -191,7 +186,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		void runTask() {
 			ArrayList pictures = g.getAllPictures();
 			
-			pId = su.startProgress(0, pictures.size(), "Uploading pictures", false);
+			su.startProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, 0, pictures.size(), "Uploading pictures", false);
 			
 			// upload each file, one at a time
 			boolean allGood = true;
@@ -200,23 +195,21 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			while (iter.hasNext() && allGood && !interrupt) {
 				Picture p = (Picture) iter.next();
 
-				su.updateProgressStatus(pId, "Uploading " + p.toString()
+				su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Uploading " + p.toString()
 					+ " (" + (uploadedCount + 1) + "/" + pictures.size() + ")");
 				
 				allGood = uploadPicture(p);
 				
-				su.updateProgressValue(pId, uploadedCount++);
+				su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_PROGRESS, uploadedCount++);
 				
 				p.getAlbum().removePicture(p);
 			}
 			
 			if (allGood) {
-				su.stopProgress(pId, "Upload complete");
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload complete");
 			} else {
-				su.stopProgress(pId, "Upload failed");
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload failed");
 			}
-			
-			pId = -1;
 		}
 
 		boolean uploadPicture(Picture p) {
@@ -240,7 +233,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				
 				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
+					status(StatusUpdate.LEVEL_UPLOAD_ONE, "Received redirect, following...");
 					
 					rsp = mConnection.Post(urlPath, data, hdrs);
 				}
@@ -278,7 +271,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		}
 		
 		void runTask() {
-			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
+			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, 10, "Fetching albums from " + g.toString(), true);
 			
 			try {
 				URL url =g.getGalleryUrl(SCRIPT_NAME);
@@ -298,7 +291,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				
 				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
+					status(StatusUpdate.LEVEL_BACKGROUND, "Received redirect, following...");
 					
 					rsp = mConnection.Post(urlPath, form_data);
 				}
@@ -330,7 +323,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 							}
 						}
 						
-						status("Fetched albums");
+						status(StatusUpdate.LEVEL_BACKGROUND, "Fetched albums");
 						
 						g.setAlbumList(mAlbumList);
 					} else {
@@ -339,16 +332,16 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				}
 			} catch (IOException ioe) {
 				Log.logException(Log.ERROR, MODULE, ioe);
-				status("Error: " + ioe.toString());
+				status(StatusUpdate.LEVEL_BACKGROUND, "Error: " + ioe.toString());
 			} catch (ModuleException me) {
 				Log.logException(Log.ERROR, MODULE, me);
-				status("Error: " + me.toString());
+				status(StatusUpdate.LEVEL_BACKGROUND, "Error: " + me.toString());
 			} catch (Exception ee) {
 				Log.logException(Log.ERROR, MODULE, ee);
-				status("Error: " + ee.toString());
+				status(StatusUpdate.LEVEL_BACKGROUND, "Error: " + ee.toString());
 			}
 		
-			su.stopProgress(pId, "Fetch complete");
+			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Fetch complete");
 		}
 	}
 }

@@ -1,3 +1,21 @@
+2003-09-20  Pierre-Luc Paour <gallery@paour.com> (1.2-b1)
+
+	* Integrated patch by Markus Cozowicz to provide feedback during long
+	  uploads. Thanks Markus!
+	* Created a new modal progress dialog for uploads. It shows much
+	  more info, and is cancelable. The normal progress bar has been
+	  improved to be less fickle when two things happen at the same
+	  time.
+	* Optionally ignore the return code of spawned applications. This is
+	  to work around what I think is a Java VM bug on Linux where the
+	  return code is wrong.
+	* Amedeo Paglione started work on i18n. A simple framework is in place
+	  and he's starting to externalize all UI strings.
+
+2003-09-12  Pierre-Luc Paour <gallery@paour.com> (1.1)
+
+	* Shipped GR 1.1
+
 2003-09-06  Pierre-Luc Paour <gallery@paour.com> (1.1-RC1-b1)
 
 	* Fixed incompatibility with Java 1.3: I was trying to catch an exception

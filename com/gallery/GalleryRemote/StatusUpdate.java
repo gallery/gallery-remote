@@ -27,18 +27,34 @@ package com.gallery.GalleryRemote;
  *	@version    $id$
  */
 public interface StatusUpdate {
+	public static final int LEVEL_GENERIC = 0;
+	public static final int LEVEL_BACKGROUND = 1;
+	public static final int LEVEL_CACHE = 2;
+	public static final int LEVEL_UPLOAD_ONE = 3;
+	public static final int LEVEL_UPLOAD_PROGRESS = 4;
+	public static final int LEVEL_UNINTERUPTIBLE = 5;
+	public static final int NUM_LEVELS = 6;
+
+	/* level-bound methods */
 	public void setStatus( String message );
 	
-	public int startProgress( int min, int max, String message, boolean undetermined);
+	public void startProgress( int level, int min, int max, String message, boolean undetermined);
 	
-	public void updateProgressValue( int progressId, int value );
-	public void updateProgressValue( int progressId, int value, int maxValue );
+	public void updateProgressValue( int level, int value );
+	public void updateProgressValue( int level, int value, int maxValue );
 	
-	public void updateProgressStatus( int progressId, String message );
-	
-	public void stopProgress( int progressId, String message );
-	
+	public void updateProgressStatus( int level, String message );
+
+	public void setUndetermined( int level, boolean undetermined);
+
+	public int getProgressValue(int level);
+	public int getProgressMinValue(int level);
+	public int getProgressMaxValue(int level);
+
+	public void stopProgress( int level, String message );
+
+	/* level-independant methods */
 	public void setInProgress(boolean inProgress);
 	
-	public void error (String message);
+	public void error(String message);
 }

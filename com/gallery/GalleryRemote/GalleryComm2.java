@@ -26,12 +26,10 @@ import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.SocketException;
 import java.util.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-import HTTPClient.Codecs;
-import HTTPClient.HTTPConnection;
-import HTTPClient.HTTPResponse;
-import HTTPClient.ModuleException;
-import HTTPClient.NVPair;
+import HTTPClient.*;
 
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
@@ -77,13 +75,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 *	The gallery this GalleryComm2 instance is attached to.
 	 */
 	protected final Gallery g;
-	
-	/**
-	 *	The process ID for StatusUpdate.  XXX: What's -1? -- tim
-	 *	-1 is an initialization value. means no id.
-	 */
-	int pId = -1;
-	
+
 	/**
 	 *  The minor revision of the server (2.x)
 	 *	Use this to decide whether some functionality
@@ -187,17 +179,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 	}
 	
-	void status( StatusUpdate su, String message) {
+	void status( StatusUpdate su, int level, String message) {
 		Log.log(Log.INFO, MODULE, message);
-		if (pId != -1) {
-			su.setStatus(message);
-		} else {
-			su.updateProgressStatus(pId, message);
-		}
+		su.updateProgressStatus(level, message);
 	}
 	
 	void error( StatusUpdate su, String message) {
-		status(su, message);
+		status(su, StatusUpdate.LEVEL_GENERIC, message);
 		su.error( message );
 	}
 	
@@ -218,7 +206,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		StatusUpdate su;
 		HTTPConnection mConnection;
 		boolean interrupt = false;
-		
+		boolean terminated = false;
+		Thread thread = null;
+
 		public GalleryTask( StatusUpdate su ) {
 			if ( su == null ) {
 				this.su = new StatusUpdateAdapter(){};
@@ -228,6 +218,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		public void run() {
+			thread = Thread.currentThread();
 			su.setInProgress(true);
 			if ( ! isLoggedIn ) {
 				if ( !login() ) {
@@ -240,15 +231,22 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			} else {
 				Log.log(Log.TRACE, MODULE, "Still logged in to " + g.toString());
 			}
-			
+
 			runTask();
-			su.setInProgress(false);
+
+			cleanUp();
 		}
 		
 		public void interrupt() {
+			thread.interrupt();
 			interrupt = true;
 		}
-		
+
+		public void cleanUp() {
+			su.setInProgress(false);
+			terminated = true;
+		}
+
 		abstract void runTask();
 		
 		/**
@@ -271,11 +269,17 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			String urlPath = galUrl.getFile();
 			//urlPath = urlPath + ( (urlPath.endsWith( "/" )) ? SCRIPT_NAME : "/" + SCRIPT_NAME );
 			Log.log(Log.TRACE, MODULE, "Url: " + urlPath );
-			
-			// create a connection	
+
+			if (data != null) {
+				su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, "Starting upload...", false);
+			}
+
+			// create a connection
 			HTTPConnection mConnection = new HTTPConnection( galUrl );
+
+			// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
 			HTTPResponse rsp = null;
-			
+
 			// post multipart if there is data
 			if ( data == null ) {
 				if (form_data == null) {
@@ -284,13 +288,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					rsp = mConnection.Post(urlPath, form_data);
 				}
 			} else {
-				rsp = mConnection.Post(urlPath, data, form_data);
+				rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
 			}
 			
 			// handle 30x redirects
 			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 				// retry, the library will have fixed the URL
-				status(su, "Received redirect, following...");
+				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, "Received redirect, following...");
 				if ( data == null ) {
 					if (form_data == null) {
 						rsp = mConnection.Get(urlPath);
@@ -298,7 +302,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						rsp = mConnection.Post(urlPath, form_data);
 					}
 				} else {
-					rsp = mConnection.Post(urlPath, data, form_data);
+					rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
 				}
 			}
 			
@@ -323,15 +327,20 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					Properties p = new Properties();
 					p.load( new StringBufferInputStream( response ) );
+
+					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, "Added image successfully");
+
 					return p;
 				} else {
+					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, "Adding image failed");
+
 					return null;
 				}
 			}
 		}
 		
 		private boolean login() {
-			status(su, "Logging in to " + g.toString());
+			status(su, StatusUpdate.LEVEL_GENERIC, "Logging in to " + g.toString());
 
 			if (g.getType() != Gallery.TYPE_STANDALONE) {
 				try {
@@ -388,7 +397,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// load and validate the response
 				Properties p = requestResponse( form_data, g.getGalleryUrl(SCRIPT_NAME) );
 				if ( GR_STAT_SUCCESS.equals( p.getProperty( "status" ) ) ) {
-					status(su, "Logged in");
+					status(su, StatusUpdate.LEVEL_GENERIC, "Logged in");
 					try {
 						String serverVersion = p.getProperty( "server_version" );
 						int i = serverVersion.indexOf( "." );
@@ -445,8 +454,35 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		void runTask() {
 			ArrayList pictures = g.getAllPictures();
 			
-			pId = su.startProgress(0, pictures.size(), "Uploading pictures", false);
-			
+			su.startProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, 0, pictures.size(), "Uploading pictures", false);
+
+			if (su instanceof UploadProgress) {
+				((UploadProgress) su).setCancelListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						((UploadProgress) su).updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Stopping upload...");
+						((UploadProgress) su).setUndetermined(StatusUpdate.LEVEL_UPLOAD_PROGRESS, true);
+						interrupt();
+						long startTime = System.currentTimeMillis();
+
+						while (!terminated && System.currentTimeMillis() < startTime + 10000) {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e1) {	}
+						}
+
+						if (!terminated) {
+							Log.log(Log.ERROR, "Thread would not terminate properly: killing it");
+							thread.stop();
+
+							// since we killed the thread, it's not going to clean up after itself
+							cleanUp();
+						}
+
+						((UploadProgress) su).setVisible(false);
+					}
+				});
+			}
+
 			// upload each file, one at a time
 			boolean allGood = true;
 			int uploadedCount = 0;
@@ -454,12 +490,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			while (iter.hasNext() && allGood && !interrupt) {
 				Picture p = (Picture) iter.next();
 				
-				su.updateProgressStatus(pId, "Uploading " + p.toString()
+				su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Uploading " + p.toString()
 					+ " (" + (uploadedCount + 1) + "/" + pictures.size() + ")");
 				
 				allGood = uploadPicture(p);
 				
-				su.updateProgressValue(pId, uploadedCount++);
+				su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_PROGRESS, ++uploadedCount);
 				
 				if (allGood) {
 					p.getAlbum().removePicture(p);
@@ -467,12 +503,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 			
 			if (allGood) {
-				su.stopProgress(pId, "Upload complete");
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload complete");
 			} else {
-				su.stopProgress(pId, "Upload failed");
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload failed");
 			}
-			
-			pId = -1;
 		}
 		
 		boolean uploadPicture(Picture p) {
@@ -526,7 +560,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// load and validate the response
 				Properties props = requestResponse( hdrs, data, g.getGalleryUrl(SCRIPT_NAME), true );
 				if ( props.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
-					status(su, "Upload successful.");
+					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, "Upload successful.");
 					return true;
 				} else {
 					error(su, "Upload error: " + props.getProperty( "status_text" ));
@@ -563,7 +597,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		void runTask() {
-			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
+			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, 10, "Fetching albums from " + g.toString(), true);
 			
 			try {
 				long startTime = System.currentTimeMillis();
@@ -586,7 +620,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				error(su, "Error: " + me.toString());
 			}
 			
-			su.stopProgress(pId, "Fetch complete");
+			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Fetch complete");
 		}
 
 		private void list20() throws IOException, ModuleException {
@@ -656,7 +690,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					}
 				}
 
-				status(su, "Fetched albums");
+				status(su, StatusUpdate.LEVEL_BACKGROUND, "Fetched albums");
 
 				g.setAlbumList(mAlbumList);
 			} else {
@@ -758,7 +792,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					depth++;
 				}
 
-				status(su, "Fetched albums");
+				status(su, StatusUpdate.LEVEL_BACKGROUND, "Fetched albums");
 
 				g.setAlbumList(orderedAlbums);
 			} else {
@@ -779,7 +813,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		void runTask() {
-			status(su, "Getting album information from " + g.toString());
+			status(su, StatusUpdate.LEVEL_GENERIC, "Getting album information from " + g.toString());
 			
 			try {
 				// setup the protocol parameters
@@ -797,7 +831,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					int autoResize = Integer.parseInt( p.getProperty( "auto_resize" ) );
 					a.setServerAutoResize( autoResize );
 					
-					status(su, "Fetched album properties.");
+					status(su, StatusUpdate.LEVEL_GENERIC, "Fetched album properties.");
 					
 				} else {
 					error(su, "Error: " + p.getProperty( "status_text" ));
@@ -835,7 +869,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		void runTask() {
-			status(su, "Getting album information from " + g.toString());
+			status(su, StatusUpdate.LEVEL_GENERIC, "Getting album information from " + g.toString());
 
 			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
 			// by Gallery. Using an empty string doesn't work, because then the HTTP parameter is not
@@ -862,7 +896,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// load and validate the response
 				Properties p = requestResponse( form_data );
 				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
-					status(su, "Create album successful.");
+					status(su, StatusUpdate.LEVEL_GENERIC, "Create album successful.");
 				} else {
 					error(su, "Error: " + p.getProperty( "status_text" ));
 				}
@@ -883,7 +917,34 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	boolean isTrue( String s ){
 		return s.equals( "true" );	
 	}
-	
+
+	class MyTransferListener implements TransferListener {
+		StatusUpdate su;
+		java.text.DecimalFormat df = new java.text.DecimalFormat("##,##0");
+		java.text.DecimalFormat ff = new java.text.DecimalFormat("##,##0.0");
+
+		MyTransferListener(StatusUpdate su) {
+			this.su = su;
+		}
+
+		public void dataTransferred(int transferred, int overall, double kbPerSecond)
+		{
+			su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_ONE,
+					"Transferring "+df.format(transferred / 1024) + " / " + df.format(overall / 1024) +
+					" kB ("+ff.format(kbPerSecond / 1024.0)+" kB/s)");
+			su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_ONE, transferred);
+		}
+
+		public void transferStart(int overall) {
+			su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_ONE, 0, overall);
+		}
+
+		public void transferEnd() {
+			su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_ONE, "Upload completed: server processing...");
+			su.setUndetermined(StatusUpdate.LEVEL_UPLOAD_ONE, true);
+		}
+	};
+
 	/* -------------------------------------------------------------------------
 	 * MAIN METHOD (test only)
 	 */ 

@@ -20,6 +20,8 @@
  */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.util.DialogUtil;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -76,9 +78,7 @@ public class AboutBox extends JDialog {
         		
         pack();
         
-        Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-        
-        setLocation( (int) ( s.getWidth() - getWidth() ) / 2, (int) ( s.getHeight() - getHeight() ) / 2 );
+        DialogUtil.center(this);
         
         addMouseListener(
         new java.awt.event.MouseAdapter() {

@@ -110,7 +110,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				mainFrame.galleries.insertElementAt(g, i);
 			}
 		} else if (cmd.equals("New")) {
-			Gallery newG = new Gallery(mainFrame);
+			Gallery newG = new Gallery(mainFrame.jStatusBar);
 			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, newG);
 
 			if (ged.isOK()) {

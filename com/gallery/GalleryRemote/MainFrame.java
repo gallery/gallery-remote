@@ -61,7 +61,7 @@ import JSX.ObjIn;
  */
 public class MainFrame extends javax.swing.JFrame
 		 implements ActionListener, ItemListener, ListSelectionListener,
-		 ListDataListener, StatusUpdate {
+		 ListDataListener {
 	public static final String MODULE = "MainFrame";
 	public static final String FILE_TYPE = ".grg";
 
@@ -71,23 +71,19 @@ public class MainFrame extends javax.swing.JFrame
 	//private Gallery currentGallery = null;
 	//private Album currentAlbum = null;
 	private boolean inProgress = false;
-	private Thread undeterminedThread = null;
-	private boolean progressOn = false;
 
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
 
-	int progressId = 0;
 	boolean running = true;
 
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
+	public StatusBar jStatusBar = new StatusBar(this);
+
 	JPanel jPanel1 = new JPanel();
-	GridBagLayout gridBagLayout2 = new GridBagLayout();
 	JMenuBar jMenuBar1 = new JMenuBar();
 	JLabel jLabel1 = new JLabel();
 	JLabel jLabel7 = new JLabel();
 	JPanel jPanel3 = new JPanel();
 	GridLayout gridLayout1 = new GridLayout();
-	JPanel jPanel4 = new JPanel();
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
 	JScrollPane jScrollPane1 = new JScrollPane();
 
@@ -101,8 +97,6 @@ public class MainFrame extends javax.swing.JFrame
 	PictureInspector jPictureInspector = new PictureInspector();
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
-	JProgressBar jProgress = new JProgressBar();
-	JLabel jStatus = new JLabel();
 	JMenu jMenuFile = new JMenu();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 	JMenuItem jMenuItemSave = new JMenuItem();
@@ -129,6 +123,8 @@ public class MainFrame extends javax.swing.JFrame
 	public static ImageIcon iRight;
 	public static ImageIcon iLeft;
 	public static ImageIcon iFlip;
+	public static ImageIcon iComputer;
+	public static ImageIcon iUploading;
 
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
 	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -149,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame
 		int i = 0;
 		while ( true ) {
 			try {
-				Gallery g = Gallery.readFromProperties(p, i++, this);
+				Gallery g = Gallery.readFromProperties(p, i++, jStatusBar);
 				if (g == null) {
 					break;
 				}
@@ -226,6 +222,8 @@ public class MainFrame extends javax.swing.JFrame
 		toFront();
 
 		readPreferences(GalleryRemote.getInstance().properties);
+
+		//new UploadProgress();
 	}
 
 	private void setGalleries(DefaultComboBoxModel galleries) {
@@ -288,6 +286,12 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}
 
+	void setInProgress(boolean inProgress) {
+		this.inProgress = inProgress;
+
+		resetUIState();
+	}
+
 
 	void resetUIState() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -308,7 +312,7 @@ public class MainFrame extends javax.swing.JFrame
 				if (currentGallery != null
 					&& currentGallery.getUsername() != null
 					&& currentGallery.hasComm()
-					&& currentGallery.getComm(MainFrame.this).isLoggedIn()) {
+					&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
 					jLoginButton.setText(grRes.getString("Log_out"));
 				} else {
 					jLoginButton.setText("Log in");
@@ -321,7 +325,7 @@ public class MainFrame extends javax.swing.JFrame
 				jPicturesList.setEnabled( enabled );
 				jAlbumCombo.setEnabled( enabled );
 				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
-					&& currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+					&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
@@ -348,19 +352,19 @@ public class MainFrame extends javax.swing.JFrame
 				if ( getCurrentAlbum() == null) {
 					jPictureInspector.setPictures( null );
 
-					setStatus( "Select a Gallery URL and click Log in..." );
+					jStatusBar.setStatus("Select a Gallery URL and click Log in..." );
 				} else if ( getCurrentAlbum().sizePictures() > 0 ) {
 					jPictureInspector.setPictures( jPicturesList.getSelectedValues() );
 
 					int selN = jPicturesList.getSelectedIndices().length;
 
 					if ( sel == -1 ) {
-						setStatus( getCurrentAlbum().sizePictures() + " pictures / "
+						jStatusBar.setStatus(getCurrentAlbum().sizePictures() + " pictures / "
 						+ NumberFormat.getInstance().format(
 						( (int) getCurrentAlbum().getPictureFileSize() / 1024 ) )
 						+ " K" );
 					} else {
-						setStatus( "Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
+						jStatusBar.setStatus("Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
 						+ NumberFormat.getInstance().format(
 						( (int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 ) )
 						+ " K" );
@@ -368,7 +372,7 @@ public class MainFrame extends javax.swing.JFrame
 				} else {
 					jPictureInspector.setPictures( null );
 
-					setStatus( "No selection" );
+					jStatusBar.setStatus("No selection" );
 				}
 		}});
 	}
@@ -423,133 +427,11 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	public void setStatus( String message ) {
-		if (! progressOn) {
-			// prevent progress message from being overriden
-			jStatus.setText( message );
-		} else {
-			//Log.log(Log.ERROR, MODULE, "Trying to override progress with status");
-			//Log.logStack(Log.ERROR, MODULE);
-		}
-	}
-
-
-	public int startProgress( int min, int max, String message, boolean undetermined) {
-		if (progressOn)
-		{
-			Log.log(Log.INFO, "Hijacking progress by creating a new one");
-
-			if (undeterminedThread != null) {
-				undeterminedThread.interrupt();
-				undeterminedThread = null;
-			}
-		}
-
-		progressOn = true;
-
-		jProgress.setMinimum(min);
-		jProgress.setValue(min);
-		jProgress.setMaximum(max);
-		//progress.setStringPainted( true );
-
-		if (undetermined && undeterminedThread == null) {
-			undeterminedThread = new Thread() {
-				public void run() {
-					boolean forward = true;
-					while (! interrupted() ) {
-						if (jProgress.getValue() >= jProgress.getMaximum()) {
-							forward = false;
-						} else if (jProgress.getValue() <= jProgress.getMinimum()) {
-							forward = true;
-						}
-
-						updateProgressValue(progressId, jProgress.getValue() + (forward?1:-1));
-
-						try {
-							sleep(500);
-						} catch (InterruptedException e) {}
-					}
-				}
-			};
-			undeterminedThread.start();
-		}
-
-		jStatus.setText(message + "...");
-
-		return ++progressId;
-	}
-
-	public void updateProgressValue( int progressId, int value ) {
-		if (progressOn && progressId == this.progressId) {
-			jProgress.setValue( value );
-		} else {
-			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
-			//Log.logStack(Log.TRACE, MODULE);
-		}
-	}
-
-	public void updateProgressValue( int progressId, int value, int maxValue ) {
-		if (progressOn && progressId == this.progressId) {
-			jProgress.setValue( value );
-			jProgress.setMaximum( maxValue );
-		} else {
-			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
-			//Log.logStack(Log.TRACE, MODULE);
-		}
-	}
-
-	public void updateProgressStatus( int progressId, String message ) {
-		if (progressOn && progressId == this.progressId) {
-			jStatus.setText( message );
-		} else {
-			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong progressId");
-			//Log.logStack(Log.TRACE, MODULE);
-		}
-	}
-
-	public void stopProgress( int progressId, String message )
-	{
-		if (! progressOn)
-		{
-			Log.log(Log.TRACE, MODULE, "Stopping progress when it's already stopped");
-			Log.logStack(Log.TRACE, MODULE);
-		}
-
-		if ( progressId == this.progressId ) {
-			progressOn = false;
-
-			if (undeterminedThread != null) {
-				undeterminedThread.interrupt();
-				undeterminedThread = null;
-			}
-
-			//progress.setStringPainted( false );
-			jProgress.setValue(jProgress.getMinimum());
-
-			jStatus.setText(message);
-		} else {
-			Log.log(Log.TRACE, MODULE, "Wrong progressId when stopping progress");
-		}
-	}
-
-	public void setInProgress(boolean inProgress) {
-		this.inProgress = inProgress;
-
-		resetUIState();
-	}
-
-
-	public void error (String message ) {
-		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
-	}
-
-
-
 	/**
 	 *  Open a file selection dialog and load the corresponding files
 	 */
 	public void browseAddPictures() {
-		setStatus( "Select pictures to add to the list" );
+		jStatusBar.setStatus("Select pictures to add to the list" );
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
@@ -616,7 +498,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		saveState(f);
 
-		getCurrentGallery().uploadFiles( this );
+		getCurrentGallery().uploadFiles( new UploadProgress(this) );
 	}
 
 
@@ -626,7 +508,7 @@ public class MainFrame extends javax.swing.JFrame
 	public void fetchAlbums() {
 		Log.log(Log.INFO, MODULE, "fetchAlbums starting");
 
-		getCurrentGallery().fetchAlbums( this );
+		getCurrentGallery().fetchAlbums( jStatusBar );
 
 		//updateAlbumCombo();
 
@@ -792,8 +674,8 @@ public class MainFrame extends javax.swing.JFrame
 	private void jbInit()
 		throws Exception {//{{{
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
-		this.getContentPane().setLayout( gridBagLayout1 );
-		jPanel1.setLayout( gridBagLayout2 );
+		this.getContentPane().setLayout( new GridBagLayout() );
+		jPanel1.setLayout( new GridBagLayout() );
 		jLabel1.setText( grRes.getString("Gallery_URL") );
 		jLabel7.setText( grRes.getString("Select_Album") );
 		jLoginButton.setText( "Log in" );
@@ -814,14 +696,7 @@ public class MainFrame extends javax.swing.JFrame
 		jBrowseButton.setText( "Add pictures..." );
 		jBrowseButton.setActionCommand( "Browse" );
 		jGalleryCombo.setActionCommand("Url");
-		jProgress.setMinimumSize( new Dimension( 10, 18 ) );
-		jProgress.setPreferredSize( new Dimension( 150, 18 ) );
-		jProgress.setStringPainted( false );
 		gridLayout1.setHgap( 5 );
-		jStatus.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, SystemColor.control, SystemColor.control, Color.gray ) );
-		jStatus.setMinimumSize( new Dimension( 100, 18 ) );
-		jStatus.setPreferredSize( new Dimension( 38, 18 ) );
-		jPanel4.setLayout( gridBagLayout3 );
 		jMenuFile.setText( "File" );
 		jMenuItemQuit.setText( "Quit" );
 		jMenuItemQuit.setActionCommand( "File.Quit" );
@@ -864,12 +739,8 @@ public class MainFrame extends javax.swing.JFrame
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		jPanel3.add( jBrowseButton, null );
 		jPanel3.add( jUploadButton, null );
-		this.getContentPane().add( jPanel4, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
+		this.getContentPane().add( jStatusBar, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		jPanel4.add( jProgress, new GridBagConstraints( 1, 0, 1, 1, 0.25, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		jPanel4.add( jStatus, new GridBagConstraints( 0, 0, 1, 1, 0.75, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 		jPanel1.add( jGalleryCombo,  new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
 		jPanel1.add(jNewGalleryButton,     new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0
@@ -978,7 +849,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
-			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(this).isLoggedIn()) {
+			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 				// we're currently logged in: log out
 				getCurrentGallery().logOut();
 				//if (getCurrentAlbum() != null) {
@@ -990,7 +861,7 @@ public class MainFrame extends javax.swing.JFrame
 				//resetUIState();
 			} else {
 		    	// login may have failed and caused getComm to be null.
-				GalleryComm comm = getCurrentGallery().getComm(this);
+				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
 
 				// may have tried to connect and failed
 				if (comm != null && !GalleryComm.wasAuthFailure()) {
@@ -1368,7 +1239,9 @@ public class MainFrame extends javax.swing.JFrame
 			iDelete = new ImageIcon(MainFrame.class.getResource("/Delete16.gif"));
 			iRight = new ImageIcon(MainFrame.class.getResource("/RotateRight24.gif"));
 			iLeft = new ImageIcon(MainFrame.class.getResource("/RotateLeft24.gif"));
-			iFlip = new ImageIcon(MainFrame.class.getResource("/FlipHoriz24.gif"));
+
+			iComputer = new ImageIcon(MainFrame.class.getResource("/computer.gif"));
+			iUploading = new ImageIcon(MainFrame.class.getResource("/uploading.gif"));
 		} catch (Exception e) {
 			Log.logException(Log.ERROR, MODULE, e);
 		}

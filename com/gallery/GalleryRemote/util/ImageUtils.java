@@ -47,12 +47,17 @@ public class ImageUtils {
 	static Vector toDelete = new Vector();
 	static long totalTime = 0;
 	static int totalIter = 0;
+
 	static boolean useIM = false;
 	static String imPath = null;
+	static int jpegQuality = 75;
+	static boolean imIgnoreErrorCode = false;
+
 	static boolean useJpegtran = false;
 	static String jpegtranPath = null;
+	static boolean jpegtranIgnoreErrorCode = false;
+
 	static File tmpDir = null;
-	static int jpegQuality = 75;
 
 	public static final int THUMB = 0;
 	public static final int PREVIEW = 1;
@@ -93,22 +98,22 @@ public class ImageUtils {
 				
 				cmdline.append(" \"").append(filename).append("\"");
 
-				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append("\" ");
+				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append("\"");
 
 				cmdline.append(" +profile \"*\" ");
 
 				File temp = File.createTempFile("thumb", "." + format[usage], tmpDir);
 				toDelete.add(temp);
 				
-				cmdline.append(temp.getPath());
+				cmdline.append("\"" +temp.getPath() + "\"");
 				
 				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
 			
 				Process p = Runtime.getRuntime().exec(cmdline.toString());
-				p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+				int exitValue = p.waitFor();
+				Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
 				
-				if (p.exitValue() != 0) {
+				if (exitValue != 0 && ! imIgnoreErrorCode) {
 					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 					useIM = false;
 				} else {
@@ -162,7 +167,7 @@ public class ImageUtils {
 
 				cmdline.append(" \"").append(filename).append("\"");
 
-				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append(">\" ");
+				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append(">\"");
 
 				//cmdline.append("-gravity SouthEast -draw \"image Over 200,200 0,0 G:\\Projects\\Dev\\gallery_remote10\\2ni.png\" ");
 
@@ -177,10 +182,10 @@ public class ImageUtils {
 				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
 
 				Process p = Runtime.getRuntime().exec(cmdline.toString());
-				p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+				int exitValue = p.waitFor();
+				Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
 
-				if (p.exitValue() != 0) {
+				if (exitValue != 0 && ! imIgnoreErrorCode) {
 					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 					useIM = false;
 					r = null;
@@ -254,10 +259,10 @@ public class ImageUtils {
 		Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
 
 		Process p = Runtime.getRuntime().exec(cmdline.toString());
-		p.waitFor();
-		Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+		int exitValue = p.waitFor();
+		Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
 
-		if (p.exitValue() != 0) {
+		if (exitValue != 0 && ! jpegtranIgnoreErrorCode) {
 			Log.log(Log.CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
 			useJpegtran = false;
 			r = null;
@@ -325,6 +330,9 @@ public class ImageUtils {
 				imPath = p.getProperty("imConvertPath");
 				Log.log(Log.INFO, MODULE, "imPath: " + imPath);
 				
+				imIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", imIgnoreErrorCode);
+				Log.log(Log.INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
+
 				if (! new File(imPath).exists()) {
 					Log.log(Log.CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
 					useIM = false;
@@ -369,6 +377,9 @@ public class ImageUtils {
 			if (useJpegtran) {
 				jpegtranPath = p.getProperty("jpegtranPath");
 				Log.log(Log.INFO, MODULE, "jpegtranPath: " + jpegtranPath);
+
+				jpegtranIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", jpegtranIgnoreErrorCode);
+				Log.log(Log.INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
 
 				if (! new File(jpegtranPath).exists()) {
 					Log.log(Log.CRITICAL, MODULE, "Can't find jpegtran at the above path");

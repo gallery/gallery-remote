@@ -95,7 +95,7 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 						if (!newGallery) {
 							// add Gallery access settings
 
-							Gallery g = Gallery.readFromProperties(newProps, 99, mainFrame, false);
+							Gallery g = Gallery.readFromProperties(newProps, 99, mainFrame.jStatusBar, false);
 							if (g != null) {
 								g.setPrefsIndex(mainFrame.galleries.getSize());
 								mainFrame.galleries.addElement(g);

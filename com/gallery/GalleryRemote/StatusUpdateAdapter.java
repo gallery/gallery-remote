@@ -27,27 +27,34 @@ package com.gallery.GalleryRemote;
  *	@version    $id$
  */
 public abstract class StatusUpdateAdapter implements StatusUpdate {
-	public void setStatus( String message ) {
+	/* level-bound methods */
+	public void startProgress( int level, int min, int max, String message, boolean undetermined) {}
+
+	public void updateProgressValue( int level, int value ) {}
+	public void updateProgressValue( int level, int value, int maxValue ) {}
+
+	public void setUndetermined( int level, boolean undetermined) {}
+
+	public void updateProgressStatus( int level, String message ) {}
+
+	public void stopProgress( int level, String message ) {}
+
+	/* level-independant methods */
+	public void setInProgress(boolean inProgress) {}
+
+	public void setStatus( String message ) {}
+
+	public void error(String message) {}
+
+	public int getProgressValue(int level) {
+		return 0;
 	}
-	
-	public int startProgress( int min, int max, String message, boolean undetermined) {
-		return -1; // XXX: what is this? -- tim
+
+	public int getProgressMinValue(int level) {
+		return 0;
 	}
-	
-	public void updateProgressValue( int progressId, int value ) {
-	}
-	public void updateProgressValue( int progressId, int value, int maxValue ) {
-	}
-	
-	public void updateProgressStatus( int progressId, String message ) {
-	}
-	
-	public void stopProgress( int progressId, String message ) {
-	}
-	
-	public void setInProgress(boolean inProgress) {
-	}
-	
-	public void error (String message ) {
+
+	public int getProgressMaxValue(int level) {
+		return 0;
 	}
 }
