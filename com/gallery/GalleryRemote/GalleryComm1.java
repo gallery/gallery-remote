@@ -127,6 +127,8 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 
+				triedLogin = true;
+
 				HTTPConnection mConnection = new HTTPConnection(url);
 				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
 

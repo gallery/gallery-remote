@@ -45,7 +45,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 
 		if (level > currentLevel) {
 			currentLevel = level;
-			data[currentLevel].active = true;
+			//data[currentLevel].active = true;
 		}
 
 		return true;
@@ -127,22 +127,29 @@ public class StatusBar extends JPanel implements StatusUpdate {
 				data[level].undeterminedThread = null;
 			}
 
+			data[level].minValue = 0;
+			data[level].maxValue = 0;
+			data[level].value = 0;
+			data[level].undetermined = false;
+
+			if (level > LEVEL_GENERIC) {
+				data[level].active = false;
+			}
+
 			// find the next active level
-			currentLevel = level - 1;
-			while (currentLevel >= 0 && data[currentLevel].active == false) {
+			//currentLevel = level - 1;
+			while (currentLevel > LEVEL_GENERIC && data[currentLevel].active == false) {
 				currentLevel--;
 			}
 
-			if (currentLevel == -1) {
-				resetUIState();
-			} else {
-				resetUIState();
-			}
+			//if (currentLevel == -1) {
+			resetUIState();
+			//} else {
+			//	resetUIState();
+			//}
 		}
 
-		if (level > LEVEL_GENERIC) {
-			data[level].active = false;
-		}
+		//setStatus(message);
 	}
 
 	public void setInProgress(boolean inProgress) {
@@ -171,8 +178,11 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	private void resetUIState() {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
+		//SwingUtilities.invokeLater(new Runnable() {
+		//new Thread() {
+		//	public void run() {
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "level: " + currentLevel + " - " + data[currentLevel].message + " - " + data[currentLevel].value);
 				if (currentLevel >= 0) {
 					jProgress.setMinimum(data[currentLevel].minValue);
 					jProgress.setValue(data[currentLevel].value);
@@ -199,8 +209,8 @@ public class StatusBar extends JPanel implements StatusUpdate {
 					} catch (Throwable t) {
 					}
 				}
-			}
-		});
+			//}
+		//}.start();
 	}
 
 	class StatusLevelData {

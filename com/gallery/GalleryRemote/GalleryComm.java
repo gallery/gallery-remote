@@ -51,6 +51,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 	/** Flag to hold logged in status.  Only need to log in once. */
 	protected boolean isLoggedIn = false;
+	protected boolean triedLogin = false;
 
 	/* -------------------------------------------------------------------------
 	 * STATIC INITIALIZATON
@@ -124,9 +125,13 @@ public abstract class GalleryComm implements PreferenceNames {
         throw new RuntimeException("This method is not available on this protocol");
     }
 
-    public void moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
-        throw new RuntimeException("This method is not available on this protocol");
-    }
+	public void moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
+		throw new RuntimeException("This method is not available on this protocol");
+	}
+
+	public void login(StatusUpdate su) {
+		throw new RuntimeException("This method is not available on this protocol");
+	}
 
 	public void logOut() {
 		isLoggedIn = false;
@@ -137,7 +142,11 @@ public abstract class GalleryComm implements PreferenceNames {
 		return isLoggedIn;
 	}
 
-	public boolean hasCapability(int capability) {
+	public boolean hasCapability(StatusUpdate su, int capability) {
+		if (! isLoggedIn() && !triedLogin) {
+			login(su);
+		}
+
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
 	}
 

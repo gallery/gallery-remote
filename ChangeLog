@@ -1,4 +1,9 @@
+2003-01-23  Pierre-Luc Paour <gallery@paour.com> (1.3-b21)
 
+	* More refactoring to improve startup sequence for the applets.
+	* Slideshow applet now doesn't doawload the list of albums, which
+	  was wrong in the first place because it would only show writable
+	  albums.
 
 2004-01-25  M. Scott Gartner <sgartner@pingbot.com> (1.3-b20)
 

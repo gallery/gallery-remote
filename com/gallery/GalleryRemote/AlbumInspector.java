@@ -352,8 +352,8 @@ public class AlbumInspector extends JPanel
 			jResizeToHeight.setText("" + album.getResizeDimension().height);
 			jBeginning.setSelected(album.getAddToBeginning());
 
-			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
-			jMove.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_MOVE_ALBUM));
+			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
+			jMove.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_MOVE_ALBUM));
 
 			// todo
 			jApply.setEnabled(false);

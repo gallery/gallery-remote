@@ -183,10 +183,9 @@ public class MainFrame extends JFrame
 				}
 			}
 		} else {
-			Gallery g = new Gallery(jStatusBar);
-			g.addTreeModelListener(this);
+			//Gallery g = new Gallery(jStatusBar);
 			Applet applet = GalleryRemote._().getApplet();
-			String url = applet.getParameter("gr_url");
+			/*String url = applet.getParameter("gr_url");
 			String cookieName = applet.getParameter("gr_cookie_name");
 			String cookieValue = applet.getParameter("gr_cookie_value");
 			String cookieDomain = applet.getParameter("gr_cookie_domain");
@@ -203,10 +202,14 @@ public class MainFrame extends JFrame
 			g.setType(Gallery.TYPE_STANDALONE);
 			g.setStUrlString(url);
 			g.addListDataListener(this);
-			g.cookieLogin = true;
-			galleries.addElement(g);
+			g.cookieLogin = true;*/
 
-			CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
+			GRApplet.AppletInfo info = ((GRApplet) applet).getGRAppletInfo();
+
+			info.gallery.addTreeModelListener(this);
+			galleries.addElement(info.gallery);
+
+			//CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
 		}
 
 		setIconImage(iconImage);
@@ -227,9 +230,7 @@ public class MainFrame extends JFrame
 	 *
 	 * @throws Exception Description of Exception
 	 */
-	public void initComponents()
-			throws Exception {
-
+	public void startup() {
 		try {
 			jbInit();
 			jbInitEvents();
@@ -480,7 +481,7 @@ public class MainFrame extends JFrame
 				jPictureInspector.setEnabled(enabled);
 				jPicturesList.setEnabled(enabled && currentAlbum.getCanAdd());
 				jNewAlbumButton.setEnabled(!inProgress && currentGallery != null && currentGallery.hasComm()
-						&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+						&& currentGallery.getComm(jStatusBar).hasCapability(jStatusBar, GalleryCommCapabilities.CAPA_NEW_ALBUM));
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();

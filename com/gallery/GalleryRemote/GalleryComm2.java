@@ -196,6 +196,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		doTask(moveAlbumTask, async);
 	}
 
+	public void login(StatusUpdate su) {
+		LoginTask loginTask = new LoginTask(su);
+		doTask(loginTask, false);
+	}
+
 	/* -------------------------------------------------------------------------
 	* UTILITY METHODS
 	*/
@@ -439,6 +444,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			// make the request
 			try {
+				triedLogin = true;
+
 				// load and validate the response
 				Properties p = requestResponse(form_data, g.getGalleryUrl(SCRIPT_NAME));
 				if (GR_STAT_SUCCESS.equals(p.getProperty("status"))
@@ -495,6 +502,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				capabilities = capabilities1;
 			}
 		}
+	}
+
+	class LoginTask extends GalleryTask {
+		LoginTask(StatusUpdate su) {
+			super(su);
+		}
+
+		void runTask() {}
 	}
 
 	/**
@@ -1060,9 +1075,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		void runTask() {
-			status(su, StatusUpdate.LEVEL_GENERIC,
-					GRI18n.getString(MODULE, "fetchAlbImages",
-							new String[]{a.getName()}));
+			su.startProgress(StatusUpdate.LEVEL_GENERIC, 0, 10, GRI18n.getString(MODULE, "fetchAlbImages",
+							new String[]{a.getName()}), true);
 
 			try {
 				// setup the protocol parameters
@@ -1125,8 +1139,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						newPictures.add(picture);
 					}
 
-					status(su, StatusUpdate.LEVEL_GENERIC,
-							GRI18n.getString(MODULE, "fetchAlbImagesDone",
+					su.stopProgress(StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "fetchAlbImagesDone",
 									new String[]{"" + numImages}));
 
 					a.setHasFetchedImages(true);

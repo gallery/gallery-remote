@@ -97,7 +97,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	 * @param gallery The new gallery
 	 */
 	public void fetchAlbumProperties(StatusUpdate su) {
-		if (!hasFetchedInfo && getGallery().getComm(su).hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
+		if (!hasFetchedInfo && getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};
@@ -113,14 +113,14 @@ public class Album extends Picture implements ListModel, Serializable {
 	}
 
 	public void fetchAlbumImages(StatusUpdate su) {
-		if (getGallery().getComm(su).hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
+		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};
 			}
 
 			try {
-				gallery.getComm(su).fetchAlbumImages(su, this, false);
+				gallery.getComm(su).fetchAlbumImages(su, this, true);
 			} catch (RuntimeException e) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-fetch-images");
 				Log.logException(Log.LEVEL_INFO, MODULE, e);
@@ -129,7 +129,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	}
 
 	public void moveAlbumTo(StatusUpdate su, Album newParent) {
-		if (getGallery().getComm(su).hasCapability(GalleryCommCapabilities.CAPA_MOVE_ALBUM)) {
+		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_MOVE_ALBUM)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};

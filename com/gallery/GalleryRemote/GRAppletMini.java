@@ -53,8 +53,21 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		SwingUtilities.updateComponentTreeUI(this);
 
 		jbInit();
+	}
 
-		initAppletParamsAndLogin();
+	public void startup() {
+		galleries = new DefaultComboBoxModel();
+		AppletInfo info = getGRAppletInfo();
+
+		gallery = info.gallery;
+
+		galleries.addElement(gallery);
+
+		gallery.fetchAlbums(getMainStatusUpdate(), false);
+
+		album = gallery.getAlbumByName(info.albumName);
+
+		ImageUtils.deferredTasks();
 
 		jPicturesList.setModel(album);
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
@@ -64,38 +77,6 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		//jStatusBar.setStatus(GRI18n.getString(MODULE, "DefMessage"));
 		jStatusBar.setStatus(GRI18n.getString("MainFrame", "selPicToAdd"));
-	}
-
-	protected void initAppletParamsAndLogin() {
-		galleries = new DefaultComboBoxModel();
-		gallery = new Gallery(getMainStatusUpdate());
-		String url = getParameter("gr_url");
-		String cookieName = getParameter("gr_cookie_name");
-		String cookieValue = getParameter("gr_cookie_value");
-		String cookieDomain = getParameter("gr_cookie_domain");
-		String cookiePath = getParameter("gr_cookie_path");
-		String albumName = getParameter("gr_album");
-
-		if (cookieDomain == null || cookieDomain.length() < 1) {
-			try {
-				cookieDomain = new URL(url).getHost();
-			} catch (Exception e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			}
-		}
-
-		gallery.setType(Gallery.TYPE_STANDALONE);
-		gallery.setStUrlString(url);
-		gallery.cookieLogin = true;
-		galleries.addElement(gallery);
-
-		CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
-
-		gallery.fetchAlbums(getMainStatusUpdate(), false);
-
-		album = gallery.getAlbumByName(albumName);
-
-		ImageUtils.deferredTasks();
 	}
 
 	public void shutdown() {
@@ -149,7 +130,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		return jPicturesList;
 	}
 
-	private void jbInit() {
+	protected void jbInit() {
 		jUpload = new JButton();
 		jAdd = new JButton();
 		jStatusBar = new StatusBar(75);

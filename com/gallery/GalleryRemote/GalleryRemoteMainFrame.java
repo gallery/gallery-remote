@@ -27,13 +27,13 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 				+ File.separator + "GalleryRemote");
 	}
 
-	protected void run() {
-		super.run();
+	protected void initializeGR() {
+		super.initializeGR();
 
 		try {
 			if (isAppletMode() || !Update.upgrade()) {
 				mainFrame = new MainFrame();
-				mainFrame.initComponents();
+				//mainFrame.initComponents();
 			} else {
 				Log.shutdown();
 				System.exit(0);

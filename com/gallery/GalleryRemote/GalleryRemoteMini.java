@@ -10,8 +10,8 @@ import java.awt.*;
  * Date: Jan 14, 2004
  */
 public class GalleryRemoteMini extends GalleryRemote {
-	protected void run() {
-		super.run();
+	protected void initializeGR() {
+		super.initializeGR();
 		
 		Log.setMaxLevel();
 	}

@@ -13,6 +13,8 @@ import java.io.File;
  * Date: Jan 14, 2004
  */
 public interface GalleryRemoteCore {
+	public void startup();
+
 	public void shutdown();
 	public void shutdown(boolean shutdownOs);
 

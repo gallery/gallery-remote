@@ -37,25 +37,29 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
 	}
 
-	public void initUI() {
-		// update the look and feel
-		SwingUtilities.updateComponentTreeUI(this);
+	public void startup() {
+		galleries = new DefaultComboBoxModel();
+		AppletInfo info = getGRAppletInfo();
 
-		jbInit();
+		gallery = info.gallery;
 
-		initAppletParamsAndLogin();
+		galleries.addElement(gallery);
+		ImageUtils.deferredTasks();
+
+		album = new Album(gallery);
+		album.setName(info.albumName);
 
 		album.fetchAlbumImages(jStatusBar);
 	}
 
-	private void jbInit() {
-		//jLabel = new JLabel("<HTML>The Gallery Remote applet is running. Please don't close this window or navigate away!</HTML>");
+	protected void jbInit() {
 		jStart = new JButton(GRI18n.getString(MODULE, "Start"));
 		jStart.addActionListener(this);
 		getContentPane().add("Center", jStart);
 
 		jStatusBar = new StatusBar(75);
 		getContentPane().add("South", jStatusBar);
+
 		jPicturesList = new DroppableList();
 	}
 

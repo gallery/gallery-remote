@@ -73,7 +73,7 @@ public abstract class GalleryRemote {
 		defaults.setReadOnly();
 	}
 
-	protected void run() {
+	protected void initializeGR() {
 		try {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -113,6 +113,10 @@ public abstract class GalleryRemote {
 		}
 	}
 
+	protected void runGR() {
+		getCore().startup();
+	}
+
 	public boolean isAppletMode() {
 		return applet != null;
 	}
@@ -129,11 +133,11 @@ public abstract class GalleryRemote {
 		return singleton;
 	}
 
-	public static GalleryRemote createInstance(String className, Applet applet) {
+	public static boolean createInstance(String className, Applet applet) {
 		if (singleton == null) {
 			System.out.println("Instanciating Gallery Remote...");
 
-			setProperties();
+			setStaticProperties();
 
 			try {
 				singleton = (GalleryRemote) Class.forName(className).newInstance();
@@ -147,15 +151,15 @@ public abstract class GalleryRemote {
 
 			singleton.applet = applet;
 
-			singleton.run();
+			//singleton.run();
+
+			return true;
 		} else {
 			System.err.println("Trying to instanciate Gallery Remote more than once...");
 			Thread.dumpStack();
 
-			return null;
+			return false;
 		}
-
-		return singleton;
 	}
 
 	public static void shutdownInstance() {
@@ -167,9 +171,12 @@ public abstract class GalleryRemote {
 	// Main entry point
 	public static void main(String[] args) {
 		createInstance("com.gallery.GalleryRemote.GalleryRemoteMainFrame", null);
+
+		_().initializeGR();
+		_().runGR();
 	}
 
-	public static void setProperties() {
+	public static void setStaticProperties() {
 		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Gallery Remote");
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.showGrowBox", "false");
