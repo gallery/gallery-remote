@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package com.gallery.GalleryRemote.model;
 
 import java.io.*;
@@ -41,189 +40,286 @@ public class Album extends Picture implements ListModel
 	String username;
 	String password;
 	long pictureFileSize = -1;
+	Gallery gallery = null;
 
 	// ListModel
 	Vector listeners = new Vector( 1 );
 
-	public Enumeration getPictures()
-	{
+
+	/**
+	 *  Sets the gallery attribute of the Album object
+	 *
+	 *@param  gallery  The new gallery
+	 */
+	public void setGallery( Gallery gallery ) {
+		this.gallery = gallery;
+	}
+
+
+	/**
+	 *  Gets the gallery attribute of the Album object
+	 *
+	 *@return    The gallery
+	 */
+	public Gallery getGallery() {
+		return gallery;
+	}
+
+
+	/**
+	 *  Gets the pictures inside the album
+	 *
+	 *@return    The pictures value
+	 */
+	public Enumeration getPictures() {
 		return pictures.elements();
 	}
 
-	public void addPicture( Picture p )
-	{
-		p.setAlbum(this);
+
+	/**
+	 *  Adds a picture to the album
+	 *
+	 *@param  p  the picture to add. This will change its parent album
+	 */
+	public void addPicture( Picture p ) {
+		p.setAlbum( this );
 		pictures.addElement( p );
-		
+
 		notifyListeners();
 	}
 
-	public void addPicture( File file )
-	{
+
+	/**
+	 *  Adds a picture to the album
+	 *
+	 *@param  file  the file to create the picture from
+	 */
+	public void addPicture( File file ) {
 		Picture p = new Picture( file );
-		p.setAlbum(this);
+		p.setAlbum( this );
 		pictures.addElement( p );
-		
+
 		notifyListeners();
 	}
 
-	public void addPictures( File[] files )
-	{
-		for ( int i = 0; i < files.length; i++ )
-		{
+
+	/**
+	 *  Adds pictures to the album
+	 *
+	 *@param  files  the files to create the pictures from
+	 */
+	public void addPictures( File[] files ) {
+		for ( int i = 0; i < files.length; i++ ) {
 			Picture p = new Picture( files[i] );
-			p.setAlbum(this);
+			p.setAlbum( this );
 			pictures.addElement( p );
 		}
-		
+
 		notifyListeners();
 	}
 
-	public int sizePictures()
-	{
+
+	/**
+	 *  Number of pictures in the album
+	 *
+	 *@return    Number of pictures in the album
+	 */
+	public int sizePictures() {
 		return pictures.size();
 	}
 
-	public void clearPictures()
-	{
+
+	/**
+	 *  Remove all the pictures
+	 */
+	public void clearPictures() {
 		pictures.clear();
-		
+
 		notifyListeners();
 	}
 
-	public void removePicture( int n )
-	{
+
+	/**
+	 *  Remove a picture
+	 *
+	 *@param  n  item number of the picture to remove
+	 */
+	public void removePicture( int n ) {
 		pictures.remove( n );
-		
+
 		notifyListeners();
 	}
 
-	public void removePictures( int[] indices )
-	{
-		for ( int i = indices.length - 1; i >= 0; i-- )
-		{
+
+	/**
+	 *  Remove pictures
+	 *
+	 *@param  indices  list of indices of pictures to remove
+	 */
+	public void removePictures( int[] indices ) {
+		for ( int i = indices.length - 1; i >= 0; i-- ) {
 			pictures.remove( indices[i] );
 		}
-		
+
 		notifyListeners();
 	}
 
-	public Picture getPicture( int n )
-	{
+
+	/**
+	 *  Get a picture from the album
+	 *
+	 *@param  n  index of the picture to retrieve
+	 *@return    The Picture
+	 */
+	public Picture getPicture( int n ) {
 		return (Picture) pictures.get( n );
 	}
 
-	public void setPicture( int n, Picture p )
-	{
+
+	/**
+	 *  Set a picture in the album
+	 *
+	 *@param  n  index of the picture
+	 *@param  p  The new picture
+	 */
+	public void setPicture( int n, Picture p ) {
 		pictures.set( n, p );
-		
+
 		notifyListeners();
 	}
-	
-	public ArrayList getFileList()
-	{
-		ArrayList l = new ArrayList(pictures.size());
-		
+
+
+	/**
+	 *  Get the list of files that contain the pictures
+	 *
+	 *@return    The fileList value
+	 */
+	public ArrayList getFileList() {
+		ArrayList l = new ArrayList( pictures.size() );
+
 		Enumeration e = pictures.elements();
-		while (e.hasMoreElements())
-		{
-			l.add(((Picture) e.nextElement()).getSource());
+		while ( e.hasMoreElements() ) {
+			l.add( ( (Picture) e.nextElement() ).getSource() );
 		}
-		
+
 		return l;
 	}
 
-	public void setName( String name )
-	{
+
+	/**
+	 *  Sets the name attribute of the Album object
+	 *
+	 *@param  name  The new name value
+	 */
+	public void setName( String name ) {
 		this.name = name;
 	}
 
-	public void setUrl( String url )
-	{
-		this.url = url;
-	}
 
-	public void setUsername( String username )
-	{
-		this.username = username;
-	}
-
-	public void setPassword( String password )
-	{
-		this.password = password;
-	}
-
-	public String getName()
-	{
+	/**
+	 *  Gets the name attribute of the Album object
+	 *
+	 *@return    The name value
+	 */
+	public String getName() {
 		return name;
 	}
 
-	public String getUrl()
-	{
-		return url;
-	}
 
-	public String getUsername()
-	{
-		return username;
-	}
-
-	public String getPassword()
-	{
-		return password;
-	}
-	
-	public long getPictureFileSize()
-	{
-		if (pictureFileSize == -1)
-		{
-			pictureFileSize = getPictureFileSize((Picture[]) pictures.toArray(new Picture[0]));
+	/**
+	 *  Gets the aggregated file size of all the pictures in the album
+	 *
+	 *@return    The file size (bytes)
+	 */
+	public long getPictureFileSize() {
+		if ( pictureFileSize == -1 ) {
+			pictureFileSize = getPictureFileSize( (Picture[]) pictures.toArray( new Picture[0] ) );
 		}
-		
+
 		return pictureFileSize;
 	}
-	
-	public static long getPictureFileSize(Picture[] pictures)
-	{
+
+
+	/**
+	 *  Gets the aggregated file size of a list of pictures
+	 *
+	 *@param  pictures  the list of Pictures
+	 *@return           The file size (bytes)
+	 */
+	public static long getPictureFileSize( Picture[] pictures ) {
+		return getObjectFileSize( pictures );
+	}
+
+
+	/**
+	 *  Gets the aggregated file size of a list of pictures Unsafe, the Objects
+	 *  will be cast to Pictures.
+	 *
+	 *@param  pictures  the list of Pictures
+	 *@return           The file size (bytes)
+	 */
+	public static long getObjectFileSize( Object[] pictures ) {
 		long total = 0;
-		
-		for (int i = 0; i < pictures.length; i++) {
-			total += pictures[i].getFileSize();
+
+		for ( int i = 0; i < pictures.length; i++ ) {
+			total += ( (Picture) pictures[i] ).getFileSize();
 		}
-		
+
 		return total;
 	}
-	
-	// ListModel
-	public int getSize()
-	{
+
+
+	/*
+	 *	ListModel Implementation
+	 */
+	/**
+	 *  Gets the size attribute of the Album object
+	 *
+	 *@return    The size value
+	 */
+	public int getSize() {
 		return pictures.size();
 	}
 
-	public Object getElementAt( int index )
-	{
+
+	/**
+	 *  Gets the elementAt attribute of the Album object
+	 *
+	 *@param  index  Description of Parameter
+	 *@return        The elementAt value
+	 */
+	public Object getElementAt( int index ) {
 		return pictures.elementAt( index );
 	}
 
-	public void addListDataListener( ListDataListener ldl )
-	{
+
+	/**
+	 *  Adds a feature to the ListDataListener attribute of the Album object
+	 *
+	 *@param  ldl  The feature to be added to the ListDataListener attribute
+	 */
+	public void addListDataListener( ListDataListener ldl ) {
 		listeners.addElement( ldl );
 	}
 
-	public void removeListDataListener( ListDataListener ldl )
-	{
+
+	/**
+	 *  Description of the Method
+	 *
+	 *@param  ldl  Description of Parameter
+	 */
+	public void removeListDataListener( ListDataListener ldl ) {
 		listeners.removeElement( ldl );
 	}
 
-	void notifyListeners()
-	{
+
+	void notifyListeners() {
 		pictureFileSize = -1;
-		
+
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, pictures.size() );
 
 		Enumeration e = listeners.elements();
-		while ( e.hasMoreElements() )
-		{
+		while ( e.hasMoreElements() ) {
 			( (ListDataListener) e.nextElement() ).contentsChanged( lde );
 		}
 	}
