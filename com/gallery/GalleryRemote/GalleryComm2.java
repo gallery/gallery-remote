@@ -630,7 +630,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
 					a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
 					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
-					a.setExtraFields( p.getProperty( infoExtraFieldsKey ) );
+					a.setExtraFieldsString( p.getProperty( infoExtraFieldsKey ) );
 
 					a.setName( p.getProperty( nameKey ) );
 					a.setTitle( p.getProperty( titleKey ) );
@@ -710,7 +710,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String title = p.getProperty( titleKey );
 					a.setName( name );
 					a.setTitle( title );
-					a.setExtraFields( p.getProperty(infoExtraFieldKey));
+					a.setExtraFieldsString( p.getProperty(infoExtraFieldKey));
 
 					a.setGallery( g );
 					mAlbumList.add( a );
