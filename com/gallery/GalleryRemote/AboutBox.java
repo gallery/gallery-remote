@@ -67,7 +67,7 @@ public class AboutBox extends javax.swing.JFrame {
 		jLabel2.setText("Version:");
 		jLabel2.setHorizontalAlignment(javax.swing.JLabel.RIGHT);
 
-		jLabelVersion.setSize(new java.awt.Dimension(130, 20));
+		jLabelVersion.setSize(new java.awt.Dimension(200, 20));
 		jLabelVersion.setLocation(new java.awt.Point(120, 80));
 		jLabelVersion.setVisible(true);
 		jLabelVersion.setVerticalAlignment(javax.swing.JLabel.TOP);

@@ -26,36 +26,33 @@ import java.util.*;
 import javax.swing.JFileChooser;
 import java.io.File;
 
-public class AddFileDialog {
-
-
-	static File[] addFiles(Component parent) {
+public class AddFileDialog
+{
+	public static File currentDirectory =  null;
 	
+	static File[] addFiles(Component parent)
+	{
 		JFileChooser fc = new JFileChooser();
 		
 		fc.addChoosableFileFilter(new GalleryFileFilter());
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setMultiSelectionEnabled(true);
+		
+		if (currentDirectory != null)
+		{
+			fc.setCurrentDirectory(currentDirectory);
+		}
 
 		int retval = fc.showDialog(parent, "Add");
-		if (retval != JFileChooser.CANCEL_OPTION) {
-		
+		if (retval != JFileChooser.CANCEL_OPTION)
+		{
+			currentDirectory = fc.getCurrentDirectory();
+			
 			File[] files = fc.getSelectedFiles();
 			
-			//Iterator iter = Arrays.asList(files).iterator();
-			//while (iter.hasNext()) {
-			//	File file = (File) iter.next();
-			//	System.out.println(file.getAbsolutePath());
-			//}
-			
 			return files;
-			
 		}
-	
 			
 		return null;
 	}
-
-
-
 }
