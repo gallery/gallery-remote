@@ -32,7 +32,7 @@
 	  classpath="${build}" fork="true" />
   </target>
   
-  <target name="jar" depends="compile"
+  <target name="jar" depends="clean,compile"
   		description="create a jar of the source">
 	
 	<jar destfile="GalleryRemote.jar" basedir="${build}" />
