@@ -25,6 +25,7 @@
 		<copy file="${src}/rar_about_gr1.png" todir="${build}" />
 		<copy file="${src}/rar_icon_32.gif" todir="${build}" />
 		<copy file="${src}/rar_icon_16.gif" todir="${build}" />
+		<copy file="${src}/com/gallery/GalleryRemote/prefs/panes.properties" todir="${build}/com/gallery/GalleryRemote/prefs" />
 	</target>
 
 	<target name="run" depends="compile"

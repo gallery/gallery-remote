@@ -61,7 +61,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 	private void loadPanes() {
 		Properties panes = new Properties();
 		try {
-			panes.load(getClass().getResourceAsStream("/com/gallery/GalleryRemote/prefs/panes.properties"));
+			panes.load(getClass().getResourceAsStream("panes.properties"));
 
 			int i = 1;
 			String className = null;
