@@ -22,6 +22,7 @@ package com.gallery.GalleryRemote;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -37,28 +38,32 @@ public class PictureInspector extends JPanel
 	implements ActionListener
 {
 	public static final String MODULE = "PictInspec";
-	
+
 	GridBagLayout gridBagLayout4 = new GridBagLayout();
-	JLabel icon = new JLabel();
 	JLabel jLabel5 = new JLabel();
-	JLabel path = new JLabel();
 	JLabel jLabel6 = new JLabel();
-	JLabel album = new JLabel();
-	JLabel Caption = new JLabel();
 	JLabel jLabel4 = new JLabel();
-	JButton up = new JButton();
 	JLabel jLabel8 = new JLabel();
-	JButton down = new JButton();
 	JPanel spacer = new JPanel();
 	JLabel jLabel1 = new JLabel();
-	JLabel size = new JLabel();
-	JTextField caption = new JTextField();
+	JLabel jLabel2 = new JLabel();
+
+	JScrollPane jScrollPane1 = new JScrollPane();
+	JScrollPane jScrollPane2 = new JScrollPane();
+
+	JButton delete = new JButton();
+	JButton up = new JButton();
+	JButton down = new JButton();
+
+	JLabel icon = new JLabel();
+	JTextArea album = new JTextArea();
+	JTextArea size = new JTextArea();
+	JTextArea caption = new JTextArea();
+	JTextArea path = new JTextArea();
 
 	MainFrame mf = null;
 	Object[] pictures = null;
-	JButton delete = new JButton();
-	JLabel jLabel2 = new JLabel();
-
+	int emptyIconHeight = 0;
 
 	/**
 	 *  Constructor for the PictureInspector object
@@ -70,6 +75,9 @@ public class PictureInspector extends JPanel
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
+
+		emptyIconHeight = (int) icon.getPreferredSize().getHeight();
+		Log.log(Log.TRACE, MODULE, "emptyIconHeight: " + emptyIconHeight);
 	}
 
 
@@ -81,66 +89,89 @@ public class PictureInspector extends JPanel
 		icon.setText( "icon" );
 		icon.setVerticalTextPosition( SwingConstants.BOTTOM );
 		jLabel5.setText( "Path:" );
-		path.setText( "path" );
 		jLabel6.setText( "Album:" );
-		album.setText( "album" );
 		jLabel4.setText( "Caption:" );
+		jLabel8.setText( "Move:" );
+		jLabel1.setText( "Size:" );
+		jLabel2.setText("Delete:");
+
+		album.setRows(0);
+		album.setText("");
+		album.setEditable(false);
+		album.setFont(new java.awt.Font("SansSerif", 0, 11));
+		album.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		size.setRows(0);
+		size.setText("");
+		size.setEditable(false);
+		size.setFont(new java.awt.Font("SansSerif", 0, 11));
+		size.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		caption.setText("");
+		caption.setLineWrap(true);
+		caption.setEditable(false);
+		caption.setFont(new java.awt.Font("SansSerif", 0, 11));
+		caption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		path.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		path.setFont(new java.awt.Font("SansSerif", 0, 11));
+		path.setEditable(false);
+		path.setText("");
+		path.setLineWrap(true);
+
 		up.setMaximumSize(new Dimension( 100, 23 ) );
 		up.setMinimumSize( new Dimension( 100, 23 ) );
 		up.setPreferredSize( new Dimension( 100, 23 ) );
 		up.setText( "Move up" );
 		up.setActionCommand( "Up" );
-		jLabel8.setText( "Move:" );
 		down.setMaximumSize(new Dimension( 100, 23 ) );
 		down.setMinimumSize( new Dimension( 100, 23 ) );
 		down.setPreferredSize( new Dimension( 100, 23 ) );
 		down.setText( "Move down" );
 		down.setActionCommand( "Down" );
-		jLabel1.setText( "Size:" );
-		size.setText( "size" );
-		caption.setBackground(SystemColor.control);
-		caption.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
-		caption.setBorder( null );
-		caption.setEditable( false );
-		caption.setText( "caption" );
 		delete.setMaximumSize(new Dimension( 100, 23 ) );
 		delete.setMinimumSize(new Dimension( 100, 23 ) );
 		delete.setPreferredSize(new Dimension( 100, 23 ) );
 		delete.setActionCommand("Delete");
 		delete.setText("Delete");
-		jLabel2.setText("Delete:");
+
+    	jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane1.setBorder(null);
+    	jScrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane2.setBorder(null);
+		add( jLabel5,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+		add( jLabel6,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+		add( jLabel4,     new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+		add( jLabel8,   new GridBagConstraints(0, 5, 1, 2, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		add( jLabel1,   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+		add(jLabel2,    new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
+		add( spacer,   new GridBagConstraints(0, 8, 2, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
+
 		add( icon,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		add( jLabel5,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
-		add( path,  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		add( jLabel6,  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
 		add( album,  new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		add( Caption,  new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
-		add( jLabel4,  new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
-		add( up,   new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0
+		add( size,  new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+
+		add( up,    new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0) );
-		add( jLabel8,  new GridBagConstraints(0, 6, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
-		add( down,  new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0
+		add( down,   new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
-		add( spacer,  new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
-		this.add( jLabel1,  new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
-		this.add( size,  new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		this.add( caption,  new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		this.add(delete,    new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0
+		add(delete,     new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0));
-		this.add(jLabel2,   new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
+		this.add(jScrollPane1,   new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jScrollPane2,   new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jScrollPane1.getViewport().add(path, null);
+		jScrollPane2.getViewport().add(caption, null);
+		
+		this.setMinimumSize( new Dimension( 150, 0 ) );
 	}
 
 	private void jbInitEvents() {
@@ -148,7 +179,7 @@ public class PictureInspector extends JPanel
 		up.addActionListener( this );
 		down.addActionListener( this );
 	}
-	
+
 	// Event handling
 	/**
 	 *  Menu and button handling
@@ -158,7 +189,7 @@ public class PictureInspector extends JPanel
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
 		Log.log(Log.INFO, MODULE, "Command selected " + command );
-		
+
 		if ( command.equals( "Delete" ) ) {
 			mf.deleteSelectedPictures();
 		} else if ( command.equals( "Up" ) ) {
@@ -187,6 +218,12 @@ public class PictureInspector extends JPanel
 	public void setPictures( Object[] pictures ) {
 		this.pictures = pictures;
 
+		icon.setPreferredSize(
+			new Dimension( 0,
+				GalleryRemote.getInstance().properties.getThumbnailSize().height
+				+ emptyIconHeight
+				+ icon.getIconTextGap() ) );
+
 		if ( pictures == null || pictures.length == 0 ) {
 			icon.setText("no picture selected");
 			icon.setIcon( mf.defaultThumbnail );
@@ -194,19 +231,20 @@ public class PictureInspector extends JPanel
 			album.setText( "" );
 			caption.setText( "" );
 			size.setText( "" );
-			
+
 			up.setEnabled(false);
 			down.setEnabled(false);
 			delete.setEnabled(false);
 		} else if ( pictures.length == 1) {
 			Picture p = (Picture) pictures[0];
-			
+
 			icon.setText( p.getSource().getName() );
 			icon.setIcon( mf.getThumbnail( p ) );
 			path.setText( p.getSource().getParent() );
 			album.setText( p.getAlbum().getName() );
 			caption.setText( p.getCaption() );
-			size.setText( String.valueOf( (int) p.getFileSize() ) + " bytes" );
+			size.setText( NumberFormat.getInstance().format( 
+				(int) p.getFileSize() ) + " bytes" );
 
 			up.setEnabled(true);
 			down.setEnabled(true);
@@ -219,15 +257,13 @@ public class PictureInspector extends JPanel
 			path.setText( "" );
 			album.setText( p.getAlbum().getName() );
 			caption.setText( "" );
-			size.setText( Album.getObjectFileSize(pictures) + " bytes" );
+			size.setText( NumberFormat.getInstance().format(
+				Album.getObjectFileSize(pictures) ) + " bytes" );
 
 			up.setEnabled(false);
 			down.setEnabled(false);
 			delete.setEnabled(true);
 		}
-	}
-	
-	public void setPictures( Picture[] ps) {
 	}
 }
 
