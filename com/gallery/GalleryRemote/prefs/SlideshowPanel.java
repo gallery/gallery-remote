@@ -35,6 +35,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JComboBox jUrl;
 	JCheckBox jLowRez = new JCheckBox();
 	JCheckBox jRandom = new JCheckBox();
+	JCheckBox jNoStretch = new JCheckBox();
 	JPanel spacerPanel1 = new JPanel();
 
 	public JLabel getIcon() {
@@ -49,6 +50,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 		jLowRez.setSelected(props.getBooleanProperty(SLIDESHOW_LOWREZ));
 		jRandom.setSelected(props.getBooleanProperty(SLIDESHOW_RANDOM));
+		jNoStretch.setSelected(props.getBooleanProperty(SLIDESHOW_NOSTRETCH));
 		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
 
 		jProgress.setEnabled(! props.isOverridden(SLIDESHOW_PROGRESS));
@@ -57,6 +59,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jUrl.setEnabled(! props.isOverridden(SLIDESHOW_URL));
 		jLowRez.setEnabled(! props.isOverridden(SLIDESHOW_LOWREZ));
 		jRandom.setEnabled(! props.isOverridden(SLIDESHOW_RANDOM));
+		jNoStretch.setEnabled(! props.isOverridden(SLIDESHOW_NOSTRETCH));
 		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
 	}
 
@@ -68,6 +71,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 		props.setBooleanProperty(SLIDESHOW_LOWREZ, jLowRez.isSelected());
 		props.setBooleanProperty(SLIDESHOW_RANDOM, jRandom.isSelected());
+		props.setBooleanProperty(SLIDESHOW_NOSTRETCH, jNoStretch.isSelected());
 		props.setIntProperty(SLIDESHOW_DELAY, Integer.parseInt(jDelay.getText()));
 	}
 
@@ -114,6 +118,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		delayHelp.setText(GRI18n.getString(MODULE, "delayDesc"));
 		jRandom.setText(GRI18n.getString(MODULE, "random"));
 		jRandom.setToolTipText(GRI18n.getString(MODULE, "randomHelp"));
+		jNoStretch.setText(GRI18n.getString(MODULE, "noStretch"));
+		jNoStretch.setToolTipText(GRI18n.getString(MODULE, "noStretchHelp"));
 
 		progress.setText(GRI18n.getString(MODULE, "progress"));
 		progress.setLabelFor(jProgress);
@@ -146,8 +152,13 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		progressionPanel.add(delayHelp,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		progressionPanel.add(jRandom,   new GridBagConstraints(0, 2, 2, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		JPanel jRandomNoStretch = new JPanel();
+		jRandomNoStretch.add(jRandom);
+		jRandomNoStretch.add(jNoStretch);
+		progressionPanel.add(jRandomNoStretch,   new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		//progressionPanel.add(jNoStretch,   new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0
+		//		,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		performancePanel.add(jLowRez,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));

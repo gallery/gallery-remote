@@ -43,6 +43,7 @@ public interface PreferenceNames {
 	public static final String PN_LOGIN_URL = "pnLoginUrl.";
 	public static final String PHPN_GALLERY_URL = "phpnGalleryUrl.";
 	public static final String PHPN_LOGIN_URL = "phpnLoginUrl.";
+	public static final String ALIAS = "alias.";
 
 	// Proxy panel
 	public static final String USE_PROXY = "useProxy";
@@ -61,6 +62,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_RANDOM = "slideshowRandom";
 	public static final String SLIDESHOW_MAX_PICTURES = "slideshowMaxPictures";
 	public static final String SLIDESHOW_RECURSIVE = "slideshowRecursive";
+	public static final String SLIDESHOW_NOSTRETCH = "slideshowNoStretch";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";

@@ -34,6 +34,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 	JLabel jPhpnLoginUrlLabel = new JLabel();
 	JLabel jPhpnGalleryUrlLabel = new JLabel();
 	JLabel jPhpnHelpLabel = new JLabel();
+	JLabel jAliasLabel = new JLabel();
 
 	JComboBox jType = new JComboBox();
 	JPanel jStylePanel = new JPanel();
@@ -41,6 +42,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 	JTextField jUsername = new JTextField();
 	JPasswordField jPassword = new JPasswordField();
+	JTextField jAlias = new JTextField();
 
 	JPanel jPostNuke = new JPanel();
 	JTextField jPnLoginUrl = new JTextField();
@@ -81,6 +83,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 
 		jMainPanel.setLayout(new GridBagLayout());
+		jAliasLabel.setText(GRI18n.getString(MODULE, "alias"));
+		jAlias.setToolTipText(GRI18n.getString(MODULE, "aliasTip"));
 		jUsernameLabel.setText(GRI18n.getString(MODULE, "username"));
 		jPasswordLabel.setText(GRI18n.getString(MODULE, "passwd"));
 		jTypeLabel.setText(GRI18n.getString(MODULE, "type"));
@@ -122,21 +126,25 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jPhpnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);
-		jMainPanel.add(jStylePanel, new GridBagConstraints(0, 3, 4, 1, 1.0, 1.0
+		jMainPanel.add(jStylePanel, new GridBagConstraints(0, 4, 4, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		jMainPanel.add(jUsernameLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jMainPanel.add(jUsernameLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
+		jMainPanel.add(jAliasLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-		jMainPanel.add(jPasswordLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jMainPanel.add(jPasswordLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
-		jMainPanel.add(jTypeLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+		jMainPanel.add(jTypeLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
-		jMainPanel.add(jUsername, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+		jMainPanel.add(jAlias, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 5, 5), 0, 0));
-		jMainPanel.add(jPassword, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+		jMainPanel.add(jUsername, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jMainPanel.add(jType, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
+		jMainPanel.add(jPassword, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jMainPanel.add(jButtonPanel, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
+		jMainPanel.add(jType, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
+		jMainPanel.add(jButtonPanel, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 		jButtonPanel.add(jOk, null);
 		jButtonPanel.add(jCancel, null);
@@ -183,6 +191,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 	public void resetUIState() {
 		jUsername.setText(gallery.getUsername());
 		jPassword.setText(gallery.getPassword());
+		jAlias.setText(gallery.getAlias() == null?"":gallery.getAlias());
 
 		jType.setSelectedIndex(gallery.getType());
 		String panel = (String) jType.getSelectedItem();
@@ -201,6 +210,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		gallery.setUsername(jUsername.getText());
 		gallery.setPassword(jPassword.getText());
 		gallery.setType(jType.getSelectedIndex());
+		String alias = jAlias.getText().trim();
+		gallery.setAlias(alias.length() == 0?null:alias);
 
 		gallery.setStUrlString(jStandaloneUrl.getText());
 

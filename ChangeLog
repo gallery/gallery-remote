@@ -1,3 +1,12 @@
+2004-04-21  Pierre-Luc Paour <gallery@paour.com> (1.4-b5)
+
+	* Added support for Gallery aliases, to use as a handle instead of the
+	  Gallery URL in the GR UI.
+	* Implemented slideshow preference to not stretch small images in
+	  preview and slideshow.
+	* Fixed local slideshow broken in 1.4-b3.
+	* Fixed one syntax incompatibility for Java 1.5.
+
 2004-04-20  Pierre-Luc Paour <gallery@paour.com> (1.4-b4)
 
 	* Added German translation, courtesy of Hubert Baumgartner.

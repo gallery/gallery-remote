@@ -64,7 +64,7 @@ public class ThumbnailCache implements Runnable {
 					Image scaled = null;
 					Dimension newD = ImageUtils.getSizeKeepRatio(
 							new Dimension(i.getIconWidth(), i.getIconHeight()),
-							GalleryRemote._().properties.getThumbnailSize());
+							GalleryRemote._().properties.getThumbnailSize(), true);
 					scaled = i.getImage().getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
 
 					i.getImage().flush();

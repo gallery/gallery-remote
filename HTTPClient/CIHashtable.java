@@ -163,9 +163,9 @@ final class CIHashtableEnumeration implements Enumeration
 {
     Enumeration HTEnum;
 
-    public CIHashtableEnumeration(Enumeration enum)
+    public CIHashtableEnumeration(Enumeration enum1)
     {
-	HTEnum = enum;
+	HTEnum = enum1;
     }
 
     public boolean hasMoreElements()

@@ -129,7 +129,11 @@ public class ImageUtils {
 
 			//cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append("\"");
 			cmd.add("-resize");
-			cmd.add(d.width + "x" + d.height);
+			if (GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SLIDESHOW_NOSTRETCH)) {
+				cmd.add(d.width + "x" + d.height + ">");
+			} else {
+				cmd.add(d.width + "x" + d.height);
+			}
 
 			//cmdline.append(" +profile \"*\" ");
 			cmd.add("+profile");
@@ -161,7 +165,7 @@ public class ImageUtils {
 		}
 
 		if (!useIM && r == null) {
-			r = loadJava(filename, d);
+			r = loadJava(filename, d, GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SLIDESHOW_NOSTRETCH));
 		}
 
 		long time = System.currentTimeMillis() - start;
@@ -172,10 +176,10 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static ImageIcon loadJava(URL url, Dimension d) {
+	public static ImageIcon loadJava(URL url, Dimension d, boolean noStretch) {
 		ImageIcon r = new ImageIcon(url);
 
-		return loadJavaInternal(r, d);
+		return loadJavaInternal(r, d, noStretch);
 		/*try {
 			ImageInputStream iis = ImageIO.createImageInputStream(url.openStream());
 			return loadJavaInternal(iis, d);
@@ -185,10 +189,10 @@ public class ImageUtils {
 		}*/
 	}
 
-	public static ImageIcon loadJava(String filename, Dimension d) {
+	public static ImageIcon loadJava(String filename, Dimension d, boolean noStretch) {
 		ImageIcon r = new ImageIcon(filename);
 
-		return loadJavaInternal(r, d);
+		return loadJavaInternal(r, d, noStretch);
 		/*try {
 			ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
 			return loadJavaInternal(iis, d);
@@ -198,11 +202,16 @@ public class ImageUtils {
 		}*/
 	}
 
-	private static ImageIcon loadJavaInternal(ImageIcon r, Dimension d) {
+	private static ImageIcon loadJavaInternal(ImageIcon r, Dimension d, boolean noStretch) {
 		Image scaled = null;
 		Dimension newD = getSizeKeepRatio(
 				new Dimension(r.getIconWidth(), r.getIconHeight()),
-				d);
+				d, noStretch);
+
+		if (newD == null) {
+			return r;
+		}
+
 		scaled = r.getImage().getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
 
 		r.getImage().flush();
@@ -322,7 +331,7 @@ public class ImageUtils {
 
 			Dimension newD = getSizeKeepRatio(
 					new Dimension(rim.getWidth(), rim.getHeight()),
-					d);
+					d, true);
 
 			Image scaled = rim.getScaledInstance(newD.width, newD.height, Image.SCALE_SMOOTH);
 			//ImageObserver imageObserver = GalleryRemote._().getMainFrame();
@@ -756,10 +765,10 @@ public class ImageUtils {
 		}
 
 		defaultThumbnail = loadJava(ImageUtils.class.getResource(DEFAULT_RESOURCE),
-				GalleryRemote._().properties.getThumbnailSize());
+				GalleryRemote._().properties.getThumbnailSize(), true);
 
 		unrecognizedThumbnail = loadJava(ImageUtils.class.getResource(UNRECOGNIZED_RESOURCE),
-				GalleryRemote._().properties.getThumbnailSize());
+				GalleryRemote._().properties.getThumbnailSize(), true);
 
 		// Making sure jpegtran works
 		try {
@@ -809,7 +818,11 @@ public class ImageUtils {
 		}
 	}
 
-	public static Dimension getSizeKeepRatio(Dimension source, Dimension target) {
+	public static Dimension getSizeKeepRatio(Dimension source, Dimension target, boolean noStretch) {
+		if (noStretch && target.width > source.width && target.height > source.height) {
+			return null;
+		}
+
 		Dimension result = new Dimension();
 
 		float sourceRatio = (float) source.width / source.height;

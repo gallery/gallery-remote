@@ -55,6 +55,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String phpnGalleryUrlString = null;
 	String username;
 	String password;
+	String alias;
 	//ArrayList albumList = null;
 	//Album selectedAlbum = null;
 	int type = TYPE_STANDALONE;
@@ -630,6 +631,14 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		}
 	}
 
+	public void setAlias(String alias) {
+		this.alias = alias;
+
+		if (!blockWrites) {
+			GalleryRemote._().properties.setProperty(ALIAS + prefsIndex, alias);
+		}
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -642,6 +651,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public int getType() {
 		return type;
+	}
+
+	public String getAlias() {
+		return alias;
 	}
 
 	public static Gallery readFromProperties(GalleryProperties p, int prefsIndex, StatusUpdate su) {
@@ -687,6 +700,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 				g.setType(type);
 			}
 		}
+		g.setAlias(p.getProperty(ALIAS + prefsIndex));
 
 		g.setPrefsIndex(prefsIndex);
 
@@ -705,6 +719,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 			p.remove(PASSWORD + prefsIndex);
 		}
 		p.setProperty(TYPE + prefsIndex, types[type]);
+		if (getAlias() != null) {
+			p.setProperty(ALIAS + prefsIndex, getAlias());
+		}
 
 		if (pnLoginUrlString != null) {
 			p.setProperty(PN_LOGIN_URL + prefsIndex, pnLoginUrlString);
@@ -732,6 +749,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		p.remove(PN_GALLERY_URL + n);
 		p.remove(PHPN_LOGIN_URL + n);
 		p.remove(PHPN_GALLERY_URL + n);
+		p.remove(ALIAS + n);
 	}
 
 	public void setPrefsIndex(int prefsIndex) {
@@ -747,6 +765,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public String toString(boolean disambiguate) {
+		if (alias != null) {
+			return alias;
+		}
+
 		String tmp = null;
 
 		switch (type) {
