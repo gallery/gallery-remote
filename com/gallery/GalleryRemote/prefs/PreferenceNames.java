@@ -60,4 +60,5 @@ public interface PreferenceNames {
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
+	public static final String SUPPRESS_WARNING_CORRUPTED = "suppressWarningCorrupted";
 }

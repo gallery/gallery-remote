@@ -27,8 +27,6 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.io.*;
 import java.lang.reflect.Method;
@@ -815,7 +813,7 @@ public class ImageUtils {
 		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM)) {
 			if (GalleryRemote.getInstance().mainFrame != null
 					&& GalleryRemote.getInstance().mainFrame.isVisible()) {
-				MessageDialog md = new MessageDialog(
+				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextIM"),
 						GRI18n.getString(MODULE, "warningUrlIM"),
 						GRI18n.getString(MODULE, "warningUrlTextIM")
@@ -836,7 +834,7 @@ public class ImageUtils {
 		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN)) {
 			if (GalleryRemote.getInstance().mainFrame != null
 					&& GalleryRemote.getInstance().mainFrame.isVisible()) {
-				MessageDialog md = new MessageDialog(
+				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextJpegtran"),
 						GRI18n.getString(MODULE, "warningUrlJpegtran"),
 						GRI18n.getString(MODULE, "warningUrlTextJpegtran")
@@ -848,57 +846,6 @@ public class ImageUtils {
 			} else {
 				deferredStopUsingJpegtran = true;
 			}
-		}
-	}
-
-	static class MessageDialog extends JDialog {
-		JLabel jIcon = new JLabel();
-		JLabel jMessage = new JLabel();
-		BrowserLink jURL = new BrowserLink();
-		JCheckBox jDontShow = new JCheckBox();
-		JButton jOk = new JButton();
-
-		public MessageDialog(String message, String url, String urlText) {
-			super(GalleryRemote.getInstance().mainFrame,
-					GRI18n.getString(MODULE, "warningTitle"),
-					true);
-
-			jIcon.setIcon(UIManager.getIcon("OptionPane.warningIcon"));
-			setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			getContentPane().setLayout(new GridBagLayout());
-			jMessage.setText(message);
-			jURL.setText(urlText);
-			jURL.setUrl(url);
-			jDontShow.setText(GRI18n.getString(MODULE, "warningDontShow"));
-			jOk.setText(GRI18n.getString(MODULE, "warningOK"));
-			jOk.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					setVisible(false);
-				}
-			});
-
-			getContentPane().add(jIcon, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-					, GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(5, 5, 0, 10), 0, 0));
-			getContentPane().add(jMessage, new GridBagConstraints(1, 0, 2, 1, 1.0, 1.0
-					, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
-			getContentPane().add(jURL, new GridBagConstraints(1, 1, 2, 1, 0.0, 0.0
-					, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
-			getContentPane().add(jDontShow, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
-					, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
-			getContentPane().add(jOk, new GridBagConstraints(2, 2, 1, 2, 0.0, 0.0
-					, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 5, 5), 0, 0));
-
-			getRootPane().setDefaultButton(jOk);
-
-			pack();
-
-			DialogUtil.center(this, getOwner());
-
-			setVisible(true);
-		}
-
-		public boolean dontShow() {
-			return jDontShow.isSelected();
 		}
 	}
 }

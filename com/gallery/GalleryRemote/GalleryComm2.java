@@ -29,6 +29,7 @@ import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
+import com.gallery.GalleryRemote.util.UrlMessageDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -357,6 +358,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					GalleryProperties p = new GalleryProperties();
 					p.load(new StringBufferInputStream(response));
+
+					//mConnection.stop();
 
 					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgOk"));
 
@@ -857,16 +860,49 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					while (it.hasNext()) {
 						Album a = (Album) it.next();
 
-						if (a.getAlbumDepth() == depth) {
-							it.remove();
+						try {
+							if (a.getAlbumDepth() == depth) {
+								it.remove();
 
-							Album parentAlbum = a.getParentAlbum();
-							if (parentAlbum == null) {
-								orderedAlbums.add(a);
-							} else {
-								int i = orderedAlbums.indexOf(parentAlbum);
-								orderedAlbums.add(i + 1, a);
+								Album parentAlbum = a.getParentAlbum();
+								if (parentAlbum == null) {
+									orderedAlbums.add(a);
+								} else {
+									int i = orderedAlbums.indexOf(parentAlbum);
+									orderedAlbums.add(i + 1, a);
+								}
 							}
+						} catch (IllegalArgumentException e) {
+							it.remove();
+							Log.log(Log.LEVEL_TRACE, MODULE, "Gallery server album list is corrupted: " +
+									"album " + a.getName() + " has a bad containment hierarchy.");
+
+							/*JOptionPane.showMessageDialog(GalleryRemote.getInstance().mainFrame,
+									GRI18n.getString(MODULE, "fixCorrupted", new String[] {
+										a.getTitle(),
+										a.getGallery().getGalleryUrl(a.getName()).toString()}),
+									GRI18n.getString(MODULE, "fixCorruptedTitle"),
+									JOptionPane.ERROR_MESSAGE);*/
+
+							if (! GalleryRemote.getInstance().properties.getBooleanProperty(SUPPRESS_WARNING_CORRUPTED)) {
+								UrlMessageDialog md = new UrlMessageDialog(
+										GRI18n.getString(MODULE, "fixCorrupted", new String[] {
+											a.getTitle(),
+											a.getGallery().getGalleryUrl(a.getName()).toString()}),
+										a.getGallery().getGalleryUrl(GRI18n.getString(MODULE, "fixCorruptedUrl", new String[] {
+											a.getName()} )).toString(),
+										null);
+
+								if (md.dontShow()) {
+									GalleryRemote.getInstance().properties.setBooleanProperty(SUPPRESS_WARNING_CORRUPTED, true);
+								}
+							}
+
+							// This doesn't work: there's a problem with the connection (maybe not re-entrant...)
+							//if (answer == JOptionPane.YES_OPTION) {
+								//a.moveAlbumTo(su, null);
+								//moveAlbum(su, a, null, true);
+							//}
 						}
 					}
 

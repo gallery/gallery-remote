@@ -687,7 +687,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		notifyListeners();
 	}
 
-	public int getAlbumDepth() {
+	public int getAlbumDepth() throws IllegalArgumentException {
 		if (albumDepth == null) {
 			albumDepth = new Integer(depthHelper(0));
 		}
@@ -695,8 +695,12 @@ public class Album extends Picture implements ListModel, Serializable {
 		return albumDepth.intValue();
 	}
 
-	int depthHelper(int depth) {
-		if (getParentAlbum() != null && getParentAlbum() != this) {
+	int depthHelper(int depth) throws IllegalArgumentException {
+		if (getParentAlbum() == this || depth > 20) {
+			throw new IllegalArgumentException("Circular containment hierarchy. Gallery corrupted!");
+		}
+
+		if (getParentAlbum() != null) {
 			return getParentAlbum().depthHelper(depth + 1);
 		} else {
 			return depth;
