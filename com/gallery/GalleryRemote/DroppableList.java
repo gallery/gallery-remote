@@ -106,7 +106,7 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
         //Log.log(Log.TRACE, "DROPLIST","dragOver - dtde");
         p = dropTargetDragEvent.getLocation();
-        
+        repaint();
     }
     
     
