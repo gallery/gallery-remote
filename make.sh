@@ -2,12 +2,14 @@ export CLASSPATH=.
 
 make_()
 {
-	javac com/gallery/GalleryRemote/GalleryRemote.java;
+	# Remove -source 1.3 if you are using a pre-1.4 VM
+	javac -source 1.3 com/gallery/GalleryRemote/GalleryRemote.java;
 }
 
 make_all()
 {
-	javac com/gallery/GalleryRemote/*.java HTTPClient/*.java;
+	# Remove -source 1.3 if you are using a pre-1.4 VM
+	javac -source 1.3 com/gallery/GalleryRemote/*.java HTTPClient/*.java;
 }
 
 make_clean()

@@ -5,11 +5,13 @@ set CLASSPATH=.
 goto make_%1%
 
 :make_
-javac com/gallery/GalleryRemote/GalleryRemote.java
+rem Remove -source 1.3 if you are using a pre-1.4 VM
+javac -source 1.3 com/gallery/GalleryRemote/GalleryRemote.java
 goto :EOF
 
 :make_all
-javac com/gallery/GalleryRemote/*.java HTTPClient/*.java
+rem Remove -source 1.3 if you are using a pre-1.4 VM
+javac -source 1.3 com/gallery/GalleryRemote/*.java HTTPClient/*.java
 goto :EOF
 
 :make_clean
