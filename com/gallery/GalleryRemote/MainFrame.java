@@ -28,8 +28,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.NumberFormat;
 import java.util.Collections;
 
@@ -37,8 +35,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
@@ -902,10 +898,10 @@ public class MainFrame extends javax.swing.JFrame
 				//resetUIState();
 			} else {
 		    	// login may have failed and caused getComm to be null.
-				getCurrentGallery().getComm(this);
+				GalleryComm comm = getCurrentGallery().getComm(this);
 
 				// may have tried to connect and failed
-				if (!GalleryComm.wasAuthFailure()) {
+				if (comm != null && !GalleryComm.wasAuthFailure()) {
 					fetchAlbums();
 				}
 			}
