@@ -144,7 +144,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		htmlEscapeCaptionsNot.setToolTipText("When checked, you can (and have to) write your captions in HTML markup. " +
 				"When unchecked, just type any text, and HTML markup will be generated " +
 				"for you.");
-		htmlEscapeCaptionsNot.setText("Allow HTML markup in captions");
+		htmlEscapeCaptionsNot.setText("Allow HTML markup in captions and extra fields");
 		captionStripExtension.setToolTipText("Remove the extension (.gif, .jpeg, etc.) from the filename when using " +
 				"it as a caption");
 		captionStripExtension.setText("Strip the filename extension");
