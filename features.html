@@ -46,10 +46,9 @@ th {
 <h2>Document goal</h2>
 <p>Serve as a basis for team and community discussions about GR 1.0 features, 
   how they will be implemented, and by whom. </p>
-<h2>Prerequisite</h2>
-<p>Right now, GR is pretty monolythic. Before I can open development to other 
-  developers, I need to make the code more modular. This has already started, 
-  but any and all suggestions are welcome.</p>
+<p>The goal is to ship Gallery Remote 1.0 once all P1 and P2 features have been 
+  implemented. P3 and lower features will be implemented in point-releases following 
+  the release of GR 1.0.</p>
 <h2>Feature list (Gallery Remote)</h2>
 <table width="100%" border="1">
   <tr> 
@@ -84,7 +83,7 @@ th {
   <tr valign="top"> 
     <td>Inspector</td>
     <td>P2</td>
-    <td>50%</td>
+    <td>60%</td>
     <td><p>paour</p></td>
     <td>In the UI, have an inspector pane for each Picture, that can display full 
       filename, file size, thumbnail, caption, order ID, resize/rotate buttons, 
@@ -93,8 +92,50 @@ th {
       <p>Also, with Explorer UI, can inspect Album properties.</p></td>
   </tr>
   <tr valign="top"> 
-    <td>Download Album</td>
+    <td>Create album</td>
     <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td><p>Provide UI to create albums on server.</p>
+      <p>Option to create albums before existing albums, or after.</p></td>
+    <td><p>Would be more elegant in Explorer UI.</p>
+      <p>Needs protocol upgrade</p></td>
+  </tr>
+  <tr valign="top"> 
+    <td>Upload Picture captions</td>
+    <td>P2</td>
+    <td>100%</td>
+    <td>tim</td>
+    <td>When a picture is uploaded, also upload a caption.</td>
+    <td>Needs protocol upgrade</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Pre-upload resize</td>
+    <td>P2</td>
+    <td>100%</td>
+    <td>paour</td>
+    <td>Pictures can be resized on the client, thus minimizing the bandwidth necessary 
+      for the upload.</td>
+    <td>Default Java resizing quality is not great, and not very flexible. We 
+      may need to use an external app. It may be worth investigating the plug-in 
+      mechanism in G2 for resizing.</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Reorder album</td>
+    <td>P3</td>
+    <td>50%</td>
+    <td>dolan</td>
+    <td><p>Drag-and-drop (intra-list) reordering of album, whether before uploading, 
+        or an existing album.</p>
+      <p>Also, provide visual clues when an external drag is dropped on the list, 
+        and allow drop to happen at any point in the list (right now, drops always 
+        append pictures to the end of the list.</p></td>
+    <td>Sorting additions to an album is implemented. Sorting an existing album 
+      is not yet done.</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Download Album</td>
+    <td>P3</td>
     <td>0%</td>
     <td>&nbsp;</td>
     <td>In order to support reordering existing albums, we need to be able to 
@@ -102,44 +143,13 @@ th {
     <td>Needs protocol upgrade</td>
   </tr>
   <tr valign="top"> 
-    <td>Reorder album</td>
-    <td>P2</td>
-    <td>90%</td>
-    <td>dolan</td>
-    <td><p>Drag-and-drop (intra-list) reordering of album, whether before uploading, 
-        or an existing album.</p>
-      <p>Also, provide visual clues when an external drag is dropped on the list, 
-        and allow drop to happen at any point in the list (right now, drops always 
-        append pictures to the end of the list.</p></td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr valign="top"> 
     <td>Upload Album order</td>
-    <td>P2</td>
+    <td>P3</td>
     <td>0%</td>
     <td>&nbsp;</td>
     <td>Upload updated order for album. Would be nice to do it in such a way that 
-      we don't need to lock the album.</td>
+      we don't need to lock the album while the user is editing the album order.</td>
     <td>Needs protocol upgrade</td>
-  </tr>
-  <tr valign="top"> 
-    <td>Upload Picture captions</td>
-    <td>P2</td>
-    <td>0%</td>
-    <td>&nbsp;</td>
-    <td>When a picture is uploaded, also upload a caption.</td>
-    <td>Needs protocol upgrade</td>
-  </tr>
-  <tr valign="top"> 
-    <td>Pre-upload resize</td>
-    <td>P2</td>
-    <td>0%</td>
-    <td>paour</td>
-    <td>Pictures can be resized on the client, thus minimizing the bandwidth necessary 
-      for the upload.</td>
-    <td>Default Java resizing quality is not great, and not very flexible. We 
-      may need to use an external app. It may be worth investigating the plug-in 
-      mechanism in G2 for resizing.</td>
   </tr>
   <tr valign="top"> 
     <td>Multi-album upload</td>
@@ -159,16 +169,6 @@ th {
     <td>Pictures can be rotated on the client.</td>
     <td>This can probably be done in Java, since it's not resource-intensive (only 
       for JPEG, though).</td>
-  </tr>
-  <tr valign="top"> 
-    <td>Create album</td>
-    <td>P3</td>
-    <td>0%</td>
-    <td>&nbsp;</td>
-    <td><p>Provide UI to create albums on server.</p>
-      <p>Option to create albums before existing albums, or after.</p></td>
-    <td><p>Would be more elegant in Explorer UI.</p>
-      <p>Needs protocol upgrade</p></td>
   </tr>
   <tr valign="top"> 
     <td>Proxy support</td>
@@ -239,7 +239,7 @@ th {
   <tr valign="top"> 
     <td>Security</td>
     <td>P0</td>
-    <td>0%</td>
+    <td>20%</td>
     <td>tim</td>
     <td>One person needs to be in charge of auditing the security of any protocol 
       change. Maybe we can ask help from Bharrat for this.</td>
@@ -248,7 +248,7 @@ th {
   <tr valign="top"> 
     <td>Modularity</td>
     <td>P1</td>
-    <td>0%</td>
+    <td>20%</td>
     <td>tim</td>
     <td>The remote code is all in one file, and other projects want to use remote 
       functionality, but want a UI or other features. We should see if we can 
@@ -259,7 +259,7 @@ th {
   <tr valign="top"> 
     <td>Protocol versioning</td>
     <td>P1</td>
-    <td>0%</td>
+    <td>80%</td>
     <td>tim</td>
     <td>Make it easy to support protocol versioning. It's probably somewhat in 
       there, but we need to make sure we won't run into trouble when we start 
@@ -269,34 +269,16 @@ th {
   <tr valign="top"> 
     <td>IIS support</td>
     <td>P1</td>
-    <td>0%</td>
-    <td>tim</td>
+    <td>100%</td>
+    <td>paour</td>
     <td>IIS seems to send a slightly different acknowledgement to GR, so login 
       fails. </td>
     <td>Bug <a href="https://sourceforge.net/tracker/?func=detail&aid=602606&group_id=7130&atid=107130">602606</a></td>
   </tr>
   <tr valign="top"> 
-    <td>Album download</td>
-    <td>P2</td>
-    <td>0%</td>
-    <td>tim</td>
-    <td>Expose an interface to allow downloading of picture order, thumbnails 
-      and captions for a given album.</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr valign="top"> 
-    <td>Album order upload</td>
-    <td>P2</td>
-    <td>30%</td>
-    <td>tim</td>
-    <td>Expose an interface to allow remotely changing the order of pictures/sub-albums 
-      in an album.</td>
-    <td>&nbsp;</td>
-  </tr>
-  <tr valign="top"> 
     <td>Picture caption upload</td>
     <td>P2</td>
-    <td>0%</td>
+    <td>100%</td>
     <td>tim</td>
     <td><p>Expose an interface to allow uploading captions for a given picture.</p>
       <p>Right now there is a hack that allows using the filename for the caption: 
@@ -306,21 +288,39 @@ th {
     <td><p>&nbsp;</p></td>
   </tr>
   <tr valign="top"> 
-    <td>Double byte support</td>
+    <td>Create album</td>
     <td>P2</td>
+    <td>0%</td>
+    <td>tim</td>
+    <td>Expose and interface to allow creating albums remotely.</td>
+    <td>Does this mean we also need to handle album security setting, or just 
+      that we only use the default settings?</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Album download</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>tim</td>
+    <td>Expose an interface to allow downloading of picture order, thumbnails 
+      and captions for a given album.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Album order upload</td>
+    <td>P3</td>
+    <td>30%</td>
+    <td>tim</td>
+    <td>Expose an interface to allow remotely changing the order of pictures/sub-albums 
+      in an album.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Double byte support</td>
+    <td>P3</td>
     <td>0%</td>
     <td>&nbsp;</td>
     <td>We need to make sure the protocol can handle double-byte chars.</td>
     <td>Bug <a href="http://sourceforge.net/tracker/?func=detail&aid=480880&group_id=7130&atid=107130">480880</a></td>
-  </tr>
-  <tr valign="top"> 
-    <td>Create album</td>
-    <td>P3</td>
-    <td>0%</td>
-    <td>&nbsp;</td>
-    <td>Expose and interface to allow creating albums remotely.</td>
-    <td>Does this mean we also need to handle album security setting, or just 
-      that we only use the default settings?</td>
   </tr>
   <tr valign="top"> 
     <td>Honor Filename retention</td>
