@@ -162,8 +162,10 @@ public abstract class GalleryComm implements PreferenceNames {
 				HTTPConnection.setProxyServer(hostname, port);
 				
 				if (username != null && username.length() > 0) {
+					String password = p.getBase64Property(PROXY_PASSWORD);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy auth to " + username + ":" + password);
 					AuthorizationInfo.addBasicAuthorization(hostname, port, "",
-							username, p.getBase64Property(PROXY_PASSWORD));
+							username, password);
 				}
 			} else {
 				HTTPConnection.setProxyServer(null, 0);
@@ -216,7 +218,10 @@ public abstract class GalleryComm implements PreferenceNames {
 			if (rspCode >= 300 && rspCode < 400) {
 				// retry, the library will have fixed the URL
 				rsp = mConnection.Post(urlPath);
+				rspCode = rsp.getStatusCode();
 			}
+
+			Log.log(Log.LEVEL_TRACE, MODULE, "tryComm " + urlPath + ": " + rspCode);
 
 			return rspCode == 200;
 		} catch (UnknownHostException uhe) {
