@@ -218,4 +218,7 @@
 
 		<postchangelog/>
 	</target>
+
+    <target name="nightly" depends="zip, installer_macosx"
+        description="Run all the tasks for a nightly build" />
 </project>
