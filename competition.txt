@@ -1,0 +1,35 @@
+Gallery Remote needs an icon and a banner/about box image, and we would like to appeal to the community to design one, so...
+
+
+* WELCOME TO THE GALLERY REMOTE ICON COMPETITION *
+
+
+What we are looking for:
+
+* Icons: 16x16 (small icon), 32x32 (normal icon), 128x128 (Mac OS X icon), in full color, to be used as the executable file icon
+
+* Banner/Splash-screen/about box: any size, use your jugement
+
+* Web Buttons: any standard size
+
+Of course, the more complete proposals will be all the more attractive, but a great proposal that we can adapt ourselves to other uses is fine too. I'm personally biased toward colorful and dynamic, yet legible when it comes to icons and buttons :-)
+
+All submissions will be posted on the community site for visitors to comment on, and will remain there. The winning submission will be used ruthlessly for Gallery Remote and the web site.
+
+To submit a proposal, send it to paour@sourceforge.net.
+
+Thanks for participating!
+
+
+The Gallery Remote team.
+
+
+Details:
+- the competition will run until September 15th 2002 at Midnight (California time)
+- in order to stimulate competing proposals, all submissions will be posted to this community web site and can be viewed by all as they come in
+- submitters can propose multiple proposals each, and can revise them
+- as always in Open Source, drawing inspiration from another author is encouraged; blatantly ripping off someone else's work is not admissible
+- the winner will be determined by the Gallery team, which will itself be heavily influenced by the comments of the community
+- the winning proposal will be used as the icon for Gallery Remote starting with GR 1.0 and will be credited in the Gallery Remote "about box" along with the development team
+- all submissions will remain on the community web site
+- submitting a proposal implies agreeing to having it posted on the site and used in Gallery Remote free of rights, and modified by the Gallery team for the purposes of Gallery Remote and the web site
