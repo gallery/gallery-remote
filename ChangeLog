@@ -1,3 +1,7 @@
+2003-06-16  Pierre-Luc Paour <gallery@paour.com> (1.1-b6)
+
+	* Implemented rotate-before-upload based on jpegtran.
+
 2003-06-16  Pierre-Luc Paour <gallery@paour.com> (1.1-b5)
 
 	* Truncating long URLs in UI to make it nicer when CMS URLs are

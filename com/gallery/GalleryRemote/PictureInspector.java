@@ -243,18 +243,21 @@ public class PictureInspector extends JPanel
 			}
 			setPictures(pictures);
 			mf.repaint();
+			mf.previewFrame.repaint();
 		} else if ( command.equals( "Right" ) ) {
 			for (int i = 0; i < pictures.length; i++) {
 				((Picture) pictures[i]).rotateRight();
 			}
 			setPictures(pictures);
 			mf.repaint();
+			mf.previewFrame.repaint();
 		} else if ( command.equals( "Flip" ) ) {
 			for (int i = 0; i < pictures.length; i++) {
 				((Picture) pictures[i]).flip();
 			}
 			setPictures(pictures);
 			mf.repaint();
+			mf.previewFrame.repaint();
 		}
 	}
 

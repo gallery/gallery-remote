@@ -284,8 +284,7 @@ public class MainFrame extends javax.swing.JFrame
 
 				if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
 					if ( sel != -1 ) {
-						String filename = ( getCurrentAlbum().getPicture( sel ).getSource() ).getPath();
-						previewFrame.displayFile( filename );
+						previewFrame.displayFile( getCurrentAlbum().getPicture( sel ) );
 					} else {
 						previewFrame.displayFile( null );
 					}
@@ -697,41 +696,7 @@ public class MainFrame extends javax.swing.JFrame
 	public ImageIcon getThumbnail( Picture p ) {
 		ImageIcon thumb = getThumbnail( p.getSource().getPath() );
 
-		if (p.getAngle() != 0 || p.isFlipped()) {
-			int width;
-			int height;
-			int width1;
-			int height1;
-
-			width = thumb.getImage().getWidth(this);
-			height = thumb.getImage().getHeight(this);
-
-			if (p.getAngle() % 2 == 0) {
-				width1 = width;
-				height1 = height;
-			} else {
-				width1 = height;
-				height1 = width;
-			}
-
-			Image vImg = getGlassPane().createImage(width1, height1);
-
-			Graphics2D g = (Graphics2D) vImg.getGraphics();
-
-			AffineTransform transform = AffineTransform.getTranslateInstance(width / 2, height / 2);
-			if (p.getAngle() != 0) {
-				transform.rotate(p.getAngle() * Math.PI / 2);
-			}
-			if (p.isFlipped()) {
-				transform.scale(-1, 1);
-			}
-			transform.translate(-width1 / 2 - (p.getAngle() == 3?width - width1:0) + (p.isFlipped()?width - width1:0) * (p.getAngle() == 1?-1:1),
-					-height1 / 2 - (p.getAngle() == 1?height - height1:0));
-
-			g.drawImage(thumb.getImage(), transform, this);
-
-			thumb = new ImageIcon(vImg);
-		}
+		thumb = ImageUtils.rotateImageIcon(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
 
 		return thumb;
 	}

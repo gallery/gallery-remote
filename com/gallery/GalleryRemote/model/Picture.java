@@ -132,6 +132,8 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 *@return    The source value
 	 */
     public File getUploadSource() {
+		File picture = getSource();
+
 		if ( GalleryRemote.getInstance().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD) ) {
 			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO);
 			
@@ -151,25 +153,27 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 				}
 			}
 
-			File picture = null;
 
 			if ( d != null ) {
 				try {
-					picture = ImageUtils.resize( getSource().getPath(), d );
+					picture = ImageUtils.resize( picture.getPath(), d );
 				} catch (UnsupportedOperationException e) {
 					Log.log(Log.ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
 					Log.logException(Log.ERROR, MODULE, e);
 				}
 			}
-
-			if (picture == null) {
-				picture = getSource();
-			}
-
-			return picture;
-		} else {
-			return getSource();
 		}
+
+		if (angle != 0 || flipped) {
+			try {
+				picture = ImageUtils.rotate( picture.getPath(), angle, flipped );
+			} catch (UnsupportedOperationException e) {
+				Log.log(Log.ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
+				Log.logException(Log.ERROR, MODULE, e);
+			}
+		}
+
+		return picture;
 	}
 	
     /**
