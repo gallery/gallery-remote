@@ -1,0 +1,5 @@
+# should jpegtran support be enabled?
+enabled=true
+
+# path to the executable (must be a fully-qualified path)
+jpegtranPath=jpegtran
