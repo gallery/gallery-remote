@@ -25,6 +25,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import com.gallery.GalleryRemote.*;
+
 /**
  *  Album model
  *
@@ -34,6 +36,8 @@ import javax.swing.event.*;
 
 public class Album extends Picture implements ListModel
 {
+	public static final String MODULE="Album";
+	
 	Vector pictures = new Vector();
 	String name = "Not yet connected to Gallery";
 	String url;
@@ -44,7 +48,6 @@ public class Album extends Picture implements ListModel
 
 	// ListModel
 	Vector listeners = new Vector( 1 );
-
 
 	/**
 	 *  Sets the gallery attribute of the Album object
@@ -158,7 +161,8 @@ public class Album extends Picture implements ListModel
 	public void removePicture( int n ) {
 		pictures.remove( n );
 
-		notifyListeners();
+		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, n, n );
+		notifyListeners(lde);
 	}
 
 
@@ -168,11 +172,17 @@ public class Album extends Picture implements ListModel
 	 *@param  indices  list of indices of pictures to remove
 	 */
 	public void removePictures( int[] indices ) {
+		int min, max;
+		min = max = indices[0];
+		
 		for ( int i = indices.length - 1; i >= 0; i-- ) {
 			pictures.remove( indices[i] );
+			if (indices[i] > max) max = indices[i];
+			if (indices[i] < min) min = indices[i];
 		}
 
-		notifyListeners();
+		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, min, max );
+		notifyListeners(lde);
 	}
 
 
@@ -325,13 +335,19 @@ public class Album extends Picture implements ListModel
 
 
 	void notifyListeners() {
-		pictureFileSize = -1;
-
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, pictures.size() );
-
+		
+		notifyListeners(lde);
+	}
+	
+	void notifyListeners(ListDataEvent lde) {
+		pictureFileSize = -1;
+		
+		Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
 		Enumeration e = listeners.elements();
 		while ( e.hasMoreElements() ) {
-			( (ListDataListener) e.nextElement() ).contentsChanged( lde );
+			ListDataListener ldl = (ListDataListener) e.nextElement();
+			ldl.contentsChanged( lde );
 		}
 	}
 }
