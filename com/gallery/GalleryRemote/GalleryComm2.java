@@ -959,7 +959,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		void runTask() {
-			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo"));
+			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo", new String[] { a.toString() }));
 
 			try {
 				// setup the protocol parameters

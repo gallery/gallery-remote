@@ -174,6 +174,9 @@ public abstract class GalleryRemote {
 		System.setProperty("apple.awt.showGrowBox", "false");
 		System.setProperty("apple.awt.brushMetalLook", "true");
 
+		// fix buggy Swing Windows XP lookup code
+		System.setProperty("swing.noxp", "true");
+
 		// todo: this should not remain this way
 		//System.setProperty("apple.awt.fakefullscreen", "true");
 	}
