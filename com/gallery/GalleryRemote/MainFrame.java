@@ -257,6 +257,27 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 	private void shutdown(boolean halt, boolean shutdownOs) {
+		// check that we don't have galleries with data
+		if (!shutdownOs) {
+			boolean hasGalleryWithData = false;
+
+			for (int i = 0; i < galleries.getSize(); i++) {
+				Gallery g = (Gallery) galleries.getElementAt(i);
+
+				if (g.hasPictures()) {
+					hasGalleryWithData = true;
+					break;
+				}
+			}
+
+			if (hasGalleryWithData) {
+				if (JOptionPane.showConfirmDialog((JFrame) this, grRes.getString(MODULE, "quitQuestion"),
+						"Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+					return;
+				}
+			}
+		}
+
 		if (running) {
 			running = false;
 

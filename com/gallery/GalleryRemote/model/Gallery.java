@@ -28,6 +28,7 @@ import java.io.Serializable;
 import javax.swing.*;
 
 import com.gallery.GalleryRemote.*;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
@@ -57,6 +58,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	transient StatusUpdate su;
 	transient private int prefsIndex;
+	transient private Boolean ambiguousUrl;
+	transient private boolean blockWrites = false;
 
 	public static String types[] = new String[] {STANDALONE, POSTNUKE, PHPNUKE};
 	public static final int TYPE_STANDALONE = 0;
@@ -65,11 +68,15 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public static final int TOSTRING_MAXLEN = 40;
 
+	public static GRI18n grRes = GRI18n.getInstance();
+
 	public Gallery(StatusUpdate su) {
 		this.su = su;
 
-		if (su instanceof MainFrame) {
-			prefsIndex = ((MainFrame) su).galleries.getSize();
+		// when loading from prefs, galleries not yet create. No matter: in that case, the
+		// prefsIndex is forced.
+		if (GalleryRemote.getInstance().mainFrame != null) {
+			prefsIndex = GalleryRemote.getInstance().mainFrame.galleries.getSize();
 		}
 	}
 
@@ -101,14 +108,25 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public void logOut() {
-		albumList = null;
-		selectedAlbum = null;
-		if (comm != null) {
-			comm.logOut();
-		}
-		comm = null;
+		boolean logout = true;
 
-		notifyListeners();
+		if (hasPictures()) {
+			if (JOptionPane.showConfirmDialog(null, grRes.getString(MODULE, "logoutQuestion"),
+					grRes.getString(MODULE, "logoutQuestion.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+				logout = false;
+			}
+		}
+
+		if (logout) {
+			albumList = null;
+			selectedAlbum = null;
+			if (comm != null) {
+				comm.logOut();
+			}
+			comm = null;
+
+			notifyListeners();
+		}
 	}
 
 	/*
@@ -211,6 +229,34 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		return files;
 	}
 
+	public int countAllPictures() {
+		int c = 0;
+
+		if (albumList != null) {
+			Iterator i = albumList.iterator();
+			while (i.hasNext()) {
+				Album a = (Album) i.next();
+
+				c += a.getSize();
+			}
+		}
+
+		return c;
+	}
+
+	public boolean hasPictures() {
+		if (albumList != null) {
+			Iterator i = albumList.iterator();
+			while (i.hasNext()) {
+				Album a = (Album) i.next();
+				if (a.getSize() > 0) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 
 	/*
 	* **** Gallery URL management ****
@@ -243,7 +289,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		stUrlString = reformatUrlString( urlString, true );
 
-		if (stUrlString != null) {
+		if (!blockWrites && stUrlString != null) {
 			GalleryRemote.getInstance().properties.setProperty(URL + prefsIndex, stUrlString);
 		}
 	}
@@ -267,7 +313,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		pnGalleryUrlString = reformatUrlString( urlString, false );
 
-		if (pnGalleryUrlString != null) {
+		if (!blockWrites && pnGalleryUrlString != null) {
 			GalleryRemote.getInstance().properties.setProperty(PN_GALLERY_URL + prefsIndex, pnGalleryUrlString);
 		}
 	}
@@ -291,7 +337,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		pnLoginUrlString = reformatUrlString( urlString, false );
 
-		if (pnLoginUrlString != null) {
+		if (!blockWrites && pnLoginUrlString != null) {
 			GalleryRemote.getInstance().properties.setProperty(PN_LOGIN_URL + prefsIndex, pnLoginUrlString);
 		}
 	}
@@ -315,7 +361,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		phpnGalleryUrlString = reformatUrlString( urlString, false );
 
-		if (phpnGalleryUrlString != null) {
+		if (!blockWrites && phpnGalleryUrlString != null) {
 			GalleryRemote.getInstance().properties.setProperty(PHPN_GALLERY_URL + prefsIndex, phpnGalleryUrlString);
 		}
 	}
@@ -339,7 +385,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		phpnLoginUrlString = reformatUrlString( urlString, false );
 
-		if (phpnLoginUrlString != null) {
+		if (!blockWrites && phpnLoginUrlString != null) {
 			GalleryRemote.getInstance().properties.setProperty(PHPN_LOGIN_URL + prefsIndex, phpnLoginUrlString);
 		}
 	}
@@ -430,29 +476,33 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public void setUsername( String username ) {
 		if ( /*username != null && username.length() > 0
-				&&*/ ! username.equals( this.username ) ) {
+		&&*/ ! username.equals( this.username ) ) {
 
 			this.username = username;
 
 			logOut();
 
-			GalleryRemote.getInstance().properties.setProperty(USERNAME + prefsIndex, username);
+			if (!blockWrites) {
+				GalleryRemote.getInstance().properties.setProperty(USERNAME + prefsIndex, username);
+			}
 		}
 	}
 
 	public void setPassword( String password ) {
 		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
 		if ( /*password != null && password.length() > 0
-				&&*/ ! password.equals( this.password ) ) {
+		&&*/ ! password.equals( this.password ) ) {
 
 			this.password = password;
 
 			logOut();
 
-			if (GalleryRemote.getInstance().properties.getBooleanProperty(SAVE_PASSWORDS)) {
-				GalleryRemote.getInstance().properties.setBase64Property(PASSWORD + prefsIndex, password);
-			} else {
-				GalleryRemote.getInstance().properties.remove(PASSWORD + prefsIndex);
+			if (!blockWrites) {
+				if (GalleryRemote.getInstance().properties.getBooleanProperty(SAVE_PASSWORDS)) {
+					GalleryRemote.getInstance().properties.setBase64Property(PASSWORD + prefsIndex, password);
+				} else {
+					GalleryRemote.getInstance().properties.remove(PASSWORD + prefsIndex);
+				}
 			}
 		}
 	}
@@ -460,7 +510,9 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public void setType(int type) {
 		this.type = type;
 
-		GalleryRemote.getInstance().properties.setProperty(TYPE + prefsIndex, types[type]);
+		if (!blockWrites) {
+			GalleryRemote.getInstance().properties.setProperty(TYPE + prefsIndex, types[type]);
+		}
 	}
 
 	public String getUsername() {
@@ -497,6 +549,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		Log.log(Log.LEVEL_INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)" );
 
 		Gallery g = new Gallery(su);
+		g.setBlockWrites(true);
 		g.username = username;
 		g.password = password;
 		g.setStUrlString(url);
@@ -507,13 +560,17 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		g.setPhpnLoginUrlString(p.getProperty(PHPN_LOGIN_URL + prefsIndex));
 		g.setPhpnGalleryUrlString(p.getProperty(PHPN_GALLERY_URL + prefsIndex));
 
-		g.setPrefsIndex(prefsIndex);
-
 		String typeS = p.getProperty( TYPE + prefsIndex );
 		if (typeS != null) {
-			g.setType(Arrays.asList(types).indexOf(typeS));
+			int type = Arrays.asList(types).indexOf(typeS);
+			if (type != -1) {
+				g.setType(type);
+			}
 		}
 
+		g.setPrefsIndex(prefsIndex);
+
+		g.setBlockWrites(false);
 		return g;
 	}
 
@@ -562,6 +619,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public String toString() {
+		return toString(true);
+	}
+
+	public String toString(boolean disambiguate) {
 		String tmp = null;
 
 		switch (type) {
@@ -585,11 +646,51 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			tmp = "http://";
 		}
 
+		if (disambiguate && isAmbiguousUrl()) {
+			if (username == null || username.length() == 0) {
+				tmp += "[username not set]";
+			} else {
+				tmp += " [" + username + "]";
+			}
+		}
+
 		if (tmp.length() > TOSTRING_MAXLEN) {
 			tmp = tmp.substring(0, TOSTRING_MAXLEN) + "...";
 		}
 
 		return tmp;
+	}
+
+	public boolean isAmbiguousUrl() {
+		if (ambiguousUrl == null) {
+			DefaultComboBoxModel galleries = GalleryRemote.getInstance().mainFrame.galleries;
+			String myUrl = toString(false);
+
+			for (int i = 0; i < galleries.getSize(); i++) {
+				Gallery g = (Gallery) galleries.getElementAt(i);
+
+				if (g != this && myUrl.equals(g.toString(false))) {
+					ambiguousUrl = new Boolean(true);
+					break;
+				}
+			}
+
+			if (ambiguousUrl == null) {
+				ambiguousUrl = new Boolean(false);
+			}
+		}
+
+		return ambiguousUrl.booleanValue();
+	}
+
+	public static void uncacheAmbiguousUrl() {
+		DefaultComboBoxModel galleries = GalleryRemote.getInstance().mainFrame.galleries;
+
+		for (int i = 0; i < galleries.getSize(); i++) {
+			Gallery g = (Gallery) galleries.getElementAt(i);
+
+			g.ambiguousUrl = null;
+		}
 	}
 
 	public Album getSelectedAlbum() {
@@ -684,14 +785,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		return null;
 	}
 
-//	void notifyListeners(ListDataEvent lde) {
-//		if (listeners != null) {
-//			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
-//			Enumeration e = listeners.elements();
-//			while ( e.hasMoreElements() ) {
-//				ListDataListener ldl = (ListDataListener) e.nextElement();
-//				ldl.contentsChanged( lde );
-//			}
-//		}
-//	}
+	private void setBlockWrites(boolean blockWrites) {
+		this.blockWrites = blockWrites;
+	}
 }

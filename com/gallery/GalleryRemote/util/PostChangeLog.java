@@ -2,8 +2,6 @@ package com.gallery.GalleryRemote.util;
 
 import org.apache.tools.ant.BuildException;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
-import com.gallery.GalleryRemote.prefs.PreferenceNames;
-import com.gallery.GalleryRemote.GalleryComm2;
 import com.gallery.GalleryRemote.GalleryComm;
 
 import java.util.regex.Matcher;

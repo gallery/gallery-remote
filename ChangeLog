@@ -1,3 +1,14 @@
+2003-10-30  Pierre-Luc Paour <gallery@paour.com> (1.2-b12)
+
+	* Added warning when logging out or quitting and pictures are left in
+	  a gallery, so no data is lost.
+	* Updated bundled ImageMagick (windows only) to 5.5.7, added lib needed
+	  for PNG images.
+	* Fixed URL preferences getting lost.
+	* Added disambiguation when 2 URLs for the same Gallery, but with different
+	  usernames are present.
+	* Fixed Quick Config losing the gallery type.
+
 2003-10-09  Pierre-Luc Paour <gallery@paour.com> (1.2-b11)
 
 	* Implemented patching mechanism for LAX file when the classpath

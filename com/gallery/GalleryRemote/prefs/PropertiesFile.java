@@ -160,9 +160,10 @@ public class PropertiesFile extends GalleryProperties
 				}
 
 				load( fileIn );
+			} catch (FileNotFoundException fnf) {
+				throw fnf;
 			} catch ( IOException e ) {
-				//e.printStackTrace();
-				//write();
+				// Todo: what should happen here?
 			} finally {
 				try {
 					fileIn.close();
@@ -195,9 +196,9 @@ public class PropertiesFile extends GalleryProperties
 				} catch ( NullPointerException e3 ) {
 				}
 			}
-		}
 
-		written = true;
+			written = true;
+		}
 	}
 
 	/**

@@ -111,6 +111,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				int i = mainFrame.galleries.getIndexOf(g);
 				mainFrame.galleries.removeElementAt(i);
 				mainFrame.galleries.insertElementAt(g, i);
+
+				Gallery.uncacheAmbiguousUrl();
 			}
 		} else if (cmd.equals("New")) {
 			Gallery newG = new Gallery(mainFrame.jStatusBar);
@@ -119,6 +121,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			if (ged.isOK()) {
 				mainFrame.galleries.addElement(newG);
 				jGalleries.setSelectedValue(newG, true);
+
+				Gallery.uncacheAmbiguousUrl();
 
 				resetUIState();
 			}
@@ -131,6 +135,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 
 			if (n == JOptionPane.YES_OPTION) {
 				mainFrame.removeGallery(g);
+
+				Gallery.uncacheAmbiguousUrl();
 			}
 		} else if (cmd.equals("GalleryEditorDialog")) {
 			Gallery newG = (Gallery) e.getSource();
@@ -140,6 +146,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				jGalleries.setSelectedValue(newG, true);
 			}
 
+			Gallery.uncacheAmbiguousUrl();
 			resetUIState();
 		} else {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Unknown command: " + cmd);
