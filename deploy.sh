@@ -1,4 +1,4 @@
-./make.sh cvsbuild;
+. make.sh cvsbuild;
 
 version=`grep version= defaults.properties | awk -F= '{print $2}'`;
 echo $version;
