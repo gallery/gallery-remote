@@ -308,7 +308,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			Object[] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "logIn", params));
 
-			if (g.getType() != Gallery.TYPE_STANDALONE) {
+			if (g.getType() != Gallery.TYPE_STANDALONE && g.getType() != Gallery.TYPE_APPLET) {
 				try {
 					requestResponse(null, null, g.getLoginUrl(scriptName), false, su);
 				} catch (IOException ioe) {

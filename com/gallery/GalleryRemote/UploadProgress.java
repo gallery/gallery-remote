@@ -210,7 +210,9 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		final ActionEvent fe = e;
 		new Thread() {
 			public void run() {
-				cancelListener.actionPerformed(fe);
+				if (cancelListener != null) {
+					cancelListener.actionPerformed(fe);
+				}
 			}
 		}.start();
 	}

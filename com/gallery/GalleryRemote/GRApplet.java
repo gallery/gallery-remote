@@ -88,8 +88,10 @@ public class GRApplet extends JApplet {
 		AppletInfo info = new AppletInfo();
 
 		info.gallery = new Gallery(GalleryRemote._().getCore().getMainStatusUpdate());
+		info.gallery.setBlockWrites(true);
 
 		String url = getParameter("gr_url");
+		String urlFull = getParameter("gr_url_full");
 		String cookieName = getParameter("gr_cookie_name");
 		String cookieValue = getParameter("gr_cookie_value");
 		String cookieDomain = getParameter("gr_cookie_domain");
@@ -97,12 +99,13 @@ public class GRApplet extends JApplet {
 
 		info.albumName = getParameter("gr_album");
 
-		Log.log(Log.LEVEL_TRACE, MODULE, "Applet parameters: ");
-		Log.log(Log.LEVEL_TRACE, MODULE, "gr_url: " + url);
-		Log.log(Log.LEVEL_TRACE, MODULE, "gr_cookie_name: " + cookieName);
-		Log.log(Log.LEVEL_TRACE, MODULE, "gr_cookie_domain: " + cookieDomain);
-		Log.log(Log.LEVEL_TRACE, MODULE, "gr_cookie_path: " + cookiePath);
-		Log.log(Log.LEVEL_TRACE, MODULE, "gr_album: " + info.albumName);
+		Log.log(Log.LEVEL_INFO, MODULE, "Applet parameters:");
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_url:" + url);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_url_full:" + urlFull);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_name:" + cookieName);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain:" + cookieDomain);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path:" + cookiePath);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_album:" + info.albumName);
 
 		if (cookieDomain == null || cookieDomain.length() < 1) {
 			try {
@@ -118,14 +121,40 @@ public class GRApplet extends JApplet {
 				try {
 					url = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
 							url).toString();
+
+					if (urlFull != null) {
+					}
 				} catch (MalformedURLException e1) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 				}
 			}
 		}
 
-		info.gallery.setType(Gallery.TYPE_STANDALONE);
-		info.gallery.setStUrlString(url);
+		if (urlFull != null) {
+			try {
+				URL documentBase = getDocumentBase();
+				String path = documentBase.getPath();
+				int i = path.lastIndexOf("/");
+				if (i != -1) {
+					path = path.substring(0, i);
+				}
+				urlFull = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
+						path + "/" + urlFull).toString();
+				info.gallery.setType(Gallery.TYPE_APPLET);
+				info.gallery.setApUrlString(urlFull);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
+			} catch (MalformedURLException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				urlFull = null;
+			}
+		}
+
+		if (urlFull == null) {
+			// old versions of Gallery, or bad urlFull
+			info.gallery.setType(Gallery.TYPE_STANDALONE);
+			info.gallery.setStUrlString(url);
+		}
+
 		info.gallery.cookieLogin = true;
 
 		CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));

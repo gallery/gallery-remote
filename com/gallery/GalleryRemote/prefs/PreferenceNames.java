@@ -40,6 +40,7 @@ public interface PreferenceNames {
 	public static final String POSTNUKE = "PostNuke";
 	public static final String PHPNUKE = "PHPNuke";
 	public static final String GEEKLOG = "GeekLog";
+	public static final String APPLET = "Applet";
 	public static final String PN_GALLERY_URL = "pnGalleryUrl.";
 	public static final String PN_LOGIN_URL = "pnLoginUrl.";
 	public static final String PHPN_GALLERY_URL = "phpnGalleryUrl.";
@@ -74,4 +75,8 @@ public interface PreferenceNames {
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
 	public static final String SUPPRESS_WARNING_JPEGTRAN_CROP = "suppressWarningJpegtranCrop";
 	public static final String SUPPRESS_WARNING_CORRUPTED = "suppressWarningCorrupted";
+
+	// Applet
+	public static final String APPLET_SHOW_RESIZE = "appletShowResize";
+	public static final String APPLET_DIVIDER_LOCATION = "appletDividerLocation";
 }

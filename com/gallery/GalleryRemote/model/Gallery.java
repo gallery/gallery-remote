@@ -79,6 +79,8 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public static final int TYPE_PHPNUKE = 2;
 	public static final int TYPE_GEEKLOG = 3;
 
+	public static final int TYPE_APPLET = 99;
+
 	public static final int TOSTRING_MAXLEN = 40;
 
 	public Gallery(StatusUpdate su) {
@@ -564,6 +566,12 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		}
 	}
 
+	/* Applet URL */
+
+	public void setApUrlString(String urlString) {
+		stUrlString = urlString;
+	}
+
 	/* Generic */
 
 	public URL getLoginUrl(String galleryFile) {
@@ -580,6 +588,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 				case TYPE_GEEKLOG:
 					return new URL(replace(glLoginUrlString, galleryFile));
+
+				case TYPE_APPLET:
+					return new URL(stUrlString);
 
 				default:
 					throw new RuntimeException("Unknown type: " + type);
@@ -608,13 +619,16 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 				case TYPE_GEEKLOG:
 					return new URL(replace(glGalleryUrlString, galleryFile));
 
+				case TYPE_APPLET:
+					return new URL(stUrlString);
+
 				default:
 					throw new RuntimeException("Unknown type: " + type);
 			}
 		} catch (MalformedURLException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Malformed URL.");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			JOptionPane.showMessageDialog((JFrame) su, "Malformed URL (" + e.getMessage() + ")",
+			JOptionPane.showMessageDialog((Component) su, "Malformed URL (" + e.getMessage() + ")",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
@@ -851,6 +865,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 				tmp = glGalleryUrlString;
 				break;
 
+			case TYPE_APPLET:
+				tmp = stUrlString;
+				break;
+
 			default:
 				throw new RuntimeException("Unknown type: " + type);
 		}
@@ -1049,7 +1067,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		return null;
 	}
 
-	private void setBlockWrites(boolean blockWrites) {
+	public void setBlockWrites(boolean blockWrites) {
 		this.blockWrites = blockWrites;
 	}
 

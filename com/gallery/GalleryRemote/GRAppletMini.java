@@ -44,11 +44,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	StatusBar jStatusBar;
 	JScrollPane jScrollPane;
 	DroppableList jPicturesList;
-	JPanel jContentPanel;
+	//JPanel jContentPanel;
 	JCheckBox jResize;
 	JPanel jInspector;
 	JLabel captionLabel;
 	JTextArea jCaption;
+	JSplitPane jDivider;
 
 	DefaultComboBoxModel galleries = null;
 	Album album = null;
@@ -104,6 +105,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 	public void shutdown() {
 		if (hasStarted) {
+			GalleryRemote._().properties.setIntProperty(APPLET_DIVIDER_LOCATION, jDivider.getDividerLocation());
 			GalleryRemote._().properties.write();
 			GalleryRemote.shutdownInstance();
 		}
@@ -174,11 +176,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jStatusBar = new StatusBar(75);
 		jScrollPane = new JScrollPane();
 		jPicturesList = new DroppableList();
-		jContentPanel = new JPanel(new GridBagLayout());
+		//jContentPanel = new JPanel(new GridBagLayout());
 		jResize = new JCheckBox();
 		jInspector = new JPanel(new GridBagLayout());
 		captionLabel = new JLabel();
 		jCaption = new JTextArea();
+		jDivider = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
 		jScrollPane.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "pictures")));
 
@@ -201,25 +204,34 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jCaption.setFont(UIManager.getFont("Label.font"));
 		jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 
-		jContentPanel.add(jScrollPane,           new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		jContentPanel.add(jResize,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
-		jContentPanel.add(jInspector,   new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+		jDivider.setBorder(null);
+		jDivider.setOneTouchExpandable(true);
+		//jDivider.setResizeWeight(.75);
+		jDivider.setDividerLocation(GalleryRemote._().properties.getIntProperty(APPLET_DIVIDER_LOCATION));
 
-		jInspector.add(captionLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jInspector.add(jCaption,    new GridBagConstraints(0, 1, 1, 1, 0.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jScrollPane.setMinimumSize(new Dimension(100, 0));
+		jInspector.setMinimumSize(new Dimension(0, 0));
+		jDivider.setLeftComponent(jScrollPane);
+		jDivider.setRightComponent(jInspector);
+//		jContentPanel.add(jScrollPane,           new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+//            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+//		jContentPanel.add(jInspector,   new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0
+//				,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+
+		jInspector.add(captionLabel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
+		jInspector.add(jCaption,    new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
 
 		this.getContentPane().setLayout(new GridBagLayout());
-		this.getContentPane().add(jButtonPanel,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		this.getContentPane().add(jDivider,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.getContentPane().add(jResize,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
+		this.getContentPane().add(jButtonPanel,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		this.getContentPane().add(jStatusBar,      new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
+		this.getContentPane().add(jStatusBar,      new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		this.getContentPane().add(jContentPanel,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 
 		jAdd.addActionListener(this);
 		jUpload.addActionListener(this);

@@ -1,6 +1,14 @@
+2004-05-11  Pierre-Luc Paour <gallery@paour.com> (1.4-b10)
+
+	* Fixed upload (and slideshow) applets when Gallery is embedded in a CMS.
+	* Applets now attempt to use the same language as the Gallery (GR language
+	  support is sorely lacking at the moment).
+	* Cleaned up UI of upload applet, added config parameters for showing
+	  Resize before upload and divider location.
+
 2004-05-07  Pierre-Luc Paour <gallery@paour.com> (1.4-b9)
 
-	* Fixed a slowdown when moving pas many pictures in slideshow.
+	* Fixed a slowdown when moving past many pictures in slideshow.
 
 2004-05-07  Pierre-Luc Paour <gallery@paour.com> (1.4-b8)
 
@@ -44,7 +52,7 @@
 
 2004-04-20  Pierre-Luc Paour <gallery@paour.com> (1.4-b4)
 
-	* Added German translation, courtesy of Hubert Baumgartner.
+	* Added German translation, by Hubert Baumgartner (extremely incomplete).
 
 2004-04-20  Pierre-Luc Paour <gallery@paour.com> (1.4-b3)
 
