@@ -182,6 +182,9 @@ public class DroppableList
 			Point dropLocation = dropTargetDropEvent.getLocation();
 			int listIndex = snapIndex((int) dropLocation.getY());
 
+			//Log.log(Log.LEVEL_TRACE, MODULE, "listIndex: " + listIndex + " size: " + getModel().getSize());
+			boolean endOfList = (listIndex >= getModel().getSize());
+
 			if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
 				List fileList = (List)
 						tr.getTransferData(DataFlavor.javaFileListFlavor);
@@ -212,6 +215,10 @@ public class DroppableList
 			}
 
 			dropTargetDropEvent.getDropTargetContext().dropComplete(true);
+
+			if (endOfList && getModel().getSize() > 0) {
+				ensureIndexIsVisible(getModel().getSize() - 1);
+			}
 		} catch (IOException io) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, io);
 			dropTargetDropEvent.getDropTargetContext().dropComplete(false);

@@ -353,9 +353,13 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 	class CropGlassPane extends JComponent implements MouseListener, MouseMotionListener {
 		Color background = new Color(100, 100, 100, 150);
 		boolean inDrag;
-		Point2D start = null, end = null;
+		Point2D start = null, end = null, moveCropStart = null;
 		Rectangle oldRect = null;
+		Rectangle cacheRect = null;
 		boolean centerMode = false;
+
+		int movingEdge = 0;  // use SwingConstants
+		public static final int TOLERANCE = 5;
 
 		public CropGlassPane() {
 			addMouseListener(this);
@@ -366,6 +370,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			oldRect = null;
 
 			if (currentPicture == null || currentImage == null || currentPicture.isOnline()) {
+				cacheRect = null;
 				return;
 			}
 
@@ -374,26 +379,32 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 				if (ct != null) {
 					AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, currentPicture.getDimension(), currentPicture.getAngle(), currentPicture.isFlipped());
 
-					Rectangle r = null;
 					try {
-						r = getRect(t.inverseTransform(ct.getLocation(), null),
+						cacheRect = getRect(t.inverseTransform(ct.getLocation(), null),
 								t.inverseTransform(new Point(ct.x + ct.width, ct.y + ct.height), null));
 
 						g.setColor(background);
 						g.setClip(imageRect);
-						g.fillRect(0, 0, r.x, getHeight());
-						g.fillRect(r.x, 0, getWidth() - r.x, r.y);
-						g.fillRect(r.x, r.y + r.height, getWidth() - r.x, getHeight() - r.y - r.height);
-						g.fillRect(r.x + r.width, r.y, getWidth() - r.x - r.width, r.height);
+						g.fillRect(0, 0, cacheRect.x, getHeight());
+						g.fillRect(cacheRect.x, 0, getWidth() - cacheRect.x, cacheRect.y);
+						g.fillRect(cacheRect.x, cacheRect.y + cacheRect.height, getWidth() - cacheRect.x, getHeight() - cacheRect.y - cacheRect.height);
+						g.fillRect(cacheRect.x + cacheRect.width, cacheRect.y, getWidth() - cacheRect.x - cacheRect.width, cacheRect.height);
 
 						g.setColor(Color.black);
-						g.drawRect(r.x,  r.y, r.width, r.height);
+						g.drawRect(cacheRect.x,  cacheRect.y, cacheRect.width, cacheRect.height);
 
 						g.setClip(null);
 					} catch (NoninvertibleTransformException e) {
 						Log.logException(Log.LEVEL_ERROR, MODULE, e);
 					}
+				} else {
+					if (movingEdge == 0) {
+						// only blank the cacheRect if we're not busy modifying it
+						cacheRect = null;
+					}
 				}
+			} else {
+				cacheRect = null;
 			}
 
 			paintInfo(g);
@@ -410,7 +421,11 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 					message = GRI18n.getString(MODULE, "crop");
 				}
 			} else {
-				message = GRI18n.getString(MODULE, "inCrop");;
+				if (movingEdge == 0) {
+					message = GRI18n.getString(MODULE, "inCrop");
+				} else {
+					message = GRI18n.getString(MODULE, "inModify");
+				}
 			}
 
 			g.setFont(g.getFont());
@@ -452,7 +467,37 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 			inDrag = true;
 
-			start = validate(e.getPoint());
+			switch (movingEdge) {
+				case SwingConstants.TOP:
+					// keep bottom-right
+					start = validate(new Point(cacheRect.x + cacheRect.width, cacheRect.y + cacheRect.height));
+					break;
+
+				case SwingConstants.BOTTOM:
+					// keep top-left
+					start = validate(new Point(cacheRect.x, cacheRect.y));
+					break;
+
+				case SwingConstants.LEFT:
+					// keep bottom-right
+					start = validate(new Point(cacheRect.x + cacheRect.width, cacheRect.y + cacheRect.height));
+					break;
+
+				case SwingConstants.RIGHT:
+					// keep top-left
+					start = validate(new Point(cacheRect.x, cacheRect.y));
+					break;
+
+				case 5:
+					// moving: just remember start for offset
+					moveCropStart = validate(e.getPoint());
+					break;
+
+				default:
+					// new rectangle
+					start = validate(e.getPoint());
+					break;
+			}
 
 			currentPicture.setCropTo(null);
 			repaint();
@@ -474,6 +519,8 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 					t.transform(new Point(oldRect.x + oldRect.width, oldRect.y + oldRect.height), null));
 			currentPicture.setCropTo(tmpRect);
 
+			setCursor(Cursor.getDefaultCursor());
+
 			repaint();
 		}
 
@@ -482,9 +529,45 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 				return;
 			}
 
-			Point2D p = validate(e.getPoint());
-
 			int modifiers = e.getModifiersEx();
+
+			Point2D p;
+			switch (movingEdge) {
+				case SwingConstants.TOP:
+					p = validate(new Point(cacheRect.x, (int) (e.getPoint().getY())));
+					modifiers = 0;
+					break;
+
+				case SwingConstants.BOTTOM:
+					p = validate(new Point(cacheRect.x + cacheRect.width, (int) (e.getPoint().getY())));
+					modifiers = 0;
+					break;
+
+				case SwingConstants.LEFT:
+					p = validate(new Point((int) (e.getPoint().getX()), cacheRect.y));
+					modifiers = 0;
+					break;
+
+				case SwingConstants.RIGHT:
+					p = validate(new Point((int) (e.getPoint().getX()), cacheRect.y + cacheRect.height));
+					modifiers = 0;
+					break;
+
+				case 5:
+					double dx = e.getPoint().getX() - moveCropStart.getX();
+					double dy = e.getPoint().getY() - moveCropStart.getY();
+
+					start = validate(new Point((int) (cacheRect.x + dx), (int) (cacheRect.y + dy)));
+					p = new Point((int) (cacheRect.x + cacheRect.width + dx), (int) (cacheRect.y + cacheRect.height + dy));
+					modifiers = 0;
+					break;
+
+				default:
+					// new rectangle
+					p = validate(e.getPoint());
+					break;
+			}
+
 			double px = p.getX();
 			double py = p.getY();
 			if ((modifiers & InputEvent.SHIFT_DOWN_MASK) == InputEvent.SHIFT_DOWN_MASK) {
@@ -530,7 +613,52 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			updateRect();
 		}
 
-		public void mouseMoved(MouseEvent e) {}
+		public void mouseMoved(MouseEvent e) {
+			if (currentPicture == null || currentImage == null || currentPicture.isOnline() || cacheRect == null) {
+				return;
+			}
+
+			double px = e.getPoint().getX();
+			double py = e.getPoint().getY();
+
+			boolean canMove = false;
+
+			if (px >= cacheRect.x + TOLERANCE && px <= cacheRect.x + cacheRect.width - TOLERANCE) {
+				if (Math.abs(py - cacheRect.y) < TOLERANCE) {
+					movingEdge = SwingConstants.TOP;
+					setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+					canMove = true;
+				} else if (Math.abs(py - cacheRect.y - cacheRect.height) < TOLERANCE) {
+					movingEdge = SwingConstants.BOTTOM;
+					setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+					canMove = true;
+				}
+			}
+
+			if (py >= cacheRect.y + TOLERANCE && py <= cacheRect.y + cacheRect.height - TOLERANCE) {
+				if (Math.abs(px - cacheRect.x) < TOLERANCE) {
+					movingEdge = SwingConstants.LEFT;
+					setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+					canMove = true;
+				} else if (Math.abs(px - cacheRect.x - cacheRect.width) < TOLERANCE) {
+					movingEdge = SwingConstants.RIGHT;
+					setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+					canMove = true;
+				}
+			}
+
+			if (px >= cacheRect.x + TOLERANCE && px <= cacheRect.x + cacheRect.width - TOLERANCE
+					&& py >= cacheRect.y + TOLERANCE && py <= cacheRect.y + cacheRect.height - TOLERANCE) {
+				movingEdge = 5;
+				setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+				canMove = true;
+			}
+
+			if (!canMove) {
+				movingEdge = 0;
+				setCursor(Cursor.getDefaultCursor());
+			}
+		}
 
 		public Rectangle getRect(Point2D p1, Point2D p2) {
 			Rectangle r = new Rectangle();

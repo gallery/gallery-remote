@@ -1,3 +1,8 @@
+2004-08-04  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b3)
+
+	* Added support for resizing and moving the crop area.
+	* When dropping pics at the end of the list, move to the last item.
+
 2004-08-04  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b2)
 
 	* Fixed bug adding images for first-time users.
