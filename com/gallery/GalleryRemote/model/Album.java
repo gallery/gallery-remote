@@ -185,7 +185,7 @@ public class Album extends Picture implements ListModel, Serializable
 	 *@param  files  the files to create the pictures from
 	 */
 	public void addPictures( File[] files ) {
-		addPictures(files, 0);
+		addPictures(files, -1);
 	}
         
     /**
@@ -198,7 +198,11 @@ public class Album extends Picture implements ListModel, Serializable
 		for ( int i = 0; i < files.length; i++ ) {
 			Picture p = new Picture( files[i] );
 			p.setAlbum( this );
-			pictures.add( index++, p );
+			if (index == -1) {
+				pictures.add( p );
+			} else {
+				pictures.add( index++, p );
+			}
 		}
 
 		notifyListeners();
