@@ -1,0 +1,10 @@
+# should jpegtran support be enabled?
+enabled=false
+
+# path to the executable (must be a fully-qualified path)
+jpegtranPath=jpegtran
+
+# ignore error code sent back by the executable
+# there's a bug in the Linux Java VM that returns a failed code
+# even when the executable sends back a success code...
+ignoreErrorCode=true
