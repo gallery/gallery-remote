@@ -32,6 +32,7 @@ import java.text.NumberFormat;
 import java.text.ChoiceFormat;
 import java.text.Format;
 import java.util.Collections;
+import java.util.Arrays;
 import java.lang.reflect.Method;
 
 import javax.swing.*;
@@ -553,38 +554,94 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void deleteSelectedPictures() {
 		int[] indices = jPicturesList.getSelectedIndices();
+		int selected = jPicturesList.getSelectedIndex();
+		Picture reselect = null;
+
+		// find non-selected item after selected index
+		Arrays.sort(indices);
+		boolean found = false;
+
+		int i = selected + 1;
+		while (i < jPicturesList.getModel().getSize()) {
+			if (Arrays.binarySearch(indices, i) < 0) {
+				found = true;
+				break;
+			}
+
+			i++;
+		}
+
+		if (! found) {
+			i = selected - 1;
+			while (i >= 0) {
+				if (Arrays.binarySearch(indices, i) < 0) {
+					found = true;
+					break;
+				}
+
+				i--;
+			}
+		}
+
+		if (found) {
+			reselect = (Picture) jPicturesList.getModel().getElementAt(i);
+		}
 
 		getCurrentAlbum().removePictures( indices );
+
+		if (reselect != null) {
+			jPicturesList.setSelectedValue(reselect, true);
+		}
 	}
 
 
 	/**
 	 *  Move selected Pictures up
 	 */
-	public void movePictureUp() {
-		int sel = jPicturesList.getSelectedIndex();
+	public void movePicturesUp() {
+		int[] indices = jPicturesList.getSelectedIndices();
+		int[] reselect = new int[indices.length];
 
-		if ( sel > 0 ) {
-			Picture buf = getCurrentAlbum().getPicture( sel );
-			getCurrentAlbum().setPicture( sel, getCurrentAlbum().getPicture( sel - 1 ) );
-			getCurrentAlbum().setPicture( sel - 1, buf );
-			jPicturesList.setSelectedIndex( sel - 1 );
+		Arrays.sort(indices);
+
+		for (int i = 0; i < indices.length; i++) {
+			if (indices[i] > 0) {
+				Picture buf = getCurrentAlbum().getPicture( indices[i] );
+				getCurrentAlbum().setPicture( indices[i], getCurrentAlbum().getPicture( indices[i] - 1 ) );
+				getCurrentAlbum().setPicture( indices[i] - 1, buf );
+				//jPicturesList.setSelectedIndex( indices[i] - 1 );
+				reselect[i] = indices[i] - 1;
+			} else {
+				reselect[i] = indices[i];
+			}
 		}
+
+		jPicturesList.setSelectedIndices(reselect);
 	}
 
 
 	/**
 	 *  Move selected Pictures down
 	 */
-	public void movePictureDown() {
-		int sel = jPicturesList.getSelectedIndex();
+	public void movePicturesDown() {
+		int[] indices = jPicturesList.getSelectedIndices();
+		int[] reselect = new int[indices.length];
 
-		if ( sel < getCurrentAlbum().sizePictures() - 1 ) {
-			Picture buf = getCurrentAlbum().getPicture( sel );
-			getCurrentAlbum().setPicture( sel, getCurrentAlbum().getPicture( sel + 1 ) );
-			getCurrentAlbum().setPicture( sel + 1, buf );
-			jPicturesList.setSelectedIndex( sel + 1 );
+		Arrays.sort(indices);
+
+		for (int i = indices.length - 1; i >= 0; i--) {
+			if ( indices[i]  < getCurrentAlbum().sizePictures() - 1 ) {
+				Picture buf = getCurrentAlbum().getPicture( indices[i]  );
+				getCurrentAlbum().setPicture( indices[i] , getCurrentAlbum().getPicture( indices[i]  + 1 ) );
+				getCurrentAlbum().setPicture( indices[i]  + 1, buf );
+				//jPicturesList.setSelectedIndex( sel + 1 );
+				reselect[i] = indices[i] + 1;
+			} else {
+				reselect[i] = indices[i];
+			}
 		}
+
+		jPicturesList.setSelectedIndices(reselect);
 	}
 
 	public void selectNextPicture() {
@@ -1155,10 +1212,10 @@ public class MainFrame extends javax.swing.JFrame
 					deleteSelectedPictures();
 					break;
 				case KeyEvent.VK_LEFT:
-					movePictureUp();
+					movePicturesUp();
 					break;
 				case KeyEvent.VK_RIGHT:
-					movePictureDown();
+					movePicturesDown();
 					break;
 			}
 		}

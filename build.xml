@@ -82,7 +82,7 @@
 			<fileset dir="." includes="ChangeLog" />
 			<fileset dir="." includes="GalleryRemote.jar" />
 			<fileset dir="." includes="ReadMe.html" />
-			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
+			<!--zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/-->
 			<zipfileset dir="./lib" includes="metadata-extractor-2.1.jar" prefix="lib"/>
 			<zipfileset dir="./img" includes="*" prefix="img"/>
 		</zip>

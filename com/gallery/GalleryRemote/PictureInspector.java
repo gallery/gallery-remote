@@ -265,9 +265,9 @@ public class PictureInspector extends JPanel
 		if ( command.equals( "Delete" ) ) {
 			mf.deleteSelectedPictures();
 		} else if ( command.equals( "Up" ) ) {
-			mf.movePictureUp();
+			mf.movePicturesUp();
 		} else if ( command.equals( "Down" ) ) {
-			mf.movePictureDown();
+			mf.movePicturesDown();
 		} else if ( command.equals( "Left" ) ) {
 			for (int i = 0; i < pictures.length; i++) {
 				((Picture) pictures[i]).rotateLeft();
@@ -402,12 +402,12 @@ public class PictureInspector extends JPanel
 			jSize.setText( NumberFormat.getInstance().format(
 					(int) p.getFileSize() ) + " bytes" );
 
-			jUpButton.setEnabled(true && isEnabled());
-			jDownButton.setEnabled(true && isEnabled());
-			jDeleteButton.setEnabled(true && isEnabled());
-			jRotateLeftButton.setEnabled(true && isEnabled());
-			jRotateRightButton.setEnabled(true && isEnabled());
-			jFlipButton.setEnabled(true && isEnabled());
+			jUpButton.setEnabled(isEnabled());
+			jDownButton.setEnabled(isEnabled());
+			jDeleteButton.setEnabled(isEnabled());
+			jRotateLeftButton.setEnabled(isEnabled());
+			jRotateRightButton.setEnabled(isEnabled());
+			jFlipButton.setEnabled(isEnabled());
 
 			addExtraFields(p);
 		} else {
@@ -423,12 +423,12 @@ public class PictureInspector extends JPanel
 			jSize.setText( NumberFormat.getInstance().format(
 					Album.getObjectFileSize(pictures) ) + " bytes" );
 
-			jUpButton.setEnabled(false);
-			jDownButton.setEnabled(false);
-			jDeleteButton.setEnabled(true && isEnabled());
-			jRotateLeftButton.setEnabled(true && isEnabled());
-			jRotateRightButton.setEnabled(true && isEnabled());
-			jFlipButton.setEnabled(true && isEnabled());
+			jUpButton.setEnabled(isEnabled());
+			jDownButton.setEnabled(isEnabled());
+			jDeleteButton.setEnabled(isEnabled());
+			jRotateLeftButton.setEnabled(isEnabled());
+			jRotateRightButton.setEnabled(isEnabled());
+			jFlipButton.setEnabled(isEnabled());
 
 			removeExtraFields();
 		}

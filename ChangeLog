@@ -1,3 +1,11 @@
+2003-09-27  Pierre-Luc Paour <gallery@paour.com> (1.2-b5)
+
+	* After images are removed from the list, another image is selected.
+	  This has been a long-standing irritant...
+	* Moving more than one picture up or down is now possible.
+	* Suppressing auto-rotation on the server when the user manually
+	  rotates the image or GR rotates it based on the EXIF data.
+
 2003-09-25  Pierre-Luc Paour <gallery@paour.com> (1.2-b4)
 
 	* Implemented auto-rotate based on EXIF tag, if present. Now I need

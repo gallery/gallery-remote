@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -57,8 +58,7 @@ import com.gallery.GalleryRemote.model.Picture;
  *@created    August 16, 2002
  */
 public class DroppableList extends JList
-		 implements DropTargetListener, DragSourceListener, DragGestureListener
-{
+		 implements DropTargetListener, DragSourceListener, DragGestureListener {
 	private final static String MODULE = "Droplist";
 
 	MainFrame mf = null;
@@ -68,23 +68,12 @@ public class DroppableList extends JList
 	int lastY = -1;
 
 
-	/**
-	 *  constructor - initializes the DropTarget and DragSource.
-	 */
-
 	public DroppableList() {
 		dragSource = new DragSource();
 		dragSource.createDefaultDragGestureRecognizer( this, DnDConstants.ACTION_MOVE, this );
 		dropTarget = new DropTarget( this, this );
 	}
 
-
-	/**
-	 *  Constructor for the DroppableList object
-	 *
-	 *@param  mf  Description of Parameter
-	 *@since
-	 */
 	public void setMainFrame( MainFrame mf ) {
 		this.mf = mf;
 	}
@@ -100,24 +89,10 @@ public class DroppableList extends JList
 		return height;
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  y  Description of Parameter
-	 *@return    Description of the Returned Value
-	 */
 	public int snap( int y ) {
 		return snapIndex( y ) * safeGetFixedCellHeight();
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  y  Description of Parameter
-	 *@return    Description of the Returned Value
-	 */
 	public int snapIndex( int y ) {
 		int height = safeGetFixedCellHeight();
 
@@ -129,12 +104,6 @@ public class DroppableList extends JList
 		return row;
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  g  Description of Parameter
-	 */
 	public void paint( Graphics g ) {
 		lastY = -1;
 		super.paint( g );
@@ -142,12 +111,6 @@ public class DroppableList extends JList
 
 
 	/* ********* TargetListener ********** */
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dropTargetDragEvent  Description of Parameter
-	 *@since
-	 */
 	public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
 		Log.log( Log.TRACE, MODULE, "dragEnter - dtde" );
 		if ( isEnabled() ) {
@@ -157,13 +120,6 @@ public class DroppableList extends JList
 		}
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dropTargetEvent  Description of Parameter
-	 *@since
-	 */
 	public void dragExit( DropTargetEvent dropTargetEvent ) {
 		Log.log( Log.TRACE, MODULE, "dragExit - dtde" );
 		
@@ -186,13 +142,6 @@ public class DroppableList extends JList
 		repaint();
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dropTargetDragEvent  Description of Parameter
-	 *@since
-	 */
 	public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
 		//Log.log(Log.TRACE, MODULE,"dragOver - dtde");
 		if ( isEnabled() ) {
@@ -200,12 +149,6 @@ public class DroppableList extends JList
 		}
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  y  Description of Parameter
-	 */
 	public void dragOver( int y ) {
 		Graphics g = getGraphics();
 		g.setXORMode( Color.cyan );
@@ -224,13 +167,6 @@ public class DroppableList extends JList
 		g.drawLine( xStart, ySnap + 1, xStop, ySnap + 1 );
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dropTargetDropEvent  Description of Parameter
-	 *@since
-	 */
 	public synchronized void drop( DropTargetDropEvent dropTargetDropEvent ) {
 		Log.log( Log.TRACE, MODULE, "drop - dtde" );
 		
@@ -282,45 +218,21 @@ public class DroppableList extends JList
 		}
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dropTargetDragEvent  Description of Parameter
-	 *@since
-	 */
 	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) {
 		Log.log( Log.TRACE, MODULE, "dropActionChanged - dtde" );
 	}
 
 	
 	/* ********* DragSourceListener ********** */
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dragSourceDropEvent  Description of Parameter
-	 */
 	public void dragDropEnd( DragSourceDropEvent dragSourceDropEvent ) {
 		Log.log( Log.TRACE, MODULE, "dragDropEnd - dsde" );
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dragSourceDragEvent  Description of Parameter
-	 */
 	public void dragEnter( DragSourceDragEvent dragSourceDragEvent ) {
 		/*Log.log(Log.TRACE, MODULE,"dragEnter - dsde");
 		lastY = -1;*/
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dragSourceEvent  Description of Parameter
-	 */
 	public void dragExit( DragSourceEvent dragSourceEvent ) {
 		/*Log.log(Log.TRACE, MODULE,"dragExit - dse");
 		lastY = -1;*/
@@ -337,22 +249,10 @@ public class DroppableList extends JList
 		//dragOver((int) dragSourceDragEvent.getLocation().getY());
 	}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dragSourceDragEvent  Description of Parameter
-	 */
 	public void dropActionChanged( DragSourceDragEvent dragSourceDragEvent ) { }
 
 
-
 	/* ********* DragGestureListener ********** */
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  event  Description of Parameter
-	 */
 	public void dragGestureRecognized( DragGestureEvent event ) {
 		Log.log( Log.TRACE, MODULE, "dragGestureRecognized" );
 		int[] selIndices = this.getSelectedIndices();
@@ -364,11 +264,11 @@ public class DroppableList extends JList
 				ps.add( p );
 			}
 		}
+
 		//pull out existing pictures
 		if ( !ps.isEmpty() ) {
 			dragSource.startDrag( event, DragSource.DefaultMoveDrop, ps, this );
 			mf.deleteSelectedPictures();
-
 		} else {
 			Log.log( Log.TRACE, MODULE, "nothing was selected" );
 		}
@@ -377,17 +277,9 @@ public class DroppableList extends JList
 
 
 	/* ********* Utilities ********** */
-	/**
-	 *  Given a list of files and directories, the list is expanded recursively and
-	 *  returned with only files.
-	 *
-	 *@param  filesAndFolders  Files and/or directories.
-	 *@return                  Description of the Returned Value
-	 *@exception  IOException  Description of Exception
-	 */
-	java.util.List expandDirectories( java.util.List filesAndFolders )
+	List expandDirectories( java.util.List filesAndFolders )
 		throws IOException {
-		java.util.ArrayList allFilesList = new ArrayList();
+		ArrayList allFilesList = new ArrayList();
 
 		Iterator iter = filesAndFolders.iterator();
 		while ( iter.hasNext() ) {
@@ -403,17 +295,7 @@ public class DroppableList extends JList
 	}
 
 
-	/**
-	 *  Given a directory, this method returns a recursive list of all the file
-	 *  contents of that directory. It does not include the directories in the
-	 *  resulting List.
-	 *
-	 *@param  dir              A directory to list recursively. If the file is not
-	 *      a directory, an empty list is returned.
-	 *@return                  Description of the Returned Value
-	 *@exception  IOException  Description of Exception
-	 */
-	static java.util.List listFilesRecursive( File dir )
+	static List listFilesRecursive( File dir )
 		throws IOException {
 		ArrayList ret = new ArrayList();
 
@@ -431,7 +313,8 @@ public class DroppableList extends JList
 				return ret;
 			}
 		}
-		java.util.List files = Arrays.asList( fileArray );
+
+		List files = Arrays.asList( fileArray );
 
 		Iterator iter = files.iterator();
 		while ( iter.hasNext() ) {

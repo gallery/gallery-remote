@@ -53,7 +53,7 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 
 		jSetup.setText("Setup");
 		jLabel2.setText("<html>" +
-				"This panel allows you to connect to a web server and fetch configuration options from it, for easy setup." +
+				"This panel allows you to connect to a web server and fetch configuration options from it, for easy setup. " +
 				"Enter the URL of the setup file (your administrator needs to give it to you) and click <i>Setup</i>.<br>" +
 				"<b>Caution</b>: this operation is not cancellable.<br>" +
 				"<br>" +

@@ -549,8 +549,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", p.getAlbum().getName()),
 					new NVPair("caption", caption ),
-					new NVPair("force_filename", p.getSource().getName())
+					new NVPair("force_filename", p.getSource().getName()),
+					null
 				};
+
+				// set auto-rotate only if we do the rotation in GR, otherwise we'd be overriding the server setting
+				if (p.getAngle() != 0) {
+					opts[5] = new NVPair("auto_rotate", "no");
+				}
 
 				// set up extra fields
 				if (p.getExtraFieldsMap() != null && p.getExtraFieldsMap().size() > 0) {
