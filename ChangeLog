@@ -1,3 +1,9 @@
+2003-02-02  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b3)
+	
+	* Integrated Stanley Knutson's patch to handle Basic Auth
+	  HTTP security. Thanks Stanley!
+	* GR no longer checks the version before actual login.
+
 2002-12-15  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b2)
 	
 	* Fixed selecting "Gallery main page" in the New Album dialog.

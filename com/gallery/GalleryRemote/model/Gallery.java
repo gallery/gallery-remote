@@ -371,6 +371,10 @@ public class Gallery implements ComboBoxModel
 		return comm;
 	}
 	
+	public boolean hasComm() {
+		return comm != null;
+	}
+	
 	void notifyListeners() {
 		ListDataEvent lde;
 		if (albumList != null) {

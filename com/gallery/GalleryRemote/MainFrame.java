@@ -31,7 +31,6 @@ import java.net.MalformedURLException;
 import java.text.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
@@ -59,7 +58,6 @@ public class MainFrame extends javax.swing.JFrame
 	private Album mAlbum = null;
 	private boolean mInProgress = false;
 	private Thread undeterminedThread = null;
-	private javax.swing.Timer mTimer;
 	private boolean progressOn = false;
 
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
@@ -243,8 +241,9 @@ public class MainFrame extends javax.swing.JFrame
 				username.setEnabled( !mInProgress );
 				password.setEnabled( !mInProgress );
 				
-				GalleryComm cgComm = null;
-				if (currentGallery.getUsername() != null && ((cgComm = currentGallery.getComm(MainFrame.this)) != null) && cgComm.isLoggedIn()) {
+				if (currentGallery.getUsername() != null
+					&& currentGallery.hasComm()
+					&& currentGallery.getComm(MainFrame.this).isLoggedIn()) {
 					fetch.setText("Log out");
 				} else {
 					fetch.setText("Log in");
@@ -256,7 +255,8 @@ public class MainFrame extends javax.swing.JFrame
 				pictureInspector.setEnabled( enabled );
 				picturesList.setEnabled( enabled );
 				album.setEnabled( enabled );
-				newAlbum.setEnabled( enabled && currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+				newAlbum.setEnabled( enabled && currentGallery.hasComm()
+					&& currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 				
 				// change image displayed
 				int sel = picturesList.getSelectedIndex();
@@ -566,7 +566,7 @@ public class MainFrame extends javax.swing.JFrame
 	}
 	
 	public void newAlbum() {
-		NewAlbumDialog d = new NewAlbumDialog(this, currentGallery, mAlbum);
+		new NewAlbumDialog(this, currentGallery, mAlbum);
 	}
 
 
@@ -867,7 +867,9 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
-			if (currentGallery.getComm(this).isLoggedIn()) {
+		    // login may have failed and caused getComm to be null.
+			if ((currentGallery.getComm(this)) != null &&
+			    currentGallery.getComm(this).isLoggedIn()) {
 				currentGallery.getComm(this).logOut();
 				if (mAlbum != null) {
 					mAlbum.clearPictures();
@@ -876,7 +878,10 @@ public class MainFrame extends javax.swing.JFrame
 				
 				resetUIState();
 			} else {
-				fetchAlbums();
+				// the first part of this "if" may have tried to reconnect and failed
+				if (!GalleryComm.wasAuthFailure()) {
+					fetchAlbums();
+				}
 			}
 		} else if ( command.equals( "NewAlbum" ) ) {
 			newAlbum();

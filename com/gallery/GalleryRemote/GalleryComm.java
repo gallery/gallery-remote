@@ -41,6 +41,7 @@ import java.io.*;
 public abstract class GalleryComm {
 	private static final String MODULE = "GalComm";
 	int[] capabilities = null;
+	private static int lastRespCode = 0;
 	
 	/**
 	 *	Flag to hold logged in status.  Only need to log in once.
@@ -52,6 +53,9 @@ public abstract class GalleryComm {
 	 */ 
 	
 	static {
+		/* Enable customized AuthorizePopup */
+		AuthorizePopup.enable();
+		
 		/* Configures HTTPClient to accept all cookies
 		 * this should be done at least once per GalleryRemote
 		 * invokation */
@@ -122,6 +126,12 @@ public abstract class GalleryComm {
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
 	}
 	
+	/** Return true if the last communication attempt failed with authorization error */
+	public static boolean wasAuthFailure () {
+		boolean result = (lastRespCode == 401);
+		return result;
+	}
+	
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
 			// create a connection	
@@ -140,8 +150,9 @@ public abstract class GalleryComm {
 			
 			Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
 			// Test GalleryComm1
+			// BUT: only if first try was not status code 401 = authorization failure
 			String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
-			if (tryComm(su, mConnection, urlPath1)) {
+			if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
 				Log.log(Log.TRACE, MODULE, "Server has protocol 1");
 				return new GalleryComm1(g);
 			}
@@ -159,12 +170,15 @@ public abstract class GalleryComm {
 			rsp = mConnection.Head(urlPath);
 			
 			// handle 30x redirects
-			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+			// (and authorization failure)
+			int rspCode = rsp.getStatusCode();   // try actual communcation
+			lastRespCode = rspCode;
+			if (rspCode >= 300 && rspCode < 400) {
 				// retry, the library will have fixed the URL
 				rsp = mConnection.Post(urlPath);
 			}
 			
-			return rsp.getStatusCode() == 200;
+			return rspCode == 200;
 		} catch (UnknownHostException uhe) {
 			su.error("Unknown host: " + mConnection.getHost());
 		} catch (IOException ioe)	{
