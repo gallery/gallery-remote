@@ -30,6 +30,8 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import com.gallery.GalleryRemote.*;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 /**
  *  Gallery model
@@ -38,8 +40,7 @@ import com.gallery.GalleryRemote.*;
  *@created    17 août 2002
  */
 
-public class Gallery implements ComboBoxModel, Serializable
-{
+public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 	public static final String MODULE="Gallery";
 
 	String stUrlString = null;
@@ -59,7 +60,7 @@ public class Gallery implements ComboBoxModel, Serializable
 	transient StatusUpdate su;
 	transient private int prefsIndex;
 
-	public static String types[] = new String[] {"Standalone", "PostNuke"};
+	public static String types[] = new String[] {STANDALONE, POSTNUKE};
 	public static final int TYPE_STANDALONE = 0;
 	public static final int TYPE_POSTNUKE = 1;
 
@@ -99,7 +100,11 @@ public class Gallery implements ComboBoxModel, Serializable
 	public void logOut() {
 		albumList = null;
 		selectedAlbum = null;
-		
+		if (comm != null) {
+			comm.logOut();
+		}
+		comm = null;
+
 		notifyListeners();
 	}
 
@@ -236,7 +241,7 @@ public class Gallery implements ComboBoxModel, Serializable
 		stUrlString = reformatUrlString( urlString, true );
 
 		if (stUrlString != null) {
-			GalleryRemote.getInstance().properties.setProperty("url." + prefsIndex, stUrlString);
+			GalleryRemote.getInstance().properties.setProperty(URL + prefsIndex, stUrlString);
 		}
 	}
 
@@ -260,7 +265,7 @@ public class Gallery implements ComboBoxModel, Serializable
 		pnGalleryUrlString = reformatUrlString( urlString, false );
 
 		if (pnGalleryUrlString != null) {
-			GalleryRemote.getInstance().properties.setProperty("pnGalleryUrl." + prefsIndex, pnGalleryUrlString);
+			GalleryRemote.getInstance().properties.setProperty(PN_GALLERY_URL + prefsIndex, pnGalleryUrlString);
 		}
 	}
 
@@ -284,7 +289,7 @@ public class Gallery implements ComboBoxModel, Serializable
 		pnLoginUrlString = reformatUrlString( urlString, false );
 
 		if (pnLoginUrlString != null) {
-			GalleryRemote.getInstance().properties.setProperty("pnLoginUrl." + prefsIndex, pnLoginUrlString);
+			GalleryRemote.getInstance().properties.setProperty(PN_LOGIN_URL + prefsIndex, pnLoginUrlString);
 		}
 	}
 
@@ -372,7 +377,7 @@ public class Gallery implements ComboBoxModel, Serializable
 
 			logOut();
 
-			GalleryRemote.getInstance().properties.setProperty("username." + prefsIndex, username);
+			GalleryRemote.getInstance().properties.setProperty(USERNAME + prefsIndex, username);
 		}
 	}
 
@@ -385,10 +390,10 @@ public class Gallery implements ComboBoxModel, Serializable
 
 			logOut();
 
-			if (GalleryRemote.getInstance().properties.getBooleanProperty("savePasswords")) {
-				GalleryRemote.getInstance().properties.setBase64Property("password." + prefsIndex, password);
+			if (GalleryRemote.getInstance().properties.getBooleanProperty(SAVE_PASSWORDS)) {
+				GalleryRemote.getInstance().properties.setBase64Property(PASSWORD + prefsIndex, password);
 			} else {
-				GalleryRemote.getInstance().properties.remove("password." + prefsIndex);
+				GalleryRemote.getInstance().properties.remove(PASSWORD + prefsIndex);
 			}
 		}
 	}
@@ -396,7 +401,7 @@ public class Gallery implements ComboBoxModel, Serializable
 	public void setType(int type) {
 		this.type = type;
 
-		GalleryRemote.getInstance().properties.setProperty("type." + prefsIndex, types[type]);
+		GalleryRemote.getInstance().properties.setProperty(TYPE + prefsIndex, types[type]);
 	}
 
 	public String getUsername() {
@@ -415,8 +420,8 @@ public class Gallery implements ComboBoxModel, Serializable
 
 
 	public static Gallery readFromProperties(PropertiesFile p, int prefsIndex, StatusUpdate su) throws MalformedURLException {
-		String url = p.getProperty( "url." + prefsIndex );
-		String username = p.getProperty( "username." + prefsIndex );
+		String url = p.getProperty( URL + prefsIndex );
+		String username = p.getProperty( USERNAME + prefsIndex );
 
 		if (username == null) {
 			return null;
@@ -424,7 +429,7 @@ public class Gallery implements ComboBoxModel, Serializable
 
 		String password = null;
 		try {
-			password = p.getBase64Property( "password." + prefsIndex );
+			password = p.getBase64Property( PASSWORD + prefsIndex );
 		} catch (NumberFormatException e) {}
 
 		Log.log(Log.INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)" );
@@ -433,11 +438,11 @@ public class Gallery implements ComboBoxModel, Serializable
 		g.username = username;
 		g.password = password;
 		g.setStUrlString(url);
-		g.setPnLoginUrlString(p.getProperty("pnLoginUrl." + prefsIndex));
-		g.setPnGalleryUrlString(p.getProperty("pnGalleryUrl." + prefsIndex));
+		g.setPnLoginUrlString(p.getProperty(PN_LOGIN_URL + prefsIndex));
+		g.setPnGalleryUrlString(p.getProperty(PN_GALLERY_URL + prefsIndex));
 		g.setPrefsIndex(prefsIndex);
 
-		String typeS = p.getProperty( "type." + prefsIndex );
+		String typeS = p.getProperty( TYPE + prefsIndex );
 		if (typeS != null) {
 			g.setType(Arrays.asList(types).indexOf(typeS));
 		}
@@ -448,32 +453,32 @@ public class Gallery implements ComboBoxModel, Serializable
 	public void writeToProperties(PropertiesFile p) {
 		Log.log(Log.TRACE, MODULE, "Wrote to properties: " + toString() );
 
-		p.setProperty("url." + prefsIndex, stUrlString);
-		p.setProperty("username." + prefsIndex, username);
-		if (getPassword() != null && p.getBooleanProperty("savePasswords")) {
-			p.setBase64Property("password." + prefsIndex, password);
+		p.setProperty(URL + prefsIndex, stUrlString);
+		p.setProperty(USERNAME + prefsIndex, username);
+		if (getPassword() != null && p.getBooleanProperty(SAVE_PASSWORDS)) {
+			p.setBase64Property(PASSWORD + prefsIndex, password);
 		} else {
-			p.remove("password." + prefsIndex);
+			p.remove(PASSWORD + prefsIndex);
 		}
-		p.setProperty("type." + prefsIndex, types[type]);
+		p.setProperty(TYPE + prefsIndex, types[type]);
 
 		if (pnLoginUrlString != null) {
-			p.setProperty("pnLoginUrl." + prefsIndex, pnLoginUrlString);
+			p.setProperty(PN_LOGIN_URL + prefsIndex, pnLoginUrlString);
 		}
 		if (pnGalleryUrlString != null) {
-			p.setProperty("pnGalleryUrl." + prefsIndex, pnGalleryUrlString);
+			p.setProperty(PN_GALLERY_URL + prefsIndex, pnGalleryUrlString);
 		}
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {
 		Log.log(Log.TRACE, MODULE, "Removed from properties: " + n );
 
-		p.remove("url." + n);
-		p.remove("username." + n);
-		p.remove("password." + n);
-		p.remove("type." + n);
-		p.remove("pnLoginUrl." + n);
-		p.remove("pnGalleryUrl." + n);
+		p.remove(URL + n);
+		p.remove(USERNAME + n);
+		p.remove(PASSWORD + n);
+		p.remove(TYPE + n);
+		p.remove(PN_LOGIN_URL + n);
+		p.remove(PN_GALLERY_URL + n);
 	}
 
 	public void setPrefsIndex(int prefsIndex) {

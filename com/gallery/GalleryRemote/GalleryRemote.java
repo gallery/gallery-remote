@@ -19,6 +19,9 @@
 *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.gallery.GalleryRemote;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
+
 import java.awt.Image;
 import java.io.File;
 

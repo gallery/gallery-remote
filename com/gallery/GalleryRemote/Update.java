@@ -43,6 +43,8 @@ import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
 import edu.stanford.ejalbert.BrowserLauncher;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 /**
  *  Update check and dialog
@@ -51,7 +53,7 @@ import edu.stanford.ejalbert.BrowserLauncher;
  *@created    08 septembre 2002
  */
 
-public class Update extends JFrame implements ActionListener {
+public class Update extends JFrame implements ActionListener, PreferenceNames {
 	public final String MODULE = "Update";
 	
 	public static final int NO_UPDATE = 0;
@@ -79,8 +81,8 @@ public class Update extends JFrame implements ActionListener {
 	public int check(boolean showImmediate) {
 		int result = 0;
 		
-		if ( GalleryRemote.getInstance().properties.getBooleanProperty("updateCheck")) {
-			release = new Info( GalleryRemote.getInstance().properties.getProperty("updateUrl") );
+		if ( GalleryRemote.getInstance().properties.getBooleanProperty(UPDATE_CHECK)) {
+			release = new Info( GalleryRemote.getInstance().properties.getProperty(UPDATE_URL) );
 			
 			if (release.check()) {
 				result = 1;
@@ -88,8 +90,8 @@ public class Update extends JFrame implements ActionListener {
 			}
 		}
 
-		if ( result == 0 && GalleryRemote.getInstance().properties.getBooleanProperty("updateCheckBeta")) {
-			beta = new Info( GalleryRemote.getInstance().properties.getProperty("updateUrlBeta") );
+		if ( result == 0 && GalleryRemote.getInstance().properties.getBooleanProperty(UPDATE_CHECK_BETA)) {
+			beta = new Info( GalleryRemote.getInstance().properties.getProperty(UPDATE_URL_BETA) );
 			
 			if (beta.check()) {
 				result = 2;

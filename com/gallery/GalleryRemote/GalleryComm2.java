@@ -42,6 +42,7 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 /**
  *	The GalleryComm2 class implements the client side of the Gallery remote
@@ -53,7 +54,7 @@ import com.gallery.GalleryRemote.util.HTMLEscaper;
  *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
 public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
-	GalleryCommCapabilities {
+	GalleryCommCapabilities, PreferenceNames {
 	/* Implementation notes:  One GalleryComm2 instance is needed per Gallery
 	 * server (since the protocol only logs into each server once).  So the 
 	 * constructor requires a Gallery instance and is immutable with respect
@@ -235,6 +236,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			su.setInProgress(true);
 			if ( ! isLoggedIn ) {
 				if ( !login() ) {
+					Log.log(Log.TRACE, MODULE, "Failed to log in" + g.toString());
 					su.setInProgress(false);
 					return;
 				}
@@ -450,7 +452,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				String caption = p.getCaption();
 				caption = (caption == null) ? "" : caption;
 
-				if (GalleryRemote.getInstance().properties.getBooleanProperty("htmlEscapeCaptions")) {
+				if (GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
 					caption = HTMLEscaper.escape(caption);
 				}
 
@@ -669,7 +671,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			
 			String parentAlbumName = (parentAlbum == null) ? "" : parentAlbum.getName();
 
-			if (GalleryRemote.getInstance().properties.getBooleanProperty("htmlEscapeCaptions")) {
+			if (GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
 				albumTitle = HTMLEscaper.escape(albumTitle);
 				albumDesc = HTMLEscaper.escape(albumDesc);
 			}

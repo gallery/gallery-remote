@@ -22,7 +22,7 @@ package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.GalleryFileFilter;
 import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.GalleryRemote;
 
 import java.awt.Dimension;

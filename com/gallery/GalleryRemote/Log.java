@@ -20,6 +20,8 @@
  */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
+
 import java.io.BufferedWriter;
 import java.io.CharArrayWriter;
 import java.io.FileWriter;
@@ -35,7 +37,7 @@ import java.util.List;
  *@author     paour
  *@created    August 18, 2002
  */
-public class Log extends Thread
+public class Log extends Thread implements PreferenceNames
 {
 	public final static int CRITICAL = 0;
 	public final static int ERROR = 1;
@@ -205,8 +207,8 @@ public class Log extends Thread
 	}
 
 	public static void setMaxLevel() {
-		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty( "logLevel" )) {
-			maxLevel = GalleryRemote.getInstance().properties.getIntProperty( "logLevel" );
+		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL )) {
+			maxLevel = GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL );
 			singleton.logLines.add( emptyTime + "|"
 					+ levelName[TRACE] + "|"
 					+ emptyModule + "|"
