@@ -307,8 +307,8 @@ public class Gallery implements ComboBoxModel
 		 *
 		 */
 		if ( comm == null ) {
-			//comm = new GalleryComm1( su, this );
-			comm = new GalleryComm2( this );
+			comm = new GalleryComm1( su, this );
+			//comm = new GalleryComm2( this );
 		}
 		
 		return comm;
