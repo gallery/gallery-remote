@@ -191,9 +191,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		return newAlbumTask.getNewAlbumName();
 	}
 
-	public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async) {
+	public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async, int maxPictures) {
 		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask(su,
-				a, recusive);
+				a, recusive, maxPictures);
 		doTask(fetchAlbumImagesTask, async);
 	}
 
@@ -1077,12 +1077,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	class FetchAlbumImagesTask extends GalleryTask {
 		Album a;
 		boolean recursive = false;
+		int maxPictures = 0;
 
-		FetchAlbumImagesTask(StatusUpdate su, Album a, boolean recursive) {
+		FetchAlbumImagesTask(StatusUpdate su, Album a, boolean recursive, int maxPictures) {
 			super(su);
 
 			this.a = a;
 			this.recursive = recursive;
+			this.maxPictures = maxPictures;
 		}
 
 		void runTask() {
@@ -1133,6 +1135,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					int height;
 					ArrayList extraFields = a.getExtraFields();
 					for (int i = 1; i <= numImages; i++) {
+						if (maxPictures> 0 && newPictures.size() >= maxPictures) {
+							Log.log(Log.LEVEL_TRACE, MODULE, "Fetched maximum of " + maxPictures +
+									" pictures: stopping.");
+							break;
+						}
+
 						String subAlbumName = p.getProperty("album.name." + i);
 
 						if (subAlbumName != null) {

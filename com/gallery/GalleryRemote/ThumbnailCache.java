@@ -154,7 +154,9 @@ public class ThumbnailCache implements Runnable {
 		Iterator it = thumbnails.values().iterator();
 		while (it.hasNext()) {
 			ImageIcon i = (ImageIcon) it.next();
-			i.getImage().flush();
+			if (i.getImage() != null) {
+				i.getImage().flush();
+			}
 		}
 
 		thumbnails.clear();

@@ -195,6 +195,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	public void jListKeyPressed(KeyEvent e) {
 		if (!inProgress) {
 			int vKey = e.getKeyCode();
+			Log.log(Log.LEVEL_TRACE, MODULE, "Key pressed: " + vKey);
 
 			switch (vKey) {
 				case KeyEvent.VK_DELETE:

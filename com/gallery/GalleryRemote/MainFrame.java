@@ -143,6 +143,8 @@ public class MainFrame extends JFrame
 	JCheckBoxMenuItem jCheckBoxMenuPreview = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPath = new JCheckBoxMenuItem();
 	JMenuItem jMenuItemPrefs = new JMenuItem();
+	JMenuItem jMenuItemClearCache = new JMenuItem();
+
 	JMenu jMenuHelp = new JMenu();
 	JMenuItem jMenuItemAbout = new JMenuItem();
 
@@ -726,7 +728,7 @@ public class MainFrame extends JFrame
 	public void fetchAlbumImages() {
 		Log.log(Log.LEVEL_INFO, MODULE, "fetchAlbumImages starting");
 
-		getCurrentAlbum().fetchAlbumImages(jStatusBar, false);
+		getCurrentAlbum().fetchAlbumImages(jStatusBar, false, 0);
 	}
 
 	public void newAlbum() {
@@ -805,6 +807,7 @@ public class MainFrame extends JFrame
 		GalleryRemote._().properties.setShowPreview(show);
 		if (show) {
 			previewFrame.show();
+			previewFrame.displayPicture((Picture) jPicturesList.getSelectedValue(), true);
 		} else {
 			previewFrame.hide();
 		}
@@ -975,6 +978,8 @@ public class MainFrame extends JFrame
 		jMenuItemPrefs.setText(GRI18n.getString(MODULE, "menuPref"));
 		jMenuItemPrefs.setActionCommand("Options.Prefs");
 		jMenuItemPrefs.setIcon(GalleryRemote.iPreferences);
+		jMenuItemClearCache.setText(GRI18n.getString(MODULE, "menuClearCache"));
+		jMenuItemClearCache.setActionCommand("Options.ClearCache");
 
 		jMenuHelp.setText(GRI18n.getString(MODULE, "menuHelp"));
 		jMenuItemAbout.setActionCommand("Help.About");
@@ -1058,6 +1063,8 @@ public class MainFrame extends JFrame
 		jMenuOptions.add(jCheckBoxMenuThumbnails);
 		jMenuOptions.add(jCheckBoxMenuPreview);
 		jMenuOptions.add(jCheckBoxMenuPath);
+		jMenuOptions.addSeparator();
+		jMenuOptions.add(jMenuItemClearCache);
 
 		if (!GalleryRemote.IS_MAC_OS_X) {
 			jMenuOptions.addSeparator();
@@ -1082,6 +1089,7 @@ public class MainFrame extends JFrame
 		//jGalleryCombo.addActionListener( this );
 		jAlbumTree.addTreeSelectionListener(this);
 		jMenuItemPrefs.addActionListener(this);
+		jMenuItemClearCache.addActionListener(this);
 		jMenuItemNew.addActionListener(this);
 		jMenuItemOpen.addActionListener(this);
 		jMenuItemSave.addActionListener(this);
@@ -1224,6 +1232,9 @@ public class MainFrame extends JFrame
 			doPaste();
 		} else if (command.equals("Options.Prefs")) {
 			showPreferencesDialog();
+		} else if (command.equals("Options.ClearCache")) {
+			ImageUtils.purgeTemp();
+			flushMemory();
 		} else if (command.equals("Help.About")) {
 			showAboutBox();
 		} else if (command.equals("Fetch")) {

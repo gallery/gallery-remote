@@ -205,7 +205,7 @@ public abstract class GalleryRemote {
 			String value = applet.getParameter(prefix + name);
 
 			if (value != null) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Override: " + name + "= |" + value + "|");
+				Log.log(Log.LEVEL_TRACE, MODULE, "Got: " + name + "= |" + value + "|");
 				p.setProperty(name, value);
 			}
 		}

@@ -7,6 +7,7 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.SlideshowPanel;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
@@ -32,7 +33,8 @@ import HTTPClient.Cookie;
  * User: paour
  * Date: Oct 30, 2003
  */
-public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener, ListDataListener {
+public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener, ListDataListener,
+		PreferenceNames {
 	public static final String MODULE = "AppletSlideshow";
 	JButton jStart;
 	SlideshowPanel jSlidePanel;
@@ -55,7 +57,9 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		album.setName(info.albumName);
 		album.addListDataListener(this);
 
-		album.fetchAlbumImages(jStatusBar, true);
+		album.fetchAlbumImages(jStatusBar,
+				GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_RECURSIVE, true), 
+				GalleryRemote._().properties.getIntProperty(SLIDESHOW_MAX_PICTURES, 0));
 	}
 
 	protected void jbInit() {

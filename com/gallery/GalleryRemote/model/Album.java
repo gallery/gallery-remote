@@ -113,7 +113,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		}
 	}
 
-	public void fetchAlbumImages(StatusUpdate su, boolean recursive) {
+	public void fetchAlbumImages(StatusUpdate su, boolean recursive, int maxPictures) {
 		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
@@ -121,7 +121,7 @@ public class Album extends Picture implements ListModel, Serializable {
 			}
 
 			try {
-				gallery.getComm(su).fetchAlbumImages(su, this, recursive, true);
+				gallery.getComm(su).fetchAlbumImages(su, this, recursive, true, maxPictures);
 			} catch (RuntimeException e) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-fetch-images");
 				Log.logException(Log.LEVEL_INFO, MODULE, e);

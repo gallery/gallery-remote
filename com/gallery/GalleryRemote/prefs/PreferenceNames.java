@@ -57,6 +57,8 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_DELAY = "slideshowDelay";
 	public static final String SLIDESHOW_LOWREZ = "slideshowLowRez";
 	public static final String SLIDESHOW_RANDOM = "slideshowRandom";
+	public static final String SLIDESHOW_MAX_PICTURES = "slideshowMaxPictures";
+	public static final String SLIDESHOW_RECURSIVE = "slideshowRecursive";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";

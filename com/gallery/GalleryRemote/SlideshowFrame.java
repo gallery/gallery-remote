@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import HTTPClient.TransferListener;
-
 /**
  * Created by IntelliJ IDEA.
  * User: paour
@@ -402,10 +400,10 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 	public static class OutlineLabelUI extends BasicLabelUI {
 		protected static OutlineLabelUI labelUI = new OutlineLabelUI();
-		private static Rectangle paintIconR = new Rectangle();
+		/*private static Rectangle paintIconR = new Rectangle();
 		private static Rectangle paintTextR = new Rectangle();
 		private static Rectangle paintViewR = new Rectangle();
-		private static Insets paintViewInsets = new Insets(0, 0, 0, 0);
+		private static Insets paintViewInsets = new Insets(0, 0, 0, 0);*/
 
 		public static ComponentUI createUI(JComponent c) {
 			return labelUI;
