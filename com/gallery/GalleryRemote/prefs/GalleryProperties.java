@@ -169,6 +169,17 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	}
 
     /**
+     * getLoadLastMRU returns whether we should automatically load the
+     * last MRU file when GR starts. If this is true then we should try
+     * to load getMRUItem(0).
+     *
+     * @return true if we should load the last opened file.
+     */
+    public boolean getLoadLastMRU () {
+        return(getBooleanProperty(LOAD_LAST_FILE, false));
+    }
+
+    /**
      * getMRUCountProperty returns the Most Recently Used count (the number
      * of MRU entries we should show in the menu.
      *

@@ -18,6 +18,7 @@ public interface PreferenceNames {
     public static final String UI_LOCALE = "uiLocale";
     public static final String MRU_COUNT = "mruCount";
     public static final String MRU_BASE = "mruItem.";
+    public static final String LOAD_LAST_FILE = "loadLastMRU";
 
 	// Upload panel
 	public static final String RESIZE_BEFORE_UPLOAD = "resizeBeforeUpload";
