@@ -153,8 +153,8 @@ public class Log implements PreferenceNames, Runnable {
 		try {
 			singleton.loggerThread.join();
 		} catch (InterruptedException ee) {
-			System.err.println("Thread killed for some reason");
-		}
+			System.err.println("Logger thread killed");
+		} catch (Throwable t) {}
 
 		singleton = new Log();
 	}

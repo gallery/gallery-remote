@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 import HTTPClient.CookieModule;
 import HTTPClient.Cookie;
@@ -34,7 +35,6 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 	JButton jUpload;
 	JButton jAdd;
-	//StatusUpdate status;
 	StatusBar jStatusBar;
 	JScrollPane jScrollPane;
 	DroppableList jPicturesList;
@@ -43,6 +43,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	Album album = null;
 	Gallery gallery = null;
 	boolean inProgress = false;
+	boolean hasHadPictures = false;
 
 	public GRAppletMini() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -117,6 +118,17 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jPicturesList.setEnabled(!inProgress);
 
 		this.inProgress = inProgress;
+
+		if (! inProgress && hasHadPictures) {
+			// probably finished uploading...
+			try {
+				getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
+			} catch (MalformedURLException e1) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
+			}
+
+			hasHadPictures = false;
+		}
 	}
 
 	public void addPictures(File[] files, int index, boolean select) {
@@ -204,6 +216,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 			if (files != null) {
 				addPictures(files, -1, false);
+				hasHadPictures = true;
 			}
 		} else if (e.getSource() == jUpload) {
 			gallery.uploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));

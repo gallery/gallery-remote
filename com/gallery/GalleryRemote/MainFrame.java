@@ -158,10 +158,7 @@ public class MainFrame extends JFrame
 	public static final String CARD_PICTURE = "picture";
 	public static final String CARD_ALBUM = "album";
 
-	/**
-	 * Constructor for the MainFrame object
-	 */
-	public MainFrame() {
+	public void initMainFrame() {
 		macOSXRegistration();
 
 		PropertiesFile p = GalleryRemote._().properties;
