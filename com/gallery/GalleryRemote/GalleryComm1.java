@@ -321,12 +321,13 @@ public class GalleryComm1 implements GalleryComm {
 						while (lineT.hasMoreTokens()) {
 							StringTokenizer colT = new StringTokenizer(lineT.nextToken(), "\t");
 							
-							
 							if (colT.countTokens() == 2) {
 								Album a = new Album();
 								
 								a.setName( URLDecoder.decode(colT.nextToken()) );
 								a.setTitle( URLDecoder.decode(colT.nextToken()) );
+								
+								a.setGallery( g );
 
 								mAlbumList.add(a);
 							}
