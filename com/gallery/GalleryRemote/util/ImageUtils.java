@@ -60,8 +60,8 @@ public class ImageUtils {
 	static String[] filterName = new String[3];
 	static String[] format = new String[3];
 	
-	public final static String DEFAULT_IMAGE = "default.gif";
-	public final static String UNRECOGNIZED_IMAGE = "default.gif";
+	public final static String DEFAULT_IMAGE = "img/default.gif";
+	public final static String UNRECOGNIZED_IMAGE = "img/default.gif";
 
 	public static ImageIcon defaultThumbnail = null;
 	public static ImageIcon unrecognizedThumbnail = null;
