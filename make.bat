@@ -28,14 +28,14 @@ goto :EOF
 
 :make_zip
 call :make_clean_jar
-zip -0 gallery_remote.zip GalleryRemote.jar default.gif ChangeLog defaults.properties
+rem Info-ZIP zip.exe needs to be installed somewhere in the path
+zip -0 gallery_remote.zip GalleryRemote.jar default.gif ChangeLog defaults.properties run.bat run.sh
 goto :EOF
 
 :make_source_zip
 call :make_jar
-rem zip -0 gallery_remote.zip GalleryRemote.jar default.gif (for info-zip)
-rem pkzip -e0 gallery_remote.zip GalleryRemote.jar default.gif (for pkzip)
-zip -0 gallery_remote.zip GalleryRemote.jar default.gif
+rem Info-ZIP zip.exe needs to be installed somewhere in the path
+zip -0 gallery_remote.zip GalleryRemote.jar default.gif ChangeLog defaults.properties run.bat run.sh
 goto :EOF
 
 :make_cvsbuild
