@@ -187,13 +187,18 @@ public class GalleryComm {
 				new NVPair("password", mPassword)
 			};
 			Log.log(Log.TRACE, MODULE, "login parameters: uname:" + mUsername 
-				+ " password: " + mPassword + " url: " + mURLString);
+				+ " password: " + mPassword + " url: " + mURLString + SCRIPT_NAME);
 			
 			mConnection = new HTTPConnection(url);
 			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
 			
-			if (rsp.getStatusCode() >= 300)	{
-				loginMessage = "HTTP Error: "+rsp.getReasonLine();
+			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+				// retry, the library will have fixed the URL
+				rsp = mConnection.Post(loginPage, form_data);
+			}
+			
+			if (rsp.getStatusCode() >= 400)	{
+				loginMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
 				Log.log(Log.TRACE, MODULE, response);
@@ -236,14 +241,19 @@ public class GalleryComm {
 				new NVPair("password", mPassword)
 			};
 			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: uname:" + mUsername 
-				+ " password: " + mPassword + " url: " + mURLString);
+				+ " password: " + mPassword + " url: " + mURLString + SCRIPT_NAME);
 			
 			mConnection = new HTTPConnection(url);
 			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
 			
-			if (rsp.getStatusCode() >= 300)
+			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+				// retry, the library will have fixed the URL
+				rsp = mConnection.Post(loginPage, form_data);
+			}
+			
+			if (rsp.getStatusCode() >= 400)
 			{
-				albumMessage = "HTTP Error: "+rsp.getReasonLine();
+				albumMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
 				Log.log(Log.TRACE, MODULE, response);
@@ -302,15 +312,20 @@ public class GalleryComm {
 				new NVPair("protocal_version", PROTOCAL_VERSION)
 			};
 			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: album name:" + mAlbum 
-				+ " url: " + mURLString);
+				+ " url: " + mURLString + SCRIPT_NAME);
 
 			NVPair[] afile = { new NVPair("userfile", file.getAbsolutePath()) };
 			NVPair[] hdrs = new NVPair[1];
 			byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
 			HTTPResponse rsp = mConnection.Post(savePage, data, hdrs);
 			
-			if (rsp.getStatusCode() >= 300)	{
-				uploadMessage = "HTTP Error: "+rsp.getReasonLine();
+			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+				// retry, the library will have fixed the URL
+				rsp = mConnection.Post(loginPage, form_data);
+			}
+			
+			if (rsp.getStatusCode() >= 400)	{
+				uploadMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
 				Log.log(Log.TRACE, MODULE, response);
