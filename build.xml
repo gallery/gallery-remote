@@ -34,6 +34,7 @@
 			<classpath>
 				<pathelement location="lib/JSX1.0.7.4.jar"/>
 				<pathelement path="${build}"/>
+				<pathelement path="img"/>
 			</classpath>
 		</java>
 	</target>
@@ -54,6 +55,7 @@
 			<fileset dir="." includes="GalleryRemote.jar" />
 			<fileset dir="." includes="ReadMe.html" />
 			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
+			<zipfileset dir="./img" includes="*" prefix="img"/>
 		</zip>
 	</target>
 
