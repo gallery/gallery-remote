@@ -75,7 +75,7 @@ th {
   <tr valign="top"> 
     <td>Main UI</td>
     <td>P1</td>
-    <td>50%</td>
+    <td>60%</td>
     <td>paour</td>
     <td>The main UI needs to be rewritten using Layouts, in order to allow more 
       flexibility.</td>
@@ -107,10 +107,10 @@ th {
     <td>Explorer UI</td>
     <td>P4</td>
     <td>0%</td>
-    <td>&nbsp;</td>
+    <td>dolan</td>
     <td>In the long run, I want to use a Windows Explorer-like UI, with albums 
       on the right, and their contents on the left.</td>
-    <td>&nbsp;</td>
+    <td>Depends on Download Album</td>
   </tr>
   <tr valign="top"> 
     <td>Pre-upload resize</td>
@@ -135,8 +135,9 @@ th {
   <tr valign="top"> 
     <td>Inspector</td>
     <td>P2</td>
-    <td>10%</td>
-    <td>&nbsp;</td>
+    <td>30%</td>
+    <td><p>dolan</p>
+      </td>
     <td>In the UI, have an inspector pane for each Picture, that can display full 
       filename, file size, thumbnail, caption, order ID, resize/rotate buttons, 
       remove button, move up/down buttons, order counter, etc.</td>
@@ -156,9 +157,12 @@ th {
     <td>Reorder album</td>
     <td>P2</td>
     <td>0%</td>
-    <td>&nbsp;</td>
-    <td>Drag-and-drop reordering of album, whether before uploading, or an existing 
-      album. </td>
+    <td>dolan</td>
+    <td><p>Drag-and-drop (intra-list) reordering of album, whether before uploading, 
+        or an existing album.</p>
+      <p>Also, provide visual clues when an external drag is dropped on the list, 
+        and allow drop to happen at any point in the list (right now, drops always 
+        append pictures to the end of the list.</p></td>
     <td>Tim has some code for this.</td>
   </tr>
   <tr valign="top"> 
@@ -305,6 +309,37 @@ th {
     <td>The server needs to allow retaining filenames of uploaded files (if that 
       is the server setting).</td>
     <td>Probably needs GR to upload the file name along with the file.</td>
+  </tr>
+</table>
+<h2>Things we need to do throughout</h2>
+<table width="100%" border="1">
+  <tr> 
+    <th>Name</th>
+    <th>Priority</th>
+    <th>Status</th>
+    <th>Description</th>
+    <th>Comments</th>
+  </tr>
+  <tr valign="top"> 
+    <td>Logging</td>
+    <td>P1</td>
+    <td>0%</td>
+    <td><p>Every user task and network task should be logged (using the Log class) 
+        so we can figure out what happened when something doesn't work.</p>
+      <p>Shipping versions of GR should write nothing to System.out and System.err</p></td>
+    <td>Log.log(level, message)<br>
+      Log.log(level, module, message)<br>
+      Log.log(level, class, message)</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Status and progress</td>
+    <td>P2</td>
+    <td>20%</td>
+    <td>Most user actions should update the status bar. All actions that take 
+      time (network stuff, image manipulation) should also update the progress 
+      bar built into the status bar.</td>
+    <td><p>MainFrame.setStatus(message)</p>
+      <p>MainFrame.setProgress(% complete)</p></td>
   </tr>
 </table>
 <p>&nbsp;</p>
