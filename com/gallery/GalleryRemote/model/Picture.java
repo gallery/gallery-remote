@@ -106,6 +106,10 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 		clone.fileSize = fileSize;
 		clone.escapedCaption = escapedCaption;
+		clone.indexCache = indexCache;
+
+		clone.albumOnServer = albumOnServer;
+		clone.indexOnServer = indexOnServer;
 
 		return clone;
 	}
@@ -472,7 +476,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	public Album getAlbumOnServer() {
 		if (!online) {
-			throw new RuntimeException("Can't get dimension for a local file!");
+			throw new RuntimeException("Can't get Album on server for a local file!");
 		}
 
 		return albumOnServer;
@@ -484,7 +488,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	public int getIndexOnServer() {
 		if (!online) {
-			throw new RuntimeException("Can't get dimension for a local file!");
+			throw new RuntimeException("Can't get Index on server for a local file!");
 		}
 
 		return indexOnServer;

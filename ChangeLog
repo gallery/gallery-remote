@@ -1,3 +1,10 @@
+2004-02-09  Pierre-Luc Paour <gallery@paour.com> (1.3-b28)
+
+	* Fixed yet another concurrency problem in slideshow, when using
+	  both manual and automatic slide changes.
+	* Fixed caption not being outlined. Saldy, this means the caption
+	  is not HTML capable and single-line only.
+
 2004-02-04  Pierre-Luc Paour <gallery@paour.com> (1.3-b27)
 
 	* GR now requires Java 1.4 or later, too many things are unsupported

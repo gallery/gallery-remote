@@ -7,11 +7,9 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicLabelUI;
-import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.LabelUI;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,6 +26,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public static final String MODULE = "SlideFrame";
 	List pictures = null;
 	List wantDownloaded = Collections.synchronizedList(new ArrayList());
+	Picture userPicture = null;
 	int sleepTime = 3000;
 	boolean running = false;
 	boolean shutdown = false;
@@ -61,7 +60,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 			DialogUtil.maxSize(this);
 			//setBounds(600, 100, 500, 500);
-			show();
+			super.show();
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
@@ -178,6 +177,10 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	private void addComponent(PreviewFrame.ImageContentPane cp, JLabel c, int mod, int value) {
+		if (value == 0) {
+			return;
+		}
+
 		int col;
 		int cons;
 		switch (value % 10) {
@@ -204,33 +207,9 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		c.setHorizontalAlignment(value % 10);
 	}
 
-	public static class OutlineLabelUI extends BasicLabelUI {
-		protected static OutlineLabelUI labelUI = new OutlineLabelUI();
-
-		public static ComponentUI createUI(JComponent c) {
-			return labelUI;
-		}
-
-		protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
-			g.setColor(Color.darkGray);
-			g.drawString(s,textX + 1, textY + 1);
-			g.drawString(s,textX - 1, textY + 1);
-			g.drawString(s,textX + 1, textY - 1);
-			g.drawString(s,textX - 1, textY - 1);
-			g.setColor(l.getForeground());
-			g.drawString(s, textX, textY);
-		}
-
-		/*public Dimension getPreferredSize(JComponent c) {
-		Dimension d = super.getPreferredSize(c);
-
-		return new Dimension((int) d.getWidth() + 2, (int) d.getHeight() + 2);
-		}*/
-	}
-
 	public void start(ArrayList pictures) {
 		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_RANDOM)) {
-			this.pictures = (List) pictures.clone();
+			this.pictures = new ArrayList(pictures);
 			Collections.shuffle(this.pictures);
 		} else {
 			this.pictures = pictures;
@@ -244,7 +223,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		while (running) {
 			long time = System.currentTimeMillis();
 
-			if (!next()) {
+			if (!next(false)) {
 				// the slideshow is over
 				hide();
 				break;
@@ -265,7 +244,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	private void previousAsync() {
 		new Thread() {
 			public void run() {
-				previous();
+				previous(true);
 			}
 		}.start();
 	}
@@ -273,18 +252,18 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	private void nextAsync() {
 		new Thread() {
 			public void run() {
-				next();
+				next(true);
 			}
 		}.start();
 	}
 
-	public boolean next() {
+	public boolean next(boolean user) {
 		int index = -1;
 
 		if (loadPicture != null) {
 			index = pictures.indexOf(loadPicture);
 
-			if (wantDownloaded.contains(loadPicture)) {
+			if (wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
 				// we no longer want the current picture
 				wantDownloaded.remove(loadPicture);
 			}
@@ -300,6 +279,13 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		// display next picture
 		Picture picture = (Picture) pictures.get(index);
+		if (user) {
+			userPicture = picture;
+		} else if (userPicture != null && userPicture != picture) {
+			// automatic move tying to move away from user-chosen picture
+			return true;
+		}
+
 		wantDownloaded.add(picture);
 		updateProgress(picture);
 		displayPicture(picture, false);
@@ -313,12 +299,12 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		return true;
 	}
 
-	public boolean previous() {
+	public boolean previous(boolean user) {
 		int index = -1;
 
 		if (loadPicture == null) {
 			return false;
-		} else if (wantDownloaded.contains(loadPicture)) {
+		} else if (wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
 			// we no longer want the current picture
 			wantDownloaded.remove(loadPicture);
 		}
@@ -335,6 +321,13 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		// display previous picture
 		Picture picture = (Picture) pictures.get(index);
+		if (user) {
+			userPicture = picture;
+		} else if (userPicture != null && userPicture != picture) {
+			// automatic move tying to move away from user-chosen picture
+			return true;
+		}
+
 		wantDownloaded.add(picture);
 		updateProgress(picture);
 		displayPicture(picture, false);
@@ -351,13 +344,19 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public void imageLoaded(ImageIcon image, Picture picture) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + picture + " finished loading");
 
+		if (picture == userPicture) {
+			userPicture = null;
+		}
+
 		if (picture != loadPicture) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + loadPicture + ": ignoring");
 			return;
 		}
 
 		if (picture != null) {
-			jCaption.setText("<HTML>" + picture.getCaption() + "</HTML>");
+			// todo: captions are not printed outline because they are HTML and that's a fucking mess
+			//jCaption.setText("<HTML>" + picture.getCaption() + "</HTML>");
+			jCaption.setText(picture.getCaption());
 			updateProgress(picture);
 			String extraFields = picture.getExtraFieldsString();
 			if (extraFields != null) {
@@ -399,5 +398,90 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		g.drawLine(0, 0, getWidth() * transferred / overall, 0);
 
 		return true;
+	}
+
+	public static class OutlineLabelUI extends BasicLabelUI {
+		protected static OutlineLabelUI labelUI = new OutlineLabelUI();
+		private static Rectangle paintIconR = new Rectangle();
+		private static Rectangle paintTextR = new Rectangle();
+		private static Rectangle paintViewR = new Rectangle();
+		private static Insets paintViewInsets = new Insets(0, 0, 0, 0);
+
+		public static ComponentUI createUI(JComponent c) {
+			return labelUI;
+		}
+
+		protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
+			g.setColor(Color.darkGray);
+			g.drawString(s,textX + 1, textY + 1);
+			g.drawString(s,textX - 1, textY + 1);
+			g.drawString(s,textX + 1, textY - 1);
+			g.drawString(s,textX - 1, textY - 1);
+			g.setColor(l.getForeground());
+			g.drawString(s, textX, textY);
+		}
+
+		// todo: captions are not printed outline because they are HTML and that's a fucking mess
+		/*public void paint(Graphics g, JComponent c) {
+			JLabel label = (JLabel)c;
+			String text = label.getText();
+			Icon icon = (label.isEnabled()) ? label.getIcon() : label.getDisabledIcon();
+
+			if ((icon == null) && (text == null)) {
+				return;
+			}
+
+			FontMetrics fm = g.getFontMetrics();
+			Insets insets = c.getInsets(paintViewInsets);
+
+			paintViewR.x = insets.left;
+			paintViewR.y = insets.top;
+			paintViewR.width = c.getWidth() - (insets.left + insets.right);
+			paintViewR.height = c.getHeight() - (insets.top + insets.bottom);
+
+			paintIconR.x = paintIconR.y = paintIconR.width = paintIconR.height = 0;
+			paintTextR.x = paintTextR.y = paintTextR.width = paintTextR.height = 0;
+
+			String clippedText =
+					layoutCL(label, fm, text, icon, paintViewR, paintIconR, paintTextR);
+
+			if (icon != null) {
+				icon.paintIcon(c, g, paintIconR.x, paintIconR.y);
+			}
+
+			if (text != null) {
+				View v = (View) c.getClientProperty(BasicHTML.propertyKey);
+				if (v != null) {
+					Color color = label.getForeground();
+
+					label.setForeground(Color.darkGray);
+					label.setText(label.getText() + " ");
+					paintTextR.x -= 1;
+					v.paint(g, paintTextR);
+					paintTextR.y -= 1;
+					v.paint(g, paintTextR);
+					paintTextR.x += 2;
+					v.paint(g, paintTextR);
+					paintTextR.y += 2;
+					v.paint(g, paintTextR);
+
+					label.setForeground(Color.white);
+					label.setText(label.getText() + " ");
+					paintTextR.x -= 1;
+					paintTextR.y -= 1;
+					v.paint(g, paintTextR);
+				} else {
+					int textX = paintTextR.x;
+					int textY = paintTextR.y + fm.getAscent();
+
+					if (label.isEnabled()) {
+						paintEnabledText(label, g, clippedText, textX, textY);
+					}
+					else {
+						paintDisabledText(label, g, clippedText, textX, textY);
+					}
+				}
+			}
+		}*/
 	}
 }
