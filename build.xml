@@ -263,7 +263,7 @@
 
   <move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
   <move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.VM.exe"/>
-  <move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/GalleryRemote.${version}.MacOSX.NoVM.zip"/>
+  <!--move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/GalleryRemote.${version}.MacOSX.NoVM.zip"/-->
   <move file="${install}/Linux/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Linux.NoVM.bin"/>
   <move file="${install}/Linux/VM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Linux.VM.bin"/>
   <move file="${install}/Solaris/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Solaris.NoVM.bin"/>

@@ -317,6 +317,10 @@ public class Album extends Picture implements ListModel, Serializable {
 		notifyListeners();
 	}
 
+	public void sortSubAlbums() {
+		Collections.sort(subAlbums, new NaturalOrderComparator());
+	}
+
 	/**
 	 * Number of pictures in the album
 	 * 

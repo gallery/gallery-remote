@@ -169,6 +169,7 @@ public class Log implements PreferenceNames, Runnable {
 		BufferedWriter writer = null;
 		running = true;
 		try {
+			System.out.println("Creating log file in " + System.getProperty("java.io.tmpdir"));
 			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "GalleryRemoteLog.txt")));
 			while (running) {
 				Thread.sleep(sleepInterval);

@@ -49,7 +49,9 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 	protected void initializeGR() {
 		super.initializeGR();
 
-		Log.startLog(properties.getIntProperty(PreferenceNames.LOG_LEVEL), properties.getBooleanProperty("toSysOut"));
+		Log.startLog(properties.getIntProperty(PreferenceNames.LOG_LEVEL),
+				properties.getBooleanProperty("toSysOut") ||
+				(System.getProperty("lax.stdout.redirect") != null && System.getProperty("lax.stdout.redirect").length() > 0));
 
 		try {
 			if (isAppletMode() || !Update.upgrade()) {

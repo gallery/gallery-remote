@@ -1405,6 +1405,8 @@ public class MainFrame extends JFrame
 
 			// We've been saved, we are now clean.
 			setDirtyFlag(false);
+
+			Log.log(Log.LEVEL_TRACE, MODULE, "State saved");
 		} catch (IOException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to save state");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);

@@ -30,6 +30,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.util.UrlMessageDialog;
+import com.gallery.GalleryRemote.util.NaturalOrderComparator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -875,7 +876,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "Linked " + name2parentName.size() + " albums to their parents");
 
 				// reorder
-				//Collections.reverse(albums);
+				Collections.sort(albums, new NaturalOrderComparator());
+				Collections.reverse(albums);
 				ArrayList orderedAlbums = new ArrayList();
 				int depth = 0;
 				while (!albums.isEmpty()) {
@@ -886,10 +888,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						try {
 							if (a.getAlbumDepth() == depth) {
 								it.remove();
+								a.sortSubAlbums();
 
 								Album parentAlbum = a.getParentAlbum();
 								if (parentAlbum == null) {
-									orderedAlbums.add(a);
+									orderedAlbums.add(0, a);
 								} else {
 									int i = orderedAlbums.indexOf(parentAlbum);
 									orderedAlbums.add(i + 1, a);
