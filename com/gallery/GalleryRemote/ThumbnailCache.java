@@ -20,12 +20,15 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Stack;
 
-import com.gallery.GalleryRemote.model.*;
+import javax.swing.ImageIcon;
+
+import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.ImageUtils;
 
 /**
  *  Thumbnail cache loads and resizes images in the background for display in
@@ -65,7 +68,7 @@ public class ThumbnailCache implements Runnable
 			String filename = (String) toLoad.pop();
 
 			if ( ! thumbnails.containsKey( filename ) ) {
-				ImageIcon i = ImageUtils.load( 
+				ImageIcon i = ImageUtils.load(
 					filename, 
 					GalleryRemote.getInstance().properties.getThumbnailSize(), 
 					ImageUtils.THUMB );

@@ -22,9 +22,9 @@
 package com.gallery.GalleryRemote;
 
 import java.awt.Component;
-import java.util.*;
-import javax.swing.JFileChooser;
 import java.io.File;
+
+import javax.swing.JFileChooser;
 
 public class AddFileDialog
 {

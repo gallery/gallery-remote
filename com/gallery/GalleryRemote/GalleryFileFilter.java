@@ -22,9 +22,10 @@
 package com.gallery.GalleryRemote;
 
 import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.swing.filechooser.FileFilter;
 
 public class GalleryFileFilter extends FileFilter {
 	public static String[] ext

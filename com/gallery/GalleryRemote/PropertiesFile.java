@@ -20,9 +20,11 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  *  Properties file for Gallery Remote

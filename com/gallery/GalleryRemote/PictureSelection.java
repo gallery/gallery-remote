@@ -20,11 +20,14 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import java.util.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.ListIterator;
+
 import com.gallery.GalleryRemote.model.Picture;
 
 

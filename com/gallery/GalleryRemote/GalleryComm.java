@@ -21,13 +21,21 @@
 
 package com.gallery.GalleryRemote;
 
-import com.gallery.GalleryRemote.model.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
-import HTTPClient.*;
+import HTTPClient.Cookie;
+import HTTPClient.CookieModule;
+import HTTPClient.CookiePolicyHandler;
+import HTTPClient.HTTPConnection;
+import HTTPClient.HTTPResponse;
+import HTTPClient.ModuleException;
+import HTTPClient.RoRequest;
+import HTTPClient.RoResponse;
 
-import java.net.*;
-
-import java.io.*;
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Gallery;
 
 /**
  *	This interface is a temporary mechanism to let us use version
@@ -105,7 +113,7 @@ public abstract class GalleryComm {
 	 *	the specified album (or at the root if album is null)
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
-	 *	@param a if null, create the album in the root of the gallery; otherwise
+	 *	@param parentAlbum if null, create the album in the root of the gallery; otherwise
 	 *				create as a child of the given album
 	 */
 	public void newAlbum( StatusUpdate su, Album parentAlbum,

@@ -21,13 +21,15 @@
 
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.util.*;
+import com.gallery.GalleryRemote.util.ImageUtils;
+
+import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.swing.ImageIcon;
 
 public class PreviewFrame extends javax.swing.JFrame {
 	public static final String MODULE = "PreviewFrame";
@@ -97,7 +99,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		if (r == null)
 		{
-			r = ImageUtils.load( 
+			r = ImageUtils.load(
 				filename, 
 				getRootPane().getSize(), 
 				ImageUtils.PREVIEW );

@@ -20,12 +20,23 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.util.*;
-import java.net.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.net.URL;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.UIManager;
+import javax.swing.border.MatteBorder;
 
 /**
  *  Gallery Remote About Box

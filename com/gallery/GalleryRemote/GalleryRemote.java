@@ -20,9 +20,10 @@
 */
 package com.gallery.GalleryRemote;
 import java.awt.Image;
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
+import java.io.File;
+
+import javax.swing.ImageIcon;
+import javax.swing.UIManager;
 
 /**
 *  Main class and entry point of Gallery Remote

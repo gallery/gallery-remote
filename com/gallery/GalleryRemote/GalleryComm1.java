@@ -21,12 +21,23 @@
 
 package com.gallery.GalleryRemote;
 
-import HTTPClient.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
-import com.gallery.GalleryRemote.model.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import HTTPClient.Codecs;
+import HTTPClient.HTTPConnection;
+import HTTPClient.HTTPResponse;
+import HTTPClient.ModuleException;
+import HTTPClient.NVPair;
+
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.model.Picture;
 
 public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities {
 	private static final String MODULE = "GalComm1";

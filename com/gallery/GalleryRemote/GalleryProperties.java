@@ -20,10 +20,17 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  *  GalleryProperties: access property data with a higher level of abstraction

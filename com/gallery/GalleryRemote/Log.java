@@ -20,8 +20,14 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.CharArrayWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *  Log manager

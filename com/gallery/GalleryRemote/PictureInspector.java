@@ -20,13 +20,27 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import com.gallery.GalleryRemote.model.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.ImageUtils;
 
 /**
  *  Bean inspector for Pictures
