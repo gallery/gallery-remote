@@ -4,7 +4,7 @@ Gallery Remote needs an icon and a banner/about box image, and we would like to 
 * WELCOME TO THE GALLERY REMOTE ICON COMPETITION *
 
 
-What we are looking for:
+What we are looking for in order of decreasing importance:
 
 * Icons: 16x16 (small icon), 32x32 (normal icon), 128x128 (Mac OS X icon), in full color, to be used as the executable file icon
 
