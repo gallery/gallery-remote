@@ -2,22 +2,39 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <style type="text/css">
+
 h1 { font-family: sans-serif; font-size: 17pt; font-weight: bold; }
+
 h2 { font-family: sans-serif; font-size: 14pt; font-weight: bold; }
+
 h3 { font-family: sans-serif; font-size: 12pt; font-weight: bold; }
+
 h4 { font-family: sans-serif; font-size: 11pt; font-weight: bold; }
+
 p,ol,ul,body{ font-family: serif; font-size: 11pt; }
+
 li { font-family: serif; font-size: 11pt; margin: 4px; } 
+
 .since { background-color: #FFcccc; color: #FF0000; }
+
 .weasel { color: #888888; background-color: #ffffff; font-size: 9pt; }
+
 samp { font-family: monospace; color: #0000aa; background-color: #FFFF99; }
+
 body { background-color: #FFFFFF; margin: 8px; }
+
 hr { color: black; height: 1px; width: 100%; }
 
+
+
 table { border-style: solid; border-width: 1px; border-color: black; margin: 10px;  }
+
 td	{ border-style: solid; border-width: 1px; border-color: black; margin: 5px;  }
 
+
+
 img { border-width: 0px; }
+
 </style></head>
 
 <body>
@@ -41,6 +58,7 @@ img { border-width: 0px; }
     <ol>
       <li><a href="#login"><samp>login</samp> command</a></li>
       <li><a href="#fetch-albums"><samp>fetch-albums</samp> command</a></li>
+      <li><a href="#fetch-albums-prune"><samp>fetch-albums-prune</samp> command</a></li>
       <li><a href="#add-item"><samp>add-item</samp> command</a></li>
       <li><a href="#album-properties"><samp>album-properties</samp> command</a></li>
       <li><a href="#new-album"><samp>new-album</samp> command</a></li>
@@ -54,7 +72,7 @@ img { border-width: 0px; }
 <h2><a name="intro">1. Introduction</a></h2>  
 
 <p>This document describes version 2 of the <a href="http://gallery.menalto.com/">Gallery</a> 
-  remote application protocol.</p>
+  remote application protocol, and its minor revisions.</p>
 <p>Also see documentation of the <a href="gal_remote_proto-1.html">previous version</a> 
   of the protocol.</p>
 <p>The "Gallery Remote" remote administration program is this protocol's 
@@ -135,9 +153,9 @@ and the contents of the server's response is described.</p>
 
 </p><p>In a nutshell: lines beginning with a <samp>#</samp> character are ignored. The text before the first <samp>=</samp> character is the <em>key</em>.  The remainder of the text after the <samp>=</samp> until the end-of-line character(s) is the <em>value</em>.</p>
 
-<p>Each response must begin with the text <samp>#__GR2PROTO__</samp>.
-
-</p><p>Each response must contain at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
+<p>Each response must begin with the text <samp>#__GR2PROTO__</samp>. Clients 
+  should ignore any text above this tag: it might be debug output from the server.</p>
+<p>Each response must contain at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
 
 <p>The value associated with the <samp>status</samp> key is an integer status code
 (the codes are defined in <a href="#appendix_a">Appendix A</a>.  For example, if the
@@ -156,9 +174,9 @@ server was able to complete the command in the client's request, the value of th
 <ol>
   <li> 
     <h3><a name="login"><samp>login</samp></a> command</h3>
-    <p>This command adds the proper user object to the 
-      session (if the username and password are correct). It also returns to the client the version of the protocol the server 
-      is prepared to support.</p>
+    <p>This command adds the proper user object to the session (if the username 
+      and password are correct). It also returns to the client the version of 
+      the protocol the server is prepared to support.</p>
     <ul>
       <li> 
         <h4>Context</h4>
@@ -172,22 +190,19 @@ server was able to complete the command in the client's request, the value of th
           <samp>uname=</samp><em>gallery-user-name</em><samp><br>
           password=</samp><em>cleartext-password</em><br>
         </p>
-        <p>where <em>gallery-user-name</em> is a valid gallery user name and 
-        <em>cleartext-password</em> is the corresponding password.
-
-        </p>
+        <p>where <em>gallery-user-name</em> is a valid gallery user name and <em>cleartext-password</em> 
+          is the corresponding password. </p>
       </li>
       <li> 
         <h4>Results</h4>
-        <p>
-        <samp>#__GR2PROTO__</samp><br>
-        <samp>status=</samp><em>result-code</em><br>
-        <samp>status_text=</samp><em>explanatory-text</em><br>
-        <samp>server_version=</samp><em>major-version</em><samp>.</samp><em>minor-version</em><br>
+        <p> <samp>#__GR2PROTO__</samp><br>
+          <samp>status=</samp><em>result-code</em><br>
+          <samp>status_text=</samp><em>explanatory-text</em><br>
+          <samp>server_version=</samp><em>major-version</em><samp>.</samp><em>minor-version</em><br>
         </p>
-        <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, the login completed
-        successfully and the user's session has been updated.  Any other command can now be used in requests to this server.
-        </p>
+        <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
+          the login completed successfully and the user's session has been updated. 
+          Any other command can now be used in requests to this server. </p>
       </li>
     </ul>
   </li>
@@ -206,48 +221,121 @@ server was able to complete the command in the client's request, the value of th
         <p><samp>cmd=fetch-albums<br>
           protocol_version=2.0</samp></p>
       </li>
-      <li>
+      <li> 
         <h4>Results</h4>
-        <p>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>#__GR2PROTO__</samp><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status=</samp><em>result-code</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status_text=</samp><em>explanatory-text</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-ref-num</em><br>
-0...<em>n</em> |<samp>album.perms.add.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em>
-		</p>
-		
-        <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, the album data was fetched successfully</p>
+        <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>#__GR2PROTO__</samp><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status=</samp><em>result-code</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status_text=</samp><em>explanatory-text</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-ref-num</em><br>
+          0...<em>n</em> |<samp>album.perms.add.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em> 
+        </p>
+        <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
+          the album data was fetched successfully</p>
         <p>If successful, a response to the <samp>fetch-albums</samp> command 
           returns several keys for each album in the gallery, where</p>
-          
-          <ul>
-          	<li><em>ref-num</em> is a reference number,</li>
-          	<li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
-          	<li><em>album-display-name</em> is the gallery's visual name,</li>
-          	<li><em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
-          	<li>and <em>boolean</em> represents a boolean value.  <samp>true</samp> is considered true, any other value false.</li>
-          </ul>
-          <p>A <em>parent-ref-num</em> of <samp>0</samp> (zero) indicates that the album is a "top-level" album (it has no parent).
+        <ul>
+          <li><em>ref-num</em> is a reference number,</li>
+          <li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
+          <li><em>album-display-name</em> is the gallery's visual name,</li>
+          <li><em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
+          <li>and <em>boolean</em> represents a boolean value. <samp>true</samp> 
+            is considered true, any other value false.</li>
+        </ul>
+        <p>A <em>parent-ref-num</em> of <samp>0</samp> (zero) indicates that the 
+          album is a "top-level" album (it has no parent). </p>
+        <p>Several "permissions" are reported for each album. The reported permissions 
+          are the <em>effective</em> permissions of the currently logged in user.</p>
+        <ul>
+          <li>the <em>add</em> permission allows the user to add a picture to 
+            the album.</li>
+          <li>the <em>write</em> permission allows the user to add and change 
+            pictures in the album.</li>
+          <li>the <em>del_item</em> permission allows the user remove pictures 
+            from the album.</li>
+          <li>the <em>del_alb</em> permission allows the user to delete the album.</li>
+          <li>the <em>create_sub</em> permission allows the user to create nested 
+            albums in the album.</li>
+        </ul>
+        <p>The number of albums in the response is returned as <em>number-of-albums</em>.</p>
+      </li>
+    </ul>
+  </li>
+  <li> 
+    <h3><a name="fetch-albums-prune"><samp>fetch-albums-prune</samp></a> command 
+      [since 2.2] </h3>
+    <p>The <samp>fetch-albums-prune</samp> command asks the server to return a 
+      list of all albums that the user can either write to, or that are visible 
+      to the user and contain a sub-album that is writable (including sub-albums 
+      several times removed).<br>
+      The reason for this slightly altered version of <samp>fetch-albums</samp> 
+      is two-fold: the previous version was slow on the server-side, because of 
+      the way it was structured, and limitation in the Gallery mode of operation; 
+      it returns all albums the the user can read, even if writing is not allowed. 
+      This new version is faster, because it uses a more efficient algorithm to 
+      find albums; it is more efficient because it only sends albums that are 
+      useful to the client. It also doesn't parse the pictures database, which 
+      makes it run much faster on the server.</p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>A request with the <samp>login</samp> command must be made before the 
+          <samp>fetch-albums-prune</samp> command is used.</p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p><samp>cmd=fetch-albums-prune<br>
+          protocol_version=2.2</samp></p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>#__GR2PROTO__</samp><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status=</samp><em>result-code</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status_text=</samp><em>explanatory-text</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-name</em><br>
+          0...<em>n</em> |<samp>album.perms.add.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em> 
         </p>
-          <p>Several "permissions" are reported for each album.  The reported permissions are the <em>effective</em>
-          permissions of the currently logged in user.</p>
-          <ul>
-          	<li>the <em>add</em> permission allows the user to add a picture to the album.</li>
-          	<li>the <em>write</em> permission allows the user to add and change pictures in the album.</li>
-          	<li>the <em>del_item</em> permission allows the user remove pictures from the album.</li>
-          	<li>the <em>del_alb</em> permission allows the user to delete the album.</li>
-          	<li>the <em>create_sub</em> permission allows the user to create nested albums in the album.</li>
-          </ul>
-          <p>The number of albums in the response is returned as <em>number-of-albums</em>.</p>
+        <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
+          the album data was fetched successfully</p>
+        <p>If successful, a response to the <samp>fetch-albums-prune</samp> command 
+          returns several keys for each album in the gallery, where</p>
+        <ul>
+          <li><em>ref-num</em> is the album name (ID),</li>
+          <li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
+          <li><em>album-display-name</em> is the gallery's visual name,</li>
+          <li><em>parent-name</em> refers to some other album's <em>name</em>.</li>
+          <li>and <em>boolean</em> represents a boolean value. <samp>true</samp> 
+            is considered true, any other value false.</li>
+        </ul>
+        <p>A <em>parent-ref-num</em> of <samp>0</samp> (zero) indicates that the 
+          album is a "top-level" album (it has no parent). </p>
+        <p>Several "permissions" are reported for each album. The reported permissions 
+          are the <em>effective</em> permissions of the currently logged in user.</p>
+        <ul>
+          <li>the <em>add</em> permission allows the user to add a picture to 
+            the album.</li>
+          <li>the <em>write</em> permission allows the user to add and change 
+            pictures in the album.</li>
+          <li>the <em>del_item</em> permission allows the user remove pictures 
+            from the album.</li>
+          <li>the <em>del_alb</em> permission allows the user to delete the album.</li>
+          <li>the <em>create_sub</em> permission allows the user to create nested 
+            albums in the album.</li>
+        </ul>
+        <p>The number of albums in the response is returned as <em>number-of-albums</em>.</p>
       </li>
     </ul>
   </li>
@@ -272,143 +360,175 @@ server was able to complete the command in the client's request, the value of th
       </li>
       <li> 
         <h4>Results</h4>
-        <p>
-	        <samp>#__GR2PROTO__</samp><br>
-	        <samp>status=</samp><em>result-code</em><br>
-	        <samp>status_text=</samp><em>explanatory-text</em><br>
+        <p> <samp>#__GR2PROTO__</samp><br>
+          <samp>status=</samp><em>result-code</em><br>
+          <samp>status_text=</samp><em>explanatory-text</em><br>
         </p>
-       <p>If the <em>result-code</em> equal to
-<a href="#appendix_a">GR_STAT_SUCCESS</a>, the file upload succeeded.
-        </p>
+        <p>If the <em>result-code</em> equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
+          the file upload succeeded. </p>
+      </li>
+    </ul>
+  </li>
+ 
+  <li> 
+    <h3><a name="album-properties" id="album-properties"><samp>album-properties</samp></a> 
+      command [since 2.0]</h3>
+    <p> This command asks the server for information on an album. </p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p> A request with the <samp>login</samp> command must be made before 
+          the <samp>album-properties</samp> command is used. </p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p> <samp>cmd=album-properties<br>
+          protocol_version=2.0<br>
+          set_albumName=</samp><em>album name</em> </p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p> <samp>#__GR2PROTO__</samp><br>
+          <samp>status=</samp><em>result-code</em><br>
+          <samp>status_text=</samp><em>explanatory-text</em><br>
+          <samp>auto_resize=</samp><em>resize-dimension</em> </p>
+        <p> If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request 
+          succeeded. </p>
+        <p> If the an image uploaded with the <samp>add-item</samp> command's 
+          largest dimension is greater than <em>resize-dimension</em>, the server 
+          will resize it. </p>
+        <p> If the value is <samp>0</samp> (zero), the Gallery server does not 
+          intend to resize uploaded images. </p>
       </li>
     </ul>
   </li>
   <li> 
-    <h3><a name="album-properties" id="album-properties"><samp>album-properties</samp></a> command [since 2.0]</h3>
-    <p>
-    	This command asks the server for information on an album.
-    </p>
+    <h3><a name="new-album" id="new-album"><samp>new-album</samp></a> command 
+      [since 2.1]</h3>
+    <p> This command creates a new album on the server. </p>
     <ul>
       <li> 
         <h4>Context</h4>
-        <p>
-        	A request with the <samp>login</samp> command must be made before the 
-          	<samp>album-properties</samp> command is used.
-        </p>
+        <p> A request with the <samp>login</samp> command must be made before 
+          the <samp>album-properties</samp> command is used. </p>
       </li>
       <li> 
         <h4>Form Data</h4>
-        <p>
-        	<samp>cmd=album-properties<br>
-			protocol_version=2.0<br>
-			set_albumName=</samp><em>album name</em>
-		</p>
+        <p> <samp>cmd=album-properties<br>
+          protocol_version=2.1<br>
+          set_albumName=</samp><em>parent-album-name</em> or empty to create at 
+          top level<br>
+          <samp>newAlbumName=</samp><em>album-name</em><br>
+          <samp>newAlbumTitle=</samp><em>album-title</em><br>
+          <samp>newAlbumDesc=</samp><em>album-description</em> </p>
+        <p>where <em>parent-album-name</em> is the name of the gallery that the 
+          new album should be created under;<br>
+          <em>album-name</em> is the new album's desired name;<br>
+          <em>album-title</em> is the new album's desired title;<br>
+          <em>album-description</em> is the new album's desired description. </p>
+        <p> If <em>parent-album-name</em> is empty, the album is created at the 
+          top level. </p>
       </li>
       <li> 
         <h4>Results</h4>
-        <p>
-	        <samp>#__GR2PROTO__</samp><br>
-	        <samp>status=</samp><em>result-code</em><br>
-	        <samp>status_text=</samp><em>explanatory-text</em><br>
-	        <samp>auto_resize=</samp><em>resize-dimension</em>
-	    </p>
-        <p>
-        	If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request succeeded.
+        <p> <samp>#__GR2PROTO__</samp><br>
+          <samp>status=</samp><em>result-code</em><br>
+          <samp>status_text=</samp><em>explanatory-text</em><br>
         </p>
-        <p>
-	      	If the an image uploaded with the <samp>add-item</samp> command's largest dimension
-	      	is greater than <em>resize-dimension</em>, the server will resize it.
-       	</p>
-       	<p>
-       		If the value is <samp>0</samp> (zero), the Gallery server does not intend to resize uploaded images.
-       	</p>
+        <p> If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request 
+          succeeded. </p>
+        <p> If the <em>result-code</em> is equal to GR_STAT_NO_CREATE_ALBUM_PERMISSION, 
+          the logged-in user doesn't have permission to create an album in the 
+          specified location. </p>
       </li>
     </ul>
   </li>
-  <li> 
-    <h3><a name="new-album" id="new-album"><samp>new-album</samp></a> command [since 2.1]</h3>
-    <p>
-    	This command creates a new album on the server.
-    </p>
-    <ul>
-      <li> 
-        <h4>Context</h4>
-        <p>
-        	A request with the <samp>login</samp> command must be made before the 
-          	<samp>album-properties</samp> command is used.
-        </p>
-      </li>
-      <li> 
-        <h4>Form Data</h4>
-        <p>
-        	<samp>cmd=album-properties<br>
-			protocol_version=2.1<br>
-			set_albumName=</samp><em>parent-album-name</em> or empty to create at top level<br>
-			<samp>newAlbumName=</samp><em>album-name</em><br>
-			<samp>newAlbumTitle=</samp><em>album-title</em><br>
-			<samp>newAlbumDesc=</samp><em>album-description</em>
-		</p>
-        <p>where <em>parent-album-name</em> is the name of the gallery that the new album should be created
-        under;<br>
-        <em>album-name</em> is the new album's desired name;<br>
-        <em>album-title</em> is the new album's desired title;<br>
-        <em>album-description</em> is the new album's desired description.
-        </p><p>
-        If <em>parent-album-name</em> is empty, the album is created at the top level.
-        </p>
-      </li>
-      <li> 
-        <h4>Results</h4>
-        <p>
-	        <samp>#__GR2PROTO__</samp><br>
-	        <samp>status=</samp><em>result-code</em><br>
-	        <samp>status_text=</samp><em>explanatory-text</em><br>
-	    </p>
-        <p>
-        	If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request succeeded.
-        </p>
-        <p>
-        	If the <em>result-code</em> is equal to GR_STAT_NO_CREATE_ALBUM_PERMISSION, the
-        	logged-in user doesn't have permission to create an album in the specified location.
-        </p>
-      </li>
-    </ul>
-  </li>
- </ol>
+</ol>
 
 <hr>
 
 <h2><a name="appendix_a">Appendix A: Response Status Codes</a></h2>
 
 <table>
-<thead>
-<tr>
-	<th>Status name</th>
-	<th>Code</th>
-	<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr><td>GR_STAT_SUCCESS</td><td>0</td><td>The command the client sent in
-the request completed successfully.  The data (if any) in the response should
-be considered valid.</td></tr>
-
-<tr><td>GR_STAT_PROTO_MAJ_VER_INVAL</td><td>101</td><td>The protocol major version the client is using is not supported.</td></tr>
-<tr><td>GR_STAT_PROTO_MIN_VER_INVAL</td><td>102</td><td>The protocol minor version the client is using is not supported.</td></tr>
-<tr><td>GR_STAT_PROTO_VER_FMT_INVAL</td><td>103</td><td>The format of the protocol version string the client sent in the request is invalid.</td></tr>
-<tr><td>GR_STAT_PROTO_VER_MISSING</td><td>104</td><td>The request did not contain the required <samp>protocol_version</samp> key.</td></tr>
-
-<tr><td>GR_STAT_PASSWD_WRONG</td><td>201</td><td>The password and/or username the client send in the request is invalid.</td></tr>
-<tr><td>GR_STAT_LOGIN_MISSING</td><td>202</td><td>The client used the login command in the request but failed to include either the username or password (or both) in the request.</td></tr>
-
-<tr><td>GR_STAT_UNKNOWN_CMD</td><td>301</td><td>The value of the <samp>cmd</samp> key is not valid.</td></tr>
-
-<tr><td>GR_STAT_NO_ADD_PERMISSION</td><td>401</td><td>The user does not have permission to add an item to the gallery.</td></tr>
-<tr><td>GR_STAT_NO_FILENAME</td><td>402</td><td>No filename was specified.</td></tr>
-<tr><td>GR_STAT_UPLOAD_PHOTO_FAIL</td><td>403</td><td>The file was received, but could not be processed or added to the album.</td></tr>
-<tr><td>GR_STAT_NO_CREATE_ALBUM_PERMISSION</td><td>501</td><td>A new album could not be created because the user does not have permission to do so.</td></tr>
-
-</tbody>
+  <thead>
+    <tr> 
+      <th>Status name</th>
+      <th>Code</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GR_STAT_SUCCESS</td>
+      <td>0</td>
+      <td>The command the client sent in the request completed successfully. The 
+        data (if any) in the response should be considered valid.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_PROTO_MAJ_VER_INVAL</td>
+      <td>101</td>
+      <td>The protocol major version the client is using is not supported.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_PROTO_MIN_VER_INVAL</td>
+      <td>102</td>
+      <td>The protocol minor version the client is using is not supported.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_PROTO_VER_FMT_INVAL</td>
+      <td>103</td>
+      <td>The format of the protocol version string the client sent in the request 
+        is invalid.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_PROTO_VER_MISSING</td>
+      <td>104</td>
+      <td>The request did not contain the required <samp>protocol_version</samp> 
+        key.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_PASSWD_WRONG</td>
+      <td>201</td>
+      <td>The password and/or username the client send in the request is invalid.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_LOGIN_MISSING</td>
+      <td>202</td>
+      <td>The client used the login command in the request but failed to include 
+        either the username or password (or both) in the request.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_UNKNOWN_CMD</td>
+      <td>301</td>
+      <td>The value of the <samp>cmd</samp> key is not valid.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_NO_ADD_PERMISSION</td>
+      <td>401</td>
+      <td>The user does not have permission to add an item to the gallery.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_NO_FILENAME</td>
+      <td>402</td>
+      <td>No filename was specified.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_UPLOAD_PHOTO_FAIL</td>
+      <td>403</td>
+      <td>The file was received, but could not be processed or added to the album.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_NO_CREATE_ALBUM_PERMISSION</td>
+      <td>501</td>
+      <td>A new album could not be created because the user does not have permission 
+        to do so.</td>
+    </tr>
+    <tr>
+      <td>GR_STAT_CREATE_ALBUM_FAILED</td>
+      <td>502</td>
+      <td>A new album could not be created, for a different reason (name conflict).</td>
+    </tr>
+  </tbody>
 </table>
 
 <hr>
