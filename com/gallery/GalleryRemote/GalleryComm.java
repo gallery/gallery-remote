@@ -144,25 +144,30 @@ public abstract class GalleryComm {
 		try {
 			// create a connection	
 			HTTPConnection mConnection = new HTTPConnection( url );
-			
-			// assemble the URL
-			String urlPath = url.getFile();
-			
-			Log.log(Log.TRACE, MODULE, "Trying protocol 2 for " + url);
-			// Test GalleryComm2
-			String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
-			if (tryComm(su, mConnection, urlPath2)) {
-				Log.log(Log.TRACE, MODULE, "Server has protocol 2");
+
+			if (g.getType() == Gallery.TYPE_STANDALONE) {
+				// assemble the URL
+				String urlPath = url.getFile();
+
+				Log.log(Log.TRACE, MODULE, "Trying protocol 2 for " + url);
+				// Test GalleryComm2
+				String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
+				if (tryComm(su, mConnection, urlPath2)) {
+					Log.log(Log.TRACE, MODULE, "Server has protocol 2");
+					return new GalleryComm2(g);
+				}
+
+				Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
+				// Test GalleryComm1
+				// BUT: only if first try was not status code 401 = authorization failure
+				String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
+				if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
+					Log.log(Log.TRACE, MODULE, "Server has protocol 1");
+					return new GalleryComm1(g);
+				}
+			} else {
+				// if Gallery is embedded, only support protocol 2
 				return new GalleryComm2(g);
-			}
-			
-			Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
-			// Test GalleryComm1
-			// BUT: only if first try was not status code 401 = authorization failure
-			String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
-			if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
-				Log.log(Log.TRACE, MODULE, "Server has protocol 1");
-				return new GalleryComm1(g);
 			}
 		} catch (HTTPClient.ProtocolNotSuppException e) {
 			e.printStackTrace();

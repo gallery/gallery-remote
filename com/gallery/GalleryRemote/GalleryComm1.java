@@ -116,9 +116,9 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			status("Logging in to " + g.toString());
 			
 			try	{
-				URL url = g.getUrl();
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
+				URL url = g.getGalleryUrl(SCRIPT_NAME);
+				String urlPath = url.getFile();
+				Log.log(Log.TRACE, MODULE, "Url: " + url);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "login"),
@@ -221,9 +221,9 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 
 		boolean uploadPicture(Picture p) {
 			try	{
-				URL url = g.getUrl();
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
+				URL url = g.getGalleryUrl(SCRIPT_NAME);
+				String urlPath = url.getFile();
+				Log.log(Log.TRACE, MODULE, "Url: " + url);
 			
 				NVPair[] opts = {
 					new NVPair("set_albumName", p.getAlbum().getName()),
@@ -281,9 +281,9 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
 			
 			try {
-				URL url =g.getUrl();
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
+				URL url =g.getGalleryUrl(SCRIPT_NAME);
+				String urlPath = url.getFile();
+				Log.log(Log.TRACE, MODULE, "Url: " + url);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "fetch-albums"),
