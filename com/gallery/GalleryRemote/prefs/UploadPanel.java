@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +17,9 @@ import javax.swing.border.*;
 public class UploadPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "UploadPa";
 
-	JLabel icon = new JLabel("Upload");
+    public static GRI18n grRes = GRI18n.getInstance();
+
+	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -123,41 +126,33 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 	private void jbInit() {
 		border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
-        titledBorder1 = new TitledBorder(border1,"Resize/Rotate");
+        titledBorder1 = new TitledBorder(border1,grRes.getString(MODULE, "res_rot"));
         this.setLayout(gridBagLayout1);
 		jPanel1.setLayout(gridBagLayout4);
 		resizeToWidth.setMinimumSize(new Dimension(25, 21));
 		resizeToWidth.setPreferredSize(new Dimension(25, 21));
-		resizeToWidth.setToolTipText("Resize to width");
+		resizeToWidth.setToolTipText(grRes.getString(MODULE, "res2W"));
 		jLabel2.setText("x");
 		resizeToHeight.setMinimumSize(new Dimension(25, 21));
 		resizeToHeight.setPreferredSize(new Dimension(25, 21));
-		resizeToHeight.setToolTipText("Resize to height");
+		resizeToHeight.setToolTipText(grRes.getString(MODULE, "res2H"));
 		jPanel1.setBorder(titledBorder1);
 		jPanel2.setLayout(gridBagLayout2);
-		setCaptionsWithFilenames.setToolTipText("Sets the caption to the image file when the image is loaded (it can " +
-				"later be changed by editing the caption)");
-		setCaptionsWithFilenames.setText("Pre-set captions with filenames");
-		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Captions"));
-		resizeBeforeUpload.setToolTipText("Instructs Gallery Remote to perform resizing on images before they\'re " +
-				"sent to the server, which lowers bandwidth usage. Only possible if " +
-				"ImageMagick is installed.");
-		resizeBeforeUpload.setText("Resize before upload");
-		resizeToDefault.setToolTipText("Resize to the Album\'s default");
-		resizeToDefault.setText("Album default");
-		resizeToForce.setToolTipText("Force the resize dimension, and disregard the dimensions set by the " +
-				"Album");
-		resizeToForce.setText("Force resize to");
-		htmlEscapeCaptionsNot.setToolTipText("When checked, you can (and have to) write your captions in HTML markup. " +
-				"When unchecked, just type any text, and HTML markup will be generated " +
-				"for you.");
-		htmlEscapeCaptionsNot.setText("Allow HTML markup in captions and extra fields");
-		captionStripExtension.setToolTipText("Remove the extension (.gif, .jpeg, etc.) from the filename when using " +
-				"it as a caption");
-		captionStripExtension.setText("Strip the filename extension");
-		exifAutorotate.setToolTipText("If your camera doesn\'t have an orientation sensor, you should disable " +
-    			"this feature, as it slows down adding files");
-        exifAutorotate.setText("Read EXIF from JPEG files to auto-rotate images");
+		setCaptionsWithFilenames.setToolTipText(grRes.getString(MODULE, "captTip"));
+		setCaptionsWithFilenames.setText(grRes.getString(MODULE, "capt"));
+		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "captions")));
+		resizeBeforeUpload.setToolTipText(grRes.getString(MODULE, "resBfrUpldTip"));
+		resizeBeforeUpload.setText(grRes.getString(MODULE, "resBfrUpld"));
+		resizeToDefault.setToolTipText(grRes.getString(MODULE, "res2Def"));
+		resizeToDefault.setText(grRes.getString(MODULE, "res2Def"));
+		resizeToForce.setToolTipText(grRes.getString(MODULE, "res2FrcTip"));
+		resizeToForce.setText(grRes.getString(MODULE, "res2Frc"));
+		htmlEscapeCaptionsNot.setToolTipText(grRes.getString(MODULE, "escCaptTip"));
+		htmlEscapeCaptionsNot.setText(grRes.getString(MODULE, "escCapt"));
+		captionStripExtension.setToolTipText(grRes.getString(MODULE, "stripExtTip"));
+		captionStripExtension.setText(grRes.getString(MODULE, "stripExt"));
+		exifAutorotate.setToolTipText(grRes.getString(MODULE, "autoRotTip"));
+        exifAutorotate.setText(grRes.getString(MODULE, "autoRot"));
         this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(resizeToWidth,         new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0

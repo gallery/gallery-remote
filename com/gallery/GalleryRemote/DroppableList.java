@@ -50,6 +50,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 
 import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 /**
  *  Drag and drop handler
@@ -60,6 +61,7 @@ import com.gallery.GalleryRemote.model.Picture;
 public class DroppableList extends JList
 		 implements DropTargetListener, DragSourceListener, DragGestureListener {
 	private final static String MODULE = "Droplist";
+    private static GRI18n grRes = GRI18n.getInstance();
 
 	MainFrame mf = null;
 	DragSource dragSource;
@@ -191,8 +193,8 @@ public class DroppableList extends JList
 					Log.logStack( Log.ERROR, MODULE );
 					JOptionPane.showMessageDialog(
 							null,
-							"It was not possible to accept the images due to an error.",
-							"Error Accepting Dragged Images",
+							grRes.getString(MODULE, "imgError"),
+							grRes.getString(MODULE, "dragError"),
 							JOptionPane.ERROR_MESSAGE );
 				}
 

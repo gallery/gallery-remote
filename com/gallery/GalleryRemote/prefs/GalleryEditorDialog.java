@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
@@ -16,6 +17,8 @@ import java.awt.event.ActionEvent;
  */
 public class GalleryEditorDialog extends JDialog implements ActionListener {
 	public static final String MODULE = "GEdiDlog";
+
+    public static GRI18n grRes = GRI18n.getInstance();
 
 	Gallery gallery;
 	boolean isOK = false;
@@ -76,60 +79,47 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 	private void jbInit() {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.setTitle("Gallery Details");
+		this.setTitle(grRes.getString(MODULE, "title"));
 
 		jMainPanel.setLayout(new GridBagLayout());
-		jUsernameLabel.setText("Username");
-		jPasswordLabel.setText("Password");
-		jTypeLabel.setText("Gallery Type");
+		jUsernameLabel.setText(grRes.getString(MODULE, "username"));
+		jPasswordLabel.setText(grRes.getString(MODULE, "passwd"));
+		jTypeLabel.setText(grRes.getString(MODULE, "type"));
 		jStylePanel.setLayout(jStyleLayout);
 
-		jType.setToolTipText("Use Standalone when your Gallery is not embedded inside a Content " +
-				"Management System (the default). If it is embedded, pick the CMS " +
-				"it\'s wrapped in.");
+		jType.setToolTipText(grRes.getString(MODULE, "typeTip"));
 		jType.setEditable(false);
 		jType.setModel(new DefaultComboBoxModel(Gallery.types));
 
-		jOk.setText("OK");
-		jCancel.setText("Cancel");
+		jOk.setText(grRes.getString(MODULE, "OK"));
+        jOk.setActionCommand("OK");
+		jCancel.setText(grRes.getString(MODULE, "cancel"));
+        jCancel.setActionCommand("Cancel");
 		jButtonPanel.setLayout(gridLayout1);
 		gridLayout1.setHgap(5);
 
 		jStandalone.setLayout(new GridBagLayout());
-		jStandaloneUrlLabel.setText("Gallery URL");
-		jStandaloneHelpLabel.setText("<HTML>The Gallery URL is the URL users would use to connect to your " +
-				"Gallery.</HTML>");
+		jStandaloneUrlLabel.setText(grRes.getString(MODULE, "stndAln"));
+		jStandaloneHelpLabel.setText(grRes.getString(MODULE, "stndAlnHlp"));
 		jStandaloneHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 		jStandaloneHelpLabel.setVerticalTextPosition(SwingConstants.CENTER);
 
 		jPostNuke.setLayout(new GridBagLayout());
-		jPnLoginUrlLabel.setText("PostNuke Login URL");
+		jPnLoginUrlLabel.setText(grRes.getString(MODULE, "pnLogin"));
 		jPnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
 		jPnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
-		jPnGalleryUrlLabel.setText("Gallery Module URL");
+		jPnGalleryUrlLabel.setText(grRes.getString(MODULE, "gllryUrl"));
 		jPnHelpLabel.setPreferredSize(new Dimension(300, 80));
-		jPnHelpLabel.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
-				"Remote tries to log in by the username and password you enter above " +
-				"and <b>$GALLERYFILE$</b> is replaced with the PHP file Gallery Remote uses " +
-				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).<BR>" +
-				"The <b>name</b> parameter is the PostNuke module name of your gallery; set it " +
-				"accordingly.<BR>" +
-				"This functionality is only available with Gallery 1.3.5 (beta 10) and later.</HTML>");
+		jPnHelpLabel.setText(grRes.getString(MODULE, "pnHelp"));
 		jPnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		jPHPNuke.setLayout(new GridBagLayout());
-		jPhpnLoginUrlLabel.setText("PHPNuke Login URL");
+		jPhpnLoginUrlLabel.setText(grRes.getString(MODULE, "phpNukeLogin"));
 		jPhpnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
 		jPhpnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
-		jPhpnGalleryUrlLabel.setText("Gallery Module URL");
+		jPhpnGalleryUrlLabel.setText(grRes.getString(MODULE, "gllryUrl"));
 		jPhpnHelpLabel.setPreferredSize(new Dimension(300, 80));
-		jPhpnHelpLabel.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
-				"Remote tries to log in by the username and password you enter above " +
-				"and <b>$GALLERYFILE$</b> is replaced with the PHP file Gallery Remote uses " +
-				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).<BR>" +
-				"The <b>name</b> parameter is the PHPNuke module name of your gallery; set it " +
-				"accordingly.<BR>" +
-				"This functionality is only available with Gallery 1.3.5 (beta 10) and later.</HTML>");
+		jPhpnHelpLabel.setText(grRes.getString(MODULE, "phpNukeHelp"));
 		jPhpnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);

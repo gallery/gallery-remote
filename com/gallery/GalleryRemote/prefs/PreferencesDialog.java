@@ -4,6 +4,7 @@ import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -25,6 +26,8 @@ import java.io.IOException;
 
 public class PreferencesDialog extends JDialog implements ListSelectionListener, ActionListener {
 	public static final String MODULE = "PrefsDlog";
+
+    public static GRI18n grRes = GRI18n.getInstance();
 
 	DefaultListModel panels = new DefaultListModel();
 	HashMap panelNames = new HashMap();
@@ -101,14 +104,16 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		jScrollPane1.setAlignmentY((float) 0.5);
 		jScrollPane1.setPreferredSize(new Dimension(100, 200));
 		jPanels.setLayout(jPanelsLayout);
-		this.setTitle("Gallery Remote preferences");
+		this.setTitle(grRes.getString(MODULE, "title"));
 		jOK.setMnemonic('0');
-		jOK.setText("OK");
+		jOK.setText(grRes.getString(MODULE, "OK"));
+        jOK.setActionCommand("OK");
 		jPanel2.setLayout(gridLayout1);
-		jRevert.setToolTipText("Revert this panel to its state before current changes. If the button " +
-				"is disabled, all or part of the changes in this panel cannot be reverted.");
-		jRevert.setText("Revert");
-		jCancel.setText("Cancel");
+		jRevert.setToolTipText(grRes.getString(MODULE, "revertTip"));
+		jRevert.setText(grRes.getString(MODULE, "revert"));
+        jRevert.setActionCommand("revert");
+		jCancel.setText(grRes.getString(MODULE, "cancel"));
+        jCancel.setActionCommand("cancel");
 		gridLayout1.setHgap(5);
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
 		jPanel1.add(jScrollPane1,      new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
@@ -169,9 +174,9 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 			//Log.log(Log.TRACE, MODULE, "Updating preferences");
 			//((MainFrame) getOwner()).readPreferences(oldProperties);
-		} else if (cmd.equals("Cancel")) {
+		} else if (cmd.equals("cancel")) {
 			setVisible(false);
-		} else if (cmd.equals("Revert")) {
+		} else if (cmd.equals("revert")) {
 			PreferencePanel pp = (PreferencePanel) jIcons.getSelectedValue();
 			Log.log(Log.TRACE, MODULE, "Reverting panel " + pp.getClass());
 			pp.readProperties(GalleryRemote.getInstance().properties);

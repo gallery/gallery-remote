@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,9 @@ import javax.swing.border.*;
 public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	public static final String MODULE = "GeneralPa";
 
-	JLabel icon = new JLabel("General");
+    public static GRI18n grRes = GRI18n.getInstance();
+
+	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -26,8 +29,11 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	JCheckBox savePasswords = new JCheckBox();
 	GridBagLayout gridBagLayout2 = new GridBagLayout();
 	JLabel jLabel3 = new JLabel();
-	JComboBox logLevel = new JComboBox(new String[] {"Only critical errors", "Critical and normal errors",
-													 "Also print information messages", "Detailed, very verbose log"});
+	JComboBox logLevel = new JComboBox(new String[] {
+        grRes.getString(MODULE, "logLevel0"),
+        grRes.getString(MODULE, "logLevel1"),
+	    grRes.getString(MODULE, "logLevel2"),
+        grRes.getString(MODULE, "logLevel3")});
 	JPanel jPanel3 = new JPanel();
 	JPanel jPanel4 = new JPanel();
 	JCheckBox updateCheck = new JCheckBox();
@@ -78,36 +84,33 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 
 	private void jbInit() {
 		this.setLayout(gridBagLayout1);
-		jLabel1.setText("Thumbnail size");
+		jLabel1.setText(grRes.getString(MODULE, "thumbS"));
 		jPanel1.setLayout(gridBagLayout4);
 		thumbnailWidth.setMinimumSize(new Dimension(25, 21));
 		thumbnailWidth.setPreferredSize(new Dimension(25, 21));
-		thumbnailWidth.setToolTipText("Thumbnail width");
-		jLabel2.setText("x");
+		thumbnailWidth.setToolTipText(grRes.getString(MODULE, "thumbW"));
+		jLabel2.setText(grRes.getString(MODULE, "label2"));
 		thumbnailHeight.setMinimumSize(new Dimension(25, 21));
 		thumbnailHeight.setPreferredSize(new Dimension(25, 21));
-		thumbnailHeight.setToolTipText("Thumbnail height");
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Thumbnails"));
+		thumbnailHeight.setToolTipText(grRes.getString(MODULE, "thumbH"));
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "thumb")));
 		jPanel2.setLayout(gridBagLayout2);
-		savePasswords.setToolTipText("Save passwords in the preferences file. They are not encrypted, so " +
-				"this is a security risk");
-		savePasswords.setText("Save passwords");
-		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Logging and privacy"));
-		jLabel3.setText("Log level");
-		logLevel.setToolTipText("Gallery Remote generates a log in \"log.txt\" in the application directory. " +
-				"This sets how verbose the log is.");
+		savePasswords.setToolTipText(grRes.getString(MODULE, "savePwdTip"));
+		savePasswords.setText(grRes.getString(MODULE, "savePwd"));
+		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "log_priv")));
+		jLabel3.setText(grRes.getString(MODULE, "logLevel"));
+		logLevel.setToolTipText(grRes.getString(MODULE, "logLevelTip"));
 		logLevel.setActionCommand("comboBoxChanged");
 		logLevel.setSelectedIndex(-1);
-		jPanel4.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Version checks"));
+		jPanel4.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "versionCheck")));
 		jPanel4.setMaximumSize(new Dimension(32767, 32767));
 		jPanel4.setLayout(gridBagLayout3);
-		updateCheck.setToolTipText("Checking for updates will send an HTTP request to the Gallery community " +
-				"site whenever Gallery Remote is launched");
-		updateCheck.setText("Check for updates");
-		updateCheckBeta.setToolTipText("Beta updates are much more frequent than regular releases");
-		updateCheckBeta.setText("Check for beta updates");
-		showThumbnails.setToolTipText("Show thumbnails in the list of pictures to upload");
-		showThumbnails.setText("Show thumbnails");
+		updateCheck.setToolTipText(grRes.getString(MODULE, "updateCheckTip"));
+		updateCheck.setText(grRes.getString(MODULE, "updateCheck"));
+		updateCheckBeta.setToolTipText(grRes.getString(MODULE, "updateBetaCheckTip"));
+		updateCheckBeta.setText(grRes.getString(MODULE, "updateBetaCheck"));
+		showThumbnails.setToolTipText(grRes.getString(MODULE, "showThumbTip"));
+		showThumbnails.setText(grRes.getString(MODULE, "showThumb"));
 		this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(jLabel1,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0

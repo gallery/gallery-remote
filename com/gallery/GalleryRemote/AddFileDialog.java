@@ -21,6 +21,8 @@
 
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.util.GRI18n;
+
 import java.awt.Component;
 import java.io.File;
 
@@ -28,6 +30,7 @@ import javax.swing.JFileChooser;
 
 public class AddFileDialog
 {
+
 	static File[] addFiles(Component parent)
 	{
 		JFileChooser fc = new JFileChooser();
@@ -42,7 +45,7 @@ public class AddFileDialog
 			fc.setCurrentDirectory(currentDirectory);
 		}
 
-		int retval = fc.showDialog(parent, "Add");
+		int retval = fc.showDialog(parent, GRI18n.getInstance().getString("AddFileDialog", "Add"));
 		if (retval != JFileChooser.CANCEL_OPTION)
 		{
 			GalleryRemote.getInstance().properties.setCurrentDirectory(fc.getCurrentDirectory());

@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
@@ -19,7 +20,9 @@ import javax.swing.border.*;
 public class URLPanel extends PreferencePanel implements ListSelectionListener, ActionListener {
 	public static final String MODULE = "URLPa";
 
-	JLabel icon = new JLabel("URLs");
+    public static GRI18n grRes = GRI18n.getInstance();
+
+	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JScrollPane jScrollPane1 = new JScrollPane();
@@ -52,12 +55,12 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 	private void jbInit() {
 		this.setLayout(gridBagLayout1);
 		jModify.setActionCommand("Modify");
-		jModify.setText("Modify...");
+		jModify.setText(grRes.getString(MODULE, "modify"));
 		jNew.setActionCommand("New");
-		jNew.setText("New...");
+		jNew.setText(grRes.getString(MODULE, "new"));
 		jDelete.setActionCommand("Delete");
-		jDelete.setText("Delete...");
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Details"));
+		jDelete.setText(grRes.getString(MODULE, "delete"));
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "details")));
 		jPanel1.setLayout(gridLayout1);
 		gridLayout1.setColumns(1);
 		jDetails.setMinimumSize(new Dimension(0, 50));
@@ -120,8 +123,9 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				resetUIState();
 			}
 		} else if (cmd.equals("Delete")) {
-			int n = JOptionPane.showConfirmDialog(this, "Are you sure you want to discard login information for '" + g.getStUrlString() + "'?",
-					"Delete Gallery",
+            Object [] params = {g.getStUrlString() };
+			int n = JOptionPane.showConfirmDialog(this, grRes.getString(MODULE, "delConfirm", params),
+					grRes.getString(MODULE, "delete"),
 					JOptionPane.WARNING_MESSAGE,
 					JOptionPane.YES_NO_OPTION);
 
@@ -151,20 +155,20 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			sb.append("<HTML>");
 
 			if (selectedGallery.getType() == Gallery.TYPE_STANDALONE) {
-				sb.append("Gallery URL: ").append(selectedGallery.getStUrlString()).append("<br>");
+				sb.append(grRes.getString(MODULE, "gllryURL")).append(selectedGallery.getStUrlString()).append("<br>");
 			} else if (selectedGallery.getType() == Gallery.TYPE_POSTNUKE) {
-				sb.append("PostNuke login URL: ").append(selectedGallery.getPnLoginUrlString()).append("<br>");
-				sb.append("PostNuke Gallery URL: ").append(selectedGallery.getPnGalleryUrlString()).append("<br>");
+				sb.append(grRes.getString(MODULE, "pnLoginURL")).append(selectedGallery.getPnLoginUrlString()).append("<br>");
+				sb.append(grRes.getString(MODULE, "pnGllryURL")).append(selectedGallery.getPnGalleryUrlString()).append("<br>");
 			} else if (selectedGallery.getType() == Gallery.TYPE_PHPNUKE) {
-				sb.append("PHPNuke login URL: ").append(selectedGallery.getPhpnLoginUrlString()).append("<br>");
-				sb.append("PHPNuke Gallery URL: ").append(selectedGallery.getPhpnGalleryUrlString()).append("<br>");
+				sb.append(grRes.getString(MODULE, "phpnLoginURL")).append(selectedGallery.getPhpnLoginUrlString()).append("<br>");
+				sb.append(grRes.getString(MODULE, "phpnGllryURL")).append(selectedGallery.getPhpnGalleryUrlString()).append("<br>");
 			}
 
 			String username = selectedGallery.getUsername();
 			if (username == null || username.length() == 0) {
 				username = "&lt;Not set&gt;";
 			}
-			sb.append("Username: ").append(username).append("<br>");
+			sb.append(grRes.getString(MODULE, "username")).append(username).append("<br>");
 
 			sb.append("</HTML>");
 

@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
@@ -20,9 +21,11 @@ import java.util.Iterator;
 public class QuickConfigPanel extends PreferencePanel implements ActionListener {
 	public static final String MODULE = "QuickCPa";
 
+    public static GRI18n grRes = GRI18n.getInstance();
+
 	GalleryProperties newProps = null;
 
-	JLabel icon = new JLabel("Quick Config");
+	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel jLabel1 = new JLabel();
 	JTextField jURL = new JTextField();
@@ -48,19 +51,11 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 	}
 
 	private void jbInit() {
-		jLabel1.setText("URL");
+		jLabel1.setText(grRes.getString(MODULE, "URL"));
 		this.setLayout(gridBagLayout1);
 
-		jSetup.setText("Setup");
-		jLabel2.setText("<html>" +
-				"This panel allows you to connect to a web server and fetch configuration options from it, for easy setup. " +
-				"Enter the URL of the setup file (your administrator needs to give it to you) and click <i>Setup</i>.<br>" +
-				"<b>Caution</b>: this operation is not cancellable.<br>" +
-				"<br>" +
-				"Gallery administrators: to enable your users to use this functionality you merely need to put somewhere " +
-				"on your web site a properties file that contains the settings you want to override and distribute that " +
-				"URL to your users." +
-				"</html>");
+		jSetup.setText(grRes.getString(MODULE, "setup"));
+		jLabel2.setText(grRes.getString(MODULE, "info"));
 		jLabel2.setVerticalAlignment(SwingConstants.TOP);
 		jLabel2.setPreferredSize(new Dimension(200, 100));
 		this.add(jLabel1,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
@@ -113,12 +108,12 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 
 				overridden.append("</ul>");
 
-				JOptionPane.showMessageDialog(this, "<html>Loaded configuration file.<br>Overridden properties:" + overridden.toString() + "</html>", "Done", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "confLoaded")+ overridden.toString() + "</html>", grRes.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, "Empty configuration file.", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "emptyConfFile"), "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} catch (Exception ex) {
-			JOptionPane.showMessageDialog(this, "Could not find configuration file.", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Could not find configuration file.", grRes.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
 			Log.log(Log.ERROR, MODULE, "Fetching configuration failed");
 			Log.logException( Log.ERROR, MODULE, ex );
 		}

@@ -28,6 +28,7 @@ import javax.swing.*;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 /**
  *  Album model
@@ -42,7 +43,8 @@ public class Album extends Picture implements ListModel, Serializable
 	 * CONSTANTS
 	 */
 	public static final String MODULE="Album";
-	
+    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	/* -------------------------------------------------------------------------
 	 * LOCAL STORAGE
@@ -54,8 +56,9 @@ public class Album extends Picture implements ListModel, Serializable
 	 * SERVER INFO
 	 */
 	Gallery gallery = null;
+
 	Album parent; // parent Album
-	String title = "Not yet connected to Gallery";
+	String title = grRes.getString(MODULE, "title");
 	String name;
 	ArrayList extraFields;
 
@@ -73,7 +76,7 @@ public class Album extends Picture implements ListModel, Serializable
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
 
-	public static List extraFieldsNoShow = Arrays.asList(new String[] {"Upload Date", "Capture Date"});
+	public static List extraFieldsNoShow = Arrays.asList(new String[] {grRes.getString(MODULE, "upDate"), grRes.getString(MODULE, "captDate")});
 
 
 	/**
@@ -416,7 +419,7 @@ public class Album extends Picture implements ListModel, Serializable
 		// currently.  eventually, when we start changing things
 		// on the server, permission support will get more ... interesting.
 		if ( ! canAdd ) {
-			ret.append( " (read-only)" );	
+			ret.append( grRes.getString(MODULE, "ro") );
 		}
 		
 		return ret.toString();

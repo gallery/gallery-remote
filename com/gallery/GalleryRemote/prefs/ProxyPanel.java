@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +17,9 @@ import javax.swing.border.*;
 public class ProxyPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "ProxyPa";
 
-	JLabel icon = new JLabel("Proxy");
+    public static GRI18n grRes = GRI18n.getInstance();
+
+	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JCheckBox jUseProxy = new JCheckBox();
 	JLabel jLabel1 = new JLabel();
@@ -80,12 +83,12 @@ public class ProxyPanel extends PreferencePanel implements ActionListener, Prefe
 	}
 	
 	private void jbInit() {
-		jUseProxy.setText("Use proxy");
+		jUseProxy.setText(grRes.getString(MODULE, "useProxy"));
 		this.setLayout(gridBagLayout1);
-		jLabel1.setText("Proxy URL");
-		jLabel2.setText("Proxy port");
-		jLabel3.setText("Username");
-		jLabel4.setText("Password");
+		jLabel1.setText(grRes.getString(MODULE, "proxyURL"));
+		jLabel2.setText(grRes.getString(MODULE, "proxyPort"));
+		jLabel3.setText(grRes.getString(MODULE, "username"));
+		jLabel4.setText(grRes.getString(MODULE, "passwd"));
 		jProxyHost.setText("");
 		jProxyPort.setText("");
 		jProxyUsername.setText("");

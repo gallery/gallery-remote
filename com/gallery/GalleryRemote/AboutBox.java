@@ -21,6 +21,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,7 +51,9 @@ public class AboutBox extends JDialog {
 	public static final String MODULE = "About";
     public static int TOP = 5;
     public static int BOTTOM = 105;
-    
+
+    public static GRI18n grRes = GRI18n.getInstance();
+
     /**
      *  Constructor for the AboutBox object
      */
@@ -74,7 +77,7 @@ public class AboutBox extends JDialog {
     private void init() {
         setModal( true );
         getContentPane().add( new AboutPanel(), BorderLayout.CENTER );
-        setTitle( "About Gallery Remote" );
+        setTitle( grRes.getString(MODULE, "title") );
         		
         pack();
         
@@ -222,7 +225,7 @@ public class AboutBox extends JDialog {
             
             
             AnimationThread() {
-                super( "About box animation thread" );
+                super( grRes.getString(MODULE, "aboutAnim") );
                 setPriority( Thread.MIN_PRIORITY );
             }
             
