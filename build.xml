@@ -42,7 +42,6 @@
   		description="create a zip patch of the Gallery Remote install">
 	
 	<zip destfile="gallery_remote.zip">
-	  <zipfileset dir="imagemagick" prefix="imagemagick" />
 	  <fileset dir="." includes="run.*" />
 	  <fileset dir="." includes="defaults.properties" />
 	  <fileset dir="." includes="ChangeLog" />
