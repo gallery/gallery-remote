@@ -40,8 +40,20 @@ public abstract class GalleryRemote {
 
 	private static GalleryRemote singleton = null;
 
-	public PropertiesFile properties = null;
+	/** Default properties, loaded from distribution file
+	 * and generally not modified by the user.
+	 */
 	public PropertiesFile defaults = null;
+
+	/** User properties, saved in a local file. */
+	public PropertiesFile properties = null;
+
+	/** Override properties, used by applets to force
+	 * properties to certain values, without allowing the
+	 * user to change them.
+	 */
+	public PropertiesFile override = null;
+
 	protected Applet applet = null;
 
 	public static ImageIcon iLogin;
