@@ -10,7 +10,7 @@ What we are looking for:
 
 * Banner/Splash-screen/about box: any size, use your judgement
 
-* Web Buttons: any standard size
+* Web buttons that we can use to publicize Gallery Remote: any standard size
 
 Of course, the more complete a proposal, the more attractive it will be, but we will attempt to use the best pieces of any proposal. I'm personally biased toward colorful and dynamic, yet legible when it comes to icons and buttons :-)
 
@@ -33,3 +33,13 @@ Details:
 - the winning proposal will be used as the icon for Gallery Remote starting with GR 1.0 and will be credited in the Gallery Remote "about box" along with the development team
 - all submissions will remain on the community web site
 - submitting a proposal implies agreeing to having it posted on the site and used in Gallery Remote free of rights, and modified by the Gallery team for the purposes of Gallery Remote and the web site
+
+Naming and formats:
+- submissions will only be accepted in the following formats: Windows ICO, GIF, JPEG, PNG
+- in order to ease classification of submissions, please adopt the following naming conventions (xxx: your initials; n: any suffix you like, for example the name of the icon collection):
+  - xxx_icon_16_n
+  - xxx_icon_32_n
+  - xxx_icon_128_n
+  - xxx_about_n
+  - xxx_banner_n
+  - xxx_button_n
