@@ -233,7 +233,9 @@ server was able to complete the command in the client's request, the value of th
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.info.extrafields.</samp><em>ref-num</em><samp>=</samp><em>extra-fields</em> 
+          [since 2.3]<br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em> 
         </p>
         <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
@@ -244,7 +246,9 @@ server was able to complete the command in the client's request, the value of th
           <li><em>ref-num</em> is a reference number,</li>
           <li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
           <li><em>album-display-name</em> is the gallery's visual name,</li>
-          <li><em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
+          <li><em>parent-ref-num</em> refers to some other album's <em>ref-num</em>,</li>
+          <li><em>extra-fields</em> is a comma-separated list of extra fields 
+            names, </li>
           <li>and <em>boolean</em> represents a boolean value. <samp>true</samp> 
             is considered true, any other value false.</li>
         </ul>
@@ -305,7 +309,9 @@ server was able to complete the command in the client's request, the value of th
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.info.extrafields.</samp><em>ref-num</em><samp>=</samp><em>extra-fields</em> 
+          [since 2.3]<br>
           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em> 
         </p>
         <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, 
@@ -316,7 +322,9 @@ server was able to complete the command in the client's request, the value of th
           <li><em>ref-num</em> is the album name (ID),</li>
           <li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
           <li><em>album-display-name</em> is the gallery's visual name,</li>
-          <li><em>parent-name</em> refers to some other album's <em>name</em>.</li>
+          <li><em>parent-name</em> refers to some other album's <em>name</em>,</li>
+          <li><em>extra-fields</em> is a comma-separated list of extra fields 
+            names, </li>
           <li>and <em>boolean</em> represents a boolean value. <samp>true</samp> 
             is considered true, any other value false.</li>
         </ul>
@@ -356,7 +364,9 @@ server was able to complete the command in the client's request, the value of th
           userfile=</samp><em>form-data-encoded image data</em><br>
           <samp>caption=</samp><em>caption</em> [since 2.0]<br>
           <samp>force_filename=</samp><em>name of the file on the server</em> 
-          [since 2.0]</p>
+          [since 2.0]<br>
+          <samp>extrafield_<em>fieldname</em>=</samp><em>value of the extra field</em> 
+          fieldname [since 2.3] </p>
       </li>
       <li> 
         <h4>Results</h4>
@@ -369,7 +379,6 @@ server was able to complete the command in the client's request, the value of th
       </li>
     </ul>
   </li>
- 
   <li> 
     <h3><a name="album-properties" id="album-properties"><samp>album-properties</samp></a> 
       command [since 2.0]</h3>
