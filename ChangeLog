@@ -1,10 +1,16 @@
+2004-02-12  Pierre-Luc Paour <gallery@paour.com> (1.3.1-b3)
+
+	* Slideshow button is disabled when ther are no pictures to show.
+	* This is also the case in the slideshow applet, and an alert is
+	  displayed.
+
 2004-02-12  Pierre-Luc Paour <gallery@paour.com> (1.3.1-b2)
 
 	* Fixed slideshow on the Mac (the top of the image was
 	  obscured by the menu bar). I can't figure out why the Mac VM
 	  will not go into full-screen mode...
 	* Fixed a potential VM killer bug with going into slideshow
-	  mode.
+	  mode. This was a Safari-crashing bug on Mac.
 
 2004-02-12  Pierre-Luc Paour <gallery@paour.com> (1.3.1-b1)
 

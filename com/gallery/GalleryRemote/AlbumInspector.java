@@ -357,6 +357,8 @@ public class AlbumInspector extends JPanel
 
 			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
 			jMove.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_MOVE_ALBUM));
+
+			jSlideshow.setEnabled(album.getSize() > 0);
 		}
 
 		// todo: protocol support

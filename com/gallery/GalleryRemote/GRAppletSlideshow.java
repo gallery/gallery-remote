@@ -90,7 +90,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	}
 
 	public void setInProgress(boolean inProgress) {
-		jStart.setEnabled(!inProgress);
+		jStart.setEnabled(!inProgress && album.getSize() > 0);
 
 		this.inProgress = inProgress;
 	}
@@ -124,8 +124,10 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		new Thread() {
 			public void run() {
 				slideshowFrame = new SlideshowFrame();
-				if (album.getPicturesList().size() > 0) {
+				if (album.getSize() > 0) {
 					ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+				} else {
+					JOptionPane.showMessageDialog(GRAppletSlideshow.this, GRI18n.getString(MODULE, "emptyAlbum"));
 				}
 			}
 		}.start();
