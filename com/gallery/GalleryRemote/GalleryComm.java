@@ -33,10 +33,10 @@ public class GalleryComm {
 	private static final String PROTOCAL_VERSION = "1";
 	private static final String SCRIPT_NAME = "gallery_remote.php";
 
-	private String mURLString = new String();
-	private String mUsername = new String();
-	private String mPassword = new String();
-	private String mAlbum = new String();
+	private String mURLString = null;
+	private String mUsername = null;
+	private String mPassword = null;
+	private String mAlbum = null;
 	
 	private ArrayList mFileList;
 	private ArrayList mAlbumList;
@@ -50,7 +50,6 @@ public class GalleryComm {
 	private HTTPConnection mConnection; 
 	
 	public GalleryComm() {
-	
 		//-- our policy handler accepts all cookies ---
 		CookieModule.setCookiePolicyHandler(new GalleryCookiePolicyHandler());
 	}
@@ -70,26 +69,33 @@ public class GalleryComm {
 		
 		mLoggedIn = false;
 	}
+	
 	public String getURLString () {
 		return mURLString;
 	}
+	
 	public void setUsername (String val) {
 		mUsername = val;
 		mLoggedIn = false;
 	}
+	
 	public String getUsername () {
 		return mUsername;
 	}
+	
 	public void setPassword (String val) {
 		mPassword = val;
 		mLoggedIn = false;
 	}
+	
 	public String getPassword () {
 		return mPassword;
 	}
+	
 	public void setAlbum (String val) {
 		mAlbum = val;
 	}
+	
 	public String getAlbum () {
 		return mAlbum;
 	}
@@ -99,9 +105,8 @@ public class GalleryComm {
 	//-- 
 	//-------------------------------------------------------------------------	
 	public void uploadFiles(ArrayList fileList) {
-	
-			mFileList = fileList;
-			final SwingWorker worker = new SwingWorker() {
+		mFileList = fileList;
+		final SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 				return new ActualTask("upload");
 			}
@@ -113,8 +118,7 @@ public class GalleryComm {
 	//-- 
 	//-------------------------------------------------------------------------	
 	public void fetchAlbums() {
-	
-			final SwingWorker worker = new SwingWorker() {
+		final SwingWorker worker = new SwingWorker() {
 			public Object construct() {
 				return new ActualTask("fetch-albums");
 			}
@@ -127,7 +131,6 @@ public class GalleryComm {
 	//-------------------------------------------------------------------------	
 	class ActualTask {
 		ActualTask (String task) {
-			
 			mDone = false;
 
 			//-- login ---
@@ -139,7 +142,6 @@ public class GalleryComm {
 			}
 			
 			if (task.equals("upload")) {
-			
 				//-- upload each file, one at a time ---
 				boolean allGood = true;
 				mUploadedCount = 0;
@@ -149,19 +151,18 @@ public class GalleryComm {
 					allGood = uploadFile(file);
 					mUploadedCount++;
 				}
-				status("[Upload] Complete.");
-			}
-			
-			else if (task.equals("fetch-albums")) {
 				
+				if (allGood) {
+					status("[Upload] Complete.");
+				} else {
+					status("[Upload] Aborted.");
+				}
+			} else if (task.equals("fetch-albums")) {
 				requestAlbumList();
 				status("[Album Fetch] Complete.");
-				
 			}
 	
 			mDone = true;
-	
-			
 		}
 	}
 		
@@ -189,12 +190,10 @@ public class GalleryComm {
 			mConnection = new HTTPConnection(url);
 			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
 			
-			if (rsp.getStatusCode() >= 300)
-			{
+			if (rsp.getStatusCode() >= 300)	{
 				loginMessage = "HTTP Error: "+rsp.getReasonLine();
-				
 			} else {
-				String response = new String(rsp.getData());
+				String response = new String(rsp.getData()).trim();
 
 				if (response.equals("SUCCESS")) {
 					mLoggedIn = true;
@@ -202,16 +201,12 @@ public class GalleryComm {
 				} else {
 					loginMessage = "Login Error: " + response;
 				}
-
 			}
-		}
-		catch (IOException ioe)
-		{
+		} catch (IOException ioe) {
+			Log.logException(Log.ERROR, MODULE, ioe);
 			loginMessage = "Error: " + ioe.toString();
-		}
-
-		catch (ModuleException me)
-		{
+		} catch (ModuleException me) {
+			Log.logException(Log.ERROR, MODULE, me);
 			loginMessage = "Error handling request: " + me.getMessage();
 		}
 
@@ -223,13 +218,11 @@ public class GalleryComm {
 	//-- 
 	//-------------------------------------------------------------------------	
 	private boolean requestAlbumList() {
-	
 		mLoggedIn = false;
 		String albumMessage;
-		status("[Fetch Albums]");
+		status("[Fetch Albums] Fetching...");
 		
-		try
-		{
+		try {
 			URL url = new URL(mURLString);
 			String loginPage = url.getFile() + SCRIPT_NAME;
 			
@@ -246,14 +239,13 @@ public class GalleryComm {
 			if (rsp.getStatusCode() >= 300)
 			{
 				albumMessage = "HTTP Error: "+rsp.getReasonLine();
-				
 			} else {
-				String response = new String(rsp.getData());
+				String response = new String(rsp.getData()).trim();
 
 				if (response.indexOf("SUCCESS") >= 0) {
 					albumMessage = "Success";
 					
-					Log.log(Log.INFO, MODULE, response);
+					Log.log(Log.INFO, MODULE, "Fetch Albums: " + response);
 					mAlbumList = new ArrayList();
 					
 					// build the list of hashtables here...
@@ -267,24 +259,18 @@ public class GalleryComm {
 							mAlbumList.add(h);
 						}
 					}
-					
 				} else {
-					albumMessage = " Error: [" + response + "]";
+					albumMessage = "Error: [" + response + "]";
 				}
-
 			}
-		}
-		catch (IOException ioe)
-		{
+		} catch (IOException ioe) {
+			Log.logException(Log.ERROR, MODULE, ioe);
 			albumMessage = "Error: " + ioe.toString();
-		}
-
-		catch (ModuleException me)
-		{
+		} catch (ModuleException me) {
+			Log.logException(Log.ERROR, MODULE, me);
 			albumMessage = "Error handling request: " + me.getMessage();
-		}
-		catch (Exception ee)
-		{
+		} catch (Exception ee) {
+			Log.logException(Log.ERROR, MODULE, ee);
 			albumMessage = "Error: " + ee.getMessage();
 		}
 
@@ -301,8 +287,7 @@ public class GalleryComm {
 		
 		String uploadMessage;
 		
-		try
-		{
+		try	{
 			URL url = new URL(mURLString);
 			String savePage = url.getFile() + SCRIPT_NAME;
 		
@@ -315,31 +300,29 @@ public class GalleryComm {
 			NVPair[] hdrs = new NVPair[1];
 			byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
 			HTTPResponse rsp = mConnection.Post(savePage, data, hdrs);
-			if (rsp.getStatusCode() >= 300)
-			{
+			
+			if (rsp.getStatusCode() >= 300)	{
 				uploadMessage = "HTTP Error: "+rsp.getReasonLine();
-				
 			} else {
-				String response = new String(rsp.getData());
+				String response = new String(rsp.getData()).trim();
 
-				if (response.equals("SUCCESS")) {
+				if (response.indexOf("SUCCESS") >= 0) {
 					uploadMessage = "Success";
 				} else {
 					uploadMessage = "Upload Error: " + response;
 				}
 			}
 		}
-		catch (IOException ioe)
-		{
+		catch (IOException ioe)	{
+			Log.logException(Log.ERROR, MODULE, ioe);
 			uploadMessage = "Error: " + ioe.toString();
-		}
-
-		catch (ModuleException me)
-		{
+		} catch (ModuleException me) {
+			Log.logException(Log.ERROR, MODULE, me);
 			uploadMessage = "Error handling request: " + me.getMessage();
 		}		
 		
 		status("[Upload " + filename + "] " + uploadMessage);
+		
 		return (uploadMessage.equals("Success"));
 	}
 	
@@ -361,9 +344,9 @@ public class GalleryComm {
 
 	public ArrayList getAlbumList() {
 		return mAlbumList;
-	}	
+	}
+	
 	public boolean done() {
 		return mDone;
 	}
-	
 }
