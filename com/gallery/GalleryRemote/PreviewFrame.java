@@ -95,9 +95,6 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		if (r == null)
 		{
-			/*r = safeNewImageIcon(filename);
-			Dimension d = getSizeKeepRatio(new Dimension(r.getIconWidth(), r.getIconHeight()), getRootPane().getSize());
-			r.setImage(safeGetScaledInstance(r.getImage(), d.width, d.height, Image.SCALE_FAST));*/
 			r = ImageUtils.load( 
 				filename, 
 				getRootPane().getSize(), 
@@ -149,48 +146,6 @@ public class PreviewFrame extends javax.swing.JFrame {
 			}
 		}
 	}
-	
-	/*public ImageIcon safeNewImageIcon(String filename)
-	{
-		Log.log(Log.TRACE, MODULE, "safeNewImageIcon " + filename);
-		Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-		try
-		{
-			return new ImageIcon(filename);
-		}
-		catch (OutOfMemoryError e)
-		{
-			Log.log(Log.ERROR, MODULE, "Caught out of memory error in safeNewImageIcon");
-			imageIcons.shrink();
-			return safeNewImageIcon(filename);
-		}
-		finally
-		{
-			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-		}
-	}
-	
-	public Image safeGetScaledInstance(Image image, int width, int height, int mode)
-	{
-		Log.log(Log.TRACE, MODULE, "safeGetScaledInstance");
-		Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-		try
-		{
-			Image result = image.getScaledInstance(width, height, mode);
-			image.flush();
-			return result;
-		}
-		catch (OutOfMemoryError e)
-		{
-			Log.log(Log.ERROR, MODULE, "Caught out of memory error in safeGetScaledInstance");
-			imageIcons.shrink();
-			return safeGetScaledInstance(image, width, height, mode);
-		}
-		finally
-		{
-			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-		}
-	}*/
 	
 
 	public class SmartHashtable extends Hashtable
