@@ -32,9 +32,6 @@ import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryAbstractListModel;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
-import javax.swing.*;
-import javax.swing.event.EventListenerList;
-
 /**
  *  Picture model
  *

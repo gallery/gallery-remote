@@ -236,7 +236,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			su.setInProgress(true);
 			if ( ! isLoggedIn ) {
 				if ( !login() ) {
-					Log.log(Log.TRACE, MODULE, "Failed to log in" + g.toString());
+					Log.log(Log.TRACE, MODULE, "Failed to log in to " + g.toString());
 					su.setInProgress(false);
 					return;
 				}
