@@ -59,8 +59,8 @@ code {
 <body>
 
 <h1 align="center">Gallery Remote ReadMe</h1>
-<p>Preview Version: 1.0b9<br>
-  Last modified: October 13, 2002</p>
+<p>Preview Version: 1.0<br>
+  Last modified: November 10, 2002</p>
 <h2 align="left">Contents</h2>
   
 <ol>
@@ -75,7 +75,10 @@ code {
 
   
 <h2><a name="whatisGR" id="whatisGR"></a>What is Gallery Remote?</h2>
-<p>Gallery Remote is a Desktop file upload utility for Gallery. </p>
+<p>Gallery Remote is a Desktop file upload utility for Gallery.</p>
+<p>It works best with newer versions of Gallery. Gallery 1.3.2 and later support 
+  a new protocol, which allows uploading captions along with images, creating 
+  new albums, etc.</p>
 
 <h2><a name="whatisG"></a>What is Gallery?</h2>
 <p>Gallery is a web-based photo album viewer/creator. For the latest information, 
@@ -123,19 +126,6 @@ toSysOut=true</pre>
 <p>you will see the log as it unfolds in the console...</p>
 <p><strong>Caution</strong>: Be careful before posting your log to forums or sending 
   it to anyone: your password is printed in clear text in several places.</p>
-<h3>Using the new protocol version (gallery_remote2.php)</h3>
-<ul>
-  <li>update your Gallery installation to the latest version (right now, only 
-    the CVS version supports the new protocol). You can check that your Gallery 
-    supports this if you have a file named <code>gallery_remote2.php</code> in 
-    the gallery home directory (alongside <code>gallery_remote.php</code>)</li>
-  <li>in your <code>GalleryRemote.properties</code>, add <code>protocolVersion=2</code></li>
-  <li>optionally, set the properties <code>resizeBeforeUpload</code>, <code>resizeTo</code> 
-    and <code>setCaptionsWithFilenames</code></li>
-  <li>log in and have fun. In the next revision of Gallery Remote, it will automatically 
-    detect whether the Gallery instance you're connecting to supports the new 
-    protocol or not.</li>
-</ul>
 <h2><a name="run"></a>Can I run Gallery Remote on platforms for which there is 
   no installer?</h2>
 <p>Yes, maybe. Gallery Remote was written in Java. If you have Java 1.3 or later
