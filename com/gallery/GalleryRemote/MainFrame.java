@@ -264,7 +264,8 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void updateGalleryParams() {
 		currentGallery = (Gallery) gallery.getSelectedItem();
-
+		
+		Log.log(Log.TRACE, MODULE, "current gallery: " + currentGallery);
 		if ( currentGallery.getUsername() != null ) {
 			username.setText( currentGallery.getUsername() );
 		} else {
@@ -824,19 +825,21 @@ public class MainFrame extends javax.swing.JFrame
 			Gallery g = new Gallery();
 			galleries.addElement( g );
 			gallery.setSelectedItem( g );
-		} else if ( command.equals( "Url" ) ) {
-			// new url chosen in the popup
-			if (e.getModifiers() != 0) {
-				// when modifiers are 0, it means that user edited
-				// so let the other branch take care of it
-				updateGalleryParams();
-			}
-		} else if ( command.equals( "comboBoxEdited" ) ) {
-			// text of a url edited
-			// when this happens, the getSelectedItem() is just a string...
+			updateGalleryParams();
+		} else if ( command.equals( "Url" ) ||
+			command.equals( "comboBoxEdited" ) ) {
+			//Log.log(Log.TRACE, MODULE, "modifiers: " + e.getModifiers());
+			//Log.log(Log.TRACE, MODULE, "paramString: " + e.paramString());
 			Log.log(Log.TRACE, MODULE, "selected: " + gallery.getSelectedItem().toString() 
 				+ " (" + gallery.getSelectedIndex() + ")");
-			currentGallery.setUrl((String) gallery.getSelectedItem());
+			
+			if (gallery.getSelectedItem() instanceof String) {
+				// text of a url edited
+				currentGallery.setUrl((String) gallery.getSelectedItem());
+			} else {
+				// new url chosen in the popup
+				updateGalleryParams();
+			}
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled command " + command );
 		}
