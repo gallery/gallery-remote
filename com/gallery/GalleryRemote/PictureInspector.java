@@ -216,6 +216,8 @@ public class PictureInspector extends JPanel
 	 *@param  p  The new picture value
 	 */
 	public void setPictures( Object[] pictures ) {
+		//Log.log(Log.TRACE, MODULE, "setPictures " + pictures);
+		//Log.logStack(Log.TRACE, MODULE);
 		this.pictures = pictures;
 
 		icon.setPreferredSize(
@@ -246,9 +248,9 @@ public class PictureInspector extends JPanel
 			size.setText( NumberFormat.getInstance().format( 
 				(int) p.getFileSize() ) + " bytes" );
 
-			up.setEnabled(true);
-			down.setEnabled(true);
-			delete.setEnabled(true);
+			up.setEnabled(true && isEnabled());
+			down.setEnabled(true && isEnabled());
+			delete.setEnabled(true && isEnabled());
 		} else {
 			Picture p = (Picture) pictures[0];
 
@@ -262,8 +264,18 @@ public class PictureInspector extends JPanel
 
 			up.setEnabled(false);
 			down.setEnabled(false);
-			delete.setEnabled(true);
+			delete.setEnabled(true && isEnabled());
 		}
+	}
+	
+	public void setEnabled(boolean enabled) {
+		//Log.log(Log.TRACE, MODULE, "setEnabled " + enabled);
+		icon.setEnabled(enabled);
+		up.setEnabled(enabled);
+		down.setEnabled(enabled);
+		delete.setEnabled(enabled);
+		
+		super.setEnabled(enabled);
 	}
 }
 
