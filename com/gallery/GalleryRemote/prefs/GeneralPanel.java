@@ -73,13 +73,25 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		updateCheck.setSelected(props.getBooleanProperty(UPDATE_CHECK));
 		updateCheckBeta.setSelected(props.getBooleanProperty(UPDATE_CHECK_BETA));
 
-		locales = grRes.getAvailableLocales();
+		locales = GRI18n.getAvailableLocales();
 		Vector localeStrings = new Vector();
 
 		Iterator it = locales.iterator();
 		while (it.hasNext()) {
 			Locale l = (Locale) it.next();
-			localeStrings.add(l.getDisplayLanguage());
+			StringBuffer localeDisplay = new StringBuffer(l.getDisplayLanguage(grRes.getCurrentLocale()));
+
+			if (l.getCountry() != null && l.getCountry().length() > 0) {
+				localeDisplay.append(" (").append(l.getDisplayCountry(grRes.getCurrentLocale()));
+
+				if (l.getVariant() != null && l.getVariant().length() > 0) {
+					localeDisplay.append(", ").append(l.getDisplayVariant(grRes.getCurrentLocale()));
+				}
+
+				localeDisplay.append(")");
+			}
+
+			localeStrings.add(localeDisplay.toString());
 		}
 
 		int selectedLocale = locales.indexOf(GRI18n.parseLocaleString(
@@ -199,7 +211,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		jPanel7.add(jLocale,   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel7.add(jLabel5, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		this.add(jPanel8,  new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel7.add(jPanel9,  new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0

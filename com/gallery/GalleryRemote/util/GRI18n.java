@@ -45,7 +45,6 @@ public class GRI18n implements PreferenceNames {
         Log.log(Log.INFO, MODULE, grLocale.toString());
 
         setResBundle();
-
     }
 
 	public static Locale parseLocaleString(String localeString) {
@@ -57,10 +56,11 @@ public class GRI18n implements PreferenceNames {
 			if (i != -1) {
 				return new Locale(localeString.substring(0, i), localeString.substring(i + 1));
 			} else {
-				return new Locale(localeString);
+				return new Locale(localeString, "");
 			}
 		}
 	}
+
 
 	public void setLocale(String language, String country) {
         grLocale = new Locale(language, country);
@@ -84,8 +84,8 @@ public class GRI18n implements PreferenceNames {
         }
 
         return msg;
-
     }
+
 
     public String getString(String className, String key, Object[] params) {
         String template, msg;
@@ -108,6 +108,11 @@ public class GRI18n implements PreferenceNames {
     }
 
 
+	public Locale getCurrentLocale() {
+		return grLocale;
+	}
+
+
     private void setResBundle() {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
@@ -124,17 +129,17 @@ public class GRI18n implements PreferenceNames {
         ArrayList vLocales = new ArrayList();
         String resPath = RESNAME.replaceAll("\\.", "/");
         String locPath;
+		long start = System.currentTimeMillis();
 
         Locale [] list = Locale.getAvailableLocales();
         for (int i = 0; i < list.length; i++ ) {
-
             locPath = resPath + "_" + list[i].toString() + ".properties";
             if (ClassLoader.getSystemClassLoader().getResource(locPath) != null)
                 vLocales.add(list[i]);
         }
+
+		Log.log(Log.TRACE, MODULE, "Parsed locales in " + (System.currentTimeMillis() - start) + "ms");
+
         return vLocales;
     }
-
-
-
 }

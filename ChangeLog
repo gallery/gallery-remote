@@ -1,4 +1,11 @@
+2003-10-02  Pierre-Luc Paour <gallery@paour.com> (1.2-b9)
+
+	* Better display for languages in the prefs dialog.
+	* Changed from using a Java 1.4-only method to a standard method.
+	  This was causing GR not to start under 1.3 VMs.
+
 2003-09-30  Amedeo Paglione <apaglione@mac.com> (1.2-b8)
+
 	* Implemented list of available locale resources.
 
 2003-09-30  Pierre-Luc Paour <gallery@paour.com> (1.2-b7)
