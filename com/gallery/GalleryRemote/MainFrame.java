@@ -20,6 +20,7 @@
 */
 package com.gallery.GalleryRemote;
 
+// todo: save
 //import JSX.ObjIn;
 //import JSX.ObjOut;
 import com.gallery.GalleryRemote.model.Album;
@@ -114,17 +115,19 @@ public class MainFrame extends JFrame
 	JButton jNewAlbumButton = new JButton();
 
 	JMenu jMenuFile = new JMenu();
+	// todo: save
 	//JMenuItem jMenuItemNew = new JMenuItem();
-	JMenuItem jMenuItemOpen = new JMenuItem();
-	JMenuItem jMenuItemSave = new JMenuItem();
-	JMenuItem jMenuItemSaveAs = new JMenuItem();
+	//JMenuItem jMenuItemOpen = new JMenuItem();
+	//JMenuItem jMenuItemSave = new JMenuItem();
+	//JMenuItem jMenuItemSaveAs = new JMenuItem();
 	//JMenuItem jMenuItemClose = new JMenuItem();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 
+	// todo: save
 	// Create a Vector to store the MRU menu items.  They
 	// are created dynamically below.
-	int m_MRUMenuIndex = 0;
-	Vector m_MRUFileList = new Vector();
+	//int m_MRUMenuIndex = 0;
+	//Vector m_MRUFileList = new Vector();
 
 	JMenu jMenuEdit = new JMenu();
 	JMenuItem jMenuItemCut = new JMenuItem();
@@ -276,14 +279,15 @@ public class MainFrame extends JFrame
 
 		resetUIState();
 
+		// todo: save
 		// Load a state file
-		if (GalleryRemote._().properties.getLoadLastMRU()) {
+		/*if (GalleryRemote._().properties.getLoadLastMRU()) {
 			String lastMRUFile = GalleryRemote._().properties.getMRUItem(1);
 
 			if (null != lastMRUFile) {
 				openState(lastMRUFile);
 			}
-		}
+		}*/
 
 		//new UploadProgress();
 
@@ -322,7 +326,8 @@ public class MainFrame extends JFrame
 	private void shutdown(boolean halt, boolean shutdownOs) {
 		// check that we don't have galleries with data
 		if (!shutdownOs) {
-			if (m_isDirty) {
+			// todo: save
+			/*if (m_isDirty) {
 				if (JOptionPane.showConfirmDialog(
 						(JFrame) this,
 						GRI18n.getString(MODULE, "quitQuestion"),
@@ -330,7 +335,7 @@ public class MainFrame extends JFrame
 						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
-			}
+			}*/
 		}
 
 		if (running) {
@@ -413,7 +418,8 @@ public class MainFrame extends JFrame
 						&& jAlbumTree.getSelectionCount() > 0);
 				jSortButton.setEnabled(jUploadButton.isEnabled());
 
-				if (null == lastOpenedFile) {
+				// todo: save
+				/*if (null == lastOpenedFile) {
 					setTitle(DIALOGTITLE
 							+ GRI18n.getString(MODULE, "noTitleHeader")
 							+ (m_isDirty ? "*" : ""));
@@ -421,14 +427,16 @@ public class MainFrame extends JFrame
 					setTitle(DIALOGTITLE
 							+ lastOpenedFile.getName()
 							+ (m_isDirty ? "*" : ""));
-				}
+				}*/
+				setTitle("Gallery Remote");
 
 				// during comm, don't change Gallery or do any other comm
 				jLoginButton.setEnabled(!inProgress && currentGallery != null);
 				jGalleryCombo.setEnabled(!inProgress);
 				jNewGalleryButton.setEnabled(!inProgress);
 
-				// Disable New, Open, and Close
+				// todo: save
+				/*// Disable New, Open, and Close
 				//jMenuItemNew.setEnabled(!inProgress);
 				jMenuItemOpen.setEnabled(!inProgress);
 				jMenuItemSave.setEnabled(!inProgress);
@@ -443,7 +451,7 @@ public class MainFrame extends JFrame
 					jMenuItemOpen.setEnabled(false);
 					jMenuItemSave.setEnabled(false);
 					jMenuItemSaveAs.setEnabled(false);
-				}
+				}*/
 
 				if (currentGallery != null
 						&& currentGallery.getUsername() != null
@@ -675,7 +683,8 @@ public class MainFrame extends JFrame
 			f = getCurrentGallery().getGalleryDefaultFile();
 		}
 
-		saveState(f);
+		// todo: save
+		//saveState(f);
 
 		getCurrentGallery().doUploadFiles(new UploadProgress(this));
 	}
@@ -924,7 +933,8 @@ public class MainFrame extends JFrame
 		jMenuItemNew.setIcon(GalleryRemote.iNew);
 		jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, GalleryRemote.ACCELERATOR_MASK));*/
 
-		jMenuItemOpen.setText(GRI18n.getString(MODULE, "menuOpen"));
+		// todo: save
+		/*jMenuItemOpen.setText(GRI18n.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand("File.Open");
 		jMenuItemOpen.setIcon(GalleryRemote.iOpen);
 		jMenuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, GalleryRemote.ACCELERATOR_MASK));
@@ -938,9 +948,10 @@ public class MainFrame extends JFrame
 		jMenuItemSaveAs.setActionCommand("File.SaveAs");
 
 		// todo: saving disabled, since JSX doesn't work with new class structure
+		// todo: save
 		jMenuItemOpen.setEnabled(false);
 		jMenuItemSave.setEnabled(false);
-		jMenuItemSaveAs.setEnabled(false);
+		jMenuItemSaveAs.setEnabled(false);*/
 
 		/*jMenuItemClose.setText(GRI18n.getString(MODULE, "menuClose"));
 		jMenuItemClose.setActionCommand("File.Close");
@@ -1039,7 +1050,8 @@ public class MainFrame extends JFrame
 		}
 
 		//jMenuFile.add(jMenuItemNew);
-		jMenuFile.add(jMenuItemOpen);
+		// todo: save
+		/*jMenuFile.add(jMenuItemOpen);
 		jMenuFile.add(jMenuItemSave);
 		jMenuFile.add(jMenuItemSaveAs);
 		//jMenuFile.add(jMenuItemClose);
@@ -1048,15 +1060,15 @@ public class MainFrame extends JFrame
 
 		// Remember where we are so we can build the dynamic MRU list here.
 		m_MRUMenuIndex = jMenuFile.getItemCount();
+		updateMRUItemList();*/
 
 		if (!GalleryRemote.IS_MAC_OS_X) {
-			jMenuFile.addSeparator();
+			//jMenuFile.addSeparator();
 			jMenuFile.add(jMenuItemQuit);
 
 			jMenuHelp.add(jMenuItemAbout);
 		}
 
-		updateMRUItemList();
 
 		jMenuEdit.add(jMenuItemCut);
 		jMenuEdit.add(jMenuItemCopy);
@@ -1093,9 +1105,9 @@ public class MainFrame extends JFrame
 		jMenuItemPrefs.addActionListener(this);
 		jMenuItemClearCache.addActionListener(this);
 		//jMenuItemNew.addActionListener(this);
-		jMenuItemOpen.addActionListener(this);
+		/*jMenuItemOpen.addActionListener(this);
 		jMenuItemSave.addActionListener(this);
-		jMenuItemSaveAs.addActionListener(this);
+		jMenuItemSaveAs.addActionListener(this);*/
 		//jMenuItemClose.addActionListener(this);
 		jMenuItemQuit.addActionListener(this);
 		jMenuItemAbout.addActionListener(this);
@@ -1144,7 +1156,8 @@ public class MainFrame extends JFrame
      *         process. OK_OPTION means that either we are not dirty)
      *         or that we just saved for the user.
      */
-    private int saveOnPermission(String promptMessageID, Gallery gallery) {
+	// todo: save
+    /* private int saveOnPermission(String promptMessageID, Gallery gallery) {
         if (!m_isDirty) {
             return (JOptionPane.OK_OPTION);
         }
@@ -1186,7 +1199,7 @@ public class MainFrame extends JFrame
 
         // User reneges, stop the action
         return (JOptionPane.CANCEL_OPTION);
-    }
+    }*/
 
 	// Event handling
 	/**
@@ -1215,7 +1228,8 @@ public class MainFrame extends JFrame
 			}
 
 			resetState();*/
-		} else if (command.equals("File.Open")) {
+			// todo: save
+		/*} else if (command.equals("File.Open")) {
 			openState(MRUFileName);
 		} else if (command.equals("File.Save")) {
 			// Do Save As if the file is the default
@@ -1225,7 +1239,7 @@ public class MainFrame extends JFrame
 				saveState();
 			}
 		} else if (command.equals("File.SaveAs")) {
-			saveAsState();
+			saveAsState();*/
 		/*} else if (command.equals("File.Close")) {
 			int response = saveOnPermission("OK_toSaveBeforeClose");
 
@@ -1250,13 +1264,14 @@ public class MainFrame extends JFrame
 		} else if (command.equals("Fetch")) {
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 
+				// todo: save
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
-                int response = saveOnPermission("logoutQuestion", getCurrentGallery());
+                /*int response = saveOnPermission("logoutQuestion", getCurrentGallery());
 
                 if (JOptionPane.CANCEL_OPTION == response) {
                     return;
-                }
+                }*/
 
 				getCurrentGallery().logOut();
 
@@ -1341,6 +1356,7 @@ public class MainFrame extends JFrame
 	 * file).  We assume that the UI portion has already asked the user
 	 * if this is OK.
 	 */
+	// todo: save
 	/*private void resetState() {
 		getCurrentGallery().deleteAllPictures();
 
@@ -1354,7 +1370,8 @@ public class MainFrame extends JFrame
 	}*/
 
 
-	private void saveAsState() {
+	// todo: save
+	/*private void saveAsState() {
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.setFileFilter(galleryFileFilter);
@@ -1379,6 +1396,7 @@ public class MainFrame extends JFrame
 		}
 	}
 
+	// todo: save
 	private void saveState() {
 		if (null == lastOpenedFile) {
 			Log.log(Log.LEVEL_ERROR, MODULE,
@@ -1387,7 +1405,7 @@ public class MainFrame extends JFrame
 		}
 
 		saveState(lastOpenedFile);
-	}
+	}*/
 
 	/**
 	 * This is an internal worker function to save the state to a file.
@@ -1398,7 +1416,8 @@ public class MainFrame extends JFrame
 	 *
 	 * @param f the file to store the current dialog data.
 	 */
-	private void saveState(File f) {
+	// todo: save
+	/*private void saveState(File f) {
 		try {
 			Log.log(Log.LEVEL_INFO, MODULE,
 					"Saving state to file " + f.getPath());
@@ -1424,12 +1443,13 @@ public class MainFrame extends JFrame
 		} catch (NoClassDefFoundError e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't save state...");
 		}
-	}
+	}*/
 
 	/**
 	 * Reads the properties and constructs the current MRU menu list.
 	 */
-	private void updateMRUItemList() {
+	// todo: save
+	/*private void updateMRUItemList() {
 
 		// First, delete all of the existing MRU values
 		for (int i = 0; i < m_MRUFileList.size(); i++) {
@@ -1483,7 +1503,7 @@ public class MainFrame extends JFrame
 			jMenuFile.insert(nextMRUItem, nextInsertPoint++);
 			nextMRUItem.addActionListener(this);
 		}
-	}
+	}*/
 
 	/**
 	 * Save the passed mruFile and then write the properties file so that
@@ -1491,7 +1511,8 @@ public class MainFrame extends JFrame
 	 *
 	 * @param mruFile the file to add to the MRU list
 	 */
-	private void saveMRUItem(File mruFile) {
+	// todo: save
+	/*private void saveMRUItem(File mruFile) {
 		// Wait to here to see if we succeed in loading the file.
 		GalleryRemote._().properties.addMRUItem(mruFile);
 
@@ -1500,7 +1521,7 @@ public class MainFrame extends JFrame
 
 		// Update the MRU list
 		updateMRUItemList();
-	}
+	}*/
 
 	/**
 	 * OpenState opens a file and loads it into GR.  If a file path is
@@ -1515,7 +1536,8 @@ public class MainFrame extends JFrame
 	 * @param fileToOpen The file to open (FQPN) or null if a File Open dialog
 	 *                   should be used.
 	 */
-	private void openState(String fileToOpen) {
+	// todo: save
+	/*private void openState(String fileToOpen) {
 		JFileChooser fc = null;
 		if (null == fileToOpen) {
 			fc = new JFileChooser();
@@ -1606,7 +1628,7 @@ public class MainFrame extends JFrame
 				}
 			}
 		}.start();
-	}
+	}*/
 
 	public void removeGallery(Gallery g) {
 		Log.log(Log.LEVEL_INFO, MODULE, "Deleting Gallery " + g);

@@ -28,7 +28,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 
 		scriptName = "main.php";
 
-		capabilities2 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+		capabilities = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM*/, CAPA_FETCH_ALBUMS_PRUNE};
 	}
 
@@ -73,5 +73,14 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Overriding form data: " + Arrays.asList(form_data_modified));
 
 		return form_data_modified;
+	}
+
+	void handleCapabilities() {
+		// don't do anything and leave capabilities to the default value
+	}
+
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+		// G2 doesn't return debug login info. This prevents GR from uploading each image to G2 twice.
+		return requestResponse(form_data, data, galUrl, checkResult, su, task, true);
 	}
 }

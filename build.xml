@@ -27,7 +27,6 @@
    includes="com/**,HTTPClient/**,edu/**"
    listfiles="on" debug="on" source="1.3">
    <classpath>
-    <pathelement location="lib/JSX1.0.7.4.jar"/>
     <pathelement location="lib/AppleJavaExtensions.jar"/>
     <pathelement location="lib/metadata-extractor-2.1.jar"/>
    </classpath>
@@ -48,7 +47,6 @@
 
   <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true">
    <classpath>
-    <pathelement location="lib/JSX1.0.7.4.jar"/>
     <pathelement location="lib/metadata-extractor-2.1.jar"/>
     <pathelement path="${build}"/>
     <pathelement path="img"/>
@@ -65,7 +63,7 @@
    <manifest>
     <attribute name="Built-By" value="${user.name}" />
     <attribute name="Main-Class" value="com.gallery.GalleryRemote.GalleryRemote" />
-    <attribute name="Class-Path" value="lib/metadata-extractor-2.1.jar lib/JSX1.0.7.4.jar img/" />
+    <attribute name="Class-Path" value="lib/metadata-extractor-2.1.jar img/" />
    </manifest>
   </jar>
  </target>
@@ -227,7 +225,7 @@
    name="Gallery Remote"
    mainclass="com.gallery.GalleryRemote.GalleryRemote"
    icon="rar_icon_128_gr1.icns"
-   jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar ${lib}/metadata-extractor-2.1.jar ./img.jar"
+   jars="./GalleryRemote.jar ${lib}/metadata-extractor-2.1.jar ./img.jar"
    execs="./jpegtran/macos/jpegtran"
    stubfile="${lib}/JavaApplicationStub"
    workingdirectory="$APP_PACKAGE"

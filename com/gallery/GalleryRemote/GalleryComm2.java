@@ -418,24 +418,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			return false;
 		}
-
-		private void handleCapabilities() {
-			if (serverMinorVersion >= 14) {
-				capabilities = capabilities14;
-			} else if (serverMinorVersion >= 13) {
-				capabilities = capabilities13;
-			} else if (serverMinorVersion >= 9) {
-				capabilities = capabilities9;
-			} else if (serverMinorVersion >= 7) {
-				capabilities = capabilities7;
-			} else if (serverMinorVersion >= 5) {
-				capabilities = capabilities5;
-			} else if (serverMinorVersion >= 2) {
-				capabilities = capabilities2;
-			} else if (serverMinorVersion == 1) {
-				capabilities = capabilities1;
-			}
-		}
 	}
 
 	class LoginTask extends GalleryTask {
@@ -1388,6 +1370,24 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
     public NVPair[] fudgeParameters(NVPair[] data) {
         return data;
     }
+
+	void handleCapabilities() {
+		if (serverMinorVersion >= 14) {
+			capabilities = capabilities14;
+		} else if (serverMinorVersion >= 13) {
+			capabilities = capabilities13;
+		} else if (serverMinorVersion >= 9) {
+			capabilities = capabilities9;
+		} else if (serverMinorVersion >= 7) {
+			capabilities = capabilities7;
+		} else if (serverMinorVersion >= 5) {
+			capabilities = capabilities5;
+		} else if (serverMinorVersion >= 2) {
+			capabilities = capabilities2;
+		} else if (serverMinorVersion == 1) {
+			capabilities = capabilities1;
+		}
+	}
 
 	class MyTransferListener implements TransferListener {
 		StatusUpdate su;

@@ -1,3 +1,10 @@
+2004-07-20  Pierre-Luc Paour <gallery@paour.com> (1.4-RC2-b2)
+
+	* When connected to G2, no longer offers to create new album.
+	* Removed all references to saving and/or loading state. No longer
+	  building JSX into installers and patches.
+	* Fixed uploading 2 of each picture to G2.
+
 2004-07-12  Pierre-Luc Paour <gallery@paour.com> (1.4-RC2-b1)
 
 	* Fixed hidden album bug in slideshow applet.
