@@ -31,9 +31,9 @@ You're on your own here, but it's pretty straightforward.
 Yes, maybe. Gallery Remote was written in Java. If you have Java 1.3 or later
 installed on your machine, you may be able to run the app with the command:
 
-	java -cp GalleryUp.jar com.gallery.GalleryUp.GalleryUp
+	java -cp GalleryRemote.jar com.gallery.GalleryRemote.GalleryRemote
 	
-assuming you are in the same directory as the GalleryUp.jar file.
+assuming you are in the same directory as the GalleryRemote.jar file.
 
     
 5. KNOWN PROBLEMS

@@ -1,3 +1,7 @@
+2001-11-21  Chris Smith <chris@jacko.com> (0.3)
+	
+	* v0.3 ships!
+
 2001-11-20  Chris Smith <chris@jacko.com> (0.3-b2)
 	
 	* App now remembers the last used Gallery URL, username and password.
