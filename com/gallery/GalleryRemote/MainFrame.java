@@ -21,6 +21,9 @@
 package com.gallery.GalleryRemote;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -112,6 +115,20 @@ public class MainFrame extends javax.swing.JFrame
 	JCheckBoxMenuItem jCheckBoxMenuPreview = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPath = new JCheckBoxMenuItem();
 
+	public static ImageIcon iLogin;
+	public static ImageIcon iNewGallery;
+	public static ImageIcon iAbout;
+	public static ImageIcon iSave;
+	public static ImageIcon iOpen;
+	public static ImageIcon iPreferences;
+	public static ImageIcon iNewAlbum;
+	public static ImageIcon iQuit;
+	public static ImageIcon iUp;
+	public static ImageIcon iDown;
+	public static ImageIcon iDelete;
+	public static ImageIcon iRight;
+	public static ImageIcon iLeft;
+	public static ImageIcon iFlip;
 
 	/**
 	 *  Constructor for the MainFrame object
@@ -678,7 +695,45 @@ public class MainFrame extends javax.swing.JFrame
 	 *@return    The thumbnail value
 	 */
 	public ImageIcon getThumbnail( Picture p ) {
-		return getThumbnail( p.getSource().getPath() );
+		ImageIcon thumb = getThumbnail( p.getSource().getPath() );
+
+		if (p.getAngle() != 0 || p.isFlipped()) {
+			int width;
+			int height;
+			int width1;
+			int height1;
+
+			width = thumb.getImage().getWidth(this);
+			height = thumb.getImage().getHeight(this);
+
+			if (p.getAngle() % 2 == 0) {
+				width1 = width;
+				height1 = height;
+			} else {
+				width1 = height;
+				height1 = width;
+			}
+
+			Image vImg = getGlassPane().createImage(width1, height1);
+
+			Graphics2D g = (Graphics2D) vImg.getGraphics();
+
+			AffineTransform transform = AffineTransform.getTranslateInstance(width / 2, height / 2);
+			if (p.getAngle() != 0) {
+				transform.rotate(p.getAngle() * Math.PI / 2);
+			}
+			if (p.isFlipped()) {
+				transform.scale(-1, 1);
+			}
+			transform.translate(-width1 / 2 - (p.getAngle() == 3?width - width1:0) + (p.isFlipped()?width - width1:0) * (p.getAngle() == 1?-1:1),
+					-height1 / 2 - (p.getAngle() == 1?height - height1:0));
+
+			g.drawImage(thumb.getImage(), transform, this);
+
+			thumb = new ImageIcon(vImg);
+		}
+
+		return thumb;
 	}
 
 
@@ -705,6 +760,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void jbInit()
 		throws Exception {//{{{
+		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		this.getContentPane().setLayout( gridBagLayout1 );
 		jPanel1.setLayout( gridBagLayout2 );
 		jLabel1.setText( "Gallery URL" );
@@ -712,10 +768,11 @@ public class MainFrame extends javax.swing.JFrame
 		jLoginButton.setText( "Log in" );
 		jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );
+		jLoginButton.setIcon(iLogin);
 		jNewAlbumButton.setText("New Album..." );
 		jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
-		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
+		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );
 		jUploadButton.setAlignmentX( (float) 2.0 );
 		jUploadButton.setText( "Upload Pictures" );
@@ -737,15 +794,20 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuFile.setText( "File" );
 		jMenuItemQuit.setText( "Quit" );
 		jMenuItemQuit.setActionCommand( "File.Quit" );
+		jMenuItemQuit.setIcon(iQuit);
 		jMenuItemSave.setText( "Save..." );
 		jMenuItemSave.setActionCommand( "File.Save" );
+		jMenuItemSave.setIcon(iSave);
 		jMenuItemPrefs.setText( "Preferences..." );
 		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
+		jMenuItemPrefs.setIcon(iPreferences);
 		jMenuItemOpen.setText( "Open..." );
 		jMenuItemOpen.setActionCommand( "File.Open" );
+		jMenuItemOpen.setIcon(iOpen);
 		jMenuHelp.setText( "Help" );
 		jMenuItemAbout.setActionCommand( "Help.About" );
 		jMenuItemAbout.setText( "About Gallery Remote..." );
+		jMenuItemAbout.setIcon(iAbout);
 		jMenuOptions.setText( "Options" );
 		jCheckBoxMenuThumbnails.setActionCommand( "Options.Thumbnails" );
 		jCheckBoxMenuThumbnails.setText( "Show Thumbnails" );
@@ -756,6 +818,7 @@ public class MainFrame extends javax.swing.JFrame
 		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		jNewGalleryButton.setText("Add Gallery URL...");
 		jNewGalleryButton.setActionCommand("NewGallery");
+		jNewGalleryButton.setIcon(iNewGallery);
 		jAlbumCombo.setActionCommand("Album");
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
@@ -1243,6 +1306,29 @@ public class MainFrame extends javax.swing.JFrame
 			}
 
 			return this;
+		}
+	}
+
+	static {
+		try {
+			iAbout = new ImageIcon(MainFrame.class.getResource("/Information16.gif"));
+			iSave = new ImageIcon(MainFrame.class.getResource("/Save16.gif"));
+			iOpen = new ImageIcon(MainFrame.class.getResource("/Open16.gif"));
+			iPreferences = new ImageIcon(MainFrame.class.getResource("/Preferences16.gif"));
+			iQuit = new ImageIcon(MainFrame.class.getResource("/Stop16.gif"));
+
+			iNewGallery = new ImageIcon(MainFrame.class.getResource("/WebComponentAdd16.gif"));
+			iLogin = new ImageIcon(MainFrame.class.getResource("/WebComponent16.gif"));
+			iNewAlbum = new ImageIcon(MainFrame.class.getResource("/New16.gif"));
+
+			iUp = new ImageIcon(MainFrame.class.getResource("/Up16.gif"));
+			iDown = new ImageIcon(MainFrame.class.getResource("/Down16.gif"));
+			iDelete = new ImageIcon(MainFrame.class.getResource("/Delete16.gif"));
+			iRight = new ImageIcon(MainFrame.class.getResource("/RotateRight24.gif"));
+			iLeft = new ImageIcon(MainFrame.class.getResource("/RotateLeft24.gif"));
+			iFlip = new ImageIcon(MainFrame.class.getResource("/FlipHoriz24.gif"));
+		} catch (Exception e) {
+			Log.logException(Log.ERROR, MODULE, e);
 		}
 	}
 }
