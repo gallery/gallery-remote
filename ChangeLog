@@ -1,3 +1,6 @@
+2003-09-30  Amedeo Paglione <apaglione@mac.com> (1.2-b8)
+	* Implemented list of available locale resources.
+
 2003-09-30  Pierre-Luc Paour <gallery@paour.com> (1.2-b7)
 
 	* Implemented UI in Preferences/General to select the locale

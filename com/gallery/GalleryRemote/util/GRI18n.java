@@ -9,16 +9,17 @@ import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
-import java.text.ChoiceFormat;
 import java.text.MessageFormat;
-import java.text.Format;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import java.util.*;
 
 
 public class GRI18n implements PreferenceNames {
     private static final String RESNAME =
             "com.gallery.GalleryRemote.resources.GRResources";
-    private static final String MODULE = "MainFrame";
+    private static final String MODULE = "GRI18n";
 
     private static GRI18n ourInstance;
 
@@ -34,13 +35,15 @@ public class GRI18n implements PreferenceNames {
     }
 
     private GRI18n() {
-        String myLocale, myLang, myCountry;
+        String myLocale;
         myLocale =
                 GalleryRemote.getInstance().properties.getProperty(GR_LOCALE);
 
 		grLocale = parseLocaleString(myLocale);
 
-		grMsgFrmt = new MessageFormat("");
+        grMsgFrmt = new MessageFormat("");
+        Log.log(Log.INFO, MODULE, grLocale.toString());
+
         setResBundle();
 
     }
@@ -105,11 +108,6 @@ public class GRI18n implements PreferenceNames {
     }
 
 
-	public List getAvailableLocales() {
-		return Arrays.asList(new Locale[] { Locale.ITALIAN, Locale.ENGLISH} );
-	}
-
-
     private void setResBundle() {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
@@ -120,4 +118,23 @@ public class GRI18n implements PreferenceNames {
 
         grMsgFrmt.setLocale(grLocale);
     }
+
+
+    public static List getAvailableLocales() {
+        ArrayList vLocales = new ArrayList();
+        String resPath = RESNAME.replaceAll("\\.", "/");
+        String locPath;
+
+        Locale [] list = Locale.getAvailableLocales();
+        for (int i = 0; i < list.length; i++ ) {
+
+            locPath = resPath + "_" + list[i].toString() + ".properties";
+            if (ClassLoader.getSystemClassLoader().getResource(locPath) != null)
+                vLocales.add(list[i]);
+        }
+        return vLocales;
+    }
+
+
+
 }
