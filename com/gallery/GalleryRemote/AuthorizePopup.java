@@ -74,7 +74,6 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 
 		synchronized (getClass()) {
 			if (inp == null) {
-
 				inp = new BasicAuthBox(GalleryRemote._().getMainFrame());
 			}
 		}
@@ -226,10 +225,10 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 		 * Invoked when an action occurs.
 		 */
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == pass) {
+			if (e.getSource() == pass || "ok".equals(e.getActionCommand())) {
 				done = OK;
 				hide();
-			} else if ("ok".equals(e.getActionCommand())) {
+			} else if ("clear".equals(e.getActionCommand())) {
 				user.setText("");
 				pass.setText("");
 				user.requestFocus();
