@@ -30,6 +30,7 @@ import java.text.Format;
 import java.util.Collections;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Vector;
 import java.lang.reflect.Method;
 
 import javax.swing.*;
@@ -126,6 +127,11 @@ public class MainFrame extends javax.swing.JFrame
 	JMenuItem jMenuItemSaveAs = new JMenuItem();
 	JMenuItem jMenuItemClose  = new JMenuItem();
 	JMenuItem jMenuItemQuit   = new JMenuItem();
+
+    // Create a Vector to store the MRU menu items.  They
+    // are created dynamically below.
+    int m_MRUMenuIndex = 0;
+    Vector m_MRUFileList = new Vector();
 
 	JMenu jMenuEdit = new JMenu();
 	JMenuItem jMenuItemCut = new JMenuItem();
@@ -1102,12 +1108,16 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuBar1.add( jMenuOptions );
 		jMenuBar1.add( jMenuHelp );
 
-        jMenuFile.add( jMenuItemNew    );
+        jMenuFile.add( jMenuItemNew );
 		jMenuFile.add( jMenuItemOpen );
 		jMenuFile.add( jMenuItemSave );
         jMenuFile.add( jMenuItemSaveAs );
-        jMenuFile.add( jMenuItemClose  );
-        jMenuFile.add( jMenuItemQuit   );
+        jMenuFile.add( jMenuItemClose );
+
+        jMenuFile.addSeparator();
+
+        // Remember where we are so we can build the dynamic MRU list here.
+        m_MRUMenuIndex = jMenuFile.getItemCount();
 
 		if (!IS_MAC_OS_X) {
 			jMenuFile.addSeparator();
@@ -1115,6 +1125,8 @@ public class MainFrame extends javax.swing.JFrame
 
 			jMenuHelp.add( jMenuItemAbout );
 		}
+
+        updateMRUItemList();
 
 		jMenuEdit.add( jMenuItemCut );
 		jMenuEdit.add( jMenuItemCopy );
@@ -1239,6 +1251,12 @@ public class MainFrame extends javax.swing.JFrame
 		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 		//Log.log(Log.TRACE, MODULE, "        event " + e );
 
+        String MRUFileName = null;
+        if (command.startsWith("File.MRU.")) {
+            MRUFileName = command.substring("File.MRU.".length());
+            command = "File.Open";
+        }
+
 		if ( command.equals( "File.Quit" ) ) {
 			thisWindowClosing( null );
 		} else if ( command.equals( "File.New" ) ) {
@@ -1251,7 +1269,7 @@ public class MainFrame extends javax.swing.JFrame
 			resetState();
 		} else if ( command.equals( "File.Open" ) ) {
 
-			openState();
+            openState(MRUFileName);
 		} else if ( command.equals( "File.Save" ) ) {
             // Do Save As if the file is the default
             if (m_lastOpenedFile == null) {
@@ -1409,6 +1427,8 @@ public class MainFrame extends javax.swing.JFrame
 
             saveState(m_lastOpenedFile);
 
+            saveMRUItem(m_lastOpenedFile);
+
             // We've been saved, we are now clean.
             m_isDirty = false;
 		}
@@ -1458,42 +1478,145 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}
 
-	private void openState() {
+    /**
+     * Reads the properties and constructs the current MRU menu list.
+     */
+    private void updateMRUItemList() {
+
+        // First, delete all of the existing MRU values
+        for (int i=0; i < m_MRUFileList.size(); i++) {
+            jMenuFile.remove((JMenuItem)m_MRUFileList.elementAt(i));
+
+        }
+
+        // Create the MRU list.  First we need to find out how manu
+        // MRU items we are displaying.  We will store up to 20 MRU files
+        // in the properties file, but we only display the top x files in the
+        // menu.
+        m_MRUFileList.clear();
+        int mruCount = GalleryRemote.getInstance().properties.getMRUCountProperty();
+
+        for (int i=1; i <= 20 && m_MRUFileList.size() < mruCount; i++) {
+            // Get the file name (if any) from the properties file
+            String fileName = GalleryRemote.getInstance().properties.getMRUItem(i);
+
+            if (null == fileName) {
+                // If the MRU item doesn't exist, skip this one
+                continue;
+            }
+
+            File mruFile = new File (fileName);
+
+            if (!mruFile.isFile()) {
+                // If the file has been deleted, skip it
+                continue;
+            }
+
+            // OK, we now have a valid candidate, create the menu item
+            int nextMenuItem = m_MRUFileList.size()+1;
+            String menuString = nextMenuItem + "  " + mruFile.getName();
+
+            JMenuItem nextMRUItem = new JMenuItem();
+            nextMRUItem.setText(menuString);
+            nextMRUItem.setMnemonic('0'+nextMenuItem);
+            nextMRUItem.setActionCommand("File.MRU." +  fileName);
+            nextMRUItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0 + nextMenuItem,
+                                                              ActionEvent.CTRL_MASK));
+
+            // Remember this menu item.
+            m_MRUFileList.addElement(nextMRUItem);
+        }
+
+        // Now insert the items into the menu after the insertion point
+        // we saved off earlier and set the listeners.
+        int nextInsertPoint = m_MRUMenuIndex;
+        for (int i=0; i < m_MRUFileList.size(); i++) {
+            JMenuItem nextMRUItem = (JMenuItem)m_MRUFileList.elementAt(i);
+            jMenuFile.insert(nextMRUItem, nextInsertPoint++);
+            nextMRUItem.addActionListener( this );
+        }
+    }
+
+    /**
+     * Save the passed mruFile and then write the properties file so that
+     * we don't lose the changes.  Then force the MRU menu to change.
+     *
+     * @param mruFile the file to add to the MRU list
+     */
+    private void saveMRUItem(File mruFile) {
+        // Wait to here to see if we succeed in loading the file.
+        GalleryRemote.getInstance().properties.addMRUItem(mruFile);
+
+        // Save the properties file so we don't lose the MRU
+        GalleryRemote.getInstance().properties.write();
+
+        // Update the MRU list
+        updateMRUItemList();
+    }
+
+    /**
+     * OpenState opens a file and loads it into GR.  If a file path is
+     * passed in, then that file is opened.  If null is passed in then a
+     * File Open dialog is displayed to allow the user to choose a file to
+     * open.
+     *
+     * Once a file has been loaded, this method has the side-effect of the
+     * file being added to the MRU list (or moved to the top of that list
+     * if it was already on it).
+     *
+     * @param fileToOpen The file to open (FQPN) or null if a File Open dialog
+     *                   should be used.
+     */
+	private void openState(String fileToOpen) {
+        JFileChooser fc = null;
 		try {
-			JFileChooser fc = new JFileChooser();
-			fc.setAcceptAllFileFilterUsed(false);
-			fc.setFileFilter(galleryFileFilter);
+            if (null == fileToOpen) {
+    			fc = new JFileChooser();
+    			fc.setAcceptAllFileFilterUsed(false);
+    			fc.setFileFilter(galleryFileFilter);
 
-			int returnVal = fc.showOpenDialog(this);
+    			int returnVal = fc.showOpenDialog(this);
 
-			if(returnVal == JFileChooser.APPROVE_OPTION) {
-				Log.log(Log.LEVEL_INFO, MODULE, "Opening state from file " + fc.getSelectedFile().getPath());
-
-                // Before we change galleries, ask them if they want to save.
-                int response = saveOnPermission();
-
-                if (JOptionPane.CANCEL_OPTION == response) {
-					return;
-				}
+    			if(returnVal != JFileChooser.APPROVE_OPTION) {
+                    return;
+                }
 
                 // Remember the file
                 m_lastOpenedFile = fc.getSelectedFile();
 
-                resetUIState();
+                Log.log(Log.LEVEL_INFO, MODULE,
+                        "Opening state from file " + fc.getSelectedFile().getPath());
 
-				ObjIn in = new ObjIn(new BufferedReader(new FileReader(m_lastOpenedFile)));
-				Gallery[] galleryArray = (Gallery[]) in.readObject();
-				DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
+            } else {
+                m_lastOpenedFile = new File(fileToOpen);
 
-				for (int i = 0; i < galleryArray.length; i++) {
-					newGalleries.addElement(galleryArray[i]);
-					//galleryArray[i].checkTransients();
-					galleryArray[i].addListDataListener(this);
-					thumbnailCache.preloadThumbnails(galleryArray[i].getAllPictures().iterator());
-				}
+                Log.log(Log.LEVEL_INFO, MODULE,
+                        "Opening state from file " + fileToOpen);
+            }
 
-				setGalleries( newGalleries );
+            // Before we change galleries, ask them if they want to save.
+            int response = saveOnPermission();
+
+            if (JOptionPane.CANCEL_OPTION == response) {
+				return;
 			}
+
+			ObjIn in = new ObjIn(new BufferedReader(new FileReader(m_lastOpenedFile)));
+			Gallery[] galleryArray = (Gallery[]) in.readObject();
+			DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
+
+			for (int i = 0; i < galleryArray.length; i++) {
+				newGalleries.addElement(galleryArray[i]);
+				//galleryArray[i].checkTransients();
+				galleryArray[i].addListDataListener(this);
+				thumbnailCache.preloadThumbnails(galleryArray[i].getAllPictures().iterator());
+			}
+
+            saveMRUItem(m_lastOpenedFile);
+
+			setGalleries( newGalleries );
+
+            resetUIState();
 		} catch (IOException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);

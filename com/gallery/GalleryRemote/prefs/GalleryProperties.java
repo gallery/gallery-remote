@@ -26,6 +26,7 @@ import com.gallery.GalleryRemote.Base64;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  *  GalleryProperties: access property data with a higher level of abstraction
@@ -43,10 +45,10 @@ import java.util.StringTokenizer;
  */
 public class GalleryProperties extends Properties implements PreferenceNames {
 	public static final String MODULE = "GalProps";
-	
+
 	SimpleDateFormat dateFormat
 		= new SimpleDateFormat ("yyyy/MM/dd");
-	
+
 	// caches
 	protected Dimension thumbnailSize = null;
 	protected Rectangle mainBounds = null;
@@ -166,6 +168,117 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty( key, ( (int) d.getWidth() ) + "," + ( (int) d.getHeight() ) );
 	}
 
+    /**
+     * getMRUCountProperty returns the Most Recently Used count (the number
+     * of MRU entries we should show in the menu.
+     *
+     * @return the mruCount value from the properties file.
+     */
+    public int getMRUCountProperty () {
+        return(getIntProperty(MRU_COUNT, 4));
+    }
+
+    /**
+     * getMRUItem returns the MRU item at the passed number. These are
+     * stored in property items that end in the number with a prefix of
+     * MRU_BASE. If the item does not exist in the properties file we
+     * will return null.
+     *
+     * @param mruItemNumber the number of the MRU item to return
+     *
+     * @return the string stored at item mruItemNumber.  This is a file (as a
+     *         string) and was probably set by addMRUItem().
+     */
+    public String getMRUItem (int mruItemNumber) {
+        return(getProperty(MRU_BASE + mruItemNumber, null));
+    }
+
+    /**
+     * removeMRUItem removes the designated MRU item. Note that this
+     * does not get this new value into the file, if you want this MRU
+     * value to be permanent you will have to also force the properties
+     * file to save.
+     *
+     * @param mruItemNumber the number of the MRU item to return
+     */
+    public void removeMRUItem (int mruItemNumber) {
+        remove(MRU_BASE + mruItemNumber);
+    }
+
+    /**
+     * setMRUItem set the designated MRU item to the passed string. Note that this
+     * does not get this new value into the file, if you want this MRU
+     * value to be permanent you will have to also force the properties
+     * file to save.
+     *
+     * @param mruItemNumber the number of the MRU item to set
+     * @param mruItem       the MRU item to set
+     */
+    public void setMRUItem (int mruItemNumber, String mruItem) {
+        setProperty(MRU_BASE + mruItemNumber, mruItem);
+    }
+
+    /**
+     * addMRUItem saves the passed mruItem onto the list of MRU items
+     * stored in the properties file and causes the properties file to
+     * be written out. If the item was already in the list, then it
+     * simply moves the passed item to the top of the list.
+     *
+     * Note that this does not get this new value into the file, if you
+     * want this MRU value to be permanent you will have to also force
+     * the properties file to save.
+     *
+     * @param mruItem The mruItem File to add.
+     */
+    public void addMRUItem (File mruItem) {
+        // First get all of the MRU items from the current file
+        Vector mruItems = new Vector();
+        try {
+            String currentItem = mruItem.getCanonicalPath();
+            addMRUItem(currentItem);
+        } catch (IOException ioe) {
+            // Just log it as there isn't really anything else we can do just now.
+            Log.log(Log.LEVEL_ERROR, MODULE, "mruItem add attempt with an invalid File object");
+            Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
+        }
+    }
+
+    /**
+     * addMRUItem saves the passed mruItem onto the list of MRU items
+     * stored in the properties file and causes the properties file to
+     * be written out. If the item was already in the list, then it
+     * simply moves the passed item to the top of the list.
+     *
+     * Note that this does not get this new value into the file, if you
+     * want this MRU value to be permanent you will have to also force
+     * the properties file to save.
+     *
+     * @param mruItem The mruItem path String to add.
+     */
+    public void addMRUItem (String newMRUItem) {
+        // First get all of the MRU items from the current file
+        Vector mruItems = new Vector();
+        mruItems.addElement(newMRUItem);
+        for (int i=0; i < 20; i++) {
+            String nextItem = getMRUItem(i);
+
+            // Skip any missing items and if the current item is already
+            // in the list skip it too.
+            if (null != nextItem && !nextItem.equals(newMRUItem)) {
+                mruItems.addElement(nextItem);
+            }
+        }
+
+        // First clean up the list.
+        for (int i=1; i <= 20; i++) {
+            removeMRUItem(i);
+        }
+
+        // OK, we now have the new list, add the properties back.
+        for (int i=1; i <= mruItems.size(); i++) {
+            setMRUItem(i, (String)mruItems.elementAt(i-1));
+        }
+    }
 
 	public Rectangle getRectangleProperty( String key ) {
 		String value = getProperty( key );
@@ -236,7 +349,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	public String getBase64Property( String key ) {
 		String base64S = getProperty( key );
 		if (base64S == null) return null;
-		
+
 		try {
 			return Base64.decode( base64S );
 		} catch ( Error e ) {
@@ -247,12 +360,12 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	public void setBase64Property( String key, String value ) {
 		setProperty( key, Base64.encode( value ) );
 	}
-	
+
 
 	public Date getDateProperty( String key ) {
 		String dateS = getProperty( key );
 		if (dateS == null) return null;
-		
+
 		try {
 			return dateFormat.parse( dateS );
 		} catch ( ParseException e ) {
@@ -263,11 +376,11 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	public void setDateProperty( String key, Date date ) {
 		setProperty( key, dateFormat.format( date ) );
 	}
-	
-	
+
+
 	public String getProperty( String key, String defaultValue ) {
 		String tmp = getProperty( key );
-		
+
 		if (tmp == null) {
 			return defaultValue;
 		} else {
@@ -280,16 +393,16 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		if (module == null) {
 			module = MODULE;
 		}
-		
+
 		ArrayList names = new ArrayList(100);
         Enumeration e = propertyNames();
         while (e.hasMoreElements()) {
             names.add( e.nextElement() );
         }
-		
+
 		Object[] namesArray = names.toArray();
 		Arrays.sort(namesArray);
-		
+
 		for (int i = 0; i < namesArray.length; i++) {
 			String name = (String) namesArray[i];
 			Log.log(level, module, name + "= |" + getProperty(name) + "|");
