@@ -29,7 +29,7 @@
 			listfiles="on" debug="on" source="1.3">
 			<classpath>
 				<pathelement path="lib/JSX1.0.7.4.jar"/>
-				<pathelement path="lib/ui.jar"/>
+				<pathelement path="lib/AppleJavaExtensions.jar"/>
 			</classpath>
 		</javac>
 
