@@ -103,6 +103,11 @@ public class Gallery implements ComboBoxModel
 	 *@param  albumList  The new albumList value
 	 */
 	public void setAlbumList( ArrayList albumList ) {
+		if (albumList == null) {
+			this.albumList = null;
+			return;
+		}
+		
 		//this.albumList = albumList;
 		ArrayList buf = new ArrayList(albumList.size());
 		
@@ -118,6 +123,9 @@ public class Gallery implements ComboBoxModel
 		}
 		
 		this.albumList = buf;
+		if ( buf.size() > 0 ) {
+			selectedAlbum = (Album) this.albumList.get(1);
+		}
 		
 		notifyListeners();
 	}
