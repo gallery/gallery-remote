@@ -1,3 +1,8 @@
+2003-09-06  Pierre-Luc Paour <gallery@paour.com> (1.1-RC1-b1)
+
+	* Fixed incompatibility with Java 1.3: I was trying to catch an exception
+	  that Java 1.3 doesn't know about, so the class was not even loadable.
+
 2003-08-22  Pierre-Luc Paour <gallery@paour.com> (1.1-RC1)
 
 	* Catching error when using SSL with an untrusted server

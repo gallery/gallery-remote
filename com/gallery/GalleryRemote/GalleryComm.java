@@ -191,7 +191,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				return new GalleryComm2(g);
 			}
 		} catch (HTTPClient.ProtocolNotSuppException e) {
-			e.printStackTrace();
+			Log.logException(Log.ERROR, MODULE, e);
 		}
 		
 		return null;
@@ -215,14 +215,22 @@ public abstract class GalleryComm implements PreferenceNames {
 			return rspCode == 200;
 		} catch (UnknownHostException uhe) {
 			su.error("Unknown host: " + mConnection.getHost());
-		} catch (javax.net.ssl.SSLPeerUnverifiedException ssle) {
-			Log.logException(Log.ERROR, MODULE, ssle);
+		} catch (IOException ioe) {
+			// we can't directly catch the SSLPeerUnverifiedException, because Java 1.3 barfs and prevents
+			// loading this class at all. Instead, cast it inside another try-catch...
+			try {
+				if (ioe instanceof javax.net.ssl.SSLPeerUnverifiedException) {
+					Log.logException(Log.ERROR, MODULE, ioe);
 
-			JOptionPane.showMessageDialog((Component) su, "The site you are trying to connect to is not signed by an authorized provider.\n" +
-					"Please refer to the following document for help:\n" +
-					"http://www.infy.com/knowledge_capital/thought-papers/usingHTTPwith_java.pdf", "Error", JOptionPane.ERROR_MESSAGE);
-		} catch (IOException ioe)	{
-			Log.logException(Log.ERROR, MODULE, ioe);
+					JOptionPane.showMessageDialog((Component) su, "The site you are trying to connect to is not signed by an authorized provider.\n" +
+							"Please refer to the following document for help:\n" +
+							"http://www.infy.com/knowledge_capital/thought-papers/usingHTTPwith_java.pdf", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					Log.logException(Log.ERROR, MODULE, ioe);
+				}
+			} catch (NoClassDefFoundError ncdfe) {
+				Log.logException(Log.ERROR, MODULE, ioe);
+			}
 		} catch (ModuleException me) {
 			Log.logException(Log.ERROR, MODULE, me);
 		}
