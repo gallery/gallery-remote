@@ -708,7 +708,7 @@ public class MainFrame extends javax.swing.JFrame
 		password.setActionCommand("Password");
 		password.setNextFocusableComponent( fetch );
 		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		newGallery.setText("New Gallery");
+		newGallery.setText("Add Gallery URL");
 		newGallery.setActionCommand("NewGallery");
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
