@@ -1,5 +1,16 @@
+2003-05-06  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b4)
+
+	* Improved stability of upload when IM is not installed.
+	* Optionally HTML-escaping captions and titles during upload.
+	* Display captions in the picture list.
+	* Save and load ready to upload albums (and save a backup before
+	  uploading, in case of a problem).
+	* Fixed a problem with uploading pictures to Gallery when the
+	  Gallery's 'debug' flag was set.
+	* Reformatted many source files using IdeaJ.
+
 2003-02-02  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b3)
-	
+
 	* Integrated Stanley Knutson's patch to handle Basic Auth
 	  HTTP security. Thanks Stanley!
 	* GR no longer checks the version before actual login.
