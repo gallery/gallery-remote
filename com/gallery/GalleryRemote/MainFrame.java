@@ -20,19 +20,36 @@
  */
 package com.gallery.GalleryRemote;
 
-import HTTPClient.*;
-import com.gallery.GalleryRemote.model.*;
-
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.*;
-import java.net.URL;
 import java.net.MalformedURLException;
-import java.text.*;
-import java.util.*;
+import java.net.URL;
+import java.text.NumberFormat;
+import java.util.Vector;
+
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.ImageUtils;
+import JSX.ObjOut;
+import JSX.ObjIn;
 
 /**
  *  Description of the Class
@@ -90,6 +107,8 @@ public class MainFrame extends javax.swing.JFrame
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
 	JMenu jMenuFile = new JMenu();
 	JMenuItem jMenuItemQuit = new JMenuItem();
+	JMenuItem jMenuItemSave = new JMenuItem();
+	JMenuItem jMenuItemOpen = new JMenuItem();
 	JMenu jMenuHelp = new JMenu();
 	JMenuItem jMenuItemAbout = new JMenuItem();
 	JMenu jMenuOptions = new JMenu();
@@ -99,6 +118,7 @@ public class MainFrame extends javax.swing.JFrame
 	JScrollPane jScrollPane1 = new JScrollPane();
 	JList picturesList = new DroppableList();
 	JButton newGallery = new JButton();
+	public static final String FILE_TYPE = ".grg";
 
 
 	/**
@@ -211,7 +231,7 @@ public class MainFrame extends javax.swing.JFrame
 			p.setIntProperty( "inspectorDividerLocation", inspectorDivider.getDividerLocation() );
 	
 			p.write();
-	
+
 			setVisible( false );
 			dispose();
 	
@@ -282,7 +302,7 @@ public class MainFrame extends javax.swing.JFrame
 				
 				// status
 				if ( mAlbum == null) {
-					pictureInspector.setPictures( (Object[]) null );
+					pictureInspector.setPictures( null );
 					
 					setStatus( "Select a Gallery URL and click Log in..." );
 				} else if ( mAlbum.sizePictures() > 0 ) {
@@ -302,7 +322,7 @@ public class MainFrame extends javax.swing.JFrame
 						+ " K" );
 					}
 				} else {
-					pictureInspector.setPictures( (Object[]) null );
+					pictureInspector.setPictures( null );
 					
 					setStatus( "No selection" );
 				}
@@ -358,7 +378,7 @@ public class MainFrame extends javax.swing.JFrame
 			picturesList.setModel( mAlbum );
 			mAlbum.setListSelectionModel(picturesList.getSelectionModel());
 			picturesList.getModel().addListDataListener( this );
-			pictureInspector.setPictures( (Object[]) null );
+			pictureInspector.setPictures( null );
 		}
 	}
 	
@@ -549,7 +569,13 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void uploadPictures() {
 		Log.log(Log.INFO, MODULE, "uploadPictures starting");
-		
+
+		File f = new File(System.getProperty("user.home")
+			+ File.separator + ".GalleryRemote"
+			+ File.separator + "backup.grg");
+
+		saveState(f);
+
 		currentGallery.uploadFiles( this );
 	}
 
@@ -737,6 +763,10 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuFile.setText( "File" );
 		jMenuItemQuit.setText( "Quit" );
 		jMenuItemQuit.setActionCommand( "File.Quit" );
+		jMenuItemSave.setText( "Save" );
+		jMenuItemSave.setActionCommand( "File.Save" );
+		jMenuItemOpen.setText( "Open" );
+		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuHelp.setText( "Help" );
 		jMenuItemAbout.setActionCommand( "Help.About" );
 		jMenuItemAbout.setText( "About Gallery Remote..." );
@@ -797,6 +827,8 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuBar1.add( jMenuFile );
 		jMenuBar1.add( jMenuOptions );
 		jMenuBar1.add( jMenuHelp );
+		jMenuFile.add( jMenuItemSave );
+		jMenuFile.add( jMenuItemOpen );
 		jMenuFile.add( jMenuItemQuit );
 		jMenuHelp.add( jMenuItemAbout );
 		jMenuOptions.add( jCheckBoxMenuThumbnails );
@@ -814,6 +846,8 @@ public class MainFrame extends javax.swing.JFrame
 		gallery.addActionListener( this );
 		username.addCaretListener( this );
 		password.addCaretListener( this );
+		jMenuItemSave.addActionListener( this );
+		jMenuItemOpen.addActionListener( this );
 		jMenuItemQuit.addActionListener( this );
 		jMenuItemAbout.addActionListener( this );
 
@@ -864,6 +898,10 @@ public class MainFrame extends javax.swing.JFrame
 		
 		if ( command.equals( "File.Quit" ) ) {
 			thisWindowClosing( null );
+		} else if ( command.equals( "File.Save" ) ) {
+			saveState();
+		} else if ( command.equals( "File.Open" ) ) {
+			openState();
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
@@ -917,6 +955,83 @@ public class MainFrame extends javax.swing.JFrame
 			updatePicturesList( (Album) ( (JComboBox) e.getSource() ).getSelectedItem());
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled command " + command );
+		}
+	}
+
+	static FileFilter galleryFileFilter = new FileFilter() {
+				public boolean accept(File f) {
+					return f.isDirectory() || f.getName().endsWith(FILE_TYPE);
+				}
+
+				public String getDescription() {
+					return "GalleryRemote galleries";
+				}
+			};
+
+	private void saveState() {
+		JFileChooser fc = new JFileChooser();
+		fc.setAcceptAllFileFilterUsed(false);
+		fc.setFileFilter(galleryFileFilter);
+
+		int returnVal = fc.showSaveDialog(this);
+
+		if(returnVal == JFileChooser.APPROVE_OPTION) {
+			String name = fc.getSelectedFile().getPath();
+
+			if (! name.endsWith(FILE_TYPE) ) {
+				name += FILE_TYPE;
+			}
+
+			saveState(new File(name));
+		}
+	}
+
+	private void saveState(File f) {
+		try {
+			Log.log(Log.INFO, MODULE, "Saving state to file " + f.getPath());
+
+			Gallery[] galleryArray = new Gallery[galleries.getSize()];
+
+			for (int i = 0; i < galleries.getSize(); i++) {
+				galleryArray[i] = (Gallery) galleries.getElementAt(i);
+			}
+
+			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
+			out.writeObject(galleryArray);
+		} catch (IOException e) {
+			Log.log(Log.ERROR, MODULE, "Exception while trying to save state");
+			Log.logException(Log.ERROR, MODULE, e);
+		}
+	}
+
+	private void openState() {
+		try {
+			JFileChooser fc = new JFileChooser();
+			fc.setAcceptAllFileFilterUsed(false);
+		    fc.setFileFilter(galleryFileFilter);
+
+			int returnVal = fc.showOpenDialog(this);
+
+			if(returnVal == JFileChooser.APPROVE_OPTION) {
+				Log.log(Log.INFO, MODULE, "Opening state from file " + fc.getSelectedFile().getPath());
+
+				ObjIn in = new ObjIn(new BufferedReader(new FileReader(fc.getSelectedFile())));
+				Gallery[] galleryArray = (Gallery[]) in.readObject();
+				galleries = new DefaultComboBoxModel();
+				for (int i = 0; i < galleryArray.length; i++) {
+					galleries.addElement(galleryArray[i]);
+				}
+				gallery.setModel( galleries );
+				updateGalleryParams();
+
+				resetUIState();
+			}
+		} catch (IOException e) {
+			Log.log(Log.ERROR, MODULE, "Exception while trying to read state");
+			Log.logException(Log.ERROR, MODULE, e);
+		} catch (ClassNotFoundException e) {
+			Log.log(Log.ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
+			Log.logException(Log.ERROR, MODULE, e);
 		}
 	}
 
@@ -1005,7 +1120,7 @@ public class MainFrame extends javax.swing.JFrame
 	public void jListKeyPressed( KeyEvent e ) {
 		if ( ! mInProgress) {
 			int vKey = e.getKeyCode();
-	
+
 			switch ( vKey ) {
 				case KeyEvent.VK_DELETE:
 				case KeyEvent.VK_BACK_SPACE:
@@ -1057,11 +1172,21 @@ public class MainFrame extends javax.swing.JFrame
 					setIconTextGap( 4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth() );
 				}
 	
-				String text = f.getName();
+				StringBuffer text = new StringBuffer();
+				text.append("<html><p>");
+
+				text.append(f.getName());
 				if ( GalleryRemote.getInstance().properties.getShowPath() ) {
-					text += " [" + f.getParent() + "]";
+					text.append(" [").append(f.getParent()).append("]</p>");
 				}
-				setText( text );
+
+				if (p.getCaption() != null) {
+					text.append("<p><font color=\"gray\">").append(p.getEscapedCaption()).append("</font></p>");
+				}
+
+				text.append("</html>");
+				//Log.log(Log.TRACE, MODULE, text.toString());
+				setText( text.toString() );
 			} else {
 				setText("dummy");
 			}
