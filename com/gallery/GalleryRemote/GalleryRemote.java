@@ -21,6 +21,7 @@
 
 package com.gallery.GalleryRemote;
 import javax.swing.*;
+import java.io.*;
 
 public class GalleryRemote {
 	public GalleryRemote() {
@@ -45,6 +46,13 @@ public class GalleryRemote {
 	// Main entry point
 	static public void main(String[] args) {
 		new GalleryRemote();
+		
+		//-- check for updated version of the app, using InstallAnywhere's --
+		//-- PowerUpdate service ---
+		try{
+			Runtime.getRuntime().exec("update -whisper"); 
+		} catch (IOException e) {
+		}
 	}
 	
 }
