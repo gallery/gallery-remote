@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -237,10 +238,19 @@ public class Album extends Picture implements ListModel, Serializable {
 	 * @param index the index in the list at which to begin adding
 	 */
 	public ArrayList addPictures(File[] files, int index) {
-		ArrayList pictures = new ArrayList(files.length);
+		List expandedFiles = Arrays.asList(files);
+		try {
+			expandedFiles = ImageUtils.expandDirectories(Arrays.asList(files));
+		} catch (IOException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		}
 
-		for (int i = 0; i < files.length; i++) {
-			Picture p = new Picture(files[i]);
+		ArrayList pictures = new ArrayList(expandedFiles.size());
+
+		for (Iterator it = expandedFiles.iterator(); it.hasNext();) {
+			File f = (File) it.next();
+
+			Picture p = new Picture(f);
 			p.setAlbum(this);
 			if (index == -1) {
 				addPictureInternal(p);

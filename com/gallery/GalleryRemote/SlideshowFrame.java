@@ -60,7 +60,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			//DialogUtil.maxSize(this);
 			//setBounds(600, 100, 500, 500);
 			//show();
-		} catch (NoSuchMethodError e) {
+		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
 			show();

@@ -33,7 +33,7 @@ public class AddFileDialog {
 		JFileChooser fc = new JFileChooser();
 
 		fc.addChoosableFileFilter(new GalleryFileFilter());
-		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fc.setMultiSelectionEnabled(true);
 
 		File currentDirectory = GalleryRemote._().properties.getCurrentDirectory();
