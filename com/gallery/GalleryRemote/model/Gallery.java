@@ -292,7 +292,7 @@ public class Gallery implements ComboBoxModel, Serializable
 		if (pnLoginUrlString != null) {
 			return pnLoginUrlString.toString();
 		} else {
-			return "http://your.host.com/user.php?uname=$USERNAME$&password=$PASSWORD$&module=NS-User&op=login";
+			return "http://your.host.com/user.php?uname=$USERNAME$&pass=$PASSWORD$&module=NS-User&op=login";
 		}
 	}
 
@@ -448,14 +448,14 @@ public class Gallery implements ComboBoxModel, Serializable
 	public void writeToProperties(PropertiesFile p) {
 		Log.log(Log.TRACE, MODULE, "Wrote to properties: " + toString() );
 
-		p.setProperty("url." + prefsIndex, getStUrlString());
-		p.setProperty("username." + prefsIndex, getUsername());
+		p.setProperty("url." + prefsIndex, stUrlString);
+		p.setProperty("username." + prefsIndex, username);
 		if (getPassword() != null && p.getBooleanProperty("savePasswords")) {
-			p.setBase64Property("password." + prefsIndex, getPassword());
+			p.setBase64Property("password." + prefsIndex, password);
 		} else {
 			p.remove("password." + prefsIndex);
 		}
-		p.setProperty("type." + prefsIndex, types[getType()]);
+		p.setProperty("type." + prefsIndex, types[type]);
 
 		if (pnLoginUrlString != null) {
 			p.setProperty("pnLoginUrl." + prefsIndex, pnLoginUrlString);
