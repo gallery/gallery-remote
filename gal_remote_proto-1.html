@@ -129,22 +129,23 @@ protocal_version=1</samp></p>
 </li><li>
 
 <a name="add-photo">
-<h3><samp>add-photo</samp> command</h3>
+    <h3><samp>add-item</samp> command</h3>
 <p>This command asks the server to add a photo to a specified album.</p>
 
 <ul>
 <li>
 
 <h4>Context</h4>
-<p>A request with the <samp>login</samp> command must be made before the <samp>fetch-albums</samp> command is used.</p>
+        <p>A request with the <samp>login</samp> command must be made before the 
+          <samp>add-item</samp> command is used.</p>
 
 </li><li>
 
 <h4>Form Data</h4>
-<p><samp>cmd=fetch-albums<br>
+        <p><samp>cmd=add-item<br>
 protocal_version=1<br>
 set_albumName=</samp><em>album name</em><samp><br>
-userfile=</samp><em>form-data-encoded image data</em><br></p>
+          userfile=</samp><em>form-data-encoded image data</em></p>
 
 </li><li>
 
