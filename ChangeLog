@@ -1,3 +1,9 @@
+2004-07-12  Pierre-Luc Paour <gallery@paour.com> (1.4-RC2-b1)
+
+	* Fixed hidden album bug in slideshow applet.
+	* Fixed move album to command attempting to move when Cancel is clicked.
+	* Fixed Java resize when thumbnails are present.
+
 2004-07-10  Pierre-Luc Paour <gallery@paour.com> (1.4-RC1)
 
 	* Fixed hidden image bug in slideshow applet.

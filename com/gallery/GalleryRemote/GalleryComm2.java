@@ -1119,9 +1119,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						}
 
 						String subAlbumName = p.getProperty("album.name." + i);
+						boolean subAlbumHidden = p.getBooleanProperty("album.hidden." + i, false);
 
 						if (subAlbumName != null) {
-							fetch(a, subAlbumName, newPictures);
+							if (!subAlbumHidden) {
+								fetch(a, subAlbumName, newPictures);
+							}
 						} else {
 							Picture picture = new Picture(g);
 							picture.setOnline(true);

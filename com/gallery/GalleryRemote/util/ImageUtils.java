@@ -326,13 +326,16 @@ public class ImageUtils {
 			ImageReader reader = (ImageReader)iter.next();
 			ImageReadParam param = reader.getDefaultReadParam();
 			reader.setInput(iis, true, false);
-			IIOImage image = reader.readAll(0, param);
+
+			// Java bug with thumbnails
+			//IIOImage image = reader.readAll(0, param);
+			BufferedImage rim = (BufferedImage) reader.readAsRenderedImage(0, param);
 
 			iis.close();
 			reader.dispose();
 
 			// resize the image
-			BufferedImage rim = (BufferedImage) image.getRenderedImage();
+			//BufferedImage rim = (BufferedImage) image.getRenderedImage();
 
 			Dimension newD = getSizeKeepRatio(
 					new Dimension(rim.getWidth(), rim.getHeight()),
@@ -372,7 +375,7 @@ public class ImageUtils {
 				//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
 
 				// todo: despite my best efforts, I can't get the ImageIO library to keep the metadata.
-				image = new IIOImage(scaledB, null, null);
+				IIOImage image = new IIOImage(scaledB, null, null);
 
 				//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
 
