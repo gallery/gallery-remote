@@ -1,3 +1,15 @@
+2004-03-18  Pierre-Luc Paour <gallery@paour.com> (1.4-b2)
+
+	* Integrated Marc Pawliger's patch that reads the default
+	  caption from IPTC or EXIF.
+	* Disabled saving state (the menus are still there) because
+	  state saving crashes.
+	* Initial implementation of G2 interoperability. On the GR side,
+	  the only change is that it changes some of the URL parameter names
+	  to fit the GR theme: g2_form[name]=value. Also, GR senses
+	  if a given install is a G1 or a G2 with the remote module and
+	  uses the right URL.
+
 2004-02-26  Pierre-Luc Paour <gallery@paour.com> (1.4-b1)
 
 	* Attempt to make the tree render correctly by moving to
