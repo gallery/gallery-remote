@@ -21,12 +21,26 @@
 
 package com.gallery.GalleryRemote;
 
-import HTTPClient.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
-import com.gallery.GalleryRemote.model.*;
+import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Properties;
+
+import HTTPClient.Codecs;
+import HTTPClient.HTTPConnection;
+import HTTPClient.HTTPResponse;
+import HTTPClient.ModuleException;
+import HTTPClient.NVPair;
+
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
 
 /**
  *	The GalleryComm2 class implements the client side of the Gallery remote
@@ -289,13 +303,18 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.TRACE, MODULE, response);
 				
 				// validate response
-				if ( response.startsWith( PROTOCOL_MAGIC ) ) {
-					Properties p = new Properties();
-					p.load( new StringBufferInputStream( response ) );
-					return p;
-				} else {
+				int i = response.indexOf(PROTOCOL_MAGIC);
+
+				if ( i == -1 ) {
 					throw new GR2Exception("Server contacted, but Gallery not found at this URL (" + galUrl.toString() + ")");
+				} else if ( i > 0 ) {
+					response = response.substring(i);
+					Log.log(Log.TRACE, MODULE, "Short response: " + response);
 				}
+
+				Properties p = new Properties();
+				p.load( new StringBufferInputStream( response ) );
+				return p;
 			}
 		}
 		
@@ -397,7 +416,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// can't set null as an NVPair value
 				String caption = p.getCaption();
 				caption = (caption == null) ? "" : caption;
-				
+
+				if (GalleryRemote.getInstance().properties.getBooleanProperty("htmlEscapeCaptions")) {
+					caption = HTMLEscaper.escape(caption);
+				}
+
 				// setup the protocol parameters
 				NVPair[] opts = {
 					new NVPair("cmd", "add-item"),
@@ -607,7 +630,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			status(su, "Getting album information from " + g.toString());
 			
 			String parentAlbumName = (parentAlbum == null) ? "" : parentAlbum.getName();
-			
+
+			if (GalleryRemote.getInstance().properties.getBooleanProperty("htmlEscapeCaptions")) {
+				albumTitle = HTMLEscaper.escape(albumTitle);
+				albumDesc = HTMLEscaper.escape(albumDesc);
+			}
+
 			try {
 				// setup the protocol parameters
 				NVPair form_data[] = {
