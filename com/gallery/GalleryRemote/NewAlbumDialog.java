@@ -43,6 +43,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 
 	Gallery gallery = null;
 	Album defaultAlbum = null;
+	Album rootAlbum = null;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel jLabel2 = new JLabel();
@@ -96,7 +97,12 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		this.setModal( true );
 		this.setTitle( "New Album" );
 		
-		album = new JComboBox(new Vector(gallery.getAlbumList()));
+		Vector albums = new Vector(gallery.getAlbumList());
+		rootAlbum = new Album();
+		rootAlbum.setGallery(gallery);
+		rootAlbum.setTitle("Gallery main page");
+		albums.add(0, rootAlbum);
+		album = new JComboBox(albums);
 		album.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 		album.setSelectedItem(defaultAlbum);
 		cancel.setText( "Cancel" );
@@ -169,8 +175,17 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			a.setName(name.getText());
 			a.setTitle(title.getText());
 			a.setCaption(description.getText());
-			a.setParentAlbum((Album) album.getSelectedItem());
+			
+			Album selectedAlbum = (Album) album.getSelectedItem();
+			if (selectedAlbum == rootAlbum) {
+				a.setParentAlbum(null);
+			} else {
+				a.setParentAlbum(selectedAlbum);
+			}
+			
 			gallery.newAlbum(a, (StatusUpdate) this.getOwner());
+			
+			setVisible(false);
 		}
 	}
 }

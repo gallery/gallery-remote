@@ -130,7 +130,7 @@ public class Gallery implements ComboBoxModel
 	 *@param  username  The new username value
 	 */
 	public void setUsername( String username ) {
-		Log.log(Log.TRACE, MODULE, "setusername: " + username);
+		//Log.log(Log.TRACE, MODULE, "setusername: " + username);
 		if ( username != null && username.length() > 0
 			&& ! username.equals( this.username ) ) {
 			
@@ -147,7 +147,7 @@ public class Gallery implements ComboBoxModel
 	 *@param  password  The new password value
 	 */
 	public void setPassword( String password ) {
-		Log.log(Log.TRACE, MODULE, "setpassword: " + password);
+		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
 		if ( password != null && password.length() > 0 
 			&& ! password.equals( this.password ) ) {
 			

@@ -83,6 +83,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	protected int serverMinorVersion = 0;
 	
+	/**
+	 *	The capabilities for 2.1
+	 */
+	private static int[] capabilities1;
+	
 	
 	/* -------------------------------------------------------------------------
 	 * STATIC INITIALIZATON
@@ -122,6 +127,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		 *	protocol is, we'll be able to add more capabilities, such as
 		 *	CAPA_NEW_ALBUM (since 2.1) */
 		capabilities = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO };
+		capabilities1 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM };
 		Arrays.sort(capabilities);
 	}
@@ -346,6 +353,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						serverMinorVersion = Integer.parseInt( serverVersion.substring( i+1 ) );
 						
 						Log.log(Log.TRACE, MODULE, "Server minor version: " + serverMinorVersion);
+						
+						if (serverMinorVersion >= 1) {
+							// we have more than the 2.0 capabilities, we have 2.1 capabilities.
+							capabilities = capabilities1;
+						}
 					} catch (Exception e) {
 						Log.log( Log.ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
 						Log.logException(Log.ERROR, MODULE, e);

@@ -2,6 +2,7 @@
 	
 	* Added support for the "new-album" command to GalleryComm2.
 	* Corrected a small path problem in ImageUtils.
+	* Bumped GalleryComm2 protocol version to 2.1.
 
 2002-10-28  Pierre-Luc Paour <gallery@paour.com> (1.0-b11)
 	

@@ -1,7 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-<title>Gallery Remote Protocol version 2</title>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head><title>Gallery Remote Protocol version 2</title>
+
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <style type="text/css">
 h1 { font-family: sans-serif; font-size: 17pt; font-weight: bold; }
@@ -20,15 +18,15 @@ table { border-style: solid; border-width: 1px; border-color: black; margin: 10p
 td	{ border-style: solid; border-width: 1px; border-color: black; margin: 5px;  }
 
 img { border-width: 0px; }
-</style>
-</head>
+</style></head>
+
 <body>
 
 <h1>Gallery Remote Protocol version 2</h1>
 
-<p><cite>Tim Miller</cite> &lt;<a href="mailto:tim_miller at users.sourceforge.net">tim_miller 
+<p><cite>Tim Miller</cite> &lt;<a href="mailto:tim_miller%20at%20users.sourceforge.net">tim_miller 
   at users dot sourceforge dot net</a>&gt;<br>
-  <cite>Pierre-Luc Paour</cite> &lt;<a href="mailto:paour at users.sourceforge.net">paour 
+  <cite>Pierre-Luc Paour</cite> &lt;<a href="mailto:paour%20at%20users.sourceforge.net">paour 
   at users dot sourceforge dot net</a>&gt;</p>
 
 <h2><a name="toc">Contents</a></h2>  
@@ -92,9 +90,14 @@ login request before any other requests will succeed.</p>
 
 <h2><a name="interaction">3. Client-Server Interaction</a></h2>
 
-<p>All client-server interaction follows the standard HTTP model.  The client initiates all interactions with a <em><a href="#requests">request</a></em>.  The server always responds with one <em><a href="#responses">response</a></em>.  The data format of each request is HTTP form-data key/value pairs.  The data format of each response is plain text key/value pairs.</p>
+<p>All client-server interaction follows the standard HTTP model.  The client initiates all interactions with a <em><a href="#requests">request</a></em>.  The server always responds with one <em><a href="#responses">response</a></em>.
+ The data format of each request is HTTP form-data key/value pairs.  The
+data format of each response is plain text key/value pairs.</p>
 
-<p>Each request specifies a <em><a href="#commands">command</a></em> value (and possibly some corresponding parameters) which determines the content of the response. Command-specific responses are defined in the context of each <em>command</em> below).</p>
+<p>Each request specifies a <em><a href="#commands">command</a></em> value
+(and possibly some corresponding parameters) which determines the content
+of the response. Command-specific responses are defined in the context of
+each <em>command</em> below).</p>
 
 <hr>
 
@@ -120,19 +123,21 @@ set (as parameters).</p>
   version number. Different major versions of the protocol use different <samp>gallery_remote</samp><em>maj</em><samp>.php</samp> 
   files. Each such file may provide support for various minor versions.</p>
 
-<p>Each command is described in the <a href="#commands">Commands</a> section below.  After a brief description of the command, template form data appears and the contents of the server's response is described.</p>
+<p>Each command is described in the <a href="#commands">Commands</a> section
+below.  After a brief description of the command, template form data appears
+and the contents of the server's response is described.</p>
 
 <hr>
 
 <h2><a name="responses">5. Responses</a></h2>
 
-<p>After the client POSTs a request, the server sends a <em>response</em> to the client.  The format of the response is a key/value format compatible with the Java "<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/Properties.html">Properties</a>" stream format.<p>
+<p>After the client POSTs a request, the server sends a <em>response</em> to the client.  The format of the response is a key/value format compatible with the Java "<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/Properties.html">Properties</a>" stream format.</p><p>
 
-<p>In a nutshell: lines beginning with a <samp>#</samp> character are ignored. The text before the first <samp>=</samp> character is the <em>key</em>.  The remainder of the text after the <samp>=</samp> until the end-of-line character(s) is the <em>value</em>.</p>
+</p><p>In a nutshell: lines beginning with a <samp>#</samp> character are ignored. The text before the first <samp>=</samp> character is the <em>key</em>.  The remainder of the text after the <samp>=</samp> until the end-of-line character(s) is the <em>value</em>.</p>
 
 <p>Each response must begin with the text <samp>#__GR2PROTO__</samp>.
 
-<p>Each response must contain at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
+</p><p>Each response must contain at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
 
 <p>The value associated with the <samp>status</samp> key is an integer status code
 (the codes are defined in <a href="#appendix_a">Appendix A</a>.  For example, if the
@@ -158,7 +163,7 @@ server was able to complete the command in the client's request, the value of th
       <li> 
         <h4>Context</h4>
         <p>A request with the <samp>login</samp> command may be made at any time 
-          &mdash; there are no prerequisites.</p>
+          &#8212; there are no prerequisites.</p>
       </li>
       <li> 
         <h4>Form Data</h4>
@@ -321,7 +326,7 @@ server was able to complete the command in the client's request, the value of th
     </ul>
   </li>
   <li> 
-    <h3><a name="new-album" id="new-album"><samp>new-album</samp></a> command [since 2.0]</h3>
+    <h3><a name="new-album" id="new-album"><samp>new-album</samp></a> command [since 2.1]</h3>
     <p>
     	This command creates a new album on the server.
     </p>
@@ -337,7 +342,7 @@ server was able to complete the command in the client's request, the value of th
         <h4>Form Data</h4>
         <p>
         	<samp>cmd=album-properties<br>
-			protocol_version=2.0<br>
+			protocol_version=2.1<br>
 			set_albumName=</samp><em>parent-album-name</em> or empty to create at top level<br>
 			<samp>newAlbumName=</samp><em>album-name</em><br>
 			<samp>newAlbumTitle=</samp><em>album-title</em><br>
@@ -384,7 +389,9 @@ server was able to complete the command in the client's request, the value of th
 </tr>
 </thead>
 <tbody>
-<tr><td>GR_STAT_SUCCESS</td><td>0</td><td>The command the client sent in the request completed successfully.  The data (if any) in the response should be considered valid.</td></tr>
+<tr><td>GR_STAT_SUCCESS</td><td>0</td><td>The command the client sent in
+the request completed successfully.  The data (if any) in the response should
+be considered valid.</td></tr>
 
 <tr><td>GR_STAT_PROTO_MAJ_VER_INVAL</td><td>101</td><td>The protocol major version the client is using is not supported.</td></tr>
 <tr><td>GR_STAT_PROTO_MIN_VER_INVAL</td><td>102</td><td>The protocol minor version the client is using is not supported.</td></tr>
@@ -407,5 +414,5 @@ server was able to complete the command in the client's request, the value of th
 <hr>
 <p><samp class="weasel">$Id$</samp></p>
 
-</body>
-</html>
+<br>
+</body></html>
