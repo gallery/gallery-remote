@@ -44,5 +44,7 @@
   <property category="sys"
     name="uidesign.size.com.gallery.GalleryRemote.MainFrame" value="593,523"/>
   <property category="sys"
+    name="uidesign.size.com.gallery.GalleryRemote.NewAlbumDialog" value="400,170"/>
+  <property category="sys"
     name="uidesign.size.com.gallery.GalleryRemote.Update" value="563,437"/>
 </project>
