@@ -17,8 +17,10 @@ import java.util.*;
 
 
 public class GRI18n implements PreferenceNames {
-    private static final String RESNAME =
-            "com.gallery.GalleryRemote.resources.GRResources";
+	private static final String RESNAME =
+			"com.gallery.GalleryRemote.resources.GRResources";
+	private static final String RESPATH =
+			"com/gallery/GalleryRemote/resources/GRResources";
     private static final String MODULE = "GRI18n";
 
     private static Locale grLocale;
@@ -125,7 +127,6 @@ public class GRI18n implements PreferenceNames {
     }
 
     private static List initAvailableLocales() {
-        String resPath = RESNAME.replaceAll("\\.", "/");
         String locPath;
         String loc;
         List aList = new LinkedList();
@@ -140,7 +141,7 @@ public class GRI18n implements PreferenceNames {
             loc = list[i].toString();
             if (!loc.startsWith(prefix)) {
                 prefix = loc;
-                locPath = resPath + "_" + loc + ".properties";
+                locPath = RESPATH + "_" + loc + ".properties";
                 if (ClassLoader.getSystemClassLoader().getResource(locPath) != null)
                     aList.add(list[i]);
             }

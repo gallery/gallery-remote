@@ -244,7 +244,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		String laxClasspath = lax.getProperty("lax.class.path");
 		String classpath = GalleryRemote.getInstance().properties.getProperty("classpath");
 
-		if (! classpath.equals(laxClasspath)) {
+		if (classpath != null && ! classpath.equals(laxClasspath)) {
 			Log.log(Log.LEVEL_INFO, MODULE, "Patching LAX classpath");
 
 			try {

@@ -3,14 +3,15 @@
 		A part of the Gallery project
 	</description>
 	<!-- set global properties for this build -->
-	<property name="src" location="."/>
-	<property name="build" location="build"/>
-	<property name="lib" location="lib"/>
-	<property name="img" location="img"/>
-	<property name="dist"  location="dist"/>
-	<property name="install"  location="gallery_remote_Build_Output/Web_Installers/InstData"/>
-	<property name="docbase"  location="../gallery_docs"/>
-	<property name="docdist"  location="${docbase}/dist/grpackage"/>
+	<property name="src" location="." />
+	<property name="build" location="build" />
+	<property name="lib" location="lib" />
+	<property name="img" location="img" />
+	<property name="dist" location="dist" />
+	<property name="install" location="gallery_remote_Build_Output/Web_Installers/InstData" />
+	<property name="docbase" location="../gallery_docs" />
+	<property name="docdist" location="${docbase}/dist/grpackage" />
+	<property name="iafolder" location="G:\\Program Files\\InstallAnywhere 6 Enterprise" />
 
 	<taskdef name="jarbundler"
 		classpath="${lib}/jarbundler-0.1.jar"
@@ -80,7 +81,6 @@
 			<fileset dir="." includes="ChangeLog" />
 			<fileset dir="." includes="GalleryRemote.jar" />
 			<fileset dir="." includes="ReadMe.html" />
-			<!--zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/-->
 			<zipfileset dir="./lib" includes="metadata-extractor-2.1.jar" prefix="lib"/>
 			<zipfileset dir="./img" includes="*" prefix="img"/>
 		</zip>
@@ -119,9 +119,13 @@
 
 	<target name="installer" depends="jar, docs"
 		description="Build the installer" >
-		<exec executable="build">
-			<arg file="gallery_remote.iap_xml" />
-		</exec>
+	<!--target name="installer"
+		description="Build the installer" -->
+
+		<taskdef name="buildinstaller" classname="com.zerog.ia.integration.ant.InstallAnywhereAntTask"
+			classpath="${iafolder}/resource/build/iaant.jar" />
+
+		<buildinstaller IAProjectFile="${basedir}/gallery_remote.iap_xml" IALocation="${iafolder}"/>
 	</target>
 
 	<target name="docs" description="Build documentation">
@@ -191,7 +195,7 @@
 
 		<move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe" />
 		<move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.VM.exe" />
-		<!--move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/InstallGalleryRemote.MacOSX.NoVM.zip" /-->
+		<move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/GalleryRemote.${version}.MacOSX.NoVM.zip" />
 		<move file="${install}/Linux/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Linux.NoVM.bin" />
 		<move file="${install}/Linux/VM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Linux.VM.bin" />
 		<move file="${install}/Solaris/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Solaris.NoVM.bin" />

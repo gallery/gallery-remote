@@ -1827,6 +1827,7 @@ public class MainFrame extends javax.swing.JFrame
 			iDelete = new ImageIcon(MainFrame.class.getResource("/Delete16.gif"));
 			iRight = new ImageIcon(MainFrame.class.getResource("/RotateRight24.gif"));
 			iLeft = new ImageIcon(MainFrame.class.getResource("/RotateLeft24.gif"));
+			iFlip = new ImageIcon(MainFrame.class.getResource("/FlipHoriz24.gif"));
 
 			iComputer = new ImageIcon(MainFrame.class.getResource("/computer.gif"));
 			iUploading = new ImageIcon(MainFrame.class.getResource("/uploading.gif"));
