@@ -1,6 +1,5 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.GalleryProperties;
 import com.gallery.GalleryRemote.MainFrame;
 
 import javax.swing.*;

@@ -1,6 +1,5 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.GalleryProperties;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.model.Gallery;
 

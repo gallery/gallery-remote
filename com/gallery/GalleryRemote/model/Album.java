@@ -195,7 +195,7 @@ public class Album extends Picture implements ListModel, Serializable
 	 *@param  files  the files to create the pictures from
 	 */
 	public void addPictures( File[] files ) {
-		this.addPictures(files, 0);
+		addPictures(files, 0);
 	}
         
     /**
