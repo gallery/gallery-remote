@@ -204,23 +204,28 @@ public class PictureInspector extends JPanel
      *	Caption JTextArea events.
      */
     public void insertUpdate(DocumentEvent e) {
-    	((Picture)pictures[0]).setCaption( caption.getText() );	
+		textUpdate();
     }
 
     /**
      * Caption JTextArea events.
      */
     public void removeUpdate(DocumentEvent e) {
-    	((Picture)pictures[0]).setCaption( caption.getText() );	
+		textUpdate();
     }
 
     /**
      * Caption JTextArea events.
      */
     public void changedUpdate(DocumentEvent e) {
-    	((Picture)pictures[0]).setCaption( caption.getText() );	
+		textUpdate();
     }
-
+	
+	public void textUpdate() {
+		if (pictures != null) {
+			((Picture)pictures[0]).setCaption( caption.getText() );
+		}
+	}		
 
 
 	/**
@@ -256,7 +261,6 @@ public class PictureInspector extends JPanel
 			path.setText( "" );
 			album.setText( "" );
 			
-			// TODO: Pierre -- this doesn't seem to get called when the last picture is deleted from the dnd list. -- tim
 			caption.setText( "" );
 			caption.setEditable(false);
 			caption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
