@@ -1,3 +1,11 @@
+2003-06-12  Pierre-Luc Paour <gallery@paour.com> (1.1-b3)
+
+	* Preference property names are now constants in PreferenceNames rather
+	  than just text litterals.
+	* Added proxy support in the preferences.
+	* Explicit HTTPS support (see the ReadMe).
+	* Optionally strips the extension when using filename for caption.
+
 2003-06-04  Pierre-Luc Paour <gallery@paour.com> (1.1-b2)
 
 	* Added Upload, URLs, Proxy prefs panel.
