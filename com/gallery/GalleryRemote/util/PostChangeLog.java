@@ -101,7 +101,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			betaCheck.append("version=").append(currentBuildS).append("\n");
 			betaCheck.append("releaseDate=").append(defaultProps.getProperty("releaseDate")).append("\n");
 			betaCheck.append("releaseUrl=http://jpmullan.com/galleryupdates/remote/gallery_remote_").append(defaultProps.getProperty("version")).append(".zip\n");
-			betaCheck.append("releaseUrlMac=http://jpmullan.com/galleryupdates/remote/GalleryRemote.").append(defaultProps.getProperty("version")).append("MacOSX.NoVM.tgz\n");
+			betaCheck.append("releaseUrlMac=http://jpmullan.com/galleryupdates/remote/GalleryRemote.").append(defaultProps.getProperty("version")).append(".MacOSX.NoVM.tgz\n");
 			betaCheck.append("releaseNotes=").append(changes);
 
 			// update Menalto
