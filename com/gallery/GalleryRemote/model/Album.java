@@ -91,12 +91,12 @@ public class Album extends Picture implements ListModel
 	 *@param  gallery  The new gallery
 	 */
 	public void fetchAlbumProperties( StatusUpdate su ) {
-		if ( su == null ) {
-			su = new StatusUpdateAdapter(){};
-		}
-		
-		if ( ! hasFetchedInfo )
+		if ( ! hasFetchedInfo && getGallery().getComm().hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO))
 		{
+			if ( su == null ) {
+				su = new StatusUpdateAdapter(){};
+			}
+			
 			try {
 				gallery.getComm().albumInfo( su, this, false );
 			} catch (RuntimeException e) {
@@ -122,6 +122,8 @@ public class Album extends Picture implements ListModel
 	 *@return    the server's resize dimension for this album
 	 */
 	public int getServerAutoResize() {
+		fetchAlbumProperties(null);
+		
 		return autoResize;
 	}
 	
@@ -313,14 +315,14 @@ public class Album extends Picture implements ListModel
 		this.name = removeOffendingChars(name);
 	}
 	
-	static final String offendingChars = "\\/*?\"\'&\\u|.+# ";
+	static final String offendingChars = "\\/*?\"\'&<>|.+# ";
 	static String removeOffendingChars(String in) {
 		StringBuffer out = new StringBuffer();
 		
 		int l = in.length();
 		for (int i = 0; i < l; i++) {
 			char c = in.charAt(i);
-			if (offendingChars.indexOf(c) != -1) {
+			if (offendingChars.indexOf(c) == -1) {
 				out.append(c);
 			}
 		}

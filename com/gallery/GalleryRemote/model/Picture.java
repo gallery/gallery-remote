@@ -114,11 +114,17 @@ public class Picture {
 			
 			if ( d == null || d.equals( new Dimension( 0, 0 ) ) ) {
 				d = null;
-				album.fetchAlbumProperties(null);
 				int l = album.getServerAutoResize();
 				
 				if ( l != 0 ) {
 					d = new Dimension( l, l );
+				} else {
+					// server can't tell us how to resize, try default
+					d = GalleryRemote.getInstance().properties.getDimensionProperty("resizeToDefault");
+					
+					if ( d.equals( new Dimension( 0, 0 ) ) ) {
+						d = null;
+					}
 				}
 			}
 			
