@@ -166,11 +166,15 @@ public class PropertiesFile extends GalleryProperties {
 				// try to get from JAR
 				if (mFilename.indexOf("/") == -1) {
 					// only if the resource is local
-					if (!alreadyWarned) {
-						Log.log(Log.LEVEL_TRACE, MODULE, "Trying to find " + mFilename + " in Classpath");
+					try {
+						if (!alreadyWarned) {
+							Log.log(Log.LEVEL_TRACE, MODULE, "Trying to find " + mFilename + " in Classpath");
+						}
+						fileIn = PropertiesFile.class.getResourceAsStream("/" + mFilename);
+					} catch (IllegalArgumentException iae) {
+						// Opera throws an exception for invalid filenames...
+						fileIn = null;
 					}
-
-					fileIn = PropertiesFile.class.getResourceAsStream("/" + mFilename);
 				}
 
 				if (fileIn == null) {
