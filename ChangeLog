@@ -1,3 +1,8 @@
+2003-09-30  Pierre-Luc Paour <gallery@paour.com> (1.2-b7)
+
+	* Implemented UI in Preferences/General to select the locale
+	  among the available locales.
+
 2003-09-29  Amedeo Paglione <apaglione@mac.com> (1.2-b6)
 
 	* Internationalized all strings in GR. English and Italian versions

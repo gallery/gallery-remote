@@ -12,9 +12,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import java.text.ChoiceFormat;
 import java.text.MessageFormat;
 import java.text.Format;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class GRI18n implements PreferenceNames {
@@ -40,20 +38,28 @@ public class GRI18n implements PreferenceNames {
         myLocale =
                 GalleryRemote.getInstance().properties.getProperty(GR_LOCALE);
 
-        if (myLocale == null) {
-            grLocale = Locale.getDefault();
-        } else {
-            myLang = myLocale.substring(0, myLocale.indexOf("_"));
-            myCountry = myLocale.substring(myLocale.indexOf("_") + 1);
-            grLocale = new Locale(myLang, myCountry);
-        }
+		grLocale = parseLocaleString(myLocale);
 
-        grMsgFrmt = new MessageFormat("");
+		grMsgFrmt = new MessageFormat("");
         setResBundle();
 
     }
 
-    public void setLocale(String language, String country) {
+	public static Locale parseLocaleString(String localeString) {
+		if (localeString == null) {
+			return Locale.getDefault();
+		} else {
+			int i = localeString.indexOf("_");
+
+			if (i != -1) {
+				return new Locale(localeString.substring(0, i), localeString.substring(i + 1));
+			} else {
+				return new Locale(localeString);
+			}
+		}
+	}
+
+	public void setLocale(String language, String country) {
         grLocale = new Locale(language, country);
         setResBundle();
     }
@@ -99,6 +105,11 @@ public class GRI18n implements PreferenceNames {
     }
 
 
+	public List getAvailableLocales() {
+		return Arrays.asList(new Locale[] { Locale.ITALIAN, Locale.ENGLISH} );
+	}
+
+
     private void setResBundle() {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
@@ -108,8 +119,5 @@ public class GRI18n implements PreferenceNames {
         }
 
         grMsgFrmt.setLocale(grLocale);
-
     }
-
-
 }

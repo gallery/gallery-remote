@@ -1,23 +1,31 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
-import java.awt.*;
 import javax.swing.border.*;
+import java.util.List;
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.Locale;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
  * User: paour
  * Date: May 8, 2003
  */
-public class GeneralPanel extends PreferencePanel implements PreferenceNames {
+public class GeneralPanel extends /*JPanel*/ PreferencePanel implements PreferenceNames {
 	public static final String MODULE = "GeneralPa";
 
-    public static GRI18n grRes = GRI18n.getInstance();
+	public static GRI18n grRes = GRI18n.getInstance();
 
 	JLabel icon = new JLabel(grRes.getString(MODULE, "icon"));
+
+	List locales = null;
+	boolean defaultLocale = false;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -30,10 +38,10 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	GridBagLayout gridBagLayout2 = new GridBagLayout();
 	JLabel jLabel3 = new JLabel();
 	JComboBox logLevel = new JComboBox(new String[] {
-        grRes.getString(MODULE, "logLevel0"),
-        grRes.getString(MODULE, "logLevel1"),
-	    grRes.getString(MODULE, "logLevel2"),
-        grRes.getString(MODULE, "logLevel3")});
+		grRes.getString(MODULE, "logLevel0"),
+		grRes.getString(MODULE, "logLevel1"),
+		grRes.getString(MODULE, "logLevel2"),
+		grRes.getString(MODULE, "logLevel3")});
 	JPanel jPanel3 = new JPanel();
 	JPanel jPanel4 = new JPanel();
 	JCheckBox updateCheck = new JCheckBox();
@@ -43,7 +51,12 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	GridBagLayout gridBagLayout4 = new GridBagLayout();
 	JPanel jPanel6 = new JPanel();
 	JPanel jPanel7 = new JPanel();
+	JPanel jPanel8 = new JPanel();
 	JCheckBox showThumbnails = new JCheckBox();
+	JLabel jLabel4 = new JLabel();
+	JComboBox jLocale = new JComboBox();
+	JLabel jLabel5 = new JLabel();
+	JPanel jPanel9 = new JPanel();
 
 	public JLabel getIcon() {
 		return icon;
@@ -59,6 +72,27 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 
 		updateCheck.setSelected(props.getBooleanProperty(UPDATE_CHECK));
 		updateCheckBeta.setSelected(props.getBooleanProperty(UPDATE_CHECK_BETA));
+
+		locales = grRes.getAvailableLocales();
+		Vector localeStrings = new Vector();
+
+		Iterator it = locales.iterator();
+		while (it.hasNext()) {
+			Locale l = (Locale) it.next();
+			localeStrings.add(l.getDisplayLanguage());
+		}
+
+		int selectedLocale = locales.indexOf(GRI18n.parseLocaleString(
+				GalleryRemote.getInstance().properties.getProperty(GR_LOCALE)));
+
+		if (selectedLocale == -1) {
+			localeStrings.add(0, "Default");
+			selectedLocale = 0;
+			defaultLocale = true;
+		}
+
+		jLocale.setModel(new DefaultComboBoxModel(localeStrings));
+		jLocale.setSelectedIndex(selectedLocale);
 	}
 
 	public void writeProperties(GalleryProperties props) {
@@ -76,6 +110,17 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 
 		props.setBooleanProperty(UPDATE_CHECK, updateCheck.isSelected());
 		props.setBooleanProperty(UPDATE_CHECK_BETA, updateCheckBeta.isSelected());
+
+		int selectedLocale = jLocale.getSelectedIndex();
+		if (defaultLocale) {
+			if (selectedLocale != 0) {
+				props.setProperty(GR_LOCALE, ((Locale) locales.get(selectedLocale - 1)).toString());
+			} else {
+				// still default, don't save it
+			}
+		} else {
+			props.setProperty(GR_LOCALE, ((Locale) locales.get(selectedLocale)).toString());
+		}
 	}
 
 	public void buildUI() {
@@ -111,20 +156,24 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 		updateCheckBeta.setText(grRes.getString(MODULE, "updateBetaCheck"));
 		showThumbnails.setToolTipText(grRes.getString(MODULE, "showThumbTip"));
 		showThumbnails.setText(grRes.getString(MODULE, "showThumb"));
+		jPanel7.setLayout(new GridBagLayout());
+		jLabel4.setText(grRes.getString(MODULE, "langWarn"));
+		jLabel5.setText(grRes.getString(MODULE, "lang"));
+		jPanel7.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)), grRes.getString(MODULE, "langTitle")));
 		this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(jLabel1,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		jPanel1.add(thumbnailWidth,      new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(jLabel2,       new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
 		jPanel1.add(thumbnailHeight,      new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(jPanel6,   new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(showThumbnails,   new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel2,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel2.add(savePasswords,      new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
@@ -143,8 +192,18 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel4.add(jPanel5,   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jPanel7,  new GridBagConstraints(0, 3, 1, 1, 1.0, 1.0
+		this.add(jPanel7,  new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		jPanel7.add(jLabel4,     new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel7.add(jLocale,   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel7.add(jLabel5, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jPanel8,  new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel7.add(jPanel9,  new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 	}
 }
 
