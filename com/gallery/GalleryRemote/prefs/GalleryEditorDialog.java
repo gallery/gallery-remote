@@ -20,32 +20,41 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 	Gallery gallery;
 	boolean isOK = false;
 
-	JPanel jPanel1 = new JPanel();
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
-	JLabel jLabel1 = new JLabel();
-	JLabel jLabel2 = new JLabel();
-	JLabel jLabel3 = new JLabel();
-	JLabel jLabel4 = new JLabel();
+	JPanel jMainPanel = new JPanel();
+	JLabel jPnGalleryUrlLabel = new JLabel();
+	JLabel jUsernameLabel = new JLabel();
+	JLabel jPasswordLabel = new JLabel();
+	JLabel jTypeLabel = new JLabel();
+	JLabel jPnLoginUrlLabel = new JLabel();
+	JLabel jStandaloneUrlLabel = new JLabel();
+	JLabel jPnHelpLabel = new JLabel();
+	JLabel jStandaloneHelpLabel = new JLabel();
+	JLabel jPhpnLoginUrlLabel = new JLabel();
+	JLabel jPhpnGalleryUrlLabel = new JLabel();
+	JLabel jPhpnHelpLabel = new JLabel();
+
+	JComboBox jType = new JComboBox();
 	JPanel jStylePanel = new JPanel();
 	CardLayout jStyleLayout = new CardLayout();
-	JTextField jPnGalleryUrl = new JTextField();
+
 	JTextField jUsername = new JTextField();
 	JPasswordField jPassword = new JPasswordField();
-	JComboBox jType = new JComboBox();
+
 	JPanel jPostNuke = new JPanel();
-	GridBagLayout gridBagLayout2 = new GridBagLayout();
-	JLabel jLabel5 = new JLabel();
 	JTextField jPnLoginUrl = new JTextField();
+	JTextField jPnGalleryUrl = new JTextField();
+
+	JPanel jPHPNuke = new JPanel();
+	JTextField jPhpnLoginUrl = new JTextField();
+	JTextField jPhpnGalleryUrl = new JTextField();
+
 	JPanel jStandalone = new JPanel();
-	JLabel jLabel6 = new JLabel();
-	GridBagLayout gridBagLayout3 = new GridBagLayout();
 	JTextField jStandaloneUrl = new JTextField();
-	JPanel jPanel2 = new JPanel();
+
+	JPanel jButtonPanel = new JPanel();
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
 	GridLayout gridLayout1 = new GridLayout();
-	JLabel jLabel7 = new JLabel();
-	JLabel jLabel8 = new JLabel();
 
 	public GalleryEditorDialog(JDialog owner) {
 		this(owner, null);
@@ -69,16 +78,11 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		this.setTitle("Gallery Details");
 
-		jPanel1.setLayout(gridBagLayout1);
-		jLabel1.setText("Gallery Module URL");
-		jLabel2.setText("Username");
-		jLabel3.setText("Password");
-		jLabel4.setText("Gallery Type");
+		jMainPanel.setLayout(new GridBagLayout());
+		jUsernameLabel.setText("Username");
+		jPasswordLabel.setText("Password");
+		jTypeLabel.setText("Gallery Type");
 		jStylePanel.setLayout(jStyleLayout);
-		jPostNuke.setLayout(gridBagLayout2);
-		jLabel5.setText("PostNuke Login URL");
-		jStandalone.setLayout(gridBagLayout3);
-		jLabel6.setText("Gallery URL");
 
 		jType.setToolTipText("Use Standalone when your Gallery is not embedded inside a Content " +
 				"Management System (the default). If it is embedded, pick the CMS " +
@@ -88,58 +92,96 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 		jOk.setText("OK");
 		jCancel.setText("Cancel");
-		jPanel2.setLayout(gridLayout1);
+		jButtonPanel.setLayout(gridLayout1);
 		gridLayout1.setHgap(5);
-		jLabel7.setPreferredSize(new Dimension(300, 80));
-		jLabel7.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
+
+		jStandalone.setLayout(new GridBagLayout());
+		jStandaloneUrlLabel.setText("Gallery URL");
+		jStandaloneHelpLabel.setText("<HTML>The Gallery URL is the URL users would use to connect to your " +
+				"Gallery.</HTML>");
+		jStandaloneHelpLabel.setVerticalAlignment(SwingConstants.TOP);
+		jStandaloneHelpLabel.setVerticalTextPosition(SwingConstants.CENTER);
+
+		jPostNuke.setLayout(new GridBagLayout());
+		jPnLoginUrlLabel.setText("PostNuke Login URL");
+		jPnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
+		jPnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
+		jPnGalleryUrlLabel.setText("Gallery Module URL");
+		jPnHelpLabel.setPreferredSize(new Dimension(300, 80));
+		jPnHelpLabel.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
 				"Remote tries to log in by the username and password you enter above " +
 				"and <b>$GALLERYFILE$</b> is replaced with the PHP file Gallery Remote uses " +
 				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).<BR>" +
 				"The <b>name</b> parameter is the PostNuke module name of your gallery; set it " +
 				"accordingly.<BR>" +
 				"This functionality is only available with Gallery 1.3.5 (beta 10) and later.</HTML>");
-		jLabel7.setVerticalAlignment(SwingConstants.TOP);
-		jLabel8.setText("<HTML>The Gallery URL is the URL users would use to connect to your " +
-				"Gallery.</HTML>");
-		jLabel8.setVerticalAlignment(SwingConstants.TOP);
-		jLabel8.setVerticalTextPosition(SwingConstants.CENTER);
-		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
-		jPanel1.add(jStylePanel,          new GridBagConstraints(0, 3, 4, 1, 1.0, 1.0
+		jPnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
+
+		jPHPNuke.setLayout(new GridBagLayout());
+		jPhpnLoginUrlLabel.setText("PHPNuke Login URL");
+		jPhpnLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
+		jPhpnLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
+		jPhpnGalleryUrlLabel.setText("Gallery Module URL");
+		jPhpnHelpLabel.setPreferredSize(new Dimension(300, 80));
+		jPhpnHelpLabel.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
+				"Remote tries to log in by the username and password you enter above " +
+				"and <b>$GALLERYFILE$</b> is replaced with the PHP file Gallery Remote uses " +
+				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).<BR>" +
+				"The <b>name</b> parameter is the PHPNuke module name of your gallery; set it " +
+				"accordingly.<BR>" +
+				"This functionality is only available with Gallery 1.3.5 (beta 10) and later.</HTML>");
+		jPhpnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
+
+		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);
+		jMainPanel.add(jStylePanel,          new GridBagConstraints(0, 3, 4, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		jPanel1.add(jLabel2,         new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jMainPanel.add(jUsernameLabel,         new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
-		jPanel1.add(jLabel3,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jMainPanel.add(jPasswordLabel,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
-		jPanel1.add(jLabel4,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+		jMainPanel.add(jTypeLabel,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
-		jPanel1.add(jUsername,            new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+		jMainPanel.add(jUsername,            new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 5, 5), 0, 0));
-		jPanel1.add(jPassword,          new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+		jMainPanel.add(jPassword,          new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jPanel1.add(jType,         new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
+		jMainPanel.add(jType,         new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jPanel1.add(jPanel2,             new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
+		jMainPanel.add(jButtonPanel,             new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
-		jPanel2.add(jOk, null);
-		jPanel2.add(jCancel, null);
+		jButtonPanel.add(jOk, null);
+		jButtonPanel.add(jCancel, null);
 
 		jStylePanel.add(jPostNuke, Gallery.types[Gallery.TYPE_POSTNUKE]);
-		jPostNuke.add(jLabel5,        new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jPostNuke.add(jPnLoginUrlLabel,        new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
 		jPostNuke.add(jPnLoginUrl,           new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jPostNuke.add(jLabel1,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jPostNuke.add(jPnGalleryUrlLabel,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
 		jPostNuke.add(jPnGalleryUrl,      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jPostNuke.add(jLabel7,   new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0
+		jPostNuke.add(jPnHelpLabel,   new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0
 				,GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 20, 0, 0), 0, 0));
+
+		jStylePanel.add(jPHPNuke, Gallery.types[Gallery.TYPE_PHPNUKE]);
+		jPHPNuke.add(jPhpnLoginUrlLabel,        new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
+		jPHPNuke.add(jPhpnLoginUrl,           new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		jPHPNuke.add(jPhpnGalleryUrlLabel,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
+		jPHPNuke.add(jPhpnGalleryUrl,      new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		jPHPNuke.add(jPhpnHelpLabel,   new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0
+				,GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 20, 0, 0), 0, 0));
+
 		jStylePanel.add(jStandalone, Gallery.types[Gallery.TYPE_STANDALONE]);
-		jStandalone.add(jLabel6,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jStandalone.add(jStandaloneUrlLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 5, 5), 0, 0));
 		jStandalone.add(jStandaloneUrl,  new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.SOUTHEAST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jStandalone.add(jLabel8,    new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0
+		jStandalone.add(jStandaloneHelpLabel,    new GridBagConstraints(0, 1, 2, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 20, 0, 0), 0, 0));
 
 		jType.addActionListener(this);
@@ -156,8 +198,12 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jStyleLayout.show(jStylePanel, panel);
 
 		jStandaloneUrl.setText(gallery.getStUrlString());
+
 		jPnGalleryUrl.setText(gallery.getPnGalleryUrlString());
 		jPnLoginUrl.setText(gallery.getPnLoginUrlString());
+
+		jPhpnGalleryUrl.setText(gallery.getPhpnGalleryUrlString());
+		jPhpnLoginUrl.setText(gallery.getPhpnLoginUrlString());
 	}
 
 	public void readUIState() {
@@ -166,8 +212,12 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		gallery.setType(jType.getSelectedIndex());
 
 		gallery.setStUrlString(jStandaloneUrl.getText());
+
 		gallery.setPnLoginUrlString(jPnLoginUrl.getText());
 		gallery.setPnGalleryUrlString(jPnGalleryUrl.getText());
+
+		gallery.setPhpnLoginUrlString(jPhpnLoginUrl.getText());
+		gallery.setPhpnGalleryUrlString(jPhpnGalleryUrl.getText());
 	}
 
 	public void actionPerformed(ActionEvent e) {

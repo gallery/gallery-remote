@@ -32,8 +32,11 @@ public interface PreferenceNames {
 	public static final String URL = "url.";
 	public static final String STANDALONE = "Standalone";
 	public static final String POSTNUKE = "PostNuke";
+	public static final String PHPNUKE = "PHPNuke";
 	public static final String PN_GALLERY_URL = "pnGalleryUrl.";
 	public static final String PN_LOGIN_URL = "pnLoginUrl.";
+	public static final String PHPN_GALLERY_URL = "phpnGalleryUrl.";
+	public static final String PHPN_LOGIN_URL = "phpnLoginUrl.";
 
 	// Proxy panel
 	public static final String USE_PROXY = "useProxy";

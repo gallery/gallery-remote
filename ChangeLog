@@ -1,3 +1,7 @@
+2003-09-21  Pierre-Luc Paour <gallery@paour.com> (1.2-b2)
+
+	* Implemented PHPNuke support (thanks docmattman).
+
 2003-09-20  Pierre-Luc Paour <gallery@paour.com> (1.2-b1)
 
 	* Integrated patch by Markus Cozowicz to provide feedback during long

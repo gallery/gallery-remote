@@ -45,6 +45,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	String stUrlString = null;
 	String pnLoginUrlString = null;
 	String pnGalleryUrlString = null;
+	String phpnLoginUrlString = null;
+	String phpnGalleryUrlString = null;
 	String username;
 	String password;
 	ArrayList albumList = null;
@@ -56,9 +58,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	transient StatusUpdate su;
 	transient private int prefsIndex;
 
-	public static String types[] = new String[] {STANDALONE, POSTNUKE};
+	public static String types[] = new String[] {STANDALONE, POSTNUKE, PHPNUKE};
 	public static final int TYPE_STANDALONE = 0;
 	public static final int TYPE_POSTNUKE = 1;
+	public static final int TYPE_PHPNUKE = 2;
 
 	public static final int TOSTRING_MAXLEN = 40;
 
@@ -299,6 +302,54 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		}
 	}
 
+	/* PHPNuke Gallery URL */
+
+	public void setPhpnGalleryUrlString( String urlString ) {
+		if (urlString == null)
+		{
+			phpnGalleryUrlString = null;
+			return;
+		}
+
+		phpnGalleryUrlString = reformatUrlString( urlString, false );
+
+		if (phpnGalleryUrlString != null) {
+			GalleryRemote.getInstance().properties.setProperty(PHPN_GALLERY_URL + prefsIndex, phpnGalleryUrlString);
+		}
+	}
+
+	public String getPhpnGalleryUrlString() {
+		if (phpnGalleryUrlString != null) {
+			return phpnGalleryUrlString.toString();
+		} else {
+			return "http://your.host.com/nuke/modules.php?name=$GALLERYFILE$";
+		}
+	}
+
+	/* PHPNuke Login URL */
+
+	public void setPhpnLoginUrlString( String urlString ) {
+		if (urlString == null)
+		{
+			phpnLoginUrlString = null;
+			return;
+		}
+
+		phpnLoginUrlString = reformatUrlString( urlString, false );
+
+		if (phpnLoginUrlString != null) {
+			GalleryRemote.getInstance().properties.setProperty(PHPN_LOGIN_URL + prefsIndex, phpnLoginUrlString);
+		}
+	}
+
+	public String getPhpnLoginUrlString() {
+		if (phpnLoginUrlString != null) {
+			return phpnLoginUrlString.toString();
+		} else {
+			return "http://your.host.com/nuke/modules.php?name=Your_Account&op=login&username=$USERNAME$&password=$PASSWORD$";
+		}
+	}
+
 	/* Generic */
 
 	public URL getLoginUrl(String galleryFile) {
@@ -309,6 +360,9 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 				case TYPE_POSTNUKE:
 					return new URL(replace(pnLoginUrlString, galleryFile));
+
+				case TYPE_PHPNUKE:
+					return new URL(replace(phpnLoginUrlString, galleryFile));
 
 				default:
 					throw new RuntimeException("Unknown type: " + type);
@@ -330,6 +384,9 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 				case TYPE_POSTNUKE:
 					return new URL(replace(pnGalleryUrlString, galleryFile));
+
+				case TYPE_PHPNUKE:
+					return new URL(replace(phpnGalleryUrlString, galleryFile));
 
 				default:
 					throw new RuntimeException("Unknown type: " + type);
@@ -441,8 +498,13 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		g.username = username;
 		g.password = password;
 		g.setStUrlString(url);
+
 		g.setPnLoginUrlString(p.getProperty(PN_LOGIN_URL + prefsIndex));
 		g.setPnGalleryUrlString(p.getProperty(PN_GALLERY_URL + prefsIndex));
+
+		g.setPhpnLoginUrlString(p.getProperty(PHPN_LOGIN_URL + prefsIndex));
+		g.setPhpnGalleryUrlString(p.getProperty(PHPN_GALLERY_URL + prefsIndex));
+
 		g.setPrefsIndex(prefsIndex);
 
 		String typeS = p.getProperty( TYPE + prefsIndex );
@@ -471,6 +533,13 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (pnGalleryUrlString != null) {
 			p.setProperty(PN_GALLERY_URL + prefsIndex, pnGalleryUrlString);
 		}
+
+		if (phpnLoginUrlString != null) {
+			p.setProperty(PHPN_LOGIN_URL + prefsIndex, phpnLoginUrlString);
+		}
+		if (phpnGalleryUrlString != null) {
+			p.setProperty(PHPN_GALLERY_URL + prefsIndex, phpnGalleryUrlString);
+		}
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {
@@ -482,6 +551,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		p.remove(TYPE + n);
 		p.remove(PN_LOGIN_URL + n);
 		p.remove(PN_GALLERY_URL + n);
+		p.remove(PHPN_LOGIN_URL + n);
+		p.remove(PHPN_GALLERY_URL + n);
 	}
 
 	public void setPrefsIndex(int prefsIndex) {
@@ -498,6 +569,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 			case TYPE_POSTNUKE:
 				tmp = pnGalleryUrlString;
+				break;
+
+			case TYPE_PHPNUKE:
+				tmp = phpnGalleryUrlString;
 				break;
 
 			default:
