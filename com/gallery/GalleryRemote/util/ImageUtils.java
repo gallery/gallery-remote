@@ -217,34 +217,13 @@ public class ImageUtils {
 
 		if (useJpegtran) {
 			try {
-				StringBuffer cmdline = new StringBuffer(jpegtranPath);
+				if (flip) {
+					r = jpegtranExec(filename, " -flip horizontal");
+					filename = r.getPath();
+				}
 
 				if (angle != 0) {
-					cmdline.append(" -rotate ").append(angle * 90);
-				}
-
-				if (flip) {
-					cmdline.append(" -flip horizontal");
-				}
-
-				cmdline.append(" \"").append(filename).append("\"");
-
-				r = File.createTempFile("res"
-					, "." + GalleryFileFilter.getExtension(filename), tmpDir);
-				toDelete.add(r);
-
-				cmdline.append(" \"").append(r.getPath()).append("\"");
-
-				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
-
-				Process p = Runtime.getRuntime().exec(cmdline.toString());
-				p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
-
-				if (p.exitValue() != 0) {
-					Log.log(Log.CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
-					useJpegtran = false;
-					r = null;
+					r = jpegtranExec(filename, " -rotate " + angle * 90);
 				}
 			} catch (IOException e1) {
 				Log.logException(Log.ERROR, MODULE, e1);
@@ -255,6 +234,37 @@ public class ImageUtils {
 
 		if ( ! useJpegtran && r == null ) {
 			throw new UnsupportedOperationException("jpegtran must be installed for this operation");
+		}
+
+		return r;
+	}
+
+	private static File jpegtranExec(String filename, String command) throws IOException, InterruptedException {
+		File r;
+		StringBuffer cmdline = new StringBuffer(jpegtranPath);
+
+		cmdline.append(" -copy all");
+
+		cmdline.append(command);
+
+		cmdline.append(" \"").append(filename).append("\"");
+
+		r = File.createTempFile("res"
+			, "." + GalleryFileFilter.getExtension(filename), tmpDir);
+		toDelete.add(r);
+
+		cmdline.append(" \"").append(r.getPath()).append("\"");
+
+		Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
+
+		Process p = Runtime.getRuntime().exec(cmdline.toString());
+		p.waitFor();
+		Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+
+		if (p.exitValue() != 0) {
+			Log.log(Log.CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
+			useJpegtran = false;
+			r = null;
 		}
 
 		return r;
