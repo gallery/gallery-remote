@@ -1,3 +1,11 @@
+2003-06-16  Pierre-Luc Paour <gallery@paour.com> (1.1-b5)
+
+	* Truncating long URLs in UI to make it nicer when CMS URLs are
+	  used.
+	* Added UI for rotating pictures before upload. Actual rotation
+	  of pictures not implemented yet: only thumbnails.
+	* Added icons on most buttons and menu items.
+
 2003-06-13  Pierre-Luc Paour <gallery@paour.com> (1.1-b4)
 
 	* Reorganized event handling and data modeling for more
