@@ -27,6 +27,9 @@ public class GRI18n implements PreferenceNames {
     private ResourceBundle grResBundle;
     private MessageFormat grMsgFrmt;
 
+    private static List lAvailLoc = initAvailableLocales();
+
+
     public static GRI18n getInstance() {
         if (ourInstance == null) {
             ourInstance = new GRI18n();
@@ -126,20 +129,28 @@ public class GRI18n implements PreferenceNames {
 
 
     public static List getAvailableLocales() {
-        ArrayList vLocales = new ArrayList();
+        return lAvailLoc;
+    }
+
+    private static List initAvailableLocales() {
         String resPath = RESNAME.replaceAll("\\.", "/");
         String locPath;
-		long start = System.currentTimeMillis();
+        String loc;
+        List aList = new LinkedList();
+//		long start = System.currentTimeMillis();
 
         Locale [] list = Locale.getAvailableLocales();
+        String prefix = "##DUMMY";
         for (int i = 0; i < list.length; i++ ) {
-            locPath = resPath + "_" + list[i].toString() + ".properties";
-            if (ClassLoader.getSystemClassLoader().getResource(locPath) != null)
-                vLocales.add(list[i]);
+            loc = list[i].toString();
+            if (!loc.startsWith(prefix)) {
+                prefix = loc;
+                locPath = resPath + "_" + loc + ".properties";
+                if (ClassLoader.getSystemClassLoader().getResource(locPath) != null)
+                    aList.add(list[i]);
+            }
         }
-
-		Log.log(Log.TRACE, MODULE, "Parsed locales in " + (System.currentTimeMillis() - start) + "ms");
-
-        return vLocales;
+        //Log.log(Log.TRACE, MODULE, "Parsed locales in " + (System.currentTimeMillis() - start) + "ms");
+        return aList;
     }
 }
