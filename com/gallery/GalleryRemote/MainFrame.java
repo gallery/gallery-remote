@@ -716,7 +716,7 @@ public class MainFrame extends javax.swing.JFrame
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		jPanel3.setLayout( gridLayout1 );
 		upload.setAlignmentX( (float) 2.0 );
-		upload.setText( "Upload Albums" );
+		upload.setText( "Upload Pictures" );
 		upload.setActionCommand( "Upload" );
 		inspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
@@ -1041,22 +1041,26 @@ public class MainFrame extends javax.swing.JFrame
 				JList list, Object value, int index,
 				boolean selected, boolean hasFocus ) {
 			super.getListCellRendererComponent( list, value, index, selected, hasFocus );
-
-			Picture p = mAlbum.getPicture( index );
-			File f = p.getSource();
-
-			if ( GalleryRemote.getInstance().properties.getShowThumbnails() ) {
-				ImageIcon icon = getThumbnail( p );
-				setIcon( icon );
-				setIconTextGap( 4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth() );
+			
+			if (value != null && index != -1) {
+				Picture p = mAlbum.getPicture( index );
+				File f = p.getSource();
+	
+				if ( GalleryRemote.getInstance().properties.getShowThumbnails() ) {
+					ImageIcon icon = getThumbnail( p );
+					setIcon( icon );
+					setIconTextGap( 4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth() );
+				}
+	
+				String text = f.getName();
+				if ( GalleryRemote.getInstance().properties.getShowPath() ) {
+					text += " [" + f.getParent() + "]";
+				}
+				setText( text );
+			} else {
+				setText("dummy");
 			}
-
-			String text = f.getName();
-			if ( GalleryRemote.getInstance().properties.getShowPath() ) {
-				text += " [" + f.getParent() + "]";
-			}
-			setText( text );
-
+			
 			return this;
 		}
 	}

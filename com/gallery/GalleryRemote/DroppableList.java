@@ -70,6 +70,17 @@ public class DroppableList extends JList
 	public void setMainFrame( MainFrame daddy ) {
 		mDaddy = daddy;
 	}
+	
+	int safeGetFixedCellHeight() {
+		int height = getFixedCellHeight();
+		if (height == -1) {
+			height = (int) getCellRenderer()
+				.getListCellRendererComponent(this, null, -1, false, false)
+				.getPreferredSize().getHeight();
+		}
+		
+		return height;
+	}
 
 
 	/**
@@ -79,7 +90,7 @@ public class DroppableList extends JList
 	 *@return    Description of the Returned Value
 	 */
 	public int snap( int y ) {
-		return snapIndex( y ) * getFixedCellHeight();
+		return snapIndex( y ) * safeGetFixedCellHeight();
 	}
 
 
@@ -90,7 +101,7 @@ public class DroppableList extends JList
 	 *@return    Description of the Returned Value
 	 */
 	public int snapIndex( int y ) {
-		int height = getFixedCellHeight();
+		int height = safeGetFixedCellHeight();
 
 		int row = (int) Math.floor( ( (float) y / height ) + .5 );
 		if ( row > getModel().getSize() ) {
