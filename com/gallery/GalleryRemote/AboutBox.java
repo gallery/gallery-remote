@@ -112,7 +112,7 @@ public class AboutBox extends JDialog {
             
             //setForeground(new Color(96, 96, 96));
             image = new ImageIcon( getClass().getResource(
-            "/remote1.gif" ) );
+            "/remoteAbout.gif" ) );
             
             setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );
             
