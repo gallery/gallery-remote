@@ -34,9 +34,31 @@ import javax.swing.event.*;
 
 public class Gallery
 {
-	String url;
+	String url = "http://";
 	String username;
 	String password;
+	ArrayList albumList = null;
+
+
+	/**
+	 *  Constructor for the Gallery object
+	 */
+	public Gallery() { }
+
+
+	/**
+	 *  Constructor for the Gallery object
+	 *
+	 *@param  url       Description of Parameter
+	 *@param  username  Description of Parameter
+	 *@param  password  Description of Parameter
+	 */
+	public Gallery( String url, String username, String password ) {
+		this.url = url;
+		this.username = username;
+		this.password = password;
+	}
+
 
 	/**
 	 *  Sets the url attribute of the Gallery object
@@ -69,6 +91,16 @@ public class Gallery
 
 
 	/**
+	 *  Sets the albumList attribute of the Gallery object
+	 *
+	 *@param  albumList  The new albumList value
+	 */
+	public void setAlbumList( ArrayList albumList ) {
+		this.albumList = albumList;
+	}
+
+
+	/**
 	 *  Gets the url attribute of the Gallery object
 	 *
 	 *@return    The url value
@@ -96,4 +128,25 @@ public class Gallery
 	public String getPassword() {
 		return password;
 	}
+
+
+	/**
+	 *  Gets the albumList attribute of the Gallery object
+	 *
+	 *@return    The albumList value
+	 */
+	public ArrayList getAlbumList() {
+		return albumList;
+	}
+
+
+	/**
+	 *  For the list models to display the Gallery
+	 *
+	 *@return    Description of the Returned Value
+	 */
+	public String toString() {
+		return url;
+	}
 }
+
