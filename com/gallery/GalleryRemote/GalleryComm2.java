@@ -258,11 +258,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		 *	POSTSs a request to the Gallery server with the given form data.
 		 */	
 		Properties requestResponse( NVPair form_data[] ) throws GR2Exception, ModuleException, IOException {
-			return requestResponse( form_data, null, g.getGalleryUrl(SCRIPT_NAME), false);
+			return requestResponse( form_data, null, g.getGalleryUrl(SCRIPT_NAME), true);
 		}
 
 		Properties requestResponse( NVPair form_data[], URL galUrl ) throws GR2Exception, ModuleException, IOException {
-			return requestResponse( form_data, null, galUrl, false);
+			return requestResponse( form_data, null, galUrl, true);
 		}
 
 		/**
