@@ -297,9 +297,20 @@ public class MainFrame extends javax.swing.JFrame
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
-			addPictures( files );
+			addPictures( files);
 		}
 
+		updateUI();
+	}
+        
+        /**
+	 *  Adds a feature to the Pictures attribute of the MainFrame object
+	 *
+	 *@param  files  The feature to be added to the Pictures attribute
+	 */
+        public void addPictures( File[] files ) {
+		addPictures( files);
+                thumbnailCache.preloadThumbnails( files );
 		updateUI();
 	}
 
@@ -308,9 +319,10 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Adds a feature to the Pictures attribute of the MainFrame object
 	 *
 	 *@param  files  The feature to be added to the Pictures attribute
+         *@param  index  The index in the list of Pictures at which to begin adding
 	 */
-	public void addPictures( File[] files ) {
-		mAlbum.addPictures( files );
+	public void addPictures( File[] files, int index ) {
+		mAlbum.addPictures( files, index );
 		/*Arrays.sort( items,
 				new Comparator()
 				{
@@ -582,7 +594,7 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuItemAbout.setText( "About Gallery Remote..." );
 		jMenuOptions.setText( "Options" );
 		jCheckBoxMenuThumbnails.setActionCommand( "Options.Thumbnails" );
-		jCheckBoxMenuThumbnails.setText( "Show Thumnails" );
+		jCheckBoxMenuThumbnails.setText( "Show Thumbnails" );
 		jCheckBoxMenuPreview.setActionCommand( "Options.Preview" );
 		jCheckBoxMenuPreview.setText( "Show Preview" );
 		jCheckBoxMenuPath.setActionCommand( "Options.Path" );

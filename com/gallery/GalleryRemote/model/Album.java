@@ -103,16 +103,27 @@ public class Album extends Picture implements ListModel
 	}
 
 
-	/**
+/**
 	 *  Adds pictures to the album
 	 *
 	 *@param  files  the files to create the pictures from
 	 */
 	public void addPictures( File[] files ) {
+		this.addPictures(files, 0);
+	}
+        
+        
+        /**
+	 *  Adds pictures to the album at a specified index
+	 *
+	 *@param  files  the files to create the pictures from
+         *@param  index  the index in the list at which to begin adding
+	 */
+	public void addPictures( File[] files, int index ) {
 		for ( int i = 0; i < files.length; i++ ) {
 			Picture p = new Picture( files[i] );
 			p.setAlbum( this );
-			pictures.addElement( p );
+			pictures.add( index++, p );
 		}
 
 		notifyListeners();
