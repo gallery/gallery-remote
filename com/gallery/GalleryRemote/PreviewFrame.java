@@ -24,6 +24,7 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +37,7 @@ import java.util.Iterator;
 
 import HTTPClient.TransferListener;
 
-public class PreviewFrame extends javax.swing.JFrame {
+public class PreviewFrame extends JFrame implements PreferenceNames {
 	public static final String MODULE = "PreviewFrame";
 
 	SmartHashtable imageIcons = new SmartHashtable();
@@ -50,7 +51,6 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
-
 		setIconImage(GalleryRemote._().getMainFrame().getIconImage());
 
 		setBounds(GalleryRemote._().properties.getPreviewBounds());
@@ -83,7 +83,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			loadPicture = null;
 			//currentPicture = null;
 
-			imageLoaded(null, null);
+			pictureReady(null, null);
 		} else {
 			//String filename = picture.getSource().getPath();
 			
@@ -96,7 +96,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
 					//currentImage = r;
 					//currentPicture = picture;
-					imageLoaded(r, picture);
+					pictureReady(r, picture);
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
 					if (async) {
@@ -106,7 +106,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 						//currentPicture = picture;
 						ImageIcon sizedIcon = getSizedIconForce(picture);
 						if (sizedIcon != null) {
-							imageLoaded(sizedIcon, picture);
+							pictureReady(sizedIcon, picture);
 						}
 					}
 				}
@@ -120,7 +120,11 @@ public class PreviewFrame extends javax.swing.JFrame {
 		if (r == null) {
 			synchronized(picture) {
 				if (picture.isOnline()) {
+					pictureStartDownload(picture);
+
 					File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), listener);
+
+					pictureStartProcessing(picture);
 
 					if (f != null) {
 						r = ImageUtils.load(
@@ -131,6 +135,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 						return null;
 					}
 				} else {
+					pictureStartProcessing(picture);
+
 					r = ImageUtils.load(
 							picture.getSource().getPath(),
 							getRootPane().getSize(),
@@ -150,7 +156,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 			//Log.log(Log.LEVEL_TRACE, MODULE, "Painting ImageContentPane...");
 			//Log.logStack(Log.LEVEL_TRACE, MODULE);
 
-			g.setColor(getBackground());
+			Color c = GalleryRemote._().properties.getColorProperty(SLIDESHOW_COLOR);
+			if (c != null) {
+				g.setColor(c);
+			} else {
+				g.setColor(getBackground());
+			}
 			g.fillRect(0, 0, getSize().width, getSize().height);
 			//g.clearRect(0, 0, getSize().width, getSize().height);
 
@@ -189,7 +200,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			stillRunning = false;
 
 			if (notify) {
-				imageLoaded(tmpImage, tmpPicture);
+				pictureReady(tmpImage, tmpPicture);
 				notify = false;
 			}
 			
@@ -304,9 +315,13 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 	}
 
-	public void imageLoaded(ImageIcon image, Picture picture) {
+	public void pictureReady(ImageIcon image, Picture picture) {
 		currentImage = image;
 		currentPicture = picture;
 		repaint();
 	}
+
+	public void pictureStartDownload(Picture picture) {}
+
+	public void pictureStartProcessing(Picture picture) {}
 }

@@ -170,6 +170,25 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty(key, ((int) d.getWidth()) + "," + ((int) d.getHeight()));
 	}
 
+	public Color getColorProperty(String key) {
+		String value = getProperty(key);
+		if (value == null) return null;
+
+		StringTokenizer st;
+		if (value != null && (st = new StringTokenizer(value, ",")).countTokens() == 3) {
+			return new Color(Integer.parseInt(st.nextToken()),
+					Integer.parseInt(st.nextToken()),
+					Integer.parseInt(st.nextToken()));
+		} else {
+			Log.log(Log.LEVEL_ERROR, MODULE, "Parameter " + key + " is missing or malformed (should be red,green,blue)");
+			return null;
+		}
+	}
+
+	public void setColorProperty(String key, Color c) {
+		setProperty(key, ((int) c.getRed()) + "," + ((int) c.getGreen()) + "," + ((int) c.getBlue()));
+	}
+
 	/**
 	 * getLoadLastMRU returns whether we should automatically load the
 	 * last MRU file when GR starts. If this is true then we should try

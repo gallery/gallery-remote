@@ -53,6 +53,8 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String pnGalleryUrlString = null;
 	String phpnLoginUrlString = null;
 	String phpnGalleryUrlString = null;
+	String glLoginUrlString = null;
+	String glGalleryUrlString = null;
 	String username;
 	String password;
 	String alias;
@@ -70,10 +72,11 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient private boolean blockWrites = false;
 	transient public boolean cookieLogin = false;
 
-	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE};
+	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
 	public static final int TYPE_STANDALONE = 0;
 	public static final int TYPE_POSTNUKE = 1;
 	public static final int TYPE_PHPNUKE = 2;
+	public static final int TYPE_GEEKLOG = 3;
 
 	public static final int TOSTRING_MAXLEN = 40;
 
@@ -418,7 +421,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (stUrlString != null) {
 			return stUrlString;
 		} else {
-			return "http://your.host.com/gallery";
+			return "http://example.com/gallery";
 		}
 	}
 
@@ -441,7 +444,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (pnGalleryUrlString != null) {
 			return pnGalleryUrlString.toString();
 		} else {
-			return "http://your.host.com/modules.php?op=modload&name=gallery&file=index&include=$GALLERYFILE$";
+			return "http://example.com/modules.php?op=modload&name=gallery&file=index&include=$GALLERYFILE$";
 		}
 	}
 
@@ -464,7 +467,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (pnLoginUrlString != null) {
 			return pnLoginUrlString.toString();
 		} else {
-			return "http://your.host.com/user.php?uname=$USERNAME$&pass=$PASSWORD$&module=NS-User&op=login";
+			return "http://example.com/user.php?uname=$USERNAME$&pass=$PASSWORD$&module=NS-User&op=login";
 		}
 	}
 
@@ -487,7 +490,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (phpnGalleryUrlString != null) {
 			return phpnGalleryUrlString.toString();
 		} else {
-			return "http://your.host.com/modules.php?name=gallery&include=$GALLERYFILE$";
+			return "http://example.com/modules.php?name=gallery&include=$GALLERYFILE$";
 		}
 	}
 
@@ -510,7 +513,53 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (phpnLoginUrlString != null) {
 			return phpnLoginUrlString.toString();
 		} else {
-			return "http://your.host.com/modules.php?name=Your_Account&op=login&username=$USERNAME$&user_password=$PASSWORD$";
+			return "http://example.com/modules.php?name=Your_Account&op=login&username=$USERNAME$&user_password=$PASSWORD$";
+		}
+	}
+
+	/* GeekLog Gallery URL */
+
+	public void setGlGalleryUrlString(String urlString) {
+		if (urlString == null) {
+			glGalleryUrlString = null;
+			return;
+		}
+
+		glGalleryUrlString = reformatUrlString(urlString, false);
+
+		if (!blockWrites && glGalleryUrlString != null) {
+			GalleryRemote._().properties.setProperty(GL_GALLERY_URL + prefsIndex, glGalleryUrlString);
+		}
+	}
+
+	public String getGlGalleryUrlString() {
+		if (glGalleryUrlString != null) {
+			return glGalleryUrlString.toString();
+		} else {
+			return "http://example.com/path/to/gallery/$GALLERYFILE$";
+		}
+	}
+
+	/* PostNuke Login URL */
+
+	public void setGlLoginUrlString(String urlString) {
+		if (urlString == null) {
+			glLoginUrlString = null;
+			return;
+		}
+
+		glLoginUrlString = reformatUrlString(urlString, false);
+
+		if (!blockWrites && glLoginUrlString != null) {
+			GalleryRemote._().properties.setProperty(GL_LOGIN_URL + prefsIndex, glLoginUrlString);
+		}
+	}
+
+	public String getGlLoginUrlString() {
+		if (glLoginUrlString != null) {
+			return glLoginUrlString.toString();
+		} else {
+			return "http://example.com/path/to/geeklog/public_html/users.php?loginname=$USERNAME$&passwd=$PASSWORD$";
 		}
 	}
 
@@ -527,6 +576,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 				case TYPE_PHPNUKE:
 					return new URL(replace(phpnLoginUrlString, galleryFile));
+
+				case TYPE_GEEKLOG:
+					return new URL(replace(glLoginUrlString, galleryFile));
 
 				default:
 					throw new RuntimeException("Unknown type: " + type);
@@ -551,6 +603,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 				case TYPE_PHPNUKE:
 					return new URL(replace(phpnGalleryUrlString, galleryFile));
+
+				case TYPE_GEEKLOG:
+					return new URL(replace(glGalleryUrlString, galleryFile));
 
 				default:
 					throw new RuntimeException("Unknown type: " + type);
@@ -736,6 +791,13 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (phpnGalleryUrlString != null) {
 			p.setProperty(PHPN_GALLERY_URL + prefsIndex, phpnGalleryUrlString);
 		}
+
+		if (glLoginUrlString != null) {
+			p.setProperty(GL_LOGIN_URL + prefsIndex, glLoginUrlString);
+		}
+		if (glGalleryUrlString != null) {
+			p.setProperty(GL_GALLERY_URL + prefsIndex, glGalleryUrlString);
+		}
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {
@@ -782,6 +844,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 			case TYPE_PHPNUKE:
 				tmp = phpnGalleryUrlString;
+				break;
+
+			case TYPE_GEEKLOG:
+				tmp = glGalleryUrlString;
 				break;
 
 			default:

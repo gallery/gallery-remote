@@ -18,22 +18,24 @@ import java.awt.event.ActionListener;
 public class GalleryEditorDialog extends JDialog implements ActionListener {
 	public static final String MODULE = "GEdiDlog";
 
-
 	Gallery gallery;
 	boolean isOK = false;
 
 	JPanel jMainPanel = new JPanel();
-	JLabel jPnGalleryUrlLabel = new JLabel();
 	JLabel jUsernameLabel = new JLabel();
 	JLabel jPasswordLabel = new JLabel();
 	JLabel jTypeLabel = new JLabel();
 	JLabel jPnLoginUrlLabel = new JLabel();
-	JLabel jStandaloneUrlLabel = new JLabel();
+	JLabel jPnGalleryUrlLabel = new JLabel();
 	JLabel jPnHelpLabel = new JLabel();
+	JLabel jStandaloneUrlLabel = new JLabel();
 	JLabel jStandaloneHelpLabel = new JLabel();
 	JLabel jPhpnLoginUrlLabel = new JLabel();
 	JLabel jPhpnGalleryUrlLabel = new JLabel();
 	JLabel jPhpnHelpLabel = new JLabel();
+	JLabel jGlLoginUrlLabel = new JLabel();
+	JLabel jGlGalleryUrlLabel = new JLabel();
+	JLabel jGlHelpLabel = new JLabel();
 	JLabel jAliasLabel = new JLabel();
 
 	JComboBox jType = new JComboBox();
@@ -51,6 +53,10 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 	JPanel jPHPNuke = new JPanel();
 	JTextField jPhpnLoginUrl = new JTextField();
 	JTextField jPhpnGalleryUrl = new JTextField();
+
+	JPanel jGeekLog = new JPanel();
+	JTextField jGlLoginUrl = new JTextField();
+	JTextField jGlGalleryUrl = new JTextField();
 
 	JPanel jStandalone = new JPanel();
 	JTextField jStandaloneUrl = new JTextField();
@@ -94,9 +100,9 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jType.setEditable(false);
 		jType.setModel(new DefaultComboBoxModel(Gallery.types));
 
-		jOk.setText(GRI18n.getString(MODULE, "OK"));
+		jOk.setText(GRI18n.getString("Common", "OK"));
 		jOk.setActionCommand("OK");
-		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
+		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.setActionCommand("Cancel");
 		jButtonPanel.setLayout(gridLayout1);
 		gridLayout1.setHgap(5);
@@ -124,6 +130,15 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jPhpnHelpLabel.setPreferredSize(new Dimension(300, 80));
 		jPhpnHelpLabel.setText(GRI18n.getString(MODULE, "phpNukeHelp"));
 		jPhpnHelpLabel.setVerticalAlignment(SwingConstants.TOP);
+
+		jGeekLog.setLayout(new GridBagLayout());
+		jGlLoginUrlLabel.setText(GRI18n.getString(MODULE, "glLogin"));
+		jGlLoginUrlLabel.setVerticalAlignment(SwingConstants.TOP);
+		jGlLoginUrlLabel.setVerticalTextPosition(SwingConstants.CENTER);
+		jGlGalleryUrlLabel.setText(GRI18n.getString(MODULE, "gllryUrl"));
+		jGlHelpLabel.setPreferredSize(new Dimension(300, 80));
+		jGlHelpLabel.setText(GRI18n.getString(MODULE, "glHelp"));
+		jGlHelpLabel.setVerticalAlignment(SwingConstants.TOP);
 
 		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);
 		jMainPanel.add(jStylePanel, new GridBagConstraints(0, 4, 4, 1, 1.0, 1.0
@@ -173,6 +188,18 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jPHPNuke.add(jPhpnHelpLabel, new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0
 				, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 20, 0, 0), 0, 0));
 
+		jStylePanel.add(jGeekLog, Gallery.types[Gallery.TYPE_GEEKLOG]);
+		jGeekLog.add(jGlLoginUrlLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
+		jGeekLog.add(jGlLoginUrl, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		jGeekLog.add(jGlGalleryUrlLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 0, 5), 0, 0));
+		jGeekLog.add(jGlGalleryUrl, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		jGeekLog.add(jGlHelpLabel, new GridBagConstraints(0, 2, 2, 1, 1.0, 1.0
+				, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 20, 0, 0), 0, 0));
+
 		jStylePanel.add(jStandalone, Gallery.types[Gallery.TYPE_STANDALONE]);
 		jStandalone.add(jStandaloneUrlLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 20, 5, 5), 0, 0));
@@ -204,6 +231,9 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 		jPhpnGalleryUrl.setText(gallery.getPhpnGalleryUrlString());
 		jPhpnLoginUrl.setText(gallery.getPhpnLoginUrlString());
+
+		jGlGalleryUrl.setText(gallery.getGlGalleryUrlString());
+		jGlLoginUrl.setText(gallery.getGlLoginUrlString());
 	}
 
 	public void readUIState() {
@@ -220,6 +250,9 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 		gallery.setPhpnLoginUrlString(jPhpnLoginUrl.getText());
 		gallery.setPhpnGalleryUrlString(jPhpnGalleryUrl.getText());
+
+		gallery.setGlLoginUrlString(jGlLoginUrl.getText());
+		gallery.setGlGalleryUrlString(jGlGalleryUrl.getText());
 	}
 
 	public void actionPerformed(ActionEvent e) {

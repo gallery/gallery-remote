@@ -39,10 +39,13 @@ public interface PreferenceNames {
 	public static final String STANDALONE = "Standalone";
 	public static final String POSTNUKE = "PostNuke";
 	public static final String PHPNUKE = "PHPNuke";
+	public static final String GEEKLOG = "GeekLog";
 	public static final String PN_GALLERY_URL = "pnGalleryUrl.";
 	public static final String PN_LOGIN_URL = "pnLoginUrl.";
 	public static final String PHPN_GALLERY_URL = "phpnGalleryUrl.";
 	public static final String PHPN_LOGIN_URL = "phpnLoginUrl.";
+	public static final String GL_GALLERY_URL = "glGalleryUrl.";
+	public static final String GL_LOGIN_URL = "glLoginUrl.";
 	public static final String ALIAS = "alias.";
 
 	// Proxy panel
@@ -63,6 +66,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_MAX_PICTURES = "slideshowMaxPictures";
 	public static final String SLIDESHOW_RECURSIVE = "slideshowRecursive";
 	public static final String SLIDESHOW_NOSTRETCH = "slideshowNoStretch";
+	public static final String SLIDESHOW_COLOR = "slideshowColor";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";

@@ -333,75 +333,79 @@ public class ImageUtils {
 					new Dimension(rim.getWidth(), rim.getHeight()),
 					d, true);
 
-			Image scaled = rim.getScaledInstance(newD.width, newD.height, Image.SCALE_SMOOTH);
-			//ImageObserver imageObserver = GalleryRemote._().getMainFrame();
-			ImageObserver imageObserver = null;
-			BufferedImage scaledB = new BufferedImage(scaled.getWidth(imageObserver), scaled.getHeight(imageObserver), rim.getType());
-			scaledB.getGraphics().drawImage(scaled, 0, 0, imageObserver);
+			if (newD != null) {
+				Image scaled = rim.getScaledInstance(newD.width, newD.height, Image.SCALE_SMOOTH);
+				//ImageObserver imageObserver = GalleryRemote._().getMainFrame();
+				ImageObserver imageObserver = null;
+				BufferedImage scaledB = new BufferedImage(scaled.getWidth(imageObserver), scaled.getHeight(imageObserver), rim.getType());
+				scaledB.getGraphics().drawImage(scaled, 0, 0, imageObserver);
 
-			/*System.out.println("*** Original");
-			IIOMetadata metadata = image.getMetadata();
-			String names[] = metadata.getMetadataFormatNames();
-			for (int i = 0; i < names.length; i++) {
+				/*System.out.println("*** Original");
+				IIOMetadata metadata = image.getMetadata();
+				String names[] = metadata.getMetadataFormatNames();
+				for (int i = 0; i < names.length; i++) {
 				displayMetadata(metadata.getAsTree(names[i]));
+				}
+
+				Node root = metadata.getAsTree(metadata.getNativeMetadataFormatName());
+				Node markerSequence = root.getFirstChild().getNextSibling();
+				markerSequence.removeChild(markerSequence.getFirstChild().getNextSibling().getNextSibling().getNextSibling());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+				markerSequence.removeChild(markerSequence.getLastChild());
+
+				System.out.println("*** Modified root");
+				displayMetadata(root);*/
+
+				//metadata.setFromTree(metadata.getNativeMetadataFormatName(), root);
+
+				//System.out.println("*** Modified metadata");
+				//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
+
+				// todo: despite my best efforts, I can't get the ImageIO library to keep the metadata.
+				image = new IIOImage(scaledB, null, null);
+
+				//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
+
+				//image.setRaster(scaledB.getRaster());
+
+				//write the image
+				r = deterministicTempFile("jres"
+						, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + d);
+				toDelete.add(r);
+
+				ImageWriter writer = ImageIO.getImageWriter(reader);
+				ImageOutputStream ios = null;
+				try {
+					r.delete();
+					ios = ImageIO.createImageOutputStream(r);
+				} catch (IOException e) {
+					throw new IIOException("Can't create output stream!", e);
+				}
+
+				writer.setOutput(ios);
+				ImageWriteParam iwp = writer.getDefaultWriteParam();
+				iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+				iwp.setCompressionQuality(jpegQuality / 100.0F);
+				//metadata = writer.getDefaultStreamMetadata(null);
+				//System.out.println("*** Default metadata");
+				//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
+				writer.write(null, image, iwp);
+
+				//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
+
+				ios.flush();
+				ios.close();
+				writer.dispose();
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Java resized " + filename + " to " + r.getPath());
+			} else {
+				return new File(filename);
 			}
-
-			Node root = metadata.getAsTree(metadata.getNativeMetadataFormatName());
-			Node markerSequence = root.getFirstChild().getNextSibling();
-			markerSequence.removeChild(markerSequence.getFirstChild().getNextSibling().getNextSibling().getNextSibling());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-			markerSequence.removeChild(markerSequence.getLastChild());
-
-			System.out.println("*** Modified root");
-			displayMetadata(root);*/
-
-			//metadata.setFromTree(metadata.getNativeMetadataFormatName(), root);
-
-			//System.out.println("*** Modified metadata");
-			//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
-
-			// todo: despite my best efforts, I can't get the ImageIO library to keep the metadata.
-			image = new IIOImage(scaledB, null, null);
-
-			//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
-
-			//image.setRaster(scaledB.getRaster());
-
-			//write the image
-			r = deterministicTempFile("jres"
-					, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + d);
-			toDelete.add(r);
-
-			ImageWriter writer = ImageIO.getImageWriter(reader);
-			ImageOutputStream ios = null;
-			try {
-				r.delete();
-				ios = ImageIO.createImageOutputStream(r);
-			} catch (IOException e) {
-				throw new IIOException("Can't create output stream!", e);
-			}
-
-			writer.setOutput(ios);
-			ImageWriteParam iwp = writer.getDefaultWriteParam();
-			iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-			iwp.setCompressionQuality(jpegQuality / 100.0F);
-			//metadata = writer.getDefaultStreamMetadata(null);
-			//System.out.println("*** Default metadata");
-			//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
-			writer.write(null, image, iwp);
-
-			//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
-
-			ios.flush();
-			ios.close();
-			writer.dispose();
-
-			Log.log(Log.LEVEL_TRACE, MODULE, "Java resized " + filename + " to " + r.getPath());
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}

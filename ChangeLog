@@ -1,3 +1,15 @@
+2004-04-28  Pierre-Luc Paour <gallery@paour.com> (1.4-b6)
+
+	* Added GeekLog support.
+	* Fixed updating the album tree after creating an album.
+	* Slideshow: better feedback when manually moving to another picture.
+	* Slideshow: fixed picture-switching delay being incorrect after manually
+	  moving to another picture.
+	* New preference to override background color for slideshow and preview.
+	* Slideshow: new method for painting information on top of image, text no longer
+	  moves.
+	* Slideshow: new controller display, similar to iPhoto, with help.
+
 2004-04-21  Pierre-Luc Paour <gallery@paour.com> (1.4-b5)
 
 	* Added support for Gallery aliases, to use as a handle instead of the
@@ -71,7 +83,7 @@
 	* Fixed a bug in the applet uploader, where added pictures were
 	  not shown.
 	* From this version on, the applets are signed with a certificate
-	  authneticated by Thawte.
+	  authenticated by Thawte.
 
 	This is considered a final candidate for GR 1.3.2.
 

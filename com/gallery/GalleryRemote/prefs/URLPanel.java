@@ -14,6 +14,8 @@ import javax.swing.event.TreeModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -86,6 +88,15 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		jGalleries.setCellRenderer(new GalleryCellRenderer());
 		jGalleries.addListSelectionListener(this);
 
+		jGalleries.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					int index = jGalleries.locationToIndex(e.getPoint());
+					modifyGallery((Gallery) jGalleries.getModel().getElementAt(index));
+				}
+			}
+		});
+
 		if (GalleryRemote._().getCore().getGalleries().getSize() > 0) {
 			jGalleries.setSelectedIndex(0);
 		}
@@ -106,16 +117,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + cmd + " Gallery: " + g);
 
 		if (cmd.equals("Modify")) {
-			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, g);
-
-			if (ged.isOK()) {
-				//jGalleries.repaint();
-				int i = GalleryRemote._().getCore().getGalleries().getIndexOf(g);
-				GalleryRemote._().getCore().getGalleries().removeElementAt(i);
-				GalleryRemote._().getCore().getGalleries().insertElementAt(g, i);
-
-				Gallery.uncacheAmbiguousUrl();
-			}
+			modifyGallery(g);
 		} else if (cmd.equals("New")) {
 			Gallery newG = new Gallery(GalleryRemote._().getCore().getMainStatusUpdate());
 			if (GalleryRemote._().getCore() instanceof TreeModelListener) {
@@ -159,6 +161,19 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		}
 	}
 
+	private void modifyGallery(Gallery g) {
+		GalleryEditorDialog ged = new GalleryEditorDialog(dialog, g);
+
+		if (ged.isOK()) {
+			//jGalleries.repaint();
+			int i = GalleryRemote._().getCore().getGalleries().getIndexOf(g);
+			GalleryRemote._().getCore().getGalleries().removeElementAt(i);
+			GalleryRemote._().getCore().getGalleries().insertElementAt(g, i);
+
+			Gallery.uncacheAmbiguousUrl();
+		}
+	}
+
 	public void resetUIState() {
 		Gallery selectedGallery = (Gallery) jGalleries.getSelectedValue();
 
@@ -175,6 +190,9 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			} else if (selectedGallery.getType() == Gallery.TYPE_PHPNUKE) {
 				sb.append(GRI18n.getString(MODULE, "phpnLoginURL")).append(selectedGallery.getPhpnLoginUrlString()).append("<br>");
 				sb.append(GRI18n.getString(MODULE, "phpnGllryURL")).append(selectedGallery.getPhpnGalleryUrlString()).append("<br>");
+			} else if (selectedGallery.getType() == Gallery.TYPE_GEEKLOG) {
+				sb.append(GRI18n.getString(MODULE, "glLoginURL")).append(selectedGallery.getGlLoginUrlString()).append("<br>");
+				sb.append(GRI18n.getString(MODULE, "glGllryURL")).append(selectedGallery.getGlGalleryUrlString()).append("<br>");
 			}
 
 			String username = selectedGallery.getUsername();
@@ -188,8 +206,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			jModify.setEnabled(true);
 			jDelete.setEnabled(true);
 		} else {
-			jModify.setEnabled(true);
-			jDelete.setEnabled(true);
+			jModify.setEnabled(false);
+			jDelete.setEnabled(false);
 		}
 
 		jDetails.setText(sb.toString());

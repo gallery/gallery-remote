@@ -69,7 +69,7 @@ public class MainFrame extends JFrame
 	public static final String MODULE = "MainFrame";
 	public static final String FILE_TYPE = ".grg";
 
-	PreviewFrame previewFrame = null;
+	public PreviewFrame previewFrame = null;
 
 	private static final String DIALOGTITLE = "Gallery Remote  --  ";
 
@@ -752,6 +752,9 @@ public class MainFrame extends JFrame
 		if (newAlbumName.equals(newAlbum.getName())) {
 			newAlbum.setName(newAlbumName);
 		}
+
+		// todo: this is too drastic...
+		getCurrentGallery().reload();
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbum + "' created.");
 		// there is probably a better way... this is needed to give the UI time to catch up
@@ -1844,6 +1847,12 @@ public class MainFrame extends JFrame
 	public void flushMemory() {
 		thumbnailCache.flushMemory();
 		previewFrame.flushMemory();
+
+		for (int i = 0; i < galleries.getSize(); i++) {
+			Gallery g = (Gallery) galleries.getElementAt(i);
+
+			preloadThumbnails(g.getAllPictures().iterator());
+		}
 	}
 
 	public void preloadThumbnails(Iterator pictures) {

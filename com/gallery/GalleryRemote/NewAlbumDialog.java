@@ -106,7 +106,7 @@ public class NewAlbumDialog extends JDialog
 			jAlbum.setSelectedItem(defaultAlbum);
 		}
 
-		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
+		jCancel.setText(GRI18n.getString("Common", "cancel"));
 		jCancel.setActionCommand("Cancel");
 		jDescription.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray));
 		jDescription.setLineWrap(true);
@@ -115,7 +115,7 @@ public class NewAlbumDialog extends JDialog
 		jGalleryName.setText(GRI18n.getString(MODULE, "createAlbm", new String[] { gallery.toString() }));
 		jName.setFont(UIManager.getFont("Label.font"));
 		jName.setToolTipText(GRI18n.getString(MODULE, "albmNameTip"));
-		jOk.setText(GRI18n.getString(MODULE, "OK"));
+		jOk.setText(GRI18n.getString("Common", "OK"));
 		jOk.setActionCommand("OK");
 		jTitle.setFont(UIManager.getFont("Label.font"));
 

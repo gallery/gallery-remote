@@ -103,13 +103,13 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		jPanels.setLayout(jPanelsLayout);
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 		jOK.setMnemonic('0');
-		jOK.setText(GRI18n.getString(MODULE, "OK"));
+		jOK.setText(GRI18n.getString("Common", "OK"));
 		jOK.setActionCommand("OK");
 		jPanel2.setLayout(gridLayout1);
 		jRevert.setToolTipText(GRI18n.getString(MODULE, "revertTip"));
 		jRevert.setText(GRI18n.getString(MODULE, "revert"));
 		jRevert.setActionCommand("revert");
-		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
+		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.setActionCommand("cancel");
 		gridLayout1.setHgap(5);
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);

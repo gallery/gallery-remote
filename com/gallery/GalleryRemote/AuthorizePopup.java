@@ -139,7 +139,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			constr.weightx = 1.0;
 
 			JButton b;
-			p.add(b = new JButton(GRI18n.getString(MODULE, "ok")));
+			p.add(b = new JButton(GRI18n.getString("Common", "OK")));
 			b.addActionListener(this);
 			b.setActionCommand("ok");
 			getRootPane().setDefaultButton(b);
@@ -152,7 +152,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			constr.weightx = 2.0;
 			gb.setConstraints(b, constr);
 
-			p.add(b = new JButton(GRI18n.getString(MODULE, "cancel")));
+			p.add(b = new JButton(GRI18n.getString("Common", "Cancel")));
 			b.addActionListener(this);
 			b.setActionCommand("cancel");
 			constr.weightx = 1.0;
