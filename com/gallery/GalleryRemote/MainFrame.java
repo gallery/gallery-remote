@@ -34,7 +34,7 @@ import java.net.URL;
 
 public class MainFrame extends javax.swing.JFrame {
 
-	public final static String APP_VERSION_STRING = "0.3";
+	public final static String APP_VERSION_STRING = "0.3-b2";
 	public final static int ONE_SECOND = 1000;
 
 	javax.swing.JMenuBar jMenuBar = new javax.swing.JMenuBar();
@@ -46,7 +46,7 @@ public class MainFrame extends javax.swing.JFrame {
 	javax.swing.JPanel jPanelSettings = new javax.swing.JPanel();
 	javax.swing.JLabel jLabelURL = new javax.swing.JLabel();
 	javax.swing.JLabel jLabelUser = new javax.swing.JLabel();
-	javax.swing.JLabel jLabelPasword = new javax.swing.JLabel();
+	javax.swing.JLabel jLabelPassword = new javax.swing.JLabel();
 	javax.swing.JTextField jTextURL = new javax.swing.JTextField();
 	javax.swing.JTextField jTextUsername = new javax.swing.JTextField();
 	javax.swing.JPasswordField jPasswordField = new javax.swing.JPasswordField();
@@ -69,6 +69,7 @@ public class MainFrame extends javax.swing.JFrame {
 	private ArrayList mAlbumList;
 	private boolean mInProgress = false;
 	private Timer mTimer;
+	private PropertiesFile mPropertiesFile;
 	
 	public MainFrame() {
 		
@@ -76,6 +77,8 @@ public class MainFrame extends javax.swing.JFrame {
 		mFileList = new ArrayList();
 		mAlbumList = new ArrayList();
 		
+		//-- load the properties file ---
+		mPropertiesFile = new PropertiesFile("remote");
 	}
 	
 	public void initComponents() throws Exception {
@@ -109,33 +112,33 @@ public class MainFrame extends javax.swing.JFrame {
 		jLabelURL.setHorizontalAlignment(javax.swing.JLabel.RIGHT);
 
 		jLabelUser.setSize(new java.awt.Dimension(90, 20));
-		jLabelUser.setLocation(new java.awt.Point(9, 40));
+		jLabelUser.setLocation(new java.awt.Point(9, 42));
 		jLabelUser.setVisible(true);
 		jLabelUser.setText("Username");
 		jLabelUser.setHorizontalTextPosition(javax.swing.JLabel.RIGHT);
 		jLabelUser.setHorizontalAlignment(javax.swing.JLabel.RIGHT);
 
-		jLabelPasword.setSize(new java.awt.Dimension(90, 20));
-		jLabelPasword.setLocation(new java.awt.Point(9, 60));
-		jLabelPasword.setVisible(true);
-		jLabelPasword.setText("Password");
-		jLabelPasword.setHorizontalTextPosition(javax.swing.JLabel.RIGHT);
-		jLabelPasword.setHorizontalAlignment(javax.swing.JLabel.RIGHT);
+		jLabelPassword.setSize(new java.awt.Dimension(90, 20));
+		jLabelPassword.setLocation(new java.awt.Point(9, 64));
+		jLabelPassword.setVisible(true);
+		jLabelPassword.setText("Password");
+		jLabelPassword.setHorizontalTextPosition(javax.swing.JLabel.RIGHT);
+		jLabelPassword.setHorizontalAlignment(javax.swing.JLabel.RIGHT);
 
 		jTextURL.setSize(new java.awt.Dimension(305, 20));
 		jTextURL.setLocation(new java.awt.Point(106, 20));
 		jTextURL.setVisible(true);
-		jTextURL.setText("");
+		jTextURL.setText(mPropertiesFile.getProperty("url"));
 
 		jTextUsername.setSize(new java.awt.Dimension(180, 20));
-		jTextUsername.setLocation(new java.awt.Point(106, 40));
+		jTextUsername.setLocation(new java.awt.Point(106, 42));
 		jTextUsername.setVisible(true);
-		jTextUsername.setText("");
+		jTextUsername.setText(mPropertiesFile.getProperty("username"));
 
 		jPasswordField.setSize(new java.awt.Dimension(180, 20));
-		jPasswordField.setLocation(new java.awt.Point(106, 60));
+		jPasswordField.setLocation(new java.awt.Point(106, 64));
 		jPasswordField.setVisible(true);
-		jPasswordField.setText("");
+		jPasswordField.setText(mPropertiesFile.getProperty("password"));
 
 		jLabelAlbum.setSize(new java.awt.Dimension(103, 20));
 		jLabelAlbum.setLocation(new java.awt.Point(-4, 91));
@@ -163,7 +166,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jPanelSettings.setMaximumSize(new java.awt.Dimension(4000, 125));
 		jPanelSettings.add(jLabelURL);
 		jPanelSettings.add(jLabelUser);
-		jPanelSettings.add(jLabelPasword);
+		jPanelSettings.add(jLabelPassword);
 		jPanelSettings.add(jTextURL);
 		jPanelSettings.add(jTextUsername);
 		jPanelSettings.add(jPasswordField);
@@ -289,6 +292,13 @@ public class MainFrame extends javax.swing.JFrame {
 
 	// Close the window when the close box is clicked
 	void thisWindowClosing(java.awt.event.WindowEvent e) {
+	
+		mPropertiesFile.setProperty("url", jTextURL.getText());
+		mPropertiesFile.setProperty("username", jTextUsername.getText());
+		mPropertiesFile.setProperty("password", jPasswordField.getText());
+		
+		mPropertiesFile.write();
+	
 		setVisible(false);
 		dispose();
 		System.exit(0);
@@ -359,6 +369,7 @@ public class MainFrame extends javax.swing.JFrame {
 		Runnable doUpdate = new Runnable() {
 			public void run() {
 				//-- build the list ---
+				jComboBoxAlbums.removeAllItems();
 				Iterator iter = mAlbumList.iterator();
 				while (iter.hasNext()) {
 					Hashtable h = (Hashtable) iter.next();
@@ -431,12 +442,7 @@ public class MainFrame extends javax.swing.JFrame {
 			
 			updateFileList();
 			updateUI();
-		
 		}
-		
-
-		
-		
 	}
 	
 	//-------------------------------------------------------------------------
@@ -477,7 +483,6 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 		
 		mTimer.start();
-		
 	}
 	
 	//-------------------------------------------------------------------------
