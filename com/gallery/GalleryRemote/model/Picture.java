@@ -28,6 +28,7 @@ import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 /**
  *  Picture model
@@ -35,7 +36,7 @@ import com.gallery.GalleryRemote.Log;
  *@author     paour
  *@created    11 août 2002
  */
-public class Picture implements Serializable {
+public class Picture implements Serializable, PreferenceNames {
 	public static final String MODULE="Picture";
 
     File source = null;
@@ -70,8 +71,18 @@ public class Picture implements Serializable {
     public void setSource( File source ) {
         this.source = source;
         
-		if (GalleryRemote.getInstance().properties.getBooleanProperty("setCaptionsWithFilenames")) {
-			setCaption(source.getName());
+		if (GalleryRemote.getInstance().properties.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES)) {
+			String filename = source.getName();
+
+			if (GalleryRemote.getInstance().properties.getBooleanProperty(CAPTION_STRIP_EXTENSION)) {
+				int i = filename.lastIndexOf(".");
+
+				if (i != -1) {
+					filename = filename.substring(0, i);
+				}
+			}
+
+			setCaption(filename);
 		}
 		
         fileSize = 0;
@@ -115,8 +126,8 @@ public class Picture implements Serializable {
 	 *@return    The source value
 	 */
     public File getUploadSource() {
-		if ( GalleryRemote.getInstance().properties.getBooleanProperty("resizeBeforeUpload") ) {
-			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty("resizeTo");
+		if ( GalleryRemote.getInstance().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD) ) {
+			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO);
 			
 			if ( d == null || d.equals( new Dimension( 0, 0 ) ) ) {
 				d = null;
@@ -126,7 +137,7 @@ public class Picture implements Serializable {
 					d = new Dimension( l, l );
 				} else {
 					// server can't tell us how to resize, try default
-					d = GalleryRemote.getInstance().properties.getDimensionProperty("resizeToDefault");
+					d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO_DEFAULT);
 					
 					if ( d.equals( new Dimension( 0, 0 ) ) ) {
 						d = null;

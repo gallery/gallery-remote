@@ -1,6 +1,5 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.GalleryProperties;
 import com.gallery.GalleryRemote.Log;
 
 import javax.swing.*;
@@ -14,7 +13,7 @@ import javax.swing.border.*;
  * User: paour
  * Date: May 8, 2003
  */
-public class UploadPanel extends PreferencePanel implements ActionListener {
+public class UploadPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "UploadPa";
 
 	JLabel icon = new JLabel("Upload");
@@ -27,7 +26,6 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 	JPanel jPanel2 = new JPanel();
 	JCheckBox setCaptionsWithFilenames = new JCheckBox();
 	GridBagLayout gridBagLayout2 = new GridBagLayout();
-	JPanel jPanel3 = new JPanel();
 	GridBagLayout gridBagLayout4 = new GridBagLayout();
 	JPanel jPanel6 = new JPanel();
 	JPanel jPanel7 = new JPanel();
@@ -36,30 +34,32 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 	JRadioButton resizeToDefault = new JRadioButton();
 	JRadioButton resizeToForce = new JRadioButton();
 	JCheckBox htmlEscapeCaptionsNot = new JCheckBox();
+	JCheckBox captionStripExtension = new JCheckBox();
 
 	public JLabel getIcon() {
 		return icon;
 	}
 
 	public void readProperties(GalleryProperties props) {
-		resizeBeforeUpload.setSelected(props.getBooleanProperty("resizeBeforeUpload"));
-		if (new Dimension(0,0).equals(props.getDimensionProperty("resizeTo"))) {
+		resizeBeforeUpload.setSelected(props.getBooleanProperty(RESIZE_BEFORE_UPLOAD));
+		if (new Dimension(0,0).equals(props.getDimensionProperty(RESIZE_TO))) {
 			// use default dimension
 			resizeToDefault.setSelected(true);
 		} else {
 			resizeToForce.setSelected(true);
-			resizeToWidth.setText("" + (int) props.getDimensionProperty("resizeTo").getWidth());
-			resizeToHeight.setText("" + (int) props.getDimensionProperty("resizeTo").getHeight());
+			resizeToWidth.setText("" + (int) props.getDimensionProperty(RESIZE_TO).getWidth());
+			resizeToHeight.setText("" + (int) props.getDimensionProperty(RESIZE_TO).getHeight());
 		}
 
-		setCaptionsWithFilenames.setSelected(props.getBooleanProperty("setCaptionsWithFilenames"));
-		htmlEscapeCaptionsNot.setSelected(! props.getBooleanProperty("htmlEscapeCaptions"));
+		setCaptionsWithFilenames.setSelected(props.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES));
+		captionStripExtension.setSelected(props.getBooleanProperty(CAPTION_STRIP_EXTENSION));
+		htmlEscapeCaptionsNot.setSelected(! props.getBooleanProperty(HTML_ESCAPE_CAPTIONS));
 
 		resetUIState();
 	}
 
 	public void writeProperties(GalleryProperties props) {
-		props.setBooleanProperty("resizeBeforeUpload", resizeBeforeUpload.isSelected());
+		props.setBooleanProperty(RESIZE_BEFORE_UPLOAD, resizeBeforeUpload.isSelected());
 		if (resizeBeforeUpload.isSelected()) {
 			Dimension d = null;
 			if (resizeToDefault.isSelected()) {
@@ -72,12 +72,13 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 				}
 			}
 			if (d != null) {
-				props.setDimensionProperty("resizeTo", d);
+				props.setDimensionProperty(RESIZE_TO, d);
 			}
 		}
 
-		setCaptionsWithFilenames.setSelected(props.getBooleanProperty("setCaptionsWithFilenames"));
-		props.setBooleanProperty("htmlEscapeCaptions", ! htmlEscapeCaptionsNot.isSelected());
+		props.setBooleanProperty(SET_CAPTIONS_WITH_FILENAMES, setCaptionsWithFilenames.isSelected());
+		props.setBooleanProperty(CAPTION_STRIP_EXTENSION, captionStripExtension.isSelected());
+		props.setBooleanProperty(HTML_ESCAPE_CAPTIONS, ! htmlEscapeCaptionsNot.isSelected());
 	}
 
 	public void resetUIState() {
@@ -102,6 +103,12 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 			resizeToWidth.setEnabled(false);
 			resizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 			resizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		}
+
+		if (setCaptionsWithFilenames.isSelected()) {
+			captionStripExtension.setEnabled(true);
+		} else {
+			captionStripExtension.setEnabled(false);
 		}
 	}
 
@@ -138,6 +145,9 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 				"When unchecked, just type any text, and HTML markup will be generated " +
 				"for you.");
 		htmlEscapeCaptionsNot.setText("Allow HTML markup in captions");
+		captionStripExtension.setToolTipText("Remove the extension (.gif, .jpeg, etc.) from the filename when using " +
+				"it as a caption");
+		captionStripExtension.setText("Strip the filename extension");
 		this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(resizeToWidth,         new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
@@ -152,24 +162,25 @@ public class UploadPanel extends PreferencePanel implements ActionListener {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel2,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jPanel2.add(setCaptionsWithFilenames,         new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jPanel2.add(setCaptionsWithFilenames,          new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel2.add(jPanel3,      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel7,   new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(resizeToDefault,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
 		jPanel1.add(resizeToForce,  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
-		jPanel2.add(htmlEscapeCaptionsNot,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jPanel2.add(htmlEscapeCaptionsNot,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel2.add(captionStripExtension,  new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 20, 0, 0), 0, 0));
 		buttonGroup1.add(resizeToDefault);
 		buttonGroup1.add(resizeToForce);
 
 		resizeBeforeUpload.addActionListener(this);
 		resizeToForce.addActionListener(this);
 		resizeToDefault.addActionListener(this);
+		setCaptionsWithFilenames.addActionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {

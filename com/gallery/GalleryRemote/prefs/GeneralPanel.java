@@ -1,6 +1,5 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.GalleryProperties;
 import com.gallery.GalleryRemote.Log;
 
 import javax.swing.*;
@@ -12,7 +11,7 @@ import javax.swing.border.*;
  * User: paour
  * Date: May 8, 2003
  */
-public class GeneralPanel extends PreferencePanel {
+public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	public static final String MODULE = "GeneralPa";
 
 	JLabel icon = new JLabel("General");
@@ -45,32 +44,32 @@ public class GeneralPanel extends PreferencePanel {
 	}
 
 	public void readProperties(GalleryProperties props) {
-		showThumbnails.setSelected(props.getBooleanProperty("showThumbnails"));
-		thumbnailWidth.setText("" + (int) props.getDimensionProperty("thumbnailSize").getWidth());
-		thumbnailHeight.setText("" + (int) props.getDimensionProperty("thumbnailSize").getHeight());
+		showThumbnails.setSelected(props.getBooleanProperty(SHOW_THUMBNAILS));
+		thumbnailWidth.setText("" + (int) props.getDimensionProperty(THUMBNAIL_SIZE).getWidth());
+		thumbnailHeight.setText("" + (int) props.getDimensionProperty(THUMBNAIL_SIZE).getHeight());
 
-		savePasswords.setSelected(props.getBooleanProperty("savePasswords"));
-		logLevel.setSelectedIndex(props.getIntProperty("logLevel"));
+		savePasswords.setSelected(props.getBooleanProperty(SAVE_PASSWORDS));
+		logLevel.setSelectedIndex(props.getIntProperty(LOG_LEVEL));
 
-		updateCheck.setSelected(props.getBooleanProperty("updateCheck"));
-		updateCheckBeta.setSelected(props.getBooleanProperty("updateCheckBeta"));
+		updateCheck.setSelected(props.getBooleanProperty(UPDATE_CHECK));
+		updateCheckBeta.setSelected(props.getBooleanProperty(UPDATE_CHECK_BETA));
 	}
 
 	public void writeProperties(GalleryProperties props) {
-		props.setBooleanProperty("showThumbnails", showThumbnails.isSelected());
+		props.setBooleanProperty(SHOW_THUMBNAILS, showThumbnails.isSelected());
 
 		try {
 			Dimension d = new Dimension(Integer.parseInt(thumbnailWidth.getText()), Integer.parseInt(thumbnailHeight.getText()));
-			props.setDimensionProperty("thumbnailSize", d);
+			props.setDimensionProperty(THUMBNAIL_SIZE, d);
 		} catch (Exception e) {
 			Log.log(Log.ERROR, MODULE, "Thumbnail size should be integer numbers");
 		}
 
-		props.setBooleanProperty("savePasswords", savePasswords.isSelected());
-		props.setIntProperty("logLevel", logLevel.getSelectedIndex());
+		props.setBooleanProperty(SAVE_PASSWORDS, savePasswords.isSelected());
+		props.setIntProperty(LOG_LEVEL, logLevel.getSelectedIndex());
 
-		props.setBooleanProperty("updateCheck", updateCheck.isSelected());
-		props.setBooleanProperty("updateCheckBeta", updateCheckBeta.isSelected());
+		props.setBooleanProperty(UPDATE_CHECK, updateCheck.isSelected());
+		props.setBooleanProperty(UPDATE_CHECK_BETA, updateCheckBeta.isSelected());
 	}
 
 	public void buildUI() {
