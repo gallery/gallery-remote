@@ -1354,7 +1354,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				p.load(new StringBufferInputStream(response));
 
 				// catch session expiration problems
-				if (!alreadyRetried && !g.cookieLogin && g.getUsername() != null
+				if (!alreadyRetried && !g.cookieLogin && g.getUsername() != null && g.getUsername().length() != 0
 						&& ! "1".equals(p.getProperty("debug_user_already_logged_in"))) {
 					Log.log(Log.LEVEL_INFO, MODULE, "The session seems to have expired: trying to login and retry...");
 

@@ -305,7 +305,6 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	 */
 	public void addMRUItem(File mruItem) {
 		// First get all of the MRU items from the current file
-		Vector mruItems = new Vector();
 		try {
 			String currentItem = mruItem.getCanonicalPath();
 			addMRUItem(currentItem);
@@ -377,11 +376,16 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 
 	public boolean getBooleanProperty(String key) {
 		String booleanS = getProperty(key);
-		try {
-			return Boolean.valueOf(booleanS).booleanValue();
-		} catch (Exception e) {
-			throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be true or false)");
+
+		if (booleanS != null) {
+			if (booleanS.equalsIgnoreCase("yes") || booleanS.equalsIgnoreCase("true")) {
+				return true;
+			} else if (booleanS.equalsIgnoreCase("no") || booleanS.equalsIgnoreCase("false")) {
+				return false;
+			}
 		}
+
+		throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be true/yes or false/no)");
 	}
 
 	public boolean getBooleanProperty(String key, boolean defaultValue) {

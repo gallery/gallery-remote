@@ -4,6 +4,9 @@ jp.enabled=true
 # path to the executable (must be a fully-qualified path)
 jp.path=jpegtran
 
+# should lossless cropping be enabled?
+jp.crop.enabled=false
+
 # ignore error code sent back by the executable
 # there's a bug in the Linux Java VM that returns a failed code
 # even when the executable sends back a success code...
