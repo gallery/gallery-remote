@@ -19,17 +19,25 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	private static final String MODULE = "GalComm2_5";
 
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
-	public static final String SCRIPT_NAME = "modules/remote/module.inc";
+	public static final String SCRIPT_NAME = "main.php?g2_controller=remote:GalleryRemote&g2_form[cmd]=no-op";
 
 	public static final boolean ZEND_DEBUG = true;
+
+	private static int[] capabilities2;
+	private static int[] capabilities3;
 
 	protected GalleryComm2_5(Gallery g) {
 		super(g);
 
 		scriptName = "main.php";
 
-		capabilities = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+		capabilities2 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM*/, CAPA_FETCH_ALBUMS_PRUNE};
+		capabilities3 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE};
+
+		Arrays.sort(capabilities2);
+		Arrays.sort(capabilities3);
 	}
 
     public NVPair[] fudgeParameters(NVPair[] data) {
@@ -76,6 +84,11 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	}
 
 	void handleCapabilities() {
-		// don't do anything and leave capabilities to the default value
+		if (serverMinorVersion >= 3) {
+			capabilities = capabilities3;
+		} else {
+			capabilities = capabilities2;
+		}
 	}
+
 }

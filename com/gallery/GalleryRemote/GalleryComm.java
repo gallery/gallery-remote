@@ -233,7 +233,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				String urlPath2 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME);
 				if (tryComm(su, mConnection, urlPath2)) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
-					return new GalleryComm2(g);
+					return new GalleryComm2(g);	
 				}
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2.5 for " + url);
@@ -244,7 +244,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					return new GalleryComm2_5(g);
 				}
 
-				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
+				/*Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
 				// Test GalleryComm1
 				// BUT: only if first try was not status code 401 = authorization failure
 				String scriptName = "gallery_remote.php";
@@ -253,7 +253,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 1");
 
 					// todo: Alert, we don't support protocol 1 any more.
-				}
+				}*/
 			} else {
 				// if Gallery is embedded, only support protocol 2
 				return new GalleryComm2(g);

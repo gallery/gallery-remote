@@ -182,9 +182,9 @@ public class Cookie implements Serializable
 	    beg = Util.skipSpace(buf, end+1);
 	    int comma = set_cookie.indexOf(',', beg);
 	    int semic = set_cookie.indexOf(';', beg);
+		if (semic == -1) semic = len;
 	    if (comma == -1  &&  semic == -1)  end = len;
 	    else if (comma == -1)  end = semic;
-	    else if (semic == -1)  end = comma;
 	    else
 	    {
 		if (comma > semic)
@@ -359,10 +359,10 @@ public class Cookie implements Serializable
 	    // domains are case insensitive.
 	    value = value.toLowerCase();
 
-	    // add leading dot, if missing
-	    if (value.length() != 0 && value.charAt(0) != '.'  &&
-		!value.equals(cookie.domain))
-		value = '.' + value;
+		// add local, if it is
+		if (value.indexOf('.', 1) == -1) {
+			value += ".local";
+		}
 
 	    // must be the same domain as in the url
 	    if (!cookie.domain.endsWith(value))
@@ -372,6 +372,11 @@ public class Cookie implements Serializable
 				     " does not match given parsed " + value);
 		return false;
 	    }
+
+	    // add leading dot, if missing
+	    if (value.length() != 0 && value.charAt(0) != '.'  &&
+		!value.equals(cookie.domain))
+		value = '.' + value;
 
 
 	    /* Netscape's original 2-/3-dot rule really doesn't work because

@@ -1,3 +1,9 @@
+2004-08-13  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b7)
+
+	* Fixed cookie handling in HTTPClient (fixes losing G2 sessions).
+	* Better detection of G2.
+	* 2_5 handles 2.3 protocol.
+
 2004-08-11  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b6)
 
 	* No redirect for embedded applets.

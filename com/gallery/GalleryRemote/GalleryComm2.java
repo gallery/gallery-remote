@@ -89,13 +89,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	protected int serverMinorVersion = 0;
 
 	/** The capabilities for 2.1 */
-	protected static int[] capabilities1;
-	protected static int[] capabilities2;
-	protected static int[] capabilities5;
-	protected static int[] capabilities7;
-	protected static int[] capabilities9;
-	protected static int[] capabilities13;
-	protected static int[] capabilities14;
+	private static int[] capabilities1;
+	private static int[] capabilities2;
+	private static int[] capabilities5;
+	private static int[] capabilities7;
+	private static int[] capabilities9;
+	private static int[] capabilities13;
+	private static int[] capabilities14;
 
 
 	/* -------------------------------------------------------------------------
@@ -868,7 +868,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					depth++;
 				}
 
-				rootAlbum.setCanCreateSubAlbum(p.getBooleanProperty("can_create_root"));
+				rootAlbum.setCanCreateSubAlbum(p.getBooleanProperty("can_create_root", false));
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Ordered " + orderedAlbums.size() + " albums");
 
