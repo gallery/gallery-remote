@@ -64,10 +64,16 @@ public class ThumbnailCache implements Runnable
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
 
-			if ( thumbnails.get( filename ) == null ) {
-				loadThumbnail( filename );
+			if ( ! thumbnails.containsKey( filename ) ) {
+				ImageIcon i = ImageUtils.load( 
+					filename, 
+					GalleryRemote.getInstance().properties.getThumbnailSize(), 
+					ImageUtils.THUMB );
+				thumbnails.put( filename, i );
 				
 				loaded++;
+				
+				Log.log(Log.TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
 				mf.updateProgressValue(pId, loaded, loaded + toLoad.size());
 				mf.thumbnailLoadedNotify();
 			}
@@ -86,11 +92,13 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnail( String filename ) {
-		Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
+		Log.log(Log.TRACE, MODULE, "preloadThumbnail " + filename);
+		
+		if (!thumbnails.containsKey(filename)) {
+			toLoad.add( 0, filename );
 
-		toLoad.add( 0, filename );
-
-		rerun();
+			rerun();
+		}
 	}
 
 
@@ -100,11 +108,13 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnailFirst( String filename ) {
-		Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
+		Log.log(Log.TRACE, MODULE, "preloadThumbnail " + filename);
 
-		toLoad.push( filename );
+		if (!thumbnails.containsKey(filename)) {
+			toLoad.push( filename );
 
-		rerun();
+			rerun();
+		}
 	}
 
 
@@ -114,10 +124,14 @@ public class ThumbnailCache implements Runnable
 	 *@param  files  enumeration of File objects that should be loaded
 	 */
 	public void preloadThumbnailFiles( Enumeration files ) {
-		Log.log(Log.TRACE, MODULE, "loadPreview " + files);
+		Log.log(Log.TRACE, MODULE, "preloadThumbnail " + files);
 
 		while ( files.hasMoreElements() ) {
-			toLoad.add( 0, ( (Picture) files.nextElement() ).getSource().getPath() );
+			String filename = ( (Picture) files.nextElement() ).getSource().getPath();
+			
+			if (!thumbnails.containsKey(filename)) {
+				toLoad.add( 0, filename );
+			}
 		}
 
 		rerun();
@@ -130,10 +144,12 @@ public class ThumbnailCache implements Runnable
 	 *@param  filenames  an array of File objects
 	 */
 	public void preloadThumbnails( File[] filenames ) {
-		Log.log(Log.TRACE, MODULE, "loadPreview " + filenames);
+		Log.log(Log.TRACE, MODULE, "preloadThumbnail " + filenames);
 
 		for ( int i = 0; i < filenames.length; i++ ) {
-			toLoad.add( 0, ( (File) filenames[i] ).getPath() );
+			if (!thumbnails.containsKey(filenames[i])) {
+				toLoad.add( 0, ( (File) filenames[i] ).getPath() );
+			}
 		}
 
 		rerun();
@@ -155,40 +171,7 @@ public class ThumbnailCache implements Runnable
 
 
 	/**
-	 *  Perform the actual icon loading
-	 *
-	 *@param  filename  path to the file
-	 *@return           Resized icon
-	 */
-	public ImageIcon loadThumbnail( String filename ) {
-		ImageIcon r = null;
-		long start = System.currentTimeMillis();
-		
-		r = new ImageIcon( filename );
-		
-		Image scaled = null;
-		Dimension d = PreviewFrame.getSizeKeepRatio(
-			new Dimension( r.getIconWidth(), r.getIconHeight() ),
-			GalleryRemote.getInstance().properties.getThumbnailSize() );
-		scaled = r.getImage().getScaledInstance( d.width, d.height, mf.highQualityThumbnails ? Image.SCALE_SMOOTH : Image.SCALE_FAST );
-
-		r.getImage().flush();
-		r.setImage( scaled );
-
-		thumbnails.put( filename, r );
-		long time = System.currentTimeMillis() - start;
-		totalTime += time;
-		totalIter++;
-		Log.log(Log.TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
-
-		return r;
-	}
-	long totalTime = 0;
-	int totalIter = 0;
-
-
-	/**
-	 *  Retrieves a thumbnail from the thumnail cache
+	 *  Retrieves a thumbnail from the thumbnail cache
 	 *
 	 *@param  filename  path to the file
 	 *@return           The thumbnail object

@@ -37,29 +37,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 	String currentImageFile = null;
 	PreviewLoader previewLoader = new PreviewLoader();
 	int previewCacheSize = 10;
-
+	
 	public void initComponents()
 	{
 		setTitle("Preview");
 		
 		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
-		/*if (mPropertiesFile.getProperty("previewx") == null || mPropertiesFile.getProperty("previewy") == null)
-		{
-			setLocation(new java.awt.Point(578, 0));
-		}
-		else
-		{
-			setLocation(new java.awt.Point(Integer.parseInt(mPropertiesFile.getProperty("previewx")), Integer.parseInt(mPropertiesFile.getProperty("previewy"))));
-		}
-		
-		if (mPropertiesFile.getProperty("previewwidth") == null || mPropertiesFile.getProperty("previewheight") == null)
-		{
-			setSize(new java.awt.Dimension(502, 521));
-		}
-		else
-		{
-			setSize(new java.awt.Dimension(Integer.parseInt(mPropertiesFile.getProperty("previewwidth")), Integer.parseInt(mPropertiesFile.getProperty("previewheight"))));
-		}*/
 		
 		addComponentListener(new ComponentAdapter()
 			{
@@ -71,25 +54,19 @@ public class PreviewFrame extends javax.swing.JFrame {
 		);
 		
 		previewCacheSize = GalleryRemote.getInstance().properties.getIntProperty("previewCacheSize");
-
 	}
 	
 	public void paint(Graphics g)
 	{
 		g.clearRect(0, 0, getSize().width, getSize().height);
 		
-		if (currentImage == null)
-		{
-			getSizedIcon(MainFrame.DEFAULT_IMAGE).paintIcon(getContentPane(), g, getRootPane().getLocation().x, getRootPane().getLocation().y);
-		}
-		else
+		if (currentImage != null)
 		{
 			currentImage.paintIcon(getContentPane(), g, getRootPane().getLocation().x, getRootPane().getLocation().y);
 		}
 	}
 	
-	public void displayFile(String filename)
-	{
+	public void displayFile(String filename) {
 		if (filename == null)
 		{
 			currentImage = null;
@@ -100,24 +77,33 @@ public class PreviewFrame extends javax.swing.JFrame {
 		else if (! filename.equals(currentImageFile))
 		{
 			currentImageFile = filename;
-			previewLoader.loadPreview(filename);
+			
+			ImageIcon r = (ImageIcon) imageIcons.get(filename);
+			if (r != null) {
+				Log.log(Log.TRACE, MODULE, "Cache hit: " + filename);
+				currentImage = r;
+				repaint();
+			} else {
+				Log.log(Log.TRACE, MODULE, "Cache miss: " + filename);
+				previewLoader.loadPreview(filename);
+			}
 		}
 	}
 	
-	public ImageIcon getSizedIcon(String filename)
-	{
-		if (filename == null)
-		{
-			return null;
-		}
-		
+	public ImageIcon getSizedIconForce(String filename)	{
 		ImageIcon r = (ImageIcon) imageIcons.get(filename);
 		
 		if (r == null)
 		{
-			r = safeNewImageIcon(filename);
+			/*r = safeNewImageIcon(filename);
 			Dimension d = getSizeKeepRatio(new Dimension(r.getIconWidth(), r.getIconHeight()), getRootPane().getSize());
-			r.setImage(safeGetScaledInstance(r.getImage(), d.width, d.height, Image.SCALE_FAST));
+			r.setImage(safeGetScaledInstance(r.getImage(), d.width, d.height, Image.SCALE_FAST));*/
+			r = ImageUtils.load( 
+				filename, 
+				getRootPane().getSize(), 
+				ImageUtils.PREVIEW );
+			
+			Log.log(Log.TRACE, MODULE, "Adding to cache: " + filename);
 			imageIcons.put(filename, r);
 		}
 		
@@ -141,7 +127,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 					iFilename = null;
 				}
 				
-				currentImage = getSizedIcon(tmpFilename);
+				currentImage = getSizedIconForce(tmpFilename);
 			}
 			stillRunning = false;
 
@@ -164,7 +150,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 	}
 	
-	public ImageIcon safeNewImageIcon(String filename)
+	/*public ImageIcon safeNewImageIcon(String filename)
 	{
 		Log.log(Log.TRACE, MODULE, "safeNewImageIcon " + filename);
 		Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
@@ -204,44 +190,9 @@ public class PreviewFrame extends javax.swing.JFrame {
 		{
 			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
-	}
+	}*/
 	
-	public static Dimension getSizeKeepRatio(Dimension source, Dimension target)
-	{
-		Dimension result = new Dimension();
-		
-		float sourceRatio = (float) source.width / source.height;
-		float targetRatio = (float) target.width / target.height;
-		
-		if (targetRatio > sourceRatio)
-		{
-			result.height = target.height;
-			result.width = (int) source.width * target.height / source.height;
-		}
-		else
-		{
-			result.width = target.width;
-			result.height = (int) source.height * target.width / source.width;
-		}
 
-		return result;
-	}
-	
-	public static float getRatio(Dimension source, Dimension target)
-	{
-		float widthRatio = (float) target.width / source.width;
-		float heightRatio = (float) target.height / source.height;
-		
-		if (heightRatio > widthRatio)
-		{
-			return widthRatio;
-		}
-		else
-		{
-			return heightRatio;
-		}
-	}
-	
 	public class SmartHashtable extends Hashtable
 	{
 		Vector touchOrder = new Vector();
@@ -252,12 +203,13 @@ public class PreviewFrame extends javax.swing.JFrame {
 			super.put(key, value);
 			
 			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-			if (Runtime.getRuntime().freeMemory() < 2000000)
+			/*if (Runtime.getRuntime().freeMemory() < 2000000)
 			{
+				Log.log(Log.TRACE, MODULE, "Not enough free ram, shrinking...");
 				shrink();
 				Runtime.getRuntime().gc();
 			}
-			else if (previewCacheSize > 0 && touchOrder.size() > previewCacheSize)
+			else */if (previewCacheSize > 0 && touchOrder.size() > previewCacheSize)
 			{
 				shrink();
 			}
@@ -299,7 +251,6 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		public void shrink()
 		{
-			Log.log(Log.TRACE, MODULE, "shrink");
 			if (touchOrder.size() == 0)
 			{
 				Log.log(Log.ERROR, MODULE, "Empty SmartHashtable");
@@ -309,7 +260,18 @@ public class PreviewFrame extends javax.swing.JFrame {
 			
 			Object key = touchOrder.elementAt(0);
 			touchOrder.remove(0);
+			
+			ImageIcon i = (ImageIcon) get(key);
+			if (i != null) {
+				i.getImage().flush();
+				i = null;
+			}
+			
 			remove(key);
+
+			Runtime.getRuntime().gc();
+			
+			Log.log(Log.TRACE, MODULE, "Shrunk " + key);
 		}
 	}
 }
