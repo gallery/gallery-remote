@@ -1,6 +1,9 @@
 2002-11-11  Pierre-Luc Paour <gallery@paour.com> (1.0)
 	
 	* Changed icons and about box (thanks to Ross A. Reyman)
+	* Made the 'Log in' button a flip-flop to 'Log out'
+	* When adding a new album, pictures that were added to the list
+	  of pictures to upload are no longer forgotten.
 
 2002-11-10  Pierre-Luc Paour <gallery@paour.com> (1.0-b12)
 	
