@@ -22,9 +22,7 @@ package com.gallery.GalleryRemote.model;
 
 import java.io.File;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -61,7 +59,7 @@ public class Album extends Picture implements ListModel, Serializable
 	Album parent; // parent Album
 	String title = "Not yet connected to Gallery";
 	String name;
-	String extraFields;
+	ArrayList extraFields;
 
 	transient int autoResize = 0;
 	// permissions -- default to true for the sake of old protocols ...
@@ -74,19 +72,12 @@ public class Album extends Picture implements ListModel, Serializable
 	
 	transient boolean hasFetchedInfo = false;
 	
-	
-	/* -------------------------------------------------------------------------
-	 * INSTANCE VARIABLES
-	 */ 
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
-	
 
-	/* -------------------------------------------------------------------------
-	 * PUBLIC CLASS METHODS
-	 */
-	 
-	 	
+	public static List extraFieldsNoShow = Arrays.asList(new String[] {"Upload Date", "Capture Date"});
+
+
 	/**
 	 *  Retrieves the album properties from the server.
 	 *
@@ -466,12 +457,24 @@ public class Album extends Picture implements ListModel, Serializable
 		parent = a;
 	}
 
-	public String getExtraFields() {
+	public ArrayList getExtraFields() {
 		return extraFields;
 	}
 
-	public void setExtraFields(String extraFields) {
-		this.extraFields = extraFields;
+	public void setExtraFieldsString(String extraFieldsString) {
+		if (extraFieldsString != null && extraFieldsString.length() > 0) {
+			extraFields = new ArrayList();
+			StringTokenizer st = new StringTokenizer(extraFieldsString, ",");
+			while (st.hasMoreTokens()) {
+				String name = st.nextToken();
+
+				if (!extraFieldsNoShow.contains(name)) {
+					extraFields.add(name);
+				}
+			}
+		} else {
+			extraFields = null;
+		}
 	}
 
 	public void setCanRead( boolean b ){
