@@ -74,13 +74,13 @@ public class Gallery implements ComboBoxModel
 	
 	
 	public void uploadFiles( StatusUpdate su ) {
-		getComm().uploadFiles( su );
+		getComm().uploadFiles( su, true );
 	}
 	
 	public void fetchAlbums( StatusUpdate su ) {
 		albumList = null;
 		/* TEMPORARY */ // getComm().logOut();
-		getComm().fetchAlbums( su );
+		getComm().fetchAlbums( su, true );
 	}
 	
 	/**
@@ -123,7 +123,14 @@ public class Gallery implements ComboBoxModel
 	 *@param  username  The new username value
 	 */
 	public void setUsername( String username ) {
-		this.username = username;
+		if ( username != null && this.username != null
+			&& username.length() > 0 && this.username.length() > 0
+			&& ! username.equals( this.username ) ) {
+			
+			this.username = username;
+			
+			logOut();
+		}
 	}
 
 
@@ -133,7 +140,21 @@ public class Gallery implements ComboBoxModel
 	 *@param  password  The new password value
 	 */
 	public void setPassword( String password ) {
-		this.password = password;
+		if ( password != null && this.password != null
+			&& password.length() > 0 && this.password.length() > 0
+			&& ! password.equals( this.password ) ) {
+			
+			this.password = password;
+			
+			logOut();
+		}
+	}
+	
+	public void logOut() {
+		albumList = null;
+		selectedAlbum = null;
+		
+		notifyListeners();
 	}
 
 
@@ -252,6 +273,10 @@ public class Gallery implements ComboBoxModel
 	 *@return    Description of the Returned Value
 	 */
 	public String toString() {
+		if (url == null) {
+			return "http://";
+		}
+		
 		return url.toString();
 	}
 
@@ -297,25 +322,26 @@ public class Gallery implements ComboBoxModel
 	/**
 	 *	Lazy instantiation for the GalleryComm instance.
 	 */
-	GalleryComm getComm() {
-		
-		/* TEMPORARY
-		 * 
-		 * CHOOSE HERE WHETHER YOU WANT TO USE GR PROTO VERSION 1
-		 * OR VERSION 2 BY INSTANTIATING THE CORRECT GALLERYCOMM
-		 * IMPLEMENTATION (EITHER GalleryComm1 or GalleryComm2).
-		 *
-		 */
+	public GalleryComm getComm() {
 		if ( comm == null ) {
-			comm = new GalleryComm1( su, this );
-			//comm = new GalleryComm2( this );
+			/* TEMPORARY*/
+			if (GalleryRemote.getInstance().properties.getIntProperty("protocolVersion") == 2) {
+				comm = new GalleryComm2( this );
+			} else {
+				comm = new GalleryComm1( su, this );
+			}
 		}
 		
 		return comm;
 	}
 	
 	void notifyListeners() {
-		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
+		ListDataEvent lde;
+		if (albumList != null) {
+			lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
+		} else {
+			lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
+		}
 		
 		notifyListeners(lde);
 	}
