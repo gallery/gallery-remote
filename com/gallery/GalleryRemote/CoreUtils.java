@@ -159,7 +159,7 @@ public class CoreUtils {
 						setForeground(Color.green);
 					}
 				} else {
-					setForeground(Color.black);
+					//setForeground(Color.black);
 				}
 
 				if (GalleryRemote._().properties.getShowThumbnails()) {

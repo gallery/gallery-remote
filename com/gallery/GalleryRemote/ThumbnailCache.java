@@ -94,22 +94,6 @@ public class ThumbnailCache implements Runnable {
 
 
 	/**
-	 *  Ask for the thumbnail to be loaded
-	 *
-	 *@param  filename  path to the file
-	 */
-	/*public void preloadThumbnailFilename( String filename ) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilename " + filename);
-		
-		if (!thumbnails.containsKey(filename)) {
-			toLoad.add( 0, filename );
-
-			rerun();
-		}
-	}*/
-
-
-	/**
 	 * Ask for the thumbnail to be loaded as soon as possible
 	 * 
 	 * @param filename path to the file
@@ -131,7 +115,7 @@ public class ThumbnailCache implements Runnable {
 	 * @param pictures enumeration of Picture objects that should be loaded
 	 */
 	public void preloadThumbnails(Iterator pictures) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnails " + pictures);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnails");
 
 		while (pictures.hasNext()) {
 			Picture p = (Picture) pictures.next();

@@ -1366,9 +1366,6 @@ public class MainFrame extends JFrame
 			saveState(lastOpenedFile);
 
 			saveMRUItem(lastOpenedFile);
-
-			// We've been saved, we are now clean.
-			setDirtyFlag(false);
 		}
 	}
 
@@ -1380,9 +1377,6 @@ public class MainFrame extends JFrame
 		}
 
 		saveState(lastOpenedFile);
-
-		// We've been saved, we are now clean.
-		setDirtyFlag(false);
 	}
 
 	/**
@@ -1407,6 +1401,10 @@ public class MainFrame extends JFrame
 
 			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
 			out.writeObject(galleryArray);
+			out.close();
+
+			// We've been saved, we are now clean.
+			setDirtyFlag(false);
 		} catch (IOException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to save state");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -1571,12 +1569,15 @@ public class MainFrame extends JFrame
 
 					setGalleries(newGalleries);
 
-					resetUIState();
+					if (selectGallery == null && newGalleries.getSize() > 0) {
+						selectGallery = (Gallery) newGalleries.getElementAt(0);
+					}
 
 					if (selectGallery != null) {
 						jGalleryCombo.setSelectedItem(selectGallery);
 					}
 
+					setInProgress(false);
 				} catch (IOException e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -1902,7 +1903,7 @@ public class MainFrame extends JFrame
 			if (album != null && album.isHasFetchedImages()) {
 				setForeground(Color.green);
 			} else {
-				setForeground(Color.black);
+				// setForeground(Color.black);
 			}
 
 			setIcon(null);

@@ -1,3 +1,13 @@
+2004-02-12  Pierre-Luc Paour <gallery@paour.com> (1.3.1-b1)
+
+	* Fixed text color in list and tree when selected.
+	* State is clean after an upload attemps (since state
+	  was saved to the default location).
+	* Fixed bug where loading a state with no pictures in it
+	  would make the UI disabled.
+
+	Thanks to Robert Harlow for these.
+
 2004-02-11  Pierre-Luc Paour <gallery@paour.com> (1.3)
 
 	* Fixed moving album to root of Gallery.
