@@ -311,7 +311,11 @@ public class Album extends Picture implements ListModel
 	}
 	
 	public String toString() {
-		return title;
+		if (pictures.size() != 0) {
+			return title + " (" + pictures.size() + ")";
+		} else {
+			return title;
+		}
 	}
 
 
