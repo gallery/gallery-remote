@@ -43,7 +43,9 @@ import javax.swing.event.*;
 public class MainFrame extends javax.swing.JFrame
 		 implements ActionListener, ItemListener, ListSelectionListener
 {
-	public final static int ONE_SECOND = 1000;
+	public static final String MODULE = "MainFrame";
+	
+	public static final int ONE_SECOND = 1000;
 
 	PreviewFrame previewFrame = new PreviewFrame();
 
@@ -178,6 +180,10 @@ public class MainFrame extends javax.swing.JFrame
 
 		setVisible( false );
 		dispose();
+		
+		Log.log(Log.INFO, "Shutting log down");
+		Log.shutdown();
+		
 		System.exit( 0 );
 	}
 
@@ -278,6 +284,8 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Upload the files
 	 */
 	public void uploadPictures() {
+		Log.log(Log.INFO, MODULE, "uploadPictures starting");
+		
 		mGalleryComm.setURLString( (String) url.getSelectedItem() );
 		mGalleryComm.setUsername( username.getText() );
 		mGalleryComm.setPassword( password.getText() );
@@ -309,6 +317,8 @@ public class MainFrame extends javax.swing.JFrame
 						mInProgress = false;
 						picturesList.enable();
 						updateUI();
+						
+						Log.log(Log.INFO, MODULE, "uploadPictures finished");
 					}
 				}
 			} );
@@ -624,7 +634,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
-		System.out.println( command );
+		Log.log(Log.INFO, MODULE, "Command selected " + command );
 		if ( command.equals( "File.Quit" ) ) {
 			thisWindowClosing( null );
 		} else if ( command.equals( "Help.About" ) ) {
@@ -638,7 +648,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Upload" ) ) {
 			uploadPictures();
 		} else {
-			System.out.println( "Unhandled command " + command );
+			Log.log(Log.ERROR, MODULE, "Unhandled command " + command );
 		}
 	}
 
@@ -663,8 +673,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( item == url ) {
 			// TODO: url changed, update username and password from cache
 		} else {
-			System.out.println( "Unhandled item state change " + item );
-			Thread.dumpStack();
+			Log.log(Log.ERROR, MODULE, "Unhandled item state change " + item );
 		}
 	}
 

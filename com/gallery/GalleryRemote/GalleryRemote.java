@@ -20,6 +20,7 @@
  */
 package com.gallery.GalleryRemote;
 import java.io.*;
+import java.util.*;
 import javax.swing.*;
 
 /**
@@ -36,7 +37,10 @@ public class GalleryRemote
 	public PropertiesFile properties = null;
 	public PropertiesFile defaults = null;
 	
-	private GalleryRemote() {}
+	private GalleryRemote() {
+		defaults = new PropertiesFile("defaults");
+		properties = new PropertiesFile(defaults, "remote");
+	}
 	
 	private void run()
 	{
@@ -53,8 +57,7 @@ public class GalleryRemote
 			}
 			//* /
 			
-			defaults = new PropertiesFile("defaults");
-			properties = new PropertiesFile(defaults, "remote");
+			logEnvironment();
 			
 			mainFrame = new MainFrame();
 			mainFrame.initComponents();
@@ -65,27 +68,31 @@ public class GalleryRemote
 		}
 	}
 	
+	public static void logEnvironment()
+	{
+		Properties props = System.getProperties();
+		Enumeration e = props.propertyNames();
+		while (e.hasMoreElements())
+		{
+			String name = (String) e.nextElement();
+			Log.log(Log.INFO, "SysProps", name + "= |" + System.getProperty(name) + "|");
+		}
+	}
+	
 	public static GalleryRemote getInstance()
 	{
+		if (singleton == null)
+		{
+			singleton = new GalleryRemote();
+		}
+		
 		return singleton;
 	}
 
 	// Main entry point
 	public static void main( String[] args )
 	{
-		singleton = new GalleryRemote();
-		
-		singleton.run();
-
-		//-- check for updated version of the app, using InstallAnywhere's --
-		//-- PowerUpdate service ---
-		try
-		{
-			Runtime.getRuntime().exec( "update -whisper" );
-		}
-		catch ( IOException e )
-		{
-		}
+		getInstance().run();
 	}
 }
 

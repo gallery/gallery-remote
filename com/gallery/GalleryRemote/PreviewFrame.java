@@ -30,6 +30,8 @@ import javax.swing.border.*;
 import java.util.*;
 
 public class PreviewFrame extends javax.swing.JFrame {
+	public static final String MODULE = "PreviewFrame";
+	
 	SmartHashtable imageIcons = new SmartHashtable();
 	ImageIcon currentImage = null;
 	String currentImageFile = null;
@@ -129,7 +131,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		public void run()
 		{
-			//System.out.println("Starting " + iFilename);
+			Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 			while (iFilename != null)
 			{
 				String tmpFilename;
@@ -144,19 +146,19 @@ public class PreviewFrame extends javax.swing.JFrame {
 			stillRunning = false;
 
 			repaint();
-			//System.out.println("Ending");
+			Log.log(Log.TRACE, MODULE, "Ending");
 		}
 		
 		public void loadPreview(String filename)
 		{
-			//System.out.println("loadPreview " + filename);
+			Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
 			
 			iFilename = filename;
 			
 			if (! stillRunning)
 			{
 				stillRunning = true;
-				//System.out.println("Calling Start");
+				Log.log(Log.TRACE, MODULE,"Calling Start");
 				new Thread(this).start();
 			}
 		}
@@ -164,28 +166,28 @@ public class PreviewFrame extends javax.swing.JFrame {
 	
 	public ImageIcon safeNewImageIcon(String filename)
 	{
-		//System.out.println("safeNewImageIcon " + filename);
-		//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+		Log.log(Log.TRACE, MODULE, "safeNewImageIcon " + filename);
+		Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		try
 		{
 			return new ImageIcon(filename);
 		}
 		catch (OutOfMemoryError e)
 		{
-			//System.out.println("Caught error");
+			Log.log(Log.ERROR, MODULE, "Caught out of memory error in safeNewImageIcon");
 			imageIcons.shrink();
 			return safeNewImageIcon(filename);
 		}
 		finally
 		{
-			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
 	}
 	
 	public Image safeGetScaledInstance(Image image, int width, int height, int mode)
 	{
-		//System.out.println("safeGetScaledInstance");
-		//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+		Log.log(Log.TRACE, MODULE, "safeGetScaledInstance");
+		Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		try
 		{
 			Image result = image.getScaledInstance(width, height, mode);
@@ -194,13 +196,13 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 		catch (OutOfMemoryError e)
 		{
-			//System.out.println("Caught error");
+			Log.log(Log.ERROR, MODULE, "Caught out of memory error in safeGetScaledInstance");
 			imageIcons.shrink();
 			return safeGetScaledInstance(image, width, height, mode);
 		}
 		finally
 		{
-			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
 	}
 	
@@ -234,7 +236,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			touch(key);
 			super.put(key, value);
 			
-			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 			if (Runtime.getRuntime().freeMemory() < 2000000)
 			{
 				shrink();
@@ -244,7 +246,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			{
 				shrink();
 			}
-			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 			
 			return value;
 		}
@@ -269,7 +271,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		public void touch(Object key)
 		{
-			//System.out.println("touch " + key);
+			Log.log(Log.TRACE, MODULE, "touch " + key);
 			int i = touchOrder.indexOf(key);
 			
 			if (i != -1)
@@ -282,10 +284,10 @@ public class PreviewFrame extends javax.swing.JFrame {
 		
 		public void shrink()
 		{
-			System.out.println("shrink");
+			Log.log(Log.TRACE, MODULE, "shrink");
 			if (touchOrder.size() == 0)
 			{
-				System.out.println("Empty SmartHashtable");
+				Log.log(Log.ERROR, MODULE, "Empty SmartHashtable");
 				//throw new OutOfMemoryError();
 				return;
 			}

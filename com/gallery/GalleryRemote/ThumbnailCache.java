@@ -36,6 +36,8 @@ import com.gallery.GalleryRemote.model.*;
  */
 public class ThumbnailCache implements Runnable
 {
+	public static final String MODULE = "ThumbCache";
+	
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
 	Hashtable thumbnails = new Hashtable();
@@ -56,7 +58,7 @@ public class ThumbnailCache implements Runnable
 	 *  Main processing method for the ThumbnailLoader object
 	 */
 	public void run() {
-		//System.out.println("Starting " + iFilename);
+		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
 
@@ -68,7 +70,7 @@ public class ThumbnailCache implements Runnable
 		}
 		stillRunning = false;
 
-		//System.out.println("Ending");
+		//Log.log(Log.TRACE, MODULE, "Ending");
 	}
 
 
@@ -78,7 +80,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnail( String filename ) {
-		//System.out.println("loadPreview " + filename);
+		Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
 
 		toLoad.add( 0, filename );
 
@@ -92,7 +94,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnailFirst( String filename ) {
-		//System.out.println("loadPreview " + filename);
+		Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
 
 		toLoad.push( filename );
 
@@ -106,7 +108,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  files  enumeration of File objects that should be loaded
 	 */
 	public void preloadThumbnailFiles( Enumeration files ) {
-		//System.out.println("loadPreview " + files);
+		Log.log(Log.TRACE, MODULE, "loadPreview " + files);
 
 		while ( files.hasMoreElements() ) {
 			toLoad.add( 0, ( (Picture) files.nextElement() ).getSource().getPath() );
@@ -122,7 +124,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filenames  an array of File objects
 	 */
 	public void preloadThumbnails( File[] filenames ) {
-		//System.out.println("loadPreview " + filename);
+		Log.log(Log.TRACE, MODULE, "loadPreview " + filenames);
 
 		for ( int i = 0; i < filenames.length; i++ ) {
 			toLoad.add( 0, ( (File) filenames[i] ).getPath() );
@@ -135,7 +137,7 @@ public class ThumbnailCache implements Runnable
 	void rerun() {
 		if ( !stillRunning && GalleryRemote.getInstance().properties.getShowThumbnails() ) {
 			stillRunning = true;
-			//System.out.println("Calling Start");
+			Log.log(Log.TRACE, MODULE, "Calling Start");
 			new Thread( this ).start();
 		}
 	}
@@ -162,7 +164,7 @@ public class ThumbnailCache implements Runnable
 		r.setImage( scaled );
 
 		thumbnails.put( filename, r );
-		System.out.println( "Time: " + ( System.currentTimeMillis() - start ) );
+		Log.log(Log.TRACE, MODULE, "Time: " + ( System.currentTimeMillis() - start ) );
 
 		return r;
 	}

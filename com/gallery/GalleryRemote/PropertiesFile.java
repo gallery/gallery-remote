@@ -32,6 +32,8 @@ import java.util.*;
  */
 public class PropertiesFile extends Properties
 {
+	public static final String MODULE = "PropsFile";
+	
 	protected boolean read = false;
 	protected boolean written = false;
 	protected String mFilename;
@@ -249,7 +251,7 @@ public class PropertiesFile extends Properties
 			return new Dimension( Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ) );
 		} else {
-			System.out.println( "Parameter " + name + " is missing or malformed (should be width,height)" );
+			Log.log(Log.ERROR, MODULE,  "Parameter " + name + " is missing or malformed (should be width,height)" );
 			return null;
 		}
 	}
@@ -282,7 +284,7 @@ public class PropertiesFile extends Properties
 					Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ) );
 		} else {
-			System.out.println( "Parameter " + name + " is missing or malformed (should be x,y,width,height)" );
+			Log.log(Log.ERROR, MODULE,  "Parameter " + name + " is missing or malformed (should be x,y,width,height)" );
 			return null;
 		}
 	}

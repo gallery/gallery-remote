@@ -28,7 +28,8 @@ import java.net.*;
 import javax.swing.*;
 
 public class GalleryComm {
-
+	private static final String MODULE = "GalleryCom";
+	
 	private static final String PROTOCAL_VERSION = "1";
 	private static final String SCRIPT_NAME = "gallery_remote.php";
 
@@ -252,7 +253,7 @@ public class GalleryComm {
 				if (response.indexOf("SUCCESS") >= 0) {
 					albumMessage = "Success";
 					
-					System.out.println(response);
+					Log.log(Log.INFO, MODULE, response);
 					mAlbumList = new ArrayList();
 					
 					// build the list of hashtables here...
@@ -347,7 +348,7 @@ public class GalleryComm {
 	//-------------------------------------------------------------------------	
 	private void status(String message) {
 		mStatus = message;
-		System.out.println(message);
+		Log.log(Log.INFO, MODULE, message);
 	}
 	
 	public String getStatus() {
