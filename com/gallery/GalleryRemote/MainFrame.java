@@ -1001,6 +1001,8 @@ public class MainFrame extends javax.swing.JFrame
 		} catch (IOException e) {
 			Log.log(Log.ERROR, MODULE, "Exception while trying to save state");
 			Log.logException(Log.ERROR, MODULE, e);
+		} catch (NoClassDefFoundError e) {
+			Log.log(Log.ERROR, MODULE, "JSX not installed, can't save state...");
 		}
 	}
 
@@ -1032,6 +1034,8 @@ public class MainFrame extends javax.swing.JFrame
 		} catch (ClassNotFoundException e) {
 			Log.log(Log.ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
 			Log.logException(Log.ERROR, MODULE, e);
+		} catch (NoClassDefFoundError e) {
+			Log.log(Log.ERROR, MODULE, "JSX not installed, can't read state...");
 		}
 	}
 
