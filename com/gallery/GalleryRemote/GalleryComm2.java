@@ -23,7 +23,6 @@ package com.gallery.GalleryRemote;
 
 import java.io.IOException;
 import java.io.StringBufferInputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.SocketException;
 import java.util.*;
@@ -39,6 +38,8 @@ import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+
+import javax.swing.*;
 
 /**
  *	The GalleryComm2 class implements the client side of the Gallery remote
@@ -350,11 +351,40 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 
 			// setup protocol parameters
+			String username = g.getUsername();
+			String password = g.getPassword();
+
+			if (username == null) {
+				username = (String)JOptionPane.showInputDialog(
+                    (JFrame) su,
+                    "Username:",
+                    "Username",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    null);
+
+				g.setUsername(username);
+			}
+
+			if (password == null) {
+				password = (String)JOptionPane.showInputDialog(
+                    (JFrame) su,
+                    "Password:",
+                    "Password",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    null);
+
+				g.setPassword(password);
+			}
+
 			NVPair form_data[] = {
 				new NVPair("cmd", "login"),
 				new NVPair("protocol_version", PROTOCOL_VERSION),
-				new NVPair("uname", g.getUsername()),
-				new NVPair("password", g.getPassword())
+				new NVPair("uname", username),
+				new NVPair("password", password)
 			};
 			Log.log(Log.TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 
@@ -453,7 +483,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		boolean uploadPicture(Picture p) {
 			try	{
 				boolean escapeCaptions = GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
-				
+
 				// can't set null as an NVPair value
 				String caption = p.getCaption();
 				caption = (caption == null) ? "" : caption;
