@@ -79,11 +79,6 @@ public abstract class GalleryComm implements PreferenceNames {
 		});
 	}
 
-	public static void initHTTPClient() {
-		// no need to do anything: the static initializer does it...
-	}
-
-
 	/**
 	 *	Causes the GalleryComm instance to upload the pictures in the
 	 *	associated Gallery to the server.
