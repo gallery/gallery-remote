@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.URL;
+import java.text.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -212,14 +213,18 @@ public class MainFrame extends javax.swing.JFrame
 			int selN = picturesList.getSelectedIndices().length;
 			
 			if ( sel == -1 ) {
-				setStatus( mAlbum.sizePictures() + " pictures, "
-				+ ( (int) mAlbum.getPictureFileSize() / 1024 ) + " K" );
+				setStatus( mAlbum.sizePictures() + " pictures / "
+				+ NumberFormat.getInstance().format( 
+					( (int) mAlbum.getPictureFileSize() / 1024 ) )
+				+ " K" );
 			} else {
-				setStatus( "Selected " + selN + ((selN == 1)?" picture, ":" pictures, ")
-				+ ( (int) mAlbum.getObjectFileSize(picturesList.getSelectedValues()) / 1024 ) + " K" );
+				setStatus( "Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
+				+ NumberFormat.getInstance().format( 
+					( (int) mAlbum.getObjectFileSize( picturesList.getSelectedValues() ) / 1024 ) )
+				+ " K" );
 			}
 		} else {
-			pictureInspector.setPictures( null );
+			pictureInspector.setPictures( (Object[]) null );
 			
 			setStatus( "No selection" );
 		}
