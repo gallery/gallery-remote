@@ -61,6 +61,7 @@ public class AlbumInspector extends JPanel
 	JButton jSlideshow = new JButton();
 	JButton jNew = new JButton();
 	JButton jApply = new JButton();
+	JButton jMove = new JButton();
 	JCheckBox jResizeBeforeUpload = new JCheckBox();
 	JRadioButton jResizeToDefault = new JRadioButton();
 	JRadioButton jResizeToForce = new JRadioButton();
@@ -89,17 +90,17 @@ public class AlbumInspector extends JPanel
 		jLabelPictures.setText(GRI18n.getString(MODULE, "Pictures"));
 		jLabelSummary.setText(GRI18n.getString(MODULE, "Summary"));
 
-		jName.setFont(new Font("SansSerif", 0, 11));
+		jName.setFont(UIManager.getFont("Label.font"));
 		jName.setLineWrap(true);
 
-		jTitle.setFont(new Font("SansSerif", 0, 11));
+		jTitle.setFont(UIManager.getFont("Label.font"));
 		jTitle.setLineWrap(true);
 
+		jSummary.setFont(UIManager.getFont("Label.font"));
 		jSummary.setLineWrap(true);
-		jSummary.setFont(new java.awt.Font("SansSerif", 0, 11));
 
+		jPictures.setFont(UIManager.getFont("Label.font"));
 		jPictures.setEditable(false);
-		jPictures.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jPictures.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 
 		jPanel1.setLayout(new GridBagLayout());
@@ -109,6 +110,7 @@ public class AlbumInspector extends JPanel
 		jFetch.setText(GRI18n.getString(MODULE, "Fetch"));
 		jNew.setText(GRI18n.getString(MODULE, "New"));
 		jApply.setText(GRI18n.getString(MODULE, "Apply"));
+		jMove.setText(GRI18n.getString(MODULE, "Move"));
 
 		jResizeToWidth.setMinimumSize(new Dimension(25, 21));
 		jResizeToWidth.setPreferredSize(new Dimension(25, 21));
@@ -145,6 +147,8 @@ public class AlbumInspector extends JPanel
 		jPanelProps.add(jPictures, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 3, 0), 0, 0));
 		jPanelProps.add(jApply, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		jPanelProps.add(jMove, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
 
 		jPanel1.add(jResizeToWidth, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
@@ -205,6 +209,7 @@ public class AlbumInspector extends JPanel
 		jSlideshow.addActionListener(this);
 		jNew.addActionListener(this);
 		jApply.addActionListener(this);
+		jMove.addActionListener(this);
 
 		jBeginning.addItemListener(this);
 		jResizeBeforeUpload.addItemListener(this);
@@ -232,6 +237,8 @@ public class AlbumInspector extends JPanel
 			mf.newAlbum();
 		} else if (source == jApply) {
 			// todo
+		} else if (source == jMove) {
+			new MoveAlbumDialog(mf, album.getGallery(), album);
 		} else if (source == jSlideshow) {
 			mf.slideshow();
 		} else {
@@ -346,6 +353,7 @@ public class AlbumInspector extends JPanel
 			jBeginning.setSelected(album.getAddToBeginning());
 
 			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
+			jMove.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_MOVE_ALBUM));
 
 			// todo
 			jApply.setEnabled(false);
@@ -377,6 +385,7 @@ public class AlbumInspector extends JPanel
 		jSlideshow.setEnabled(enabled);
 		jNew.setEnabled(enabled);
 		jApply.setEnabled(enabled);
+		jMove.setEnabled(enabled);
 		jResizeBeforeUpload.setEnabled(enabled);
 		jResizeToDefault.setEnabled(enabled);
 		jResizeToForce.setEnabled(enabled);
@@ -450,6 +459,10 @@ public class AlbumInspector extends JPanel
 
 	public void textUpdate(DocumentEvent e) {
 		Document doc = e.getDocument();
+
+        if (album == null) {
+            return;
+        }
 
 		if (doc == jResizeToWidth.getDocument()) {
 			try {

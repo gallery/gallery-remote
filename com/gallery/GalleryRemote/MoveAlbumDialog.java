@@ -38,30 +38,25 @@ import java.util.Vector;
  * @author paour
  * @created October 18, 2002
  */
-public class NewAlbumDialog extends javax.swing.JDialog
+public class MoveAlbumDialog extends JDialog
 		implements ActionListener {
-	public final static String MODULE = "NewAlbum";
-
+	public final static String MODULE = "MoveAlbum";
 
 	Gallery gallery = null;
-	Album defaultAlbum = null;
+	Album album = null;
 	Album rootAlbum = null;
 
 	JLabel jLabel2 = new JLabel();
 	JLabel jLabel3 = new JLabel();
 	JLabel jLabel4 = new JLabel();
 	JLabel jLabel5 = new JLabel();
-	JTextField jTitle = new JTextField();
-	JTextField jName = new JTextField();
-	JTextArea jDescription = new JTextArea();
 	JLabel jLabel1 = new JLabel();
-	JLabel jGalleryName = new JLabel();
+	JLabel jAlbumName = new JLabel();
 	JComboBox jAlbum = null;
 	JPanel jPanel2 = new JPanel();
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
 	GridLayout gridLayout1 = new GridLayout();
-	private String newAlbumName;
 
 
 	/**
@@ -71,11 +66,11 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	 * @param gallery      Description of Parameter
 	 * @param defaultAlbum Description of Parameter
 	 */
-	public NewAlbumDialog(Frame owner, Gallery gallery, Album defaultAlbum) {
+	public MoveAlbumDialog(Frame owner, Gallery gallery, Album album) {
 		super(owner, true);
 
 		this.gallery = gallery;
-		this.defaultAlbum = defaultAlbum;
+		this.album = album;
 
 		jbInit();
 
@@ -96,57 +91,31 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
+		albums.remove(album);
 
 		jAlbum = new JComboBox(albums);
 		jAlbum.setFont(UIManager.getFont("Label.font"));
 
-		if (defaultAlbum == null) {
-			jAlbum.setSelectedItem(rootAlbum);
-		} else {
-			jAlbum.setSelectedItem(defaultAlbum);
-		}
-
 		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
 		jCancel.setActionCommand("Cancel");
-		jDescription.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray));
-		jDescription.setLineWrap(true);
-		jDescription.setRows(2);
-		jAlbum.setFont(UIManager.getFont("Label.font"));
-		jGalleryName.setText(GRI18n.getString(MODULE, "createAlbm", new String[] { gallery.toString() }));
-		jName.setFont(UIManager.getFont("Label.font"));
-		jName.setToolTipText(GRI18n.getString(MODULE, "albmNameTip"));
 		jOk.setText(GRI18n.getString(MODULE, "OK"));
 		jOk.setActionCommand("OK");
-		jTitle.setFont(UIManager.getFont("Label.font"));
+		jAlbumName.setText(GRI18n.getString(MODULE, "moveAlbm", new String[] {album.getName()}));
 
-		gridLayout1.setColumns(2);
-		gridLayout1.setHgap(5);
 		jLabel2.setText(GRI18n.getString(MODULE, "parentAlbm"));
-		jLabel3.setText(GRI18n.getString(MODULE, "albmTitle"));
-		jLabel4.setText(GRI18n.getString(MODULE, "albmName"));
-		jLabel5.setText(GRI18n.getString(MODULE, "albmDesc"));
-		jPanel2.setLayout(gridLayout1);
 
 		this.getContentPane().add(jLabel2, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 4));
-		this.getContentPane().add(jLabel3, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(2, 5, 0, 5), 0, 4));
-		this.getContentPane().add(jLabel4, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(2, 5, 0, 5), 0, 4));
-		this.getContentPane().add(jLabel5, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 3));
-		this.getContentPane().add(jTitle, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
-		this.getContentPane().add(jName, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
-		this.getContentPane().add(jDescription, new GridBagConstraints(1, 4, 1, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
-		this.getContentPane().add(jGalleryName, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
+		this.getContentPane().add(jAlbumName, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 		this.getContentPane().add(jAlbum, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
-		this.getContentPane().add(jPanel2, new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0
+		this.getContentPane().add(jPanel2, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+
+		jPanel2.setLayout(gridLayout1);
+		gridLayout1.setColumns(2);
+		gridLayout1.setHgap(5);
 		jPanel2.add(jCancel, null);
 		jPanel2.add(jOk, null);
 
@@ -169,31 +138,10 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		if (command.equals("Cancel")) {
 			setVisible(false);
 		} else if (command.equals("OK")) {
-			Album a = new Album(gallery);
-			a.setName(jName.getText());
-			a.setTitle(jTitle.getText());
-			a.setCaption(jDescription.getText());
-
-			Album selectedAlbum = (Album) jAlbum.getSelectedItem();
-			if (selectedAlbum == rootAlbum) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Selected root album");
-				a.setParentAlbum(null);
-			} else {
-				a.setParentAlbum(selectedAlbum);
-			}
-
-			newAlbumName = gallery.newAlbum(a, ((MainFrame) this.getOwner()).jStatusBar);
-
-			if (newAlbumName == null) {
-				newAlbumName = jName.getText();
-			}
+			album.moveAlbumTo(((MainFrame) this.getOwner()).jStatusBar, (Album) jAlbum.getSelectedItem());
 
 			setVisible(false);
 		}
-	}
-
-	public String getNewAlbumName() {
-		return newAlbumName;
 	}
 }
 

@@ -128,6 +128,24 @@ public class Album extends Picture implements ListModel, Serializable {
 		}
 	}
 
+	public void moveAlbumTo(StatusUpdate su, Album newParent) {
+		if (getGallery().getComm(su).hasCapability(GalleryCommCapabilities.CAPA_MOVE_ALBUM)) {
+			if (su == null) {
+				su = new StatusUpdateAdapter() {
+				};
+			}
+
+			try {
+				gallery.getComm(su).moveAlbum(su, this, newParent, false);
+
+				gallery.fetchAlbums(su);
+			} catch (RuntimeException e) {
+				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support move-album");
+				Log.logException(Log.LEVEL_INFO, MODULE, e);
+			}
+		}
+	}
+
 	/**
 	 * Sets the server auto resize dimension.
 	 * 

@@ -126,7 +126,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				resetUIState();
 			}
 		} else if (cmd.equals("Delete")) {
-			Object[] params = {g.getStUrlString()};
+			Object[] params = {g.getGalleryUrl("")};
 			int n = JOptionPane.showConfirmDialog(this, GRI18n.getString(MODULE, "delConfirm", params),
 					GRI18n.getString(MODULE, "delete"),
 					JOptionPane.WARNING_MESSAGE,

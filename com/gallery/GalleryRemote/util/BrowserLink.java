@@ -21,7 +21,7 @@ public class BrowserLink extends JLabel implements MouseListener {
 	public BrowserLink() {
 		super();
 
-		setForeground(Color.BLUE);
+		setForeground(Color.blue);
 
 		addMouseListener(this);
 	}
@@ -29,7 +29,7 @@ public class BrowserLink extends JLabel implements MouseListener {
 	public BrowserLink(String url) {
 		super(url);
 
-		setForeground(Color.BLUE);
+		setForeground(Color.blue);
 
 		addMouseListener(this);
 	}

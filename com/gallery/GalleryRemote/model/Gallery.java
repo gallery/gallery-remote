@@ -106,7 +106,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 				a.getTitle(), a.getCaption(), false);
 
 		// refresh album list asynchronously
-		fetchAlbums(su);
+        fetchAlbums(su);
+        //getComm(su).fetchAlbums(su, false);
 
 		return newAlbumName;
 	}
@@ -148,11 +149,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (albumList.size() > 0) {
 			selectedAlbum = (Album) this.albumList.get(0);
 		}
+
 		if (oldList != null) {
 			for (Iterator i = oldList.iterator(); i.hasNext();) {
 				Album a = (Album) i.next();
 
-				Log.log(Log.LEVEL_TRACE, MODULE, a.toString());
+				//Log.log(Log.LEVEL_TRACE, MODULE, a.toString());
 				if (!a.getPicturesList().isEmpty()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Album " + a + " had pictures");
 					int j = albumList.indexOf(a);
@@ -165,8 +167,22 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			}
 		}
 
+        refreshRootAlbums();
+
 		notifyListeners();
 	}
+
+    public void refreshRootAlbums() {
+        rootAlbums.clear();
+
+        for (Iterator it = albumList.iterator(); it.hasNext();) {
+            Album album = (Album) it.next();
+
+            if (album.getParentAlbum() == null) {
+                rootAlbums.add(album);
+            }
+        }
+    }
 
 	/**
 	 * Adds an album to the gallery and selects the first one added.

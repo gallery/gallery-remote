@@ -162,7 +162,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 		this.getContentPane().setLayout(gridBagLayout1);
 
-		jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
+		jLabel1.setFont(UIManager.getFont("Label.font").deriveFont(Font.BOLD, 16));
 		jLabel1.setText(GRI18n.getString(MODULE, "newVerAvail"));
 		jLabel2.setText(GRI18n.getString(MODULE, "ver"));
 		jLabel3.setText(GRI18n.getString(MODULE, "relDate"));
@@ -173,14 +173,14 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 		jDate.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jDate.setEditable(false);
-		jDate.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jDate.setFont(UIManager.getFont("Label.font"));
 		if (which.releaseDate != null) jDate.setText(DateFormat.getDateInstance().format(which.releaseDate));
 
 		jBrowse.setText(GRI18n.getString(MODULE, "openInBrwsr"));
 		jBrowse.addActionListener(this);
 
 		jReleaseNotes.setEditable(false);
-		jReleaseNotes.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jReleaseNotes.setFont(UIManager.getFont("Label.font"));
 		jReleaseNotes.setPreferredSize(new Dimension(520, 250));
 		jReleaseNotes.setMargin(new Insets(0, 3, 3, 3));
 		if (which.releaseNotes != null) jReleaseNotes.setText(which.releaseNotes);
@@ -195,7 +195,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 		jVersion.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jVersion.setEditable(false);
-		jVersion.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jVersion.setFont(UIManager.getFont("Label.font"));
 		if (which.version != null) jVersion.setText(which.version);
 
 		this.getContentPane().add(jLabel1, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0

@@ -705,7 +705,7 @@ public class MainFrame extends javax.swing.JFrame
 		NewAlbumDialog dialog = new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
 		final String newAlbumName = dialog.getNewAlbumName();
 
-		if (newAlbumName == null) {
+		if (newAlbumName == null || newAlbumName.length() == 0) {
 			return;
 		}
 
@@ -726,8 +726,8 @@ public class MainFrame extends javax.swing.JFrame
 				Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbumName);
 
 				TreePath path = getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName));
-				jAlbumTree.expandPath(path);
-				jAlbumTree.makeVisible(path);
+				//jAlbumTree.expandPath(path);
+				//jAlbumTree.makeVisible(path);
 				jAlbumTree.setSelectionPath(path);
 
 				//jAlbumTree.repaint();

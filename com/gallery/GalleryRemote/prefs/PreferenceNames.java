@@ -49,6 +49,14 @@ public interface PreferenceNames {
 	public static final String PROXY_USERNAME = "proxyUsername";
 	public static final String PROXY_PASSWORD = "proxyPassword";
 
+	// Slideshow
+	public static final String SLIDESHOW_PROGRESS = "slideshowProgressLocation";
+	public static final String SLIDESHOW_CAPTION = "slideshowCaptionLocation";
+	public static final String SLIDESHOW_EXTRA = "slideshowExtraLocation";
+	public static final String SLIDESHOW_URL = "slideshowUrlLocation";
+	public static final String SLIDESHOW_DELAY = "slideshowDelay";
+	public static final String SLIDESHOW_LOWREZ = "slideshowLowRez";
+
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";

@@ -454,7 +454,7 @@ public class PictureInspector extends JPanel
 
 					JTextArea field = new JTextArea();
 					extraTextAreas.put(name, field);
-					field.setFont(new java.awt.Font("SansSerif", 0, 11));
+					field.setFont(UIManager.getFont("Label.font"));
 					add(field, new GridBagConstraints(1, FIRST_ROW_EXTRA + i, 1, 1, 1.0, 1.0
 							, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0));
 					field.getDocument().addDocumentListener(this);

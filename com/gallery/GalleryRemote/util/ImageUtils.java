@@ -83,6 +83,10 @@ public class ImageUtils {
 	public static boolean deferredStopUsingJpegtran = false;
 
 	public static ImageIcon load(String filename, Dimension d, int usage) {
+		return load(filename, d, usage, false);
+	}
+
+	public static ImageIcon load(String filename, Dimension d, int usage, boolean ignoreFailure) {
 		if (!new File(filename).exists()) {
 			return null;
 		}
@@ -131,7 +135,7 @@ public class ImageUtils {
 				//int exitValue = exec(cmdline.toString());
 				int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
-				if (exitValue != 0 && !imIgnoreErrorCode) {
+				if (exitValue != 0 && !imIgnoreErrorCode && !ignoreFailure) {
 					if (exitValue != -1) {
 						// don't kill IM if it's just an InterruptedException
 						Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
@@ -504,6 +508,7 @@ public class ImageUtils {
 			}
 
 			in.close();
+			out.flush();
 			out.close();
 
 			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND,

@@ -43,7 +43,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 	Picture currentPicture = null;
 	PreviewLoader previewLoader = new PreviewLoader();
 	int previewCacheSize = 10;
-	//JPanel imagePane = new ImageContentPane();
+	boolean ignoreIMFailure = false;
 
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
@@ -99,7 +99,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
 					if (async) {
-						previewLoader.loadPreview(picture);
+						previewLoader.loadPreview(picture, true);
 					} else {
 						//currentImage = getSizedIconForce(picture);
 						//currentPicture = picture;
@@ -120,12 +120,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 				r = ImageUtils.load(
 						f.getPath(),
 						getRootPane().getSize(),
-						ImageUtils.PREVIEW);
+						ImageUtils.PREVIEW, ignoreIMFailure);
 			} else {
 				r = ImageUtils.load(
 						picture.getSource().getPath(),
 						getRootPane().getSize(),
-						ImageUtils.PREVIEW);
+						ImageUtils.PREVIEW, ignoreIMFailure);
 			}
 			Log.log(Log.LEVEL_TRACE, MODULE, "Adding to cache: " + picture);
 			imageIcons.put(picture, r);
@@ -136,8 +136,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 	class ImageContentPane extends JPanel {
 		public void paintComponent(Graphics g) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Painting ImageContentPane...");
-			Log.logStack(Log.LEVEL_TRACE, MODULE);
+			//Log.log(Log.LEVEL_TRACE, MODULE, "Painting ImageContentPane...");
+			//Log.logStack(Log.LEVEL_TRACE, MODULE);
 
 			g.clearRect(0, 0, getSize().width, getSize().height);
 
@@ -155,6 +155,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 	class PreviewLoader implements Runnable {
 		Picture picture;
 		boolean stillRunning = false;
+		boolean notify = false;
 
 		public void run() {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Starting " + picture);
@@ -171,14 +172,22 @@ public class PreviewFrame extends javax.swing.JFrame {
 			}
 			stillRunning = false;
 
-			imageLoaded(tmpImage, tmpPicture);
+			if (notify) {
+				imageLoaded(tmpImage, tmpPicture);
+				notify = false;
+			}
+			
 			Log.log(Log.LEVEL_TRACE, MODULE, "Ending");
 		}
 
-		public void loadPreview(Picture picture) {
+		public void loadPreview(Picture picture, boolean notify) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "loadPreview " + picture);
 
 			this.picture = picture;
+
+			if (notify) {
+				this.notify = true;
+			}
 
 			if (!stillRunning) {
 				stillRunning = true;
