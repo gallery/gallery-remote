@@ -38,6 +38,9 @@
 		<copy file="${src}/rar_icon_32.gif" todir="${build}" />
 		<copy file="${src}/rar_icon_16.gif" todir="${build}" />
 		<copy file="${src}/com/gallery/GalleryRemote/prefs/panes.properties" todir="${build}/com/gallery/GalleryRemote/prefs" />
+		<copy todir="${build}/com/gallery/GalleryRemote/resources">
+			<fileset dir="${src}/com/gallery/GalleryRemote/resources"></fileset>
+		</copy>
 	</target>
 
 	<target name="run" depends="compile"
