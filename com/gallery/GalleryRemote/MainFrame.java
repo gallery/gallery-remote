@@ -268,9 +268,9 @@ public class MainFrame extends javax.swing.JFrame
 					
 					setStatus( "Select a Gallery URL and click Fetch Albums..." );
 				} else if ( mAlbum.sizePictures() > 0 ) {
-					int selN = picturesList.getSelectedIndices().length;
-					
 					pictureInspector.setPictures( picturesList.getSelectedValues() );
+					
+					int selN = picturesList.getSelectedIndices().length;
 					
 					if ( sel == -1 ) {
 						setStatus( mAlbum.sizePictures() + " pictures / "
@@ -315,9 +315,8 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void updateAlbumCombo() {
 		album.setModel( currentGallery );
-		Log.log(Log.TRACE, MODULE, "updateAlbumCombo");
+		
 		if (album.getModel().getSize() < 1) {
-			Log.log(Log.TRACE, MODULE, "no albums");
 			album.setEnabled( false );
 			picturesList.setEnabled( false );
 			
