@@ -42,6 +42,6 @@ goto :EOF
 
 :make_cvsbuild
 rem For this to work unattended, the cvs must be checked out with the read-only account-less method
-cvs update
+cvs update -d
 call :make_zip
 goto :EOF

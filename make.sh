@@ -44,7 +44,7 @@ make_source_zip()
 make_cvsbuild()
 {
 	# For this to work unattended, the cvs must be checked out with the read-only account-less method
-	cvs update;
+	cvs update -d;
 	make_zip;
 }
 

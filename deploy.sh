@@ -1,4 +1,4 @@
-cvs update;
+cvs update -d;
 
 . make.sh zip;
 
