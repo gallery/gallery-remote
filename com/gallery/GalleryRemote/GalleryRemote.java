@@ -45,14 +45,8 @@ public abstract class GalleryRemote {
 	 */
 	public PropertiesFile defaults = null;
 
-	/** User properties, saved in a local file. */
+	/** User properties, saved in a local file */
 	public PropertiesFile properties = null;
-
-	/** Override properties, used by applets to force
-	 * properties to certain values, without allowing the
-	 * user to change them.
-	 */
-	public PropertiesFile override = null;
 
 	protected Applet applet = null;
 
@@ -80,10 +74,7 @@ public abstract class GalleryRemote {
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
 	public static int ACCELERATOR_MASK = 0;
 
-	protected GalleryRemote() {
-		defaults = new PropertiesFile("defaults");
-		defaults.setReadOnly();
-	}
+	protected GalleryRemote() {}
 
 	protected void initializeGR() {
 		try {
@@ -92,25 +83,7 @@ public abstract class GalleryRemote {
 			} catch (Exception e) {
 			}
 
-			if (isAppletMode()) {
-				if (properties == null) {
-					properties = new PropertiesFile(defaults);
-				} else {
-					properties = new PropertiesFile(properties);
-				}
-
-				properties.setReadOnly();
-
-				for (Enumeration e = properties.propertyNames(); e.hasMoreElements();) {
-					String name = (String) e.nextElement();
-					String value = applet.getParameter("gro_" + name);
-
-					if (value != null) {
-						Log.log(Log.LEVEL_TRACE, MODULE, "Override: " + name + "= |" + value + "|");
-						properties.setProperty(name, value);
-					}
-				}
-			}
+			createProperties();
 
 			// log system properties
 			new GalleryProperties(System.getProperties()).logProperties(Log.LEVEL_INFO, "SysProps");
@@ -196,6 +169,41 @@ public abstract class GalleryRemote {
 
 		// todo: this should not remain this way
 		System.setProperty("apple.awt.fakefullscreen", "true");
+	}
+
+	public void createProperties() {
+		defaults = new PropertiesFile("defaults");
+		defaults.setReadOnly();
+	}
+
+	public PropertiesFile createAppletOverride(PropertiesFile p) {
+		PropertiesFile override;
+
+		if (p == null) {
+			override = new PropertiesFile(defaults);
+		} else {
+			override = new PropertiesFile(p);
+		}
+
+		override.setReadOnly();
+
+		return override;
+	}
+
+	public PropertiesFile getAppletOverrides(PropertiesFile p, String prefix) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "Getting applet parameters for prefix " + prefix);
+
+		for (Enumeration e = p.propertyNames(); e.hasMoreElements();) {
+			String name = (String) e.nextElement();
+			String value = applet.getParameter(prefix + name);
+
+			if (value != null) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Override: " + name + "= |" + value + "|");
+				p.setProperty(name, value);
+			}
+		}
+
+		return p;
 	}
 
 	protected void loadIcons() {

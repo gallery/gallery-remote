@@ -104,7 +104,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		return jStatusBar;
 	}
 
-	public ListModel getGalleries() {
+	public DefaultComboBoxModel getGalleries() {
 		return galleries;
 	}
 
@@ -112,6 +112,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 	public void setInProgress(boolean inProgress) {
 		jUpload.setEnabled(!inProgress);
+		jAdd.setEnabled(!inProgress);
 		jPicturesList.setEnabled(!inProgress);
 
 		this.inProgress = inProgress;

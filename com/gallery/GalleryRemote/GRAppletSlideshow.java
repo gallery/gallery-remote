@@ -6,6 +6,7 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.prefs.SlideshowPanel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -32,6 +33,7 @@ import HTTPClient.Cookie;
 public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener {
 	public static final String MODULE = "AppletSlideshow";
 	JButton jStart;
+	SlideshowPanel jSlidePanel;
 
 	public GRAppletSlideshow() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -53,12 +55,27 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	}
 
 	protected void jbInit() {
+		getContentPane().setLayout(new GridBagLayout());
+
 		jStart = new JButton(GRI18n.getString(MODULE, "Start"));
-		jStart.addActionListener(this);
-		getContentPane().add("Center", jStart);
 
 		jStatusBar = new StatusBar(75);
-		getContentPane().add("South", jStatusBar);
+
+		jSlidePanel = new SlideshowPanel();
+
+		getContentPane().add(jSlidePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		getContentPane().add(new JLabel(GRI18n.getString(MODULE, "Disabled")), new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		getContentPane().add(jStart, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
+		getContentPane().add(jStatusBar, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+
+		jSlidePanel.buildUI();
+		jSlidePanel.remove(jSlidePanel.spacerPanel);
+		jSlidePanel.readProperties(GalleryRemote._().properties);
+		jStart.addActionListener(this);
 
 		jPicturesList = new DroppableList();
 	}
@@ -70,6 +87,20 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		jSlidePanel.writeProperties(GalleryRemote._().properties);
+
 		new SlideshowFrame().start(getCurrentAlbum().getPicturesList());
 	}
+
+	public void shutdown() {
+		if (hasStarted) {
+			jSlidePanel.writeProperties(GalleryRemote._().properties);
+			GalleryRemote._().properties.write();
+
+			GalleryRemote.shutdownInstance();
+		}
+
+		super.shutdown();
+	}
+
 }

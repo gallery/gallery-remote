@@ -33,7 +33,7 @@ public class ProxyPanel extends PreferencePanel implements ActionListener, Prefe
 		return icon;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 		jUseProxy.setSelected(props.getBooleanProperty(USE_PROXY));
 
 		jProxyHost.setText(props.getProperty(PROXY_HOST));
@@ -44,7 +44,7 @@ public class ProxyPanel extends PreferencePanel implements ActionListener, Prefe
 		resetUIState();
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 		props.setBooleanProperty(USE_PROXY, jUseProxy.isSelected());
 
 		props.setProperty(PROXY_HOST, jProxyHost.getText());

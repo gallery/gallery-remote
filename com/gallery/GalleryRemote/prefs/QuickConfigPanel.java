@@ -39,10 +39,10 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 		return false;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 	}
 
 	public void buildUI() {
@@ -91,8 +91,8 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 
 							Gallery g = Gallery.readFromProperties(newProps, 99, GalleryRemote._().getCore().getMainStatusUpdate(), false);
 							if (g != null) {
-								g.setPrefsIndex(mainFrame.galleries.getSize());
-								mainFrame.galleries.addElement(g);
+								g.setPrefsIndex(GalleryRemote._().getCore().getGalleries().getSize());
+								GalleryRemote._().getCore().getGalleries().addElement(g);
 								newGallery = true;
 
 								overridden.append("<li>").append(g.toString()).append("</li>");

@@ -1,8 +1,11 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,6 +17,32 @@ public class GalleryRemoteMini extends GalleryRemote {
 		super.initializeGR();
 		
 		Log.setMaxLevel();
+	}
+
+	public void createProperties() {
+		super.createProperties();
+
+		getAppletOverrides(defaults, "GRDefault_");
+
+		File f = new File(System.getProperty("user.home")
+				+ File.separator + ".GalleryRemote"
+				+ File.separator);
+
+		f.mkdirs();
+
+		File pf = new File(f, "GalleryRemoteApplet.properties");
+
+		if (!pf.exists()) {
+			try {
+				pf.createNewFile();
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+		}
+
+		properties = new PropertiesFile(defaults, pf.getPath());
+
+		properties = getAppletOverrides(createAppletOverride(properties), "GROverride_");
 	}
 
 	public Frame getMainFrame() {

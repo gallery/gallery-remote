@@ -70,7 +70,6 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 				try {
 					PreferencePanel pp = (PreferencePanel) Class.forName(className).newInstance();
 
-					pp.setMainFrame((MainFrame) getOwner());
 					pp.setDialog(this);
 					pp.buildUI();
 

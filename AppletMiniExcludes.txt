@@ -1,4 +1,9 @@
-com/gallery/GalleryRemote/prefs/*Panel*
+com/gallery/GalleryRemote/prefs/FilePanel*
+com/gallery/GalleryRemote/prefs/GeneralPanel*
+com/gallery/GalleryRemote/prefs/ProxyPanel*
+com/gallery/GalleryRemote/prefs/QuickConfigPanel*
+com/gallery/GalleryRemote/prefs/UploadgPanel*
+com/gallery/GalleryRemote/prefs/URLPanel*
 com/gallery/GalleryRemote/prefs/*Dialog*
 
 com/gallery/GalleryRemote/util/MacOSXAdapter*

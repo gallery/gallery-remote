@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.util.GRI18n;
 
@@ -43,10 +44,10 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		return false;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 	}
 
 	public void buildUI() {
@@ -81,11 +82,11 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		jPanel1.add(jDetails, null);
 		jScrollPane1.getViewport().add(jGalleries, null);
 
-		jGalleries.setModel(mainFrame.galleries);
+		jGalleries.setModel(GalleryRemote._().getCore().getGalleries());
 		jGalleries.setCellRenderer(new GalleryCellRenderer());
 		jGalleries.addListSelectionListener(this);
 
-		if (mainFrame.galleries.getSize() > 0) {
+		if (GalleryRemote._().getCore().getGalleries().getSize() > 0) {
 			jGalleries.setSelectedIndex(0);
 		}
 
@@ -109,9 +110,9 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 
 			if (ged.isOK()) {
 				//jGalleries.repaint();
-				int i = mainFrame.galleries.getIndexOf(g);
-				mainFrame.galleries.removeElementAt(i);
-				mainFrame.galleries.insertElementAt(g, i);
+				int i = GalleryRemote._().getCore().getGalleries().getIndexOf(g);
+				GalleryRemote._().getCore().getGalleries().removeElementAt(i);
+				GalleryRemote._().getCore().getGalleries().insertElementAt(g, i);
 
 				Gallery.uncacheAmbiguousUrl();
 			}
@@ -124,7 +125,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, newG);
 
 			if (ged.isOK()) {
-				mainFrame.galleries.addElement(newG);
+				GalleryRemote._().getCore().getGalleries().addElement(newG);
 				jGalleries.setSelectedValue(newG, true);
 
 				Gallery.uncacheAmbiguousUrl();
@@ -139,15 +140,15 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 					JOptionPane.YES_NO_OPTION);
 
 			if (n == JOptionPane.YES_OPTION) {
-				mainFrame.removeGallery(g);
+				((MainFrame) GalleryRemote._().getCore()).removeGallery(g);
 
 				Gallery.uncacheAmbiguousUrl();
 			}
 		} else if (cmd.equals("GalleryEditorDialog")) {
 			Gallery newG = (Gallery) e.getSource();
 
-			if (mainFrame.galleries.getIndexOf(newG) == -1) {
-				mainFrame.galleries.addElement(newG);
+			if (GalleryRemote._().getCore().getGalleries().getIndexOf(newG) == -1) {
+				GalleryRemote._().getCore().getGalleries().addElement(newG);
 				jGalleries.setSelectedValue(newG, true);
 			}
 

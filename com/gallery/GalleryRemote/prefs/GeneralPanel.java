@@ -60,7 +60,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		return icon;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 		showThumbnails.setSelected(props.getBooleanProperty(SHOW_THUMBNAILS));
 		thumbnailWidth.setText("" + (int) props.getDimensionProperty(THUMBNAIL_SIZE).getWidth());
 		thumbnailHeight.setText("" + (int) props.getDimensionProperty(THUMBNAIL_SIZE).getHeight());
@@ -105,7 +105,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		jLocale.setSelectedIndex(selectedLocale);
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 		props.setBooleanProperty(SHOW_THUMBNAILS, showThumbnails.isSelected());
 
 		try {

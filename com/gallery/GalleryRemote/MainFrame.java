@@ -1822,7 +1822,7 @@ public class MainFrame extends JFrame
 		return jStatusBar;
 	}
 
-	public ListModel getGalleries() {
+	public DefaultComboBoxModel getGalleries() {
 		return galleries;
 	}
 

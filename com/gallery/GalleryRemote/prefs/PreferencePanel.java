@@ -12,7 +12,6 @@ import javax.swing.*;
 public abstract class PreferencePanel extends JPanel {
 	protected JPanel panel = new JPanel();
 	protected boolean hasBeenRead = false;
-	MainFrame mainFrame = null;
 	JDialog dialog = null;
 
 	public abstract JLabel getIcon();
@@ -23,23 +22,19 @@ public abstract class PreferencePanel extends JPanel {
 
 	public abstract void buildUI();
 
-	public void readPropertiesFirst(GalleryProperties props) {
+	public void readPropertiesFirst(PropertiesFile props) {
 		if (!hasBeenRead) {
 			hasBeenRead = true;
 			readProperties(props);
 		}
 	}
 
-	public abstract void readProperties(GalleryProperties props);
+	public abstract void readProperties(PropertiesFile props);
 
-	public abstract void writeProperties(GalleryProperties props);
+	public abstract void writeProperties(PropertiesFile props);
 
 	public boolean hasBeenRead() {
 		return hasBeenRead;
-	}
-
-	public void setMainFrame(MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
 	}
 
 	public void setDialog(JDialog dialog) {

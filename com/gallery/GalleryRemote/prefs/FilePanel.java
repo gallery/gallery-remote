@@ -25,14 +25,14 @@ public class FilePanel extends PreferencePanel implements ActionListener, Prefer
 		return icon;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 		m_loadLastMRU.setSelected(props.getLoadLastMRU());
 		m_numberOfMRU.setSelectedIndex(props.getIntProperty(MRU_COUNT) - 1);
 
 		resetUIState();
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 		props.setLoadLastMRU(m_loadLastMRU.isSelected());
 		props.setMRUCountProperty(m_numberOfMRU.getSelectedIndex() + 1);
 	}

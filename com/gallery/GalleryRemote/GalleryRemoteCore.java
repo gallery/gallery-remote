@@ -29,7 +29,7 @@ public interface GalleryRemoteCore {
 	public void addPictures(File[] files, int index, boolean select);
 	public void addPictures(Picture[] pictures, int index, boolean select);
 
-	public ListModel getGalleries();
+	public DefaultComboBoxModel getGalleries();
 	public Album getCurrentAlbum();
 
 	public JList getPicturesList();

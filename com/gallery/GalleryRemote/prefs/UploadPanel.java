@@ -46,7 +46,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		return icon;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 		resizeBeforeUpload.setSelected(props.getBooleanProperty(RESIZE_BEFORE_UPLOAD));
 		if (new Dimension(0, 0).equals(props.getDimensionProperty(RESIZE_TO))) {
 			// use default dimension
@@ -65,7 +65,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		resetUIState();
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 		props.setBooleanProperty(RESIZE_BEFORE_UPLOAD, resizeBeforeUpload.isSelected());
 		if (resizeBeforeUpload.isSelected()) {
 			Dimension d = null;

@@ -38,7 +38,7 @@ public class PropertiesFile extends GalleryProperties {
 	protected boolean written = false;
 	protected String mFilename;
 	protected boolean readOnly = false;
-
+	
 	/**
 	 * Constructor for the PropertiesFile object
 	 * 
@@ -78,7 +78,12 @@ public class PropertiesFile extends GalleryProperties {
 	 * Overrides default method to track dirty state
 	 */
 	public Object setProperty(String name, String value) {
+		if (readOnly && defaults!= null) {
+			defaults.setProperty(name, value);
+		}
+
 		written = false;
+
 		if (value == null) {
 			return remove(name);
 		} else {
@@ -122,6 +127,10 @@ public class PropertiesFile extends GalleryProperties {
 		checkRead();
 
 		return super.propertyNames();
+	}
+
+	public boolean isOverridden(String name) {
+		return readOnly && get(name) != null;
 	}
 
 	protected void checkRead() {

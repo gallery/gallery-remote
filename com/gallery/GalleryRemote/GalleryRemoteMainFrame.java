@@ -4,6 +4,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.awt.*;
 
 /**
@@ -14,8 +15,12 @@ import java.awt.*;
 public class GalleryRemoteMainFrame extends GalleryRemote {
 	private MainFrame mainFrame = null;
 
-	protected GalleryRemoteMainFrame() {
-		super();
+	public void createProperties() {
+		super.createProperties();
+
+		if (isAppletMode()) {
+			getAppletOverrides(defaults, "GRDefault_");
+		}
 
 		File f = new File(System.getProperty("user.home")
 				+ File.separator + ".GalleryRemote"
@@ -23,8 +28,21 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 
 		f.mkdirs();
 
-		properties = new PropertiesFile(defaults, f.getPath()
-				+ File.separator + "GalleryRemote");
+		File pf = new File(f, "GalleryRemote.properties");
+
+		if (!pf.exists()) {
+			try {
+				pf.createNewFile();
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+		}
+
+		properties = new PropertiesFile(defaults, pf.getPath());
+
+		if (isAppletMode()) {
+			properties = getAppletOverrides(createAppletOverride(properties), "GROverride_");
+		}
 	}
 
 	protected void initializeGR() {

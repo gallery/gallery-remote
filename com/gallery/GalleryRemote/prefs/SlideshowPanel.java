@@ -1,12 +1,9 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.border.*;
 
@@ -23,7 +20,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 	JPanel delayPanel = new JPanel();
 	JPanel locationPanel = new JPanel();
-	JPanel spacerPanel = new JPanel();
+	public JPanel spacerPanel = new JPanel();
 	JLabel delay = new JLabel();
 	JTextField jDelay = new JTextField();
 	JLabel delayHelp = new JLabel();
@@ -43,7 +40,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		return icon;
 	}
 
-	public void readProperties(GalleryProperties props) {
+	public void readProperties(PropertiesFile props) {
 		jProgress.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_PROGRESS)));
 		jCaption.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_CAPTION)));
 		jExtra.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_EXTRA)));
@@ -51,9 +48,16 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 		jLowRez.setSelected(props.getBooleanProperty(SLIDESHOW_LOWREZ));
 		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
+
+		jProgress.setEnabled(! props.isOverridden(SLIDESHOW_PROGRESS));
+		jCaption.setEnabled(! props.isOverridden(SLIDESHOW_CAPTION));
+		jExtra.setEnabled(! props.isOverridden(SLIDESHOW_EXTRA));
+		jUrl.setEnabled(! props.isOverridden(SLIDESHOW_URL));
+		jLowRez.setEnabled(! props.isOverridden(SLIDESHOW_LOWREZ));
+		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
 	}
 
-	public void writeProperties(GalleryProperties props) {
+	public void writeProperties(PropertiesFile props) {
 		props.setIntProperty(SLIDESHOW_PROGRESS, ((LocationItem) jProgress.getSelectedItem()).id);
 		props.setIntProperty(SLIDESHOW_CAPTION, ((LocationItem) jCaption.getSelectedItem()).id);
 		props.setIntProperty(SLIDESHOW_EXTRA, ((LocationItem) jExtra.getSelectedItem()).id);
@@ -95,14 +99,25 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		performancePanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Performance"));
 
 		delay.setText(GRI18n.getString(MODULE, "delay"));
-		delayHelp.setText(GRI18n.getString(MODULE, "delayHelp"));
+		delay.setLabelFor(jDelay);
+		delay.setToolTipText(GRI18n.getString(MODULE, "delayHelp"));
+		delayHelp.setText(GRI18n.getString(MODULE, "delayDesc"));
 
 		progress.setText(GRI18n.getString(MODULE, "progress"));
+		progress.setLabelFor(jProgress);
+		progress.setToolTipText(GRI18n.getString(MODULE, "progressHelp"));
 		caption.setText(GRI18n.getString(MODULE, "caption"));
+		caption.setLabelFor(jCaption);
+		caption.setToolTipText(GRI18n.getString(MODULE, "captionHelp"));
 		extra.setText(GRI18n.getString(MODULE, "extra"));
+		extra.setLabelFor(jExtra);
+		extra.setToolTipText(GRI18n.getString(MODULE, "extraHelp"));
 		url.setText(GRI18n.getString(MODULE, "url"));
+		url.setLabelFor(jUrl);
+		url.setToolTipText(GRI18n.getString(MODULE, "urlHelp"));
 
 		jLowRez.setText(GRI18n.getString(MODULE, "lowRez"));
+		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lewRezHelp"));
 
 		this.add(delayPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
@@ -141,7 +156,6 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		locationPanel.add(jUrl,    new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-
 	}
 
 	class LocationItem {
