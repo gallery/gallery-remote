@@ -41,181 +41,347 @@ public class PropertiesFile extends Properties
 	protected Rectangle mainBounds = null;
 	protected Rectangle previewBounds = null;
 
-	public PropertiesFile( PropertiesFile p )
-	{
+
+	/**
+	 *  Constructor for the PropertiesFile object
+	 *
+	 *@param  p  Description of Parameter
+	 */
+	public PropertiesFile( PropertiesFile p ) {
 		super( p );
 	}
 
-	public PropertiesFile( String name )
-	{
+
+	/**
+	 *  Constructor for the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 */
+	public PropertiesFile( String name ) {
 		super();
 
 		setFilename( name );
 	}
 
-	public PropertiesFile( PropertiesFile p, String name )
-	{
+
+	/**
+	 *  Constructor for the PropertiesFile object
+	 *
+	 *@param  p     Description of Parameter
+	 *@param  name  Description of Parameter
+	 */
+	public PropertiesFile( PropertiesFile p, String name ) {
 		super( p );
 
 		setFilename( name );
 	}
 
-	public File getCurrentDirectory()
-	{
+
+	/**
+	 *  Gets the currentDirectory attribute of the PropertiesFile object
+	 *
+	 *@return    The currentDirectory value
+	 */
+	public File getCurrentDirectory() {
 		String currentDirectory = (String) getProperty( "filedialogPath" );
-		if ( currentDirectory != null )
-		{
+		if ( currentDirectory != null ) {
 			return new File( currentDirectory );
-		}
-		else
-		{
+		} else {
 			return null;
 		}
 	}
 
-	public void setCurrentDirectory( File currentDirectory )
-	{
+
+	/**
+	 *  Sets the currentDirectory attribute of the PropertiesFile object
+	 *
+	 *@param  currentDirectory  The new currentDirectory value
+	 */
+	public void setCurrentDirectory( File currentDirectory ) {
 		setProperty( "filedialogPath", currentDirectory.getPath() );
 	}
 
-	public boolean getShowPreview()
-	{
+
+	/**
+	 *  Gets the showPreview attribute of the PropertiesFile object
+	 *
+	 *@return    The showPreview value
+	 */
+	public boolean getShowPreview() {
 		return getBooleanProperty( "showPreview" );
 	}
 
-	public void setShowPreview( boolean showPreview )
-	{
+
+	/**
+	 *  Sets the showPreview attribute of the PropertiesFile object
+	 *
+	 *@param  showPreview  The new showPreview value
+	 */
+	public void setShowPreview( boolean showPreview ) {
 		setProperty( "showPreview", String.valueOf( showPreview ) );
 	}
 
-	public boolean getShowPath()
-	{
+
+	/**
+	 *  Gets the showPath attribute of the PropertiesFile object
+	 *
+	 *@return    The showPath value
+	 */
+	public boolean getShowPath() {
 		return getBooleanProperty( "showPath" );
 	}
 
-	public void setShowPath( boolean showPath )
-	{
+
+	/**
+	 *  Sets the showPath attribute of the PropertiesFile object
+	 *
+	 *@param  showPath  The new showPath value
+	 */
+	public void setShowPath( boolean showPath ) {
 		setProperty( "showPath", String.valueOf( showPath ) );
 	}
 
-	public boolean getShowThumbnails()
-	{
+
+	/**
+	 *  Gets the showThumbnails attribute of the PropertiesFile object
+	 *
+	 *@return    The showThumbnails value
+	 */
+	public boolean getShowThumbnails() {
 		return getBooleanProperty( "showThumbnails" );
 	}
 
-	public void setShowThumbnails( boolean showThumbnails )
-	{
+
+	/**
+	 *  Sets the showThumbnails attribute of the PropertiesFile object
+	 *
+	 *@param  showThumbnails  The new showThumbnails value
+	 */
+	public void setShowThumbnails( boolean showThumbnails ) {
 		setProperty( "showThumbnails", String.valueOf( showThumbnails ) );
 	}
 
-	public Dimension getThumbnailSize()
-	{
-		if ( thumbnailSize == null )
-		{
+
+	/**
+	 *  Gets the thumbnailSize attribute of the PropertiesFile object
+	 *
+	 *@return    The thumbnailSize value
+	 */
+	public Dimension getThumbnailSize() {
+		if ( thumbnailSize == null ) {
 			thumbnailSize = getDimensionProperty( "thumbnailSize" );
 		}
 
 		return thumbnailSize;
 	}
 
-	public Rectangle getMainBounds()
-	{
-		if ( mainBounds == null )
-		{
+
+	/**
+	 *  Gets the mainBounds attribute of the PropertiesFile object
+	 *
+	 *@return    The mainBounds value
+	 */
+	public Rectangle getMainBounds() {
+		if ( mainBounds == null ) {
 			mainBounds = getRectangleProperty( "mainBounds" );
 		}
 
 		return mainBounds;
 	}
 
-	public Rectangle getPreviewBounds()
-	{
-		if ( previewBounds == null )
-		{
+
+	/**
+	 *  Gets the previewBounds attribute of the PropertiesFile object
+	 *
+	 *@return    The previewBounds value
+	 */
+	public Rectangle getPreviewBounds() {
+		if ( previewBounds == null ) {
 			previewBounds = getRectangleProperty( "previewBounds" );
 		}
 
 		return previewBounds;
 	}
 
-	public void setThumbnailSize( Dimension size )
-	{
+
+	/**
+	 *  Sets the mainBounds attribute of the PropertiesFile object
+	 *
+	 *@param  r  The new mainBounds value
+	 */
+	public void setMainBounds( Rectangle r ) {
+		setRectangleProperty( "mainBounds", r );
+	}
+
+
+	/**
+	 *  Sets the previewBounds attribute of the PropertiesFile object
+	 *
+	 *@param  r  The new previewBounds value
+	 */
+	public void setPreviewBounds( Rectangle r ) {
+		setRectangleProperty( "previewBounds", r );
+	}
+
+
+	/**
+	 *  Sets the thumbnailSize attribute of the PropertiesFile object
+	 *
+	 *@param  size  The new thumbnailSize value
+	 */
+	public void setThumbnailSize( Dimension size ) {
 		thumbnailSize = size;
 		//write it to disk
 	}
 
-	public Dimension getDimensionProperty( String name )
-	{
+
+	/**
+	 *  Gets the dimensionProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The dimensionProperty value
+	 */
+	public Dimension getDimensionProperty( String name ) {
 		String value = getProperty( name );
 
-		int i;
-		if ( value != null && ( i = value.indexOf( "," ) ) != -1 )
-		{
-			String width = value.substring( 0, i - 1 );
-			String height = value.substring( i + 1, value.length() - 1 );
-
-			return new Dimension( Integer.parseInt( width ), Integer.parseInt( height ) );
-		}
-		else
-		{
+		StringTokenizer st;
+		if ( value != null && ( st = new StringTokenizer( value, "," ) ).countTokens() == 2 ) {
+			return new Dimension( Integer.parseInt( st.nextToken() ),
+					Integer.parseInt( st.nextToken() ) );
+		} else {
 			System.out.println( "Parameter " + name + " is missing or malformed (should be width,height)" );
 			return null;
 		}
 	}
 
-	public Rectangle getRectangleProperty( String name )
-	{
+
+	/**
+	 *  Sets the dimensionProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  The new dimensionProperty value
+	 *@param  d     The new dimensionProperty value
+	 */
+	public void setDimensionProperty( String name, Dimension d ) {
+		setProperty( name, ( (int) d.getWidth() ) + "," + ( (int) d.getHeight() ) );
+	}
+
+
+	/**
+	 *  Gets the rectangleProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The rectangleProperty value
+	 */
+	public Rectangle getRectangleProperty( String name ) {
 		String value = getProperty( name );
 
 		StringTokenizer st;
-		if ( value != null && ( st = new StringTokenizer( value, "," ) ).countTokens() == 4 )
-		{
+		if ( value != null && ( st = new StringTokenizer( value, "," ) ).countTokens() == 4 ) {
 			return new Rectangle( Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ) );
-		}
-		else
-		{
+		} else {
 			System.out.println( "Parameter " + name + " is missing or malformed (should be x,y,width,height)" );
 			return null;
 		}
 	}
 
-	public boolean getBooleanProperty( String name )
-	{
+
+	/**
+	 *  Sets the rectangleProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  The new rectangleProperty value
+	 *@param  rect  The new rectangleProperty value
+	 */
+	public void setRectangleProperty( String name, Rectangle rect ) {
+		setProperty( name, ( (int) rect.getX() ) + "," + ( (int) rect.getY() ) + ","
+				 + ( (int) rect.getWidth() ) + "," + ( (int) rect.getHeight() ) );
+	}
+
+
+	/**
+	 *  Gets the booleanProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The booleanProperty value
+	 */
+	public boolean getBooleanProperty( String name ) {
 		String booleanS = getProperty( name );
-		try
-		{
+		try {
 			return Boolean.valueOf( booleanS ).booleanValue();
-		} catch (Exception e)
-		{
-			throw new NumberFormatException("Parameter " + name + " is missing or maformed (should be true or false)");
+		} catch ( Exception e ) {
+			throw new NumberFormatException( "Parameter " + name + " is missing or maformed (should be true or false)" );
 		}
 	}
 
-	public int getIntProperty( String name )
-	{
+
+	/**
+	 *  Gets the intProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The intProperty value
+	 */
+	public int getIntProperty( String name ) {
 		String intS = getProperty( name );
-		try
-		{
+		try {
 			return Integer.valueOf( intS ).intValue();
-		} catch (Exception e)
-		{
-			throw new NumberFormatException("Parameter " + name + " is missing or maformed (should be an integer value");
+		} catch ( Exception e ) {
+			throw new NumberFormatException( "Parameter " + name + " is missing or maformed (should be an integer value" );
 		}
 	}
 
-	public String getProperty( String name )
-	{
-		if ( !read )
-		{
-			try
-			{
+
+	/**
+	 *  Sets the intProperty attribute of the PropertiesFile object
+	 *
+	 *@param  name   The new intProperty value
+	 *@param  value  The new intProperty value
+	 */
+	public void setIntProperty( String name, int value ) {
+		setProperty( name, String.valueOf( (int) value ) );
+	}
+
+
+	/**
+	 *  Gets the base64Property attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The base64Property value
+	 */
+	public String getBase64Property( String name ) {
+		String base64S = getProperty( name );
+		try {
+			return Base64.decode( base64S );
+		} catch ( Error e ) {
+			throw new NumberFormatException( "Parameter " + name + " is missing or maformed (should be a Base64 value" );
+		}
+	}
+
+
+	/**
+	 *  Set a property as a Base64 value
+	 *
+	 *@param  name   Name of the property
+	 *@param  value  The value of the property
+	 */
+	public void setBase64Property( String name, String value ) {
+		setProperty( name, Base64.encode( value ) );
+	}
+
+
+	/**
+	 *  Read a property as a string, read the file in first
+	 * so you don't have to explicitly read the file in beforehand.
+	 *
+	 *@param  name  Name of the property
+	 *@return       The property value
+	 */
+	public String getProperty( String name ) {
+		if ( !read ) {
+			try {
 				read();
-			}
-			catch ( FileNotFoundException e )
-			{
+			} catch ( FileNotFoundException e ) {
 				e.printStackTrace();
 			}
 		}
@@ -223,44 +389,47 @@ public class PropertiesFile extends Properties
 		return super.getProperty( name );
 	}
 
-	public Object setProperty( String name, String value )
-	{
+
+	/**
+	 *  Overrides default method to track dirty state
+	 */
+	public Object setProperty( String name, String value ) {
 		written = false;
 
 		return super.setProperty( name, value );
 	}
 
-	public synchronized void setFilename( String name )
-	{
+
+	/**
+	 *  Change the filename of the file (why would you want to do that?)
+	 *
+	 *@param  name  The new filename value
+	 */
+	public synchronized void setFilename( String name ) {
 		mFilename = name + ".properties";
 	}
 
-	public synchronized void read() throws FileNotFoundException
-	{
-		if ( mFilename != null )
-		{
+
+	/**
+	 *  Read the property file from disk
+	 *
+	 *@exception  FileNotFoundException  Description of Exception
+	 */
+	public synchronized void read()
+		throws FileNotFoundException {
+		if ( mFilename != null ) {
 			FileInputStream fileIn = null;
-			try
-			{
+			try {
 				fileIn = new FileInputStream( mFilename );
 				load( fileIn );
-			}
-			catch ( IOException e )
-			{
+			} catch ( IOException e ) {
 				//e.printStackTrace();
 				write();
-			}
-			finally
-			{
-				try
-				{
+			} finally {
+				try {
 					fileIn.close();
-				}
-				catch ( IOException e2 )
-				{
-				}
-				catch ( NullPointerException e3 )
-				{
+				} catch ( IOException e2 ) {
+				} catch ( NullPointerException e3 ) {
 				}
 			}
 		}
@@ -269,31 +438,23 @@ public class PropertiesFile extends Properties
 		written = true;
 	}
 
-	public synchronized void write()
-	{
-		if ( !written )
-		{
+
+	/**
+	 *  Write the property file to disk
+	 */
+	public synchronized void write() {
+		if ( !written ) {
 			FileOutputStream fileOut = null;
-			try
-			{
+			try {
 				fileOut = new FileOutputStream( mFilename );
 				store( fileOut, null );
-			}
-			catch ( IOException e )
-			{
+			} catch ( IOException e ) {
 				e.printStackTrace();
-			}
-			finally
-			{
-				try
-				{
+			} finally {
+				try {
 					fileOut.close();
-				}
-				catch ( IOException e2 )
-				{
-				}
-				catch ( NullPointerException e3 )
-				{
+				} catch ( IOException e2 ) {
+				} catch ( NullPointerException e3 ) {
 				}
 			}
 		}
