@@ -393,6 +393,7 @@ public class MainFrame extends JFrame
 				}*/
 			} else {
 				((GRApplet) GalleryRemote._().getApplet()).hasShutdown();
+				GalleryRemote.shutdownInstance();
 			}
 		}
 	}

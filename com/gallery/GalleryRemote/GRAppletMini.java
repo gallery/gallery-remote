@@ -8,6 +8,7 @@ import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.DialogUtil;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.applet.Applet;
 import java.io.FilePermission;
 import java.io.File;
@@ -31,11 +32,11 @@ import HTTPClient.Cookie;
 public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionListener {
 	public static final String MODULE = "AppletMini";
 
-	JButton jUpload = new JButton();
-	JButton jAdd = new JButton();
-	StatusBar jStatusBar = new StatusBar();
-	JScrollPane jScrollPane = new JScrollPane();
-	DroppableList jPicturesList = new DroppableList();
+	JButton jUpload;
+	JButton jAdd;
+	StatusBar jStatusBar;
+	JScrollPane jScrollPane;
+	DroppableList jPicturesList;
 
 	private DefaultComboBoxModel galleries = null;
 	private Album album = null;
@@ -53,45 +54,53 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 			return;
 		}
 
-		jbInit();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// update the look and feel
+				SwingUtilities.updateComponentTreeUI(GRAppletMini.this);
 
-		galleries = new DefaultComboBoxModel();
-		gallery = new Gallery(jStatusBar);
-		String url = getParameter("gr_url");
-		String cookieName = getParameter("gr_cookie_name");
-		String cookieValue = getParameter("gr_cookie_value");
-		String cookieDomain = getParameter("gr_cookie_domain");
-		String cookiePath = getParameter("gr_cookie_path");
-		String albumName = getParameter("gr_album");
+				jbInit();
 
-		if (cookieDomain == null || cookieDomain.length() < 1) {
-			try {
-				cookieDomain = new URL(url).getHost();
-			} catch (Exception e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				galleries = new DefaultComboBoxModel();
+				gallery = new Gallery(jStatusBar);
+				String url = getParameter("gr_url");
+				String cookieName = getParameter("gr_cookie_name");
+				String cookieValue = getParameter("gr_cookie_value");
+				String cookieDomain = getParameter("gr_cookie_domain");
+				String cookiePath = getParameter("gr_cookie_path");
+				String albumName = getParameter("gr_album");
+
+				if (cookieDomain == null || cookieDomain.length() < 1) {
+					try {
+						cookieDomain = new URL(url).getHost();
+					} catch (Exception e) {
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					}
+				}
+
+				gallery.setType(Gallery.TYPE_STANDALONE);
+				gallery.setStUrlString(url);
+				gallery.cookieLogin = true;
+				galleries.addElement(gallery);
+
+				jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+				jPicturesList.setInputMap(JComponent.WHEN_FOCUSED, null);
+				jPicturesList.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, null);
+				jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
+
+				CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
+
+				gallery.fetchAlbums(jStatusBar, false);
+
+				album = gallery.getAlbumByName(albumName);
+
+				jPicturesList.setModel(album);
+
+				ImageUtils.deferredTasks();
+
+				jStatusBar.setStatus(GRI18n.getString(MODULE, "DefMessage"));
 			}
-		}
-
-		gallery.setType(Gallery.TYPE_STANDALONE);
-		gallery.setStUrlString(url);
-		gallery.cookieLogin = true;
-		galleries.addElement(gallery);
-
-		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
-		jPicturesList.setInputMap(JComponent.WHEN_FOCUSED, null);
-		jPicturesList.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, null);
-		jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
-		//jPicturesList.setFixedCellHeight();
-
-		CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
-
-		gallery.fetchAlbums(jStatusBar, false);
-
-		album = gallery.getAlbumByName(albumName);
-
-		jPicturesList.setModel(album);
-
-		ImageUtils.deferredTasks();
+		});
 	}
 
 	public void start() {
@@ -101,9 +110,13 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 		GalleryRemote._().getCore().shutdown();
 	}
 
-	public void shutdown() {}
+	public void shutdown() {
+		GalleryRemote.shutdownInstance();
+	}
 
-	public void shutdown(boolean shutdownOs) {}
+	public void shutdown(boolean shutdownOs) {
+		shutdown();
+	}
 
 	public void flushMemory() {}
 
@@ -147,12 +160,20 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 	}
 
 	private void jbInit() {
-		jUpload.setText("Upload");
-		jAdd.setText("Add pictures");
-		GridLayout gridLayout1 = new GridLayout();
+		jUpload = new JButton();
+		jAdd = new JButton();
+		jStatusBar = new StatusBar();
+		jScrollPane = new JScrollPane();
+		jPicturesList = new DroppableList();
+
+		jScrollPane.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "pictures")));
+		jScrollPane.getViewport().add(jPicturesList, null);
+
+		jUpload.setText(GRI18n.getString(MODULE, "Upload"));
+		jAdd.setText(GRI18n.getString(MODULE, "Add"));
+
 		JPanel jButtonPanel = new JPanel();
-		jButtonPanel.setLayout(gridLayout1);
-		gridLayout1.setHgap(5);
+		jButtonPanel.setLayout(new GridLayout(1, 2, 5, 0));
 		jButtonPanel.add(jAdd);
 		jButtonPanel.add(jUpload);
 
@@ -163,7 +184,6 @@ public class GRAppletMini extends JApplet implements GalleryRemoteCore, ActionLi
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.getContentPane().add(jScrollPane,    new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
-		jScrollPane.getViewport().add(jPicturesList, null);
 
 		jAdd.addActionListener(this);
 		jUpload.addActionListener(this);

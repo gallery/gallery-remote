@@ -158,6 +158,10 @@ public abstract class GalleryRemote {
 		return singleton;
 	}
 
+	public static void shutdownInstance() {
+		singleton = null;
+	}
+
 	// Main entry point
 	public static void main(String[] args) {
 		setProperties();

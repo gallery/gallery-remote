@@ -1,5 +1,7 @@
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.util.DialogUtil;
+
 import javax.swing.*;
 import java.applet.Applet;
 import java.io.FilePermission;
@@ -18,9 +20,18 @@ public class GRApplet extends JApplet {
 	}
 
 	public void start() {
-		GalleryRemote.createInstance(true, this);
+		GalleryRemote.setProperties();
 
-		GalleryRemote.main(null);
+		if (GalleryRemote.createInstance(true, this) == null) {
+			JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this),
+					"Only one instance of the Gallery Remote can run at the same time...",
+					"Error", JOptionPane.ERROR_MESSAGE);
+
+			return;
+		}
+
+		// update the look and feel
+		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	public void stop() {

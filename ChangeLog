@@ -1,3 +1,11 @@
+2003-01-20  Pierre-Luc Paour <gallery@paour.com> (1.3-b18)
+
+	* Fixed some threading problems in slideshow.
+	* Implemented preference to download the lowrez version
+	  of an image in slideshow.
+	* i18n of applet.
+	* Fixed problems when two applets are running concurrently
+
 2003-01-16  Pierre-Luc Paour <gallery@paour.com> (1.3-b17)
 
 	* More refactoring to make the mini applet more modular.

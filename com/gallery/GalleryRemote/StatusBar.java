@@ -56,22 +56,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		data[level].active = true;
 
 		if (raiseLevel(level)) {
-			jProgress.setMinimum(minValue);
-			jProgress.setValue(minValue);
-			jProgress.setMaximum(maxValue);
-
-			try {
-				jProgress.setIndeterminate(undetermined);
-			} catch (Throwable t) {
-				// we end up here if the method is not implemented and we don't have indeterminate progress
-				// bars: come up with our own...
-				if (undetermined) {
-					data[level].undeterminedThread = new UndeterminedThread(this, level);
-					data[level].undeterminedThread.start();
-				}
-			}
-
-			jStatus.setText(message);
+			resetUIState();
 		}
 	}
 
@@ -79,7 +64,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		data[level].value = value;
 
 		if (level == currentLevel && data[level].active) {
-			jProgress.setValue(value);
+			resetUIState();
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
@@ -91,8 +76,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		data[level].value = value;
 
 		if (level == currentLevel && data[level].active) {
-			jProgress.setValue(value);
-			jProgress.setMaximum(maxValue);
+			resetUIState();
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
@@ -103,7 +87,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		data[level].message = message;
 
 		if (level == currentLevel && data[level].active) {
-			jStatus.setText(message);
+			resetUIState();
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
@@ -142,24 +126,9 @@ public class StatusBar extends JPanel implements StatusUpdate {
 			}
 
 			if (currentLevel == -1) {
-				jStatus.setText(message);
-
-				jProgress.setValue(jProgress.getMinimum());
-
-				try {
-					jProgress.setIndeterminate(false);
-				} catch (Throwable t) {
-				}
+				resetUIState();
 			} else {
-				jProgress.setMinimum(data[currentLevel].minValue);
-				jProgress.setMaximum(data[currentLevel].maxValue);
-				jProgress.setValue(data[currentLevel].value);
-				try {
-					jProgress.setIndeterminate(data[currentLevel].undetermined);
-				} catch (Throwable t) {
-				}
-
-				jStatus.setText(data[currentLevel].message);
+				resetUIState();
 			}
 		}
 
@@ -190,6 +159,39 @@ public class StatusBar extends JPanel implements StatusUpdate {
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		add(jStatus, new GridBagConstraints(0, 0, 1, 1, 0.75, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+	}
+
+	private void resetUIState() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if (currentLevel >= 0) {
+					jProgress.setMinimum(data[currentLevel].minValue);
+					jProgress.setValue(data[currentLevel].value);
+					jProgress.setMaximum(data[currentLevel].maxValue);
+
+					try {
+						jProgress.setIndeterminate(data[currentLevel].undetermined);
+					} catch (Throwable t) {
+						// we end up here if the method is not implemented and we don't have indeterminate progress
+						// bars: come up with our own...
+						if (data[currentLevel].undetermined) {
+							data[currentLevel].undeterminedThread = new UndeterminedThread(StatusBar.this, currentLevel);
+							data[currentLevel].undeterminedThread.start();
+						}
+					}
+
+					jStatus.setText(data[currentLevel].message);
+				} else {
+					jStatus.setText("");
+					jProgress.setValue(jProgress.getMinimum());
+
+					try {
+						jProgress.setIndeterminate(false);
+					} catch (Throwable t) {
+					}
+				}
+			}
+		});
 	}
 
 	class StatusLevelData {

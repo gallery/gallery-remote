@@ -17,3 +17,5 @@ com/gallery/GalleryRemote/MoveAlbumDialog*
 com/gallery/GalleryRemote/NewAlbumDialog*
 com/gallery/GalleryRemote/ThumbnailCache*
 com/gallery/GalleryRemote/Update*
+
+rar_*

@@ -82,6 +82,5 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		} catch (Exception e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
-
 	}
 }

@@ -14,15 +14,20 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.event.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import HTTPClient.TransferListener;
 
 /**
  * Created by IntelliJ IDEA.
  * User: paour
  * Date: Dec 9, 2003
  */
-public class SlideshowFrame extends PreviewFrame implements Runnable, PreferenceNames {
+public class SlideshowFrame extends PreviewFrame implements Runnable, PreferenceNames, CancellableTransferListener {
 	public static final String MODULE = "SlideFrame";
 	List pictures = null;
+	List wantDownloaded = Collections.synchronizedList(new ArrayList());
 	int sleepTime = 3000;
 	boolean running = false;
 	boolean shutdown = false;
@@ -36,6 +41,9 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		setUndecorated(true);
 		setResizable(false);
 
+		initComponents();
+		listener = this;
+
 		ignoreIMFailure = true;
 
 		try {
@@ -47,33 +55,39 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			}
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "Switching to full-screen mode");
-			//gd.setFullScreenWindow(this);
+			gd.setFullScreenWindow(this);
 
-			DialogUtil.maxSize(this);
-			show();
+			//DialogUtil.maxSize(this);
+			//setBounds(600, 100, 500, 500);
+			//show();
 		} catch (NoSuchMethodError e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
 			show();
 		}
 
-		initComponents();
+		// todo: this is a hack to prevent painting problems (the status bar paints
+		// on top of the slide show
+		JFrame mainFrame = GalleryRemote._().getMainFrame();
+		if (mainFrame != null) {
+			mainFrame.setVisible(false);
+		}
 	}
 
 	public void initComponents() {
 		previewCacheSize = 3;
 		addMouseListener(new MouseAdapter() {
 			public void mousePressed(java.awt.event.MouseEvent mouseEvent) {
-				next();
+				nextAsync();
 			}
 		});
 
 		addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if (e.getWheelRotation() > 0) {
-					next();
+					nextAsync();
 				} else {
-					previous();
+					previousAsync();
 				}
 			}
 		});
@@ -92,11 +106,11 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 						break;
 					case KeyEvent.VK_LEFT:
 					case KeyEvent.VK_UP:
-						previous();
+						previousAsync();
 						break;
 					case KeyEvent.VK_RIGHT:
 					case KeyEvent.VK_DOWN:
-						next();
+						nextAsync();
 						break;
 					case KeyEvent.VK_SPACE:
 						if (running) {
@@ -104,6 +118,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 						} else {
 							new Thread(SlideshowFrame.this).start();
 						}
+
+						updateProgress(currentPicture);
 
 						break;
 				}
@@ -225,11 +241,32 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 	}
 
+	private void previousAsync() {
+		new Thread() {
+			public void run() {
+				previous();
+			}
+		}.start();
+	}
+
+	private void nextAsync() {
+		new Thread() {
+			public void run() {
+				next();
+			}
+		}.start();
+	}
+
 	public boolean next() {
 		int index = -1;
 
 		if (loadPicture != null) {
 			index = pictures.indexOf(loadPicture);
+
+			if (wantDownloaded.contains(loadPicture)) {
+				// we no longer want the current picture
+				wantDownloaded.remove(loadPicture);
+			}
 		}
 
 		index++;
@@ -240,10 +277,16 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Next picture");
 
-		displayPicture((Picture) pictures.get(index), false);
+		// display next picture
+		Picture picture = (Picture) pictures.get(index);
+		wantDownloaded.add(picture);
+		updateProgress(picture);
+		displayPicture(picture, false);
 
-		if (++index < pictures.size() && imageIcons.get(pictures.get(index)) == null) {
-			previewLoader.loadPreview((Picture) pictures.get(index), false);
+		// and cache the one after it
+		if (++index < pictures.size() && (imageIcons.get(picture = (Picture) pictures.get(index))) == null) {
+			wantDownloaded.add(picture);
+			previewLoader.loadPreview(picture, false);
 		}
 
 		return true;
@@ -254,6 +297,9 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		if (loadPicture == null) {
 			return false;
+		} else if (wantDownloaded.contains(loadPicture)) {
+			// we no longer want the current picture
+			wantDownloaded.remove(loadPicture);
 		}
 
 		index = pictures.indexOf(loadPicture);
@@ -266,10 +312,16 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Previous picture");
 
-		displayPicture((Picture) pictures.get(index), false);
+		// display previous picture
+		Picture picture = (Picture) pictures.get(index);
+		wantDownloaded.add(picture);
+		updateProgress(picture);
+		displayPicture(picture, false);
 
-		if (--index > 0 && imageIcons.get(pictures.get(index)) == null) {
-			previewLoader.loadPreview((Picture) pictures.get(index), false);
+		// and cache the one after it
+		if (--index > 0 && (imageIcons.get(picture = (Picture) pictures.get(index))) == null) {
+			wantDownloaded.add(picture);
+			previewLoader.loadPreview(picture, false);
 		}
 
 		return true;
@@ -280,27 +332,24 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		gd.setFullScreenWindow(null);
 
 		super.hide();
+
+		JFrame mainFrame = GalleryRemote._().getMainFrame();
+		if (mainFrame != null) {
+			mainFrame.setVisible(true);
+		}
 	}
-
-	/*public void paint(Graphics g) {
-		super.paint(g);
-
-		Rectangle r = getContentPane().getBounds();
-
-		String caption = currentPicture.getCaption();
-
-		int width = g.getFontMetrics().stringWidth(caption);
-		int height = g.getFontMetrics().getDescent();
-
-		g.drawString(caption, (r.width - width) / 2, r.height - height);
-	}*/
 
 	public void imageLoaded(ImageIcon image, Picture picture) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + picture + " finished loading");
 
+		if (picture != loadPicture) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + loadPicture + ": ignoring");
+			return;
+		}
+
 		if (picture != null) {
 			jCaption.setText(picture.getCaption());
-			jProgress.setText((pictures.indexOf(picture) + 1) + "/" + pictures.size() + (running?"":" (paused)"));
+			updateProgress(picture);
 			String extraFields = picture.getExtraFieldsString();
 			if (extraFields != null) {
 				jExtra.setText(extraFields);
@@ -308,5 +357,37 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		super.imageLoaded(image, picture);
+	}
+
+	private void updateProgress(Picture picture) {
+		StringBuffer sb = new StringBuffer();
+
+		sb.append(pictures.indexOf(picture) + 1).append("/").append(pictures.size());
+
+		if (imageIcons.get(picture) == null) {
+			sb.append(" ").append("(downloading)");
+		} else if (! running) {
+			sb.append(" ").append("(paused)");
+		}
+
+		jProgress.setText(sb.toString());
+	}
+
+	public boolean dataTransferred(int transferred, int overall, double kbPerSecond, Picture p) {
+		if (! wantDownloaded.contains(p) || shutdown) {
+			return false;
+		}
+
+		Graphics g = getGraphics();
+
+		if (transferred == overall) {
+			g.setColor(getContentPane().getBackground());
+		} else {
+			g.setColor(Color.yellow);
+		}
+
+		g.drawLine(0, 0, getWidth() * transferred / overall, 0);
+
+		return true;
 	}
 }

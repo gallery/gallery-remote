@@ -37,6 +37,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import HTTPClient.TransferListener;
+
 /**
  * Interface to common image manipulation routines
  * 
@@ -433,18 +435,19 @@ public class ImageUtils {
 		}
 	}
 
-	public static File download(Picture p, Dimension d, StatusUpdate su) {
+	public static File download(Picture p, Dimension d, StatusUpdate su, CancellableTransferListener tl) {
 		URL pictureUrl = null;
 		//Dimension pictureDimension = null;
 		File f;
 		String filename;
 		LocalInfo fullInfo = getLocalFilenameForPicture(p, true);
+		boolean stop = false;
 
 		if (p.getSizeResized() != null) {
 			LocalInfo resizedInfo = getLocalFilenameForPicture(p, false);
 
-			if (d.width > p.getSizeResized().width || d.height > p.getSizeResized().height
-					|| fullInfo.file.exists()) {
+			if ((d.width > p.getSizeResized().width || d.height > p.getSizeResized().height
+					|| fullInfo.file.exists()) && ! GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SLIDESHOW_LOWREZ)) {
 				pictureUrl = p.getUrlFull();
 				//pictureDimension = p.getSizeFull();
 				f = fullInfo.file;
@@ -465,49 +468,65 @@ public class ImageUtils {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Going to download " + pictureUrl);
 
 		try {
-			URLConnection conn = pictureUrl.openConnection();
-			int size = conn.getContentLength();
-
-			if (f.exists()) {
-				Log.log(Log.LEVEL_TRACE, MODULE, filename + " already existed: no need to download it again");
-				return f;
-			}
-
-			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
-					GRI18n.getString(MODULE, "down.start", new Object[]{filename}), false);
-
-			Log.log(Log.LEVEL_TRACE, MODULE, "Saving to " + f.getPath());
-
-			BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
-			BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
-
-			byte[] buffer = new byte[2000];
-			int l;
-			int dl = 0;
-			long t = -1;
-			long start = System.currentTimeMillis();
-			while ((l = in.read(buffer)) != -1) {
-				out.write(buffer, 0, l);
-				dl += l;
-
-				long now = System.currentTimeMillis();
-				if (t != -1 && now - t > 1000) {
-					su.updateProgressValue(StatusUpdate.LEVEL_BACKGROUND, dl);
-					su.updateProgressStatus(StatusUpdate.LEVEL_BACKGROUND,
-							GRI18n.getString(MODULE, "down.progress",
-									new Object[]{filename, new Integer(dl / 1024), new Integer(size / 1024), new Integer((int) (dl / (now - start) * 1000 / 1024))}));
-
-					t = now;
+			// don't download the same picture twice
+			synchronized(p) {
+				if (f.exists()) {
+					Log.log(Log.LEVEL_TRACE, MODULE, filename + " already existed: no need to download it again");
+					return f;
 				}
 
-				if (t == -1) {
-					t = now;
+				URLConnection conn = pictureUrl.openConnection();
+				int size = conn.getContentLength();
+
+				su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
+						GRI18n.getString(MODULE, "down.start", new Object[]{filename}), false);
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Saving to " + f.getPath());
+
+				BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
+				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
+
+				byte[] buffer = new byte[2048];
+				int l;
+				int dl = 0;
+				long t = -1;
+				long start = System.currentTimeMillis();
+				while (!stop && (l = in.read(buffer)) != -1) {
+					out.write(buffer, 0, l);
+					dl += l;
+
+					long now = System.currentTimeMillis();
+					if (t != -1 && now - t > 1000) {
+						su.updateProgressValue(StatusUpdate.LEVEL_BACKGROUND, dl);
+						int speed = (int) (dl / (now - start) * 1000 / 1024);
+						su.updateProgressStatus(StatusUpdate.LEVEL_BACKGROUND,
+								GRI18n.getString(MODULE, "down.progress",
+										new Object[]{filename, new Integer(dl / 1024), new Integer(size / 1024), new Integer(speed)}));
+
+						t = now;
+					}
+
+					if (t == -1) {
+						t = now;
+					}
+
+					if (tl != null) {
+						stop = !tl.dataTransferred(dl, size, 0, p);
+					}
+				}
+
+				in.close();
+				out.flush();
+				out.close();
+
+				if (stop) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Stopped downloading " + p);
+					f.delete();
+				} else {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Downloaded " + p + " (" + dl + ") in " + (System.currentTimeMillis() - start)/1000 + "s");
+					toDelete.add(f);
 				}
 			}
-
-			in.close();
-			out.flush();
-			out.close();
 
 			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND,
 					GRI18n.getString(MODULE, "down.end", new Object[]{filename}));
@@ -516,6 +535,10 @@ public class ImageUtils {
 			f = null;
 
 			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Downloading failed");
+		}
+
+		if (stop) {
+			return null;
 		}
 
 		return f;
