@@ -554,6 +554,8 @@ public class MainFrame extends javax.swing.JFrame
 		Log.log(Log.INFO, MODULE, "fetchAlbums starting");
 		
 		currentGallery.fetchAlbums( this );
+		
+		updateAlbumCombo();
 	}
 	
 	public void newAlbum() {
@@ -860,7 +862,9 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Fetch" ) ) {
 			if (currentGallery.getComm().isLoggedIn()) {
 				currentGallery.getComm().logOut();
-				mAlbum.clearPictures();
+				if (mAlbum != null) {
+					mAlbum.clearPictures();
+				}
 				mAlbum = null;
 				
 				resetUIState();
