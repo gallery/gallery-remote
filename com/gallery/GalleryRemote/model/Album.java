@@ -46,7 +46,11 @@ public class Album extends Picture implements ListModel
 	 * LOCAL STORAGE
 	 */
 	Vector pictures = new Vector();
-
+	
+	/* -------------------------------------------------------------------------
+	 * WORKAROUND FOR LIST SELECTION BUG
+	 */
+	ListSelectionModel listSelectionModel;
 	
 	/* -------------------------------------------------------------------------
 	 * SERVER INFO
@@ -63,6 +67,8 @@ public class Album extends Picture implements ListModel
 	boolean canDeleteFrom = true;
 	boolean canDeleteThisAlbum = true;
 	boolean canCreateSubAlbum = true;
+	
+	boolean hasFetchedInfo = false;
 	
 	
 	/* -------------------------------------------------------------------------
@@ -84,8 +90,20 @@ public class Album extends Picture implements ListModel
 	 *
 	 *@param  gallery  The new gallery
 	 */
-	public void getAlbumProperties( StatusUpdate su ) {
-		gallery.getComm().albumInfo( su, this );
+	public void fetchAlbumProperties( StatusUpdate su ) {
+		if ( su == null ) {
+			su = new StatusUpdateAdapter(){};
+		}
+		
+		if ( ! hasFetchedInfo )
+		{
+			try {
+				gallery.getComm().albumInfo( su, this, false );
+			} catch (RuntimeException e) {
+				Log.log(Log.INFO, MODULE, "Server probably doesn't support album-info");
+				Log.logException(Log.INFO, MODULE, e);
+			}
+		}
 	}
 	
 	/**
@@ -95,6 +113,7 @@ public class Album extends Picture implements ListModel
 	 */
 	public void setServerAutoResize( int autoResize ) {
 		this.autoResize = autoResize;
+		hasFetchedInfo = true;
 	}
 	
 	/**
@@ -207,6 +226,11 @@ public class Album extends Picture implements ListModel
 	 *@param  n  item number of the picture to remove
 	 */
 	public void removePicture( int n ) {
+		// deselect pictures pictures at the end of the list so they will
+		// not cause selection problems (the JList doesn't synch properly
+		// the selection to the model)
+		listSelectionModel.removeSelectionInterval(sizePictures() - 1, sizePictures() - 1);
+
 		pictures.remove( n );
 
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, n, n );
@@ -226,6 +250,11 @@ public class Album extends Picture implements ListModel
 		int min, max;
 		min = max = indices[0];
 		
+		// deselect pictures pictures at the end of the list so they will
+		// not cause selection problems (the JList doesn't synch properly
+		// the selection to the model)
+		listSelectionModel.removeSelectionInterval(sizePictures() - 1 - indices.length, sizePictures() - 1);
+
 		for ( int i = indices.length - 1; i >= 0; i-- ) {
 			pictures.remove( indices[i] );
 			if (indices[i] > max) max = indices[i];
@@ -369,6 +398,10 @@ public class Album extends Picture implements ListModel
 		}
 		
 		return ret.toString();
+	}
+	
+	public void setListSelectionModel(ListSelectionModel listSelectionModel) {
+		this.listSelectionModel = listSelectionModel;
 	}
 	
 	
