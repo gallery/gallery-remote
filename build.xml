@@ -279,6 +279,11 @@
 		<postchangelog/>
 	</target>
 
+	<target name="create_keystore" description="Creates a self-signed certificate">
+		<echo message="use 'gallery' as password for the other scripts to work" />
+		<exec executable="keytool -genkey -alias gallery -dname &quot;CN=Pierre-Luc Paour, OU=Gallery, O=Gallery, L=Unknown, ST=Unknown, C=Unknown&quot; -keypass gallery -storepass gallery" />
+	</target>
+
     <target name="nightly" depends="zip, installer_macosx, applet_zip"
         description="Run all the tasks for a nightly build" />
 </project>
