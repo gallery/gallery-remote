@@ -50,7 +50,7 @@ th {
 <p>Right now, GR is pretty monolythic. Before I can open development to other 
   developers, I need to make the code more modular. This has already started, 
   but any and all suggestions are welcome.</p>
-<h2>Feature list</h2>
+<h2>Feature list (Gallery Remote)</h2>
 <table width="100%" border="1">
   <tr> 
     <th>Name</th>
@@ -91,13 +91,193 @@ th {
     <td>Data is now stored in Bean classes that could be serialized automatically 
       (Castor) or by hand (lighter).</td>
   </tr>
+  <tr valign="top"> 
+    <td>Batch uploading</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Allow pictures to be uploaded using command-line tools, all in one go, 
+      using saved files (XML) containing the upload parameters.</td>
+    <td><p>Alternately, it could be interesting to allow more than one album to 
+        be viewed in the UI at the same time, and to set up uploads to more than 
+        one album.</p>
+      <p>Also see Explorer UI</p></td>
+  </tr>
+  <tr valign="top"> 
+    <td>Explorer UI</td>
+    <td>P4</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>In the long run, I want to use a Windows Explorer-like UI, with albums 
+      on the right, and their contents on the left.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Pre-upload resize</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Pictures can be resized on the client, thus minimizing the bandwidth necessary 
+      for the upload.</td>
+    <td>Default Java resizing quality is not great, and not very flexible. We 
+      may need to use an external app. It may be worth investigating the plug-in 
+      mechanism in G2 for resizing.</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Pre-upload rotate</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Pictures can be rotated on the client.</td>
+    <td>This can probably be done in Java, since it's not resource-intensive (only 
+      for JPEG, though).</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Inspector</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>In the UI, have an inspector pane for each Picture, that can display full 
+      filename, file size, thumbnail, caption, order ID, resize/rotate buttons, 
+      remove button, move up/down buttons, order counter, etc.</td>
+    <td><p>And later on, any property that is supported by G2.</p>
+      <p>Also, with Explorer UI, can inspect Album properties.</p></td>
+  </tr>
+  <tr valign="top"> 
+    <td>Download Album</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>In order to support reordering existing albums, we need to be able to 
+      download albums from the server, including order, thumbnails and captions.</td>
+    <td>Needs protocol upgrade</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Reorder album</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Drag-and-drop reordering of album, whether before uploading, or an existing 
+      album. </td>
+    <td>Tim has some code for this.</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Upload Album order</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Upload updated order for album. Would be nice to do it in such a way that 
+      we don't need to lock the album.</td>
+    <td>Needs protocol upgrade</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Upload Picture captions</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Change captions on the server using GR.</td>
+    <td>Needs protocol upgrade</td>
+  </tr>
   <tr valign="top">
+    <td>Create album</td>
+    <td>P3</td>
+    <td>0%</td>
     <td>&nbsp;</td>
+    <td>Provide UI to create albums on server.</td>
+    <td><p>Would be more elegant in Explorer UI.</p>
+      <p>Needs protocol upgrade</p></td>
+  </tr>
+</table>
+<h2>gallery_remote.php changes</h2>
+<table width="100%" border="1">
+  <tr> 
+    <th>Name</th>
+    <th>Priority</th>
+    <th>Status</th>
+    <th>Who</th>
+    <th>Description</th>
+    <th>Comments</th>
+  </tr>
+  <tr valign="top"> 
+    <td>Modularity</td>
+    <td>P1</td>
+    <td>0%</td>
     <td>&nbsp;</td>
+    <td>The remote code is all in one file, and other projects want to use remote 
+      functionality, but want a UI or other features. We should see if we can 
+      separate the current code to isolate what is GR-specific, and what should 
+      be available to other remote interfaces.</td>
+    <td>WPW project is one example</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Protocol versioning</td>
+    <td>P1</td>
+    <td>0%</td>
     <td>&nbsp;</td>
+    <td>Make it easy to support protocol versioning. It's probably somewhat in 
+      there, but we need to make sure we won't run into trouble when we start 
+      revving the protocol frequently.</td>
     <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Security</td>
+    <td>P0</td>
+    <td>0%</td>
     <td>&nbsp;</td>
+    <td>One person needs to be in charge of auditing the security of any protocol 
+      change. Maybe we can ask help from Bharrat for this.</td>
     <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Album download</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Expose an interface to allow downloading of picture order, thumbnails 
+      and captions for a given album.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Album order upload</td>
+    <td>P2</td>
+    <td>30%</td>
+    <td>tim</td>
+    <td>Expose an interface to allow remotely changing the order of pictures/sub-albums 
+      in an album.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Picture caption upload</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Expose an interface to allow uploading captions for a given picture.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Double byte support</td>
+    <td>P2</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>We need to make sure the protocol can handle double-byte chars.</td>
+    <td>Bug <a href="http://sourceforge.net/tracker/?func=detail&aid=480880&group_id=7130&atid=107130">480880</a></td>
+  </tr>
+  <tr valign="top">
+    <td>Create album</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Expose and interface to allow creating albums remotely.</td>
+    <td>Does this mean we also need to handle album security setting, or just 
+      that we only use the default settings?</td>
+  </tr>
+  <tr valign="top"> 
+    <td>SOAP protocol</td>
+    <td>P4</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Move to SOAP for the protocol.</td>
+    <td>Probably not useful until GR2.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
