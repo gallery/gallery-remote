@@ -1107,7 +1107,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		private void fetch(Album a, String albumName, ArrayList newPictures)
-		throws GR2Exception {
+				throws GR2Exception {
+			su.updateProgressStatus(StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "fetchAlbImages",
+							new String[]{albumName}));
+
 			try {
 				// setup the protocol parameters
 				NVPair[] form_data = new NVPair[] {
@@ -1138,8 +1141,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							Picture picture = new Picture();
 							picture.setOnline(true);
 							picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
-							width = p.getIntProperty("image.raw_width." + i);
-							height = p.getIntProperty("image.raw_height." + i);
+							width = p.getIntProperty("image.raw_width." + i, 0);
+							height = p.getIntProperty("image.raw_height." + i, 0);
 							picture.setSizeFull(new Dimension(width, height));
 
 							String resizedName = p.getProperty("image.resizedName." + i);

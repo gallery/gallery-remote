@@ -45,7 +45,9 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		listener = this;
 
 		ignoreIMFailure = true;
+	}
 
+	public void show() {
 		try {
 			// Java 1.4 only
 			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -63,7 +65,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
-			show();
+			super.show();
 		}
 
 		// todo: this is a hack to prevent painting problems (the status bar paints
@@ -71,6 +73,20 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		Frame mainFrame = GalleryRemote._().getMainFrame();
 		if (mainFrame != null) {
 			mainFrame.setVisible(false);
+		}
+	}
+
+	public void hide() {
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		gd.setFullScreenWindow(null);
+
+		super.hide();
+
+		if (GalleryRemote._() != null) {
+			Frame mainFrame = GalleryRemote._().getMainFrame();
+			if (mainFrame != null) {
+				mainFrame.setVisible(true);
+			}
 		}
 	}
 
@@ -325,18 +341,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		return true;
-	}
-
-	public void hide() {
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		gd.setFullScreenWindow(null);
-
-		super.hide();
-
-		Frame mainFrame = GalleryRemote._().getMainFrame();
-		if (mainFrame != null) {
-			mainFrame.setVisible(true);
-		}
 	}
 
 	public void imageLoaded(ImageIcon image, Picture picture) {

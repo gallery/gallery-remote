@@ -28,6 +28,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.OsShutdown;
@@ -771,7 +772,9 @@ public class MainFrame extends JFrame
 	}
 
 	public void slideshow() {
-		new SlideshowFrame().start(getCurrentAlbum().getPicturesList());
+		SlideshowFrame sf = new SlideshowFrame();
+		sf.setVisible(true);
+		sf.start(getCurrentAlbum().getPicturesList());
 	}
 
 
@@ -1307,8 +1310,6 @@ public class MainFrame extends JFrame
 		if (!op.getThumbnailSize().equals(p.getThumbnailSize())) {
 			thumbnailCache.reload();
 		}
-
-		Log.setMaxLevel();
 	}
 
 	static FileFilter galleryFileFilter = new FileFilter() {

@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import java.io.File;
@@ -47,6 +48,8 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 
 	protected void initializeGR() {
 		super.initializeGR();
+
+		Log.startLog(GalleryRemote._().properties.getIntProperty(PreferenceNames.LOG_LEVEL), GalleryRemote._().properties.getBooleanProperty("toSysOut"));
 
 		try {
 			if (isAppletMode() || !Update.upgrade()) {

@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
@@ -23,9 +24,12 @@ public class GRApplet extends JApplet {
 	boolean hasStarted = false;
 	String coreClass = "com.gallery.GalleryRemote.GalleryRemoteMainFrame";
 
-	public void init() {}
+	public void init() {
+		System.out.println("Applet init");
+	}
 
 	public void start() {
+		System.out.println("Applet start");
 		initGalleryRemote();
 
 		if (hasStarted) {
@@ -63,10 +67,16 @@ public class GRApplet extends JApplet {
 	}
 
 	public void stop() {
+		System.out.println("Applet stop");
 		// don't shutdown the applet if it didn't start...
 		if (hasStarted && GalleryRemote._() != null) {
 			GalleryRemote._().getCore().shutdown();
 		}
+
+		ImageUtils.purgeTemp();
+
+		Log.log(Log.LEVEL_INFO, MODULE, "Shutting down log");
+		Log.shutdown();
 	}
 
 	public void hasShutdown() {

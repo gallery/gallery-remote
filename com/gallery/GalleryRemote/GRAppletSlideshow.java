@@ -9,6 +9,8 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.SlideshowPanel;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListDataEvent;
 import javax.swing.border.TitledBorder;
 import java.applet.Applet;
 import java.io.FilePermission;
@@ -30,10 +32,11 @@ import HTTPClient.Cookie;
  * User: paour
  * Date: Oct 30, 2003
  */
-public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener {
+public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener, ListDataListener {
 	public static final String MODULE = "AppletSlideshow";
 	JButton jStart;
 	SlideshowPanel jSlidePanel;
+	SlideshowFrame slideshowFrame = null;
 
 	public GRAppletSlideshow() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -50,6 +53,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 
 		album = new Album(gallery);
 		album.setName(info.albumName);
+		album.addListDataListener(this);
 
 		album.fetchAlbumImages(jStatusBar, true);
 	}
@@ -66,7 +70,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		getContentPane().add(jSlidePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		getContentPane().add(new JLabel(GRI18n.getString(MODULE, "Disabled")), new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
 		getContentPane().add(jStart, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 		getContentPane().add(jStatusBar, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
@@ -89,18 +93,37 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	public void actionPerformed(ActionEvent e) {
 		jSlidePanel.writeProperties(GalleryRemote._().properties);
 
-		new SlideshowFrame().start(getCurrentAlbum().getPicturesList());
+		if (slideshowFrame == null) {
+			slideshowFrame = new SlideshowFrame();
+		}
+
+		slideshowFrame.setVisible(true);
+		slideshowFrame.start(getCurrentAlbum().getPicturesList());
+
+		// null slideshowFrame so that next time the user clicks the button
+		// they get a black one, in case they changed positioning
+		slideshowFrame = null;
 	}
 
 	public void shutdown() {
 		if (hasStarted) {
 			jSlidePanel.writeProperties(GalleryRemote._().properties);
 			GalleryRemote._().properties.write();
-
-			GalleryRemote.shutdownInstance();
 		}
 
 		super.shutdown();
 	}
+
+	public void contentsChanged(ListDataEvent e) {
+		// most likely, pictures were just added to the album. Preload the first one.
+		slideshowFrame = new SlideshowFrame();
+		if (album.getPicturesList().size() > 0) {
+			ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+		}
+	}
+
+	public void intervalAdded(ListDataEvent e) {}
+
+	public void intervalRemoved(ListDataEvent e) {}
 
 }

@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import java.awt.*;
 import java.io.File;
@@ -16,7 +17,7 @@ public class GalleryRemoteMini extends GalleryRemote {
 	protected void initializeGR() {
 		super.initializeGR();
 		
-		Log.setMaxLevel();
+		Log.startLog(_().properties.getIntProperty(PreferenceNames.LOG_LEVEL), _().properties.getBooleanProperty("toSysOut"));
 	}
 
 	public void createProperties() {

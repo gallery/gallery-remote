@@ -33,7 +33,7 @@ import java.util.List;
  * @author paour
  * @created August 18, 2002
  */
-public class Log extends Thread implements PreferenceNames {
+public class Log implements PreferenceNames, Runnable {
 	public final static int LEVEL_CRITICAL = 0;
 	public final static int LEVEL_ERROR = 1;
 	public final static int LEVEL_INFO = 2;
@@ -50,28 +50,19 @@ public class Log extends Thread implements PreferenceNames {
 	public static int maxLevel = LEVEL_TRACE;
 	public static boolean toSysOut;
 
+	Thread loggerThread = null;
+
 	static int threadPriority = (Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2;
 	static Log singleton = new Log();
+	static boolean started = false;
 
-	BufferedWriter writer = null;
 	List logLines = Collections.synchronizedList(new LinkedList());
 	boolean running = false;
 
-	private Log() {
-		try {
-			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "log.txt")));
-		} catch (IOException e) {
-			System.err.println("Can't open log file 'log.txt'. Disabling log.");
-			maxLevel = -1;
-		}
-
-		setPriority(threadPriority);
-		start();
-	}
-
+	private Log() {}
 
 	public static void log(int level, String module, String message) {
-		if (level <= maxLevel) {
+		if (level <= maxLevel || !started) {
 			if (module == null) {
 				module = emptyModule;
 			} else {
@@ -123,7 +114,7 @@ public class Log extends Thread implements PreferenceNames {
 	}
 
 	public static void logStack(int level, String module) {
-		if (level <= maxLevel) {
+		if (level <= maxLevel || !started) {
 			CharArrayWriter caw = new CharArrayWriter();
 			try {
 				throw new Exception("Dump stack");
@@ -136,7 +127,7 @@ public class Log extends Thread implements PreferenceNames {
 	}
 
 	public static void logException(int level, String module, Throwable t) {
-		if (level <= maxLevel) {
+		if (level <= maxLevel || !started) {
 			//log(level, module, t.toString());
 			
 			CharArrayWriter caw = new CharArrayWriter();
@@ -160,10 +151,12 @@ public class Log extends Thread implements PreferenceNames {
 	public static void shutdown() {
 		singleton.running = false;
 		try {
-			singleton.join();
+			singleton.loggerThread.join();
 		} catch (InterruptedException ee) {
 			System.err.println("Thread killed for some reason");
 		}
+
+		singleton = new Log();
 	}
 
 
@@ -171,8 +164,12 @@ public class Log extends Thread implements PreferenceNames {
 	 * Main processing method for the Log object
 	 */
 	public void run() {
+		System.out.println("Logger thread running");
+
+		BufferedWriter writer = null;
 		running = true;
 		try {
+			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "log.txt")));
 			while (running) {
 				Thread.sleep(sleepInterval);
 				while (!logLines.isEmpty()) {
@@ -187,33 +184,45 @@ public class Log extends Thread implements PreferenceNames {
 
 				writer.flush();
 			}
-
-			writer.close();
 		} catch (IOException e) {
 			System.err.println("Can't write to log file. Disabling log...");
 			maxLevel = -1;
 		} catch (InterruptedException e) {
-			System.err.println("Thread killed for some reason");
-		}
-	}
-
-	public static void setMaxLevel() {
-		try {
-			if (maxLevel != GalleryRemote._().properties.getIntProperty(LOG_LEVEL)) {
-				maxLevel = GalleryRemote._().properties.getIntProperty(LOG_LEVEL);
-				singleton.logLines.add(emptyTime + "|"
-						+ levelName[LEVEL_TRACE] + "|"
-						+ emptyModule + "|"
-						+ "Setting Log level to " + levelName[maxLevel]);
+			System.err.println("Logger thread killed");
+		} finally {
+			running = false;
+			try {
+				if (writer != null) {
+					writer.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-
-			toSysOut = GalleryRemote._().properties.getBooleanProperty("toSysOut");
-		} catch (Exception e) {}
+		}
+		System.out.println("Logger thread shutting down");
 	}
 
-	static {
-		setMaxLevel();
+	public static void startLog(int maxLevel, boolean toSysOut) {
+		//try {
+		if (Log.maxLevel != maxLevel) {
+			Log.maxLevel = maxLevel;
+			singleton.logLines.add(emptyTime + "|"
+					+ levelName[LEVEL_TRACE] + "|"
+					+ emptyModule + "|"
+					+ "Setting Log level to " + levelName[Log.maxLevel]);
+		}
+
+		Log.toSysOut = toSysOut;
+
+		singleton.loggerThread = new Thread(singleton);
+		singleton.loggerThread.setPriority(threadPriority);
+		singleton.loggerThread.start();
+		//} catch (Exception e) {e.printStackTrace();}
 	}
+
+	/*static {
+		startLog(GalleryRemote._().properties.getIntProperty(LOG_LEVEL));
+	}*/
 
 	/*
 	public static void main( String[] param ) {
