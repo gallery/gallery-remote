@@ -64,6 +64,8 @@ public class MainFrame extends javax.swing.JFrame
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
 
 	boolean highQualityThumbnails = false;
+	
+	int progressId = 0;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -239,7 +241,12 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	public void startProgress( int min, int max, String message) {
+	public int startProgress( int min, int max, String message) {
+		if (progressOn)
+		{
+			Log.log(Log.INFO, "Hijacking progress by creating a new one");
+		}
+		
 		progressOn = true;
 		
 		progress.setMinimum(min);
@@ -248,44 +255,56 @@ public class MainFrame extends javax.swing.JFrame
 		//progress.setStringPainted( true );
 		
 		status.setText(message + "...");
+		
+		return ++progressId;
 	}
 	
-	public void updateProgressValue( int value ) {
-		if (progressOn) {
+	public void updateProgressValue( int progressId, int value ) {
+		if (progressOn && progressId == this.progressId) {
 			progress.setValue( value );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn");
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
 			Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 	
-	public void updateProgressValue( int value, int maxValue ) {
-		if (progressOn) {
+	public void updateProgressValue( int progressId, int value, int maxValue ) {
+		if (progressOn && progressId == this.progressId) {
 			progress.setValue( value );
 			progress.setMaximum( maxValue );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn");
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
 			Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 	
-	public void updateProgressStatus( String message ) {
-		if (progressOn) {
+	public void updateProgressStatus( int progressId, String message ) {
+		if (progressOn && progressId == this.progressId) {
 			status.setText( message );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn");
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong progressId");
 			Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 	
-	public void stopProgress( String message )
+	public void stopProgress( int progressId, String message )
 	{
-		progressOn = false;
+		if (! progressOn)
+		{
+			Log.log(Log.TRACE, MODULE, "Stopping progress when it's already stopped");
+			Log.logStack(Log.TRACE, MODULE);
+		}
 		
-		//progress.setStringPainted( false );
-		progress.setValue(progress.getMinimum());
-		
-		status.setText(message);
+		if ( progressId == this.progressId ) {
+			progressOn = false;
+			
+			//progress.setStringPainted( false );
+			progress.setValue(progress.getMinimum());
+			
+			status.setText(message);
+		} else {
+			Log.log(Log.TRACE, MODULE, "Wrong progressId when stopping progress");
+		}
 	}
 
 
@@ -297,32 +316,36 @@ public class MainFrame extends javax.swing.JFrame
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
-			addPictures( files);
+			addPictures( files );
 		}
 
 		updateUI();
 	}
-        
-        /**
-	 *  Adds a feature to the Pictures attribute of the MainFrame object
-	 *
-	 *@param  files  The feature to be added to the Pictures attribute
-	 */
-        public void addPictures( File[] files ) {
-		addPictures( files);
-                thumbnailCache.preloadThumbnails( files );
+	
+	/**
+	*  Adds a feature to the Pictures attribute of the MainFrame object
+	*
+	*@param  files  The feature to be added to the Pictures attribute
+	*/
+	public void addPictures( File[] files ) {
+		addPictures( files, -1 );
+		thumbnailCache.preloadThumbnails( files );
 		updateUI();
 	}
-
+	
 
 	/**
 	 *  Adds a feature to the Pictures attribute of the MainFrame object
 	 *
 	 *@param  files  The feature to be added to the Pictures attribute
-         *@param  index  The index in the list of Pictures at which to begin adding
+	 *@param  index  The index in the list of Pictures at which to begin adding
 	 */
 	public void addPictures( File[] files, int index ) {
-		mAlbum.addPictures( files, index );
+		if (index == -1) {
+			mAlbum.addPictures( files );
+		} else {
+			mAlbum.addPictures( files, index );
+		}
 		/*Arrays.sort( items,
 				new Comparator()
 				{
@@ -364,18 +387,19 @@ public class MainFrame extends javax.swing.JFrame
 		mInProgress = true;
 		updateUI();
 		
-		startProgress(0, mAlbum.sizePictures(), "Uploading pictures");
+		int pId = startProgress(0, mAlbum.sizePictures(), "Uploading pictures");
 
 		mTimer = new javax.swing.Timer( ONE_SECOND,
 			new ActionListener()
 			{
+				int pId = 0;
 				public void actionPerformed( ActionEvent evt ) {
-					updateProgressValue( mGalleryComm.getUploadedCount() );
-					updateProgressStatus( mGalleryComm.getStatus() );
+					updateProgressValue( pId, mGalleryComm.getUploadedCount() );
+					updateProgressStatus( pId, mGalleryComm.getStatus() );
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
-						stopProgress( "Upload finished" );
+						stopProgress( pId, "Upload finished" );
 						mAlbum.clearPictures();
 						mInProgress = false;
 						picturesList.enable();
@@ -384,8 +408,13 @@ public class MainFrame extends javax.swing.JFrame
 						Log.log(Log.INFO, MODULE, "uploadPictures finished");
 					}
 				}
-			} );
-
+				
+				public ActionListener setProgressId(int pId) {
+					this.pId = pId;
+					return this;
+				}
+			}.setProgressId(pId) );
+		
 		mTimer.start();
 	}
 
@@ -403,17 +432,18 @@ public class MainFrame extends javax.swing.JFrame
 		mInProgress = true;
 		updateUI();
 		
-		startProgress(0, 0, "Fetching albums");
+		int pId = startProgress(0, 0, "Fetching albums");
 
 		mTimer = new javax.swing.Timer( ONE_SECOND,
 			new ActionListener()
 			{
+				int pId = 0;
 				public void actionPerformed( ActionEvent evt ) {
 					//setStatus( mGalleryComm.getStatus() );
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
-						stopProgress("Fetch finished");
+						stopProgress(pId, "Fetch finished");
 						
 						mAlbumList = mGalleryComm.getAlbumList();
 						mInProgress = false;
@@ -421,8 +451,13 @@ public class MainFrame extends javax.swing.JFrame
 						updateUI();
 					}
 				}
-			} );
-
+				
+				public ActionListener setProgressId(int pId) {
+					this.pId = pId;
+					return this;
+				}
+			}.setProgressId(pId) );
+		
 		mTimer.start();
 	}
 
