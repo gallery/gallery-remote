@@ -1,3 +1,7 @@
+2004-07-10  Pierre-Luc Paour <gallery@paour.com> (1.4-RC1)
+
+	* No changes
+
 2004-07-09  Pierre-Luc Paour <gallery@paour.com> (1.4-b17)
 
 	* When the session expires, GR now attempts to login again.
