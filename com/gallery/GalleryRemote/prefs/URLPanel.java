@@ -152,12 +152,16 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 
 			if (selectedGallery.getType() == Gallery.TYPE_STANDALONE) {
 				sb.append("Gallery URL: ").append(selectedGallery.getStUrlString()).append("<br>");
-				sb.append("Username: ").append(selectedGallery.getUsername()).append("<br>");
 			} else if (selectedGallery.getType() == Gallery.TYPE_POSTNUKE) {
 				sb.append("PostNuke login URL: ").append(selectedGallery.getPnLoginUrlString()).append("<br>");
 				sb.append("PostNuke Gallery URL: ").append(selectedGallery.getPnGalleryUrlString()).append("<br>");
-				sb.append("Username: ").append(selectedGallery.getUsername()).append("<br>");
 			}
+
+			String username = selectedGallery.getUsername();
+			if (username == null || username.length() == 0) {
+				username = "&lt;Not set&gt;";
+			}
+			sb.append("Username: ").append(username).append("<br>");
 
 			sb.append("</HTML>");
 

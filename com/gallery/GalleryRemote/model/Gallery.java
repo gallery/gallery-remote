@@ -370,8 +370,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	*/
 
 	public void setUsername( String username ) {
-		if ( username != null && username.length() > 0
-				&& ! username.equals( this.username ) ) {
+		if ( /*username != null && username.length() > 0
+				&&*/ ! username.equals( this.username ) ) {
 
 			this.username = username;
 
@@ -383,8 +383,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public void setPassword( String password ) {
 		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
-		if ( password != null && password.length() > 0
-				&& ! password.equals( this.password ) ) {
+		if ( /*password != null && password.length() > 0
+				&&*/ ! password.equals( this.password ) ) {
 
 			this.password = password;
 
