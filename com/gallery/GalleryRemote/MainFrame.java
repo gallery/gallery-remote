@@ -20,40 +20,62 @@
 */
 package com.gallery.GalleryRemote;
 
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.event.*;
-import java.io.*;
-import java.text.NumberFormat;
-import java.text.ChoiceFormat;
-import java.text.Format;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Vector;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Vector;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.*;
+
+import JSX.ObjOut;
+import JSX.ObjIn;
 
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.util.ImageUtils;
-import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.util.OsShutdown;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
-import JSX.ObjOut;
-import JSX.ObjIn;
-import javax.swing.border.Border;
+import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.OsShutdown;
 
 /**
  *  Description of the Class
@@ -1577,6 +1599,7 @@ public class MainFrame extends javax.swing.JFrame
      *                   should be used.
      */
 	private void openState(String fileToOpen) {
+        getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         JFileChooser fc = null;
 		try {
             if (null == fileToOpen) {
@@ -1634,6 +1657,8 @@ public class MainFrame extends javax.swing.JFrame
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (NoClassDefFoundError e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't read state...");
+		} finally {
+            getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
 
