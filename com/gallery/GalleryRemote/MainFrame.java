@@ -34,7 +34,7 @@ import java.net.URL;
 
 public class MainFrame extends javax.swing.JFrame {
 
-	public final static String APP_VERSION_STRING = "0.3-b2";
+	public final static String APP_VERSION_STRING = "0.3";
 	public final static int ONE_SECOND = 1000;
 
 	javax.swing.JMenuBar jMenuBar = new javax.swing.JMenuBar();
@@ -79,7 +79,9 @@ public class MainFrame extends javax.swing.JFrame {
 		
 		//-- load the properties file ---
 		mPropertiesFile = new PropertiesFile("remote");
+			
 	}
+	
 	
 	public void initComponents() throws Exception {
 
@@ -138,7 +140,7 @@ public class MainFrame extends javax.swing.JFrame {
 		jPasswordField.setSize(new java.awt.Dimension(180, 20));
 		jPasswordField.setLocation(new java.awt.Point(106, 64));
 		jPasswordField.setVisible(true);
-		jPasswordField.setText(mPropertiesFile.getProperty("password"));
+		jPasswordField.setText("");
 
 		jLabelAlbum.setSize(new java.awt.Dimension(103, 20));
 		jLabelAlbum.setLocation(new java.awt.Point(-4, 91));
@@ -295,8 +297,6 @@ public class MainFrame extends javax.swing.JFrame {
 	
 		mPropertiesFile.setProperty("url", jTextURL.getText());
 		mPropertiesFile.setProperty("username", jTextUsername.getText());
-		mPropertiesFile.setProperty("password", jPasswordField.getText());
-		
 		mPropertiesFile.write();
 	
 		setVisible(false);
