@@ -38,8 +38,15 @@ public class GalleryRemote {
     
     private GalleryRemote() {
         defaults = new PropertiesFile("defaults");
-        properties = new PropertiesFile(defaults, 
-			System.getProperty("user.home") + File.separator + ".GalleryRemote");
+		
+		File f = new File(System.getProperty("user.home")
+			+ File.separator + ".GalleryRemote"
+			+ File.separator);
+		
+		f.mkdirs();
+		
+        properties = new PropertiesFile(defaults, f.getPath()
+			+ File.separator + "GalleryRemote");
     }
     
     private void run() {

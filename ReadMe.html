@@ -87,14 +87,14 @@ code {
 <p>There is currently no way to set some (most) of the preferences. However, the 
   preference files can be edited. You should not modify the <code>defaults.properties</code> 
   file, but you should read it to understand what each preference does. Then, 
-  you can edit the <code>.GalleryRemote.properties</code> (the first time GR is 
+  you can edit the <code>GalleryRemote.properties</code> (it is created the first time GR is 
   run) and add or replace the preferences you want to change.</p>
 <p>The preferences files used to be stored in the same directory as the GalleryRemote 
   executable, and has been moved (and renamed) to the current user's home directory. 
   On recent versions of Windows, this is the <code>Documents and Settings/<em>&lt;username&gt;</em></code> 
   directory in the boot partition. When you upgrade from versions older than 1.0b6, 
   you will lose your current preferences unless you copy the previously used <code>remote.properties</code> 
-  to <code><em>&lt;home directory&gt;</em>/.GalleryRemote.properties</code>.</p>
+  to <code><em>&lt;home directory&gt;</em>/.GalleryRemote/GalleryRemote.properties</code>.</p>
 <h3>ImageMagick setup</h3>
 <p>GR will use ImageMagick (IM) to speed up (very greatly) the computation of 
   resized images for thumbnails, preview and image upload.</p>
@@ -113,7 +113,7 @@ code {
   definitely request it if you ask for support.</p>
 <p>By default, GR writes most log information to the file <code>log.txt</code> 
   in the directory where you installed GR. If you want to see more detailed information 
-  there, you can add the following lines to your <code>.GalleryRemote.properties</code> 
+  there, you can add the following lines to your <code>GalleryRemote.properties</code> 
   file:</p>
 <pre>logLevel=3
 toSysOut=true</pre>
