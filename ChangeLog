@@ -1,3 +1,7 @@
+2005-03-01  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b12)
+
+	* Should support Mambo-embedded Gallery.
+
 2005-02-28  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b11)
 
 	* Fixed setting proxy info for downloading images already
