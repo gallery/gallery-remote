@@ -139,6 +139,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 			} catch (Throwable t) {}
 
 			if (level == LEVEL_UPLOAD_PROGRESS) {
+				// we're done...
 				setVisible(false);
 				//dispose();
 			}

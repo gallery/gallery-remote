@@ -108,20 +108,25 @@ public class ImageUtils {
 
 				cmdline.append(" +profile \"*\" ");
 
-				File temp = File.createTempFile("thumb", "." + format[usage], tmpDir);
-				toDelete.add(temp);
-				
-				cmdline.append("\"" +temp.getPath() + "\"");
-				
-				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline.toString());
-			
-				Process p = Runtime.getRuntime().exec(cmdline.toString());
-				int exitValue = p.waitFor();
-				Log.log(Log.LEVEL_TRACE, MODULE, "Returned with value " + exitValue);
-				
-				if (exitValue != 0 && ! imIgnoreErrorCode) {
-					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
-					useIM = false;
+				File temp = deterministicTempFile("thumb", "." + format[usage], tmpDir, filename + d);
+
+				if (! temp.exists()) {
+					toDelete.add(temp);
+
+					cmdline.append("\"" +temp.getPath() + "\"");
+
+					Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline.toString());
+
+					Process p = Runtime.getRuntime().exec(cmdline.toString());
+					int exitValue = p.waitFor();
+					Log.log(Log.LEVEL_TRACE, MODULE, "Returned with value " + exitValue);
+
+					if (exitValue != 0 && ! imIgnoreErrorCode) {
+						Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+						useIM = false;
+					} else {
+						r = new ImageIcon(temp.getPath());
+					}
 				} else {
 					r = new ImageIcon(temp.getPath());
 				}
@@ -260,7 +265,7 @@ public class ImageUtils {
 
 		cmdline.append(" \"").append(filename).append("\"");
 
-		r = File.createTempFile("res"
+		r = File.createTempFile("rot"
 			, "." + GalleryFileFilter.getExtension(filename), tmpDir);
 		toDelete.add(r);
 
@@ -439,7 +444,10 @@ public class ImageUtils {
 				imIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", imIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
 
-				if (! new File(imPath).exists()) {
+				if (imPath.indexOf("/") == -1 && imPath.indexOf("\\") == -1) {
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick path is not fully qualified, " +
+							"presence won't be tested until later");
+				} else 	if (! new File(imPath).exists()) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
 					useIM = false;
 				}
@@ -487,7 +495,10 @@ public class ImageUtils {
 				jpegtranIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", jpegtranIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
 
-				if (! new File(jpegtranPath).exists()) {
+				if (jpegtranPath.indexOf("/") == -1 && jpegtranPath.indexOf("\\") == -1) {
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran path is not fully qualified, " +
+							"presence won't be tested until later");
+				} if (! new File(jpegtranPath).exists()) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find jpegtran at the above path");
 					useJpegtran = false;
 				}
@@ -551,5 +562,13 @@ public class ImageUtils {
 			this.angle = angle;
 			this.flip = flip;
 		}
+	}
+
+	public static File deterministicTempFile(String prefix, String suffix, File directory, String hash) {
+		if (directory == null) {
+			directory = new File(System.getProperty("java.io.tmpdir"));
+		}
+
+		return new File(directory, prefix + hash.hashCode() + suffix);
 	}
 }

@@ -28,8 +28,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 
@@ -52,7 +51,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
-				imageIcons.clear();
+				flushMemory();
 			}
 		});
 
@@ -66,6 +65,18 @@ public class PreviewFrame extends javax.swing.JFrame {
 			ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, currentPicture.getAngle(), currentPicture.isFlipped(), this);
 			tmpImage.paintIcon(getContentPane(), g, getRootPane().getLocation().x, getRootPane().getLocation().y);
 		}
+	}
+
+	public void hide() {
+		// release memory if no longer necessary
+		flushMemory();
+		super.hide();
+
+		displayFile(null);
+	}
+
+	public void flushMemory() {
+		imageIcons.clear();
 	}
 
 	public void displayFile(Picture picture) {
@@ -146,8 +157,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 	}
 
 
-	public class SmartHashtable extends Hashtable {
-		Vector touchOrder = new Vector();
+	public class SmartHashtable extends HashMap {
+		ArrayList touchOrder = new ArrayList();
 
 		public Object put(Object key, Object value) {
 			touch(key);
@@ -169,9 +180,13 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 
 		public Object get(Object key) {
+			return get(key, true);
+		}
+
+		public Object get(Object key, boolean touch) {
 			Object result = super.get(key);
 
-			if (result != null) {
+			if (result != null && touch) {
 				touch(key);
 			}
 
@@ -179,8 +194,23 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 
 		public void clear() {
+			Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+
+			// flush images before clearing hastables for quicker deletion
+			Iterator it = values().iterator();
+			while (it.hasNext()) {
+				ImageIcon i = (ImageIcon) it.next();
+				if (i != null) {
+					i.getImage().flush();
+				}
+			}
+
 			super.clear();
 			touchOrder.clear();
+
+			Runtime.getRuntime().gc();
+
+			Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
 
 		public void touch(Object key) {
@@ -201,13 +231,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 				return;
 			}
 
-			Object key = touchOrder.elementAt(0);
+			Object key = touchOrder.get(0);
 			touchOrder.remove(0);
 
-			ImageIcon i = (ImageIcon) get(key);
+			ImageIcon i = (ImageIcon) get(key, false);
 			if (i != null) {
 				i.getImage().flush();
-				i = null;
 			}
 
 			remove(key);

@@ -2,7 +2,7 @@
 enabled=true
 
 # path to the convert executable installed with ImageMagick
-imConvertPath=imagemagick/win32/convert.exe
+imConvertPath=convert
 
 # Filters
 #    Point

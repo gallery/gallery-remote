@@ -21,9 +21,7 @@
 package com.gallery.GalleryRemote;
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Stack;
+import java.util.*;
 
 import javax.swing.ImageIcon;
 
@@ -45,7 +43,7 @@ public class ThumbnailCache implements Runnable
 
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
-	Hashtable thumbnails = new Hashtable();
+	HashMap thumbnails = new HashMap();
 	MainFrame mf;
 
 
@@ -185,6 +183,16 @@ public class ThumbnailCache implements Runnable
 		Enumeration e = ((Hashtable) thumbnails.clone()).keys();
 		thumbnails.clear();
 		preloadThumbnailFilenames(e);
+	}
+
+	public void flushMemory() {
+		Iterator it = thumbnails.values().iterator();
+		while (it.hasNext()) {
+			ImageIcon i = (ImageIcon) it.next();
+			i.getImage().flush();
+		}
+
+		thumbnails.clear();
 	}
 
 

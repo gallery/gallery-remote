@@ -1,3 +1,12 @@
+2003-11-03  Pierre-Luc Paour <gallery@paour.com> (1.2-b13)
+
+	* Better memory management for thumbnails and previews. Memory errors
+	  should be rarer, and thumbnail/preview generation should be quicker.
+	* Added button to sort files alphabetically in an album.
+	* GR should now find jpegtran and ImageMagick in that if they are
+	  available in the PATH on non-Windows platforms. Added a long-winded
+	  warning at the tail-end of the installer about how to install them.
+
 2003-10-30  Pierre-Luc Paour <gallery@paour.com> (1.2-b12)
 
 	* Added warning when logging out or quitting and pictures are left in

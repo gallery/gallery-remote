@@ -101,6 +101,7 @@ public class MainFrame extends javax.swing.JFrame
 	PictureInspector jPictureInspector = new PictureInspector();
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
+	JButton jSortButton = new JButton();
 	JMenu jMenuFile = new JMenu();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 	JMenuItem jMenuItemSave = new JMenuItem();
@@ -334,6 +335,7 @@ public class MainFrame extends javax.swing.JFrame
 				&& getCurrentAlbum().sizePictures() > 0
 				&& !inProgress
 				&& jAlbumCombo.getSelectedIndex() >= 0 );
+				jSortButton.setEnabled(jUploadButton.isEnabled());
 
 				Gallery currentGallery = getCurrentGallery();
 
@@ -533,6 +535,14 @@ public class MainFrame extends javax.swing.JFrame
 		saveState(f);
 
 		getCurrentGallery().uploadFiles( new UploadProgress(this) );
+	}
+
+
+	/**
+	 *  Sort the files alphabetically
+	 */
+	public void sortPictures() {
+		getCurrentAlbum().sortPicturesAlphabetically();
 	}
 
 
@@ -794,16 +804,19 @@ public class MainFrame extends javax.swing.JFrame
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
 		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );
-		jUploadButton.setAlignmentX( (float) 2.0 );
+		//jUploadButton.setAlignmentX( (float) 2.0 );
 		jUploadButton.setText( grRes.getString(MODULE, "upldBtnTxt") );
 		jUploadButton.setActionCommand( "Upload" );
 		jUploadButton.setToolTipText( grRes.getString(MODULE, "upldBtnTip") );
 		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "inspDvdr") ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
-		jBrowseButton.setAlignmentX( (float) 1.0 );
+		//jBrowseButton.setAlignmentX( (float) 1.0 );
 		jBrowseButton.setText( grRes.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand( "Browse" );
 		jBrowseButton.setToolTipText(grRes.getString(MODULE, "brwsBtnTip"));
+		jSortButton.setText(grRes.getString(MODULE, "sortBtnTxt"));
+		jSortButton.setActionCommand( "Sort" );
+		jSortButton.setToolTipText(grRes.getString(MODULE, "sortBtnTip"));
 		jGalleryCombo.setActionCommand("Url");
 		jGalleryCombo.setToolTipText(grRes.getString(MODULE, "gllryCombo"));
 		gridLayout1.setHgap( 5 );
@@ -849,6 +862,7 @@ public class MainFrame extends javax.swing.JFrame
 		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		jPanel3.add( jBrowseButton, null );
+		jPanel3.add( jSortButton, null);
 		jPanel3.add( jUploadButton, null );
 		this.getContentPane().add( jStatusBar, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
@@ -902,6 +916,7 @@ public class MainFrame extends javax.swing.JFrame
 		jLoginButton.addActionListener( this );
 		jNewAlbumButton.addActionListener( this );
 		jUploadButton.addActionListener( this );
+		jSortButton.addActionListener( this );
 		jBrowseButton.addActionListener( this );
 		jNewGalleryButton.addActionListener( this );
 		//jGalleryCombo.addActionListener( this );
@@ -963,13 +978,6 @@ public class MainFrame extends javax.swing.JFrame
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 				// we're currently logged in: log out
 				getCurrentGallery().logOut();
-				//if (getCurrentAlbum() != null) {
-				//	getCurrentAlbum().clearPictures();
-				//}
-				//setCurrentAlbum(null);
-
-				//jAlbumCombo.setModel(new Gallery(this));
-				//resetUIState();
 			} else {
 		    	// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -985,25 +993,10 @@ public class MainFrame extends javax.swing.JFrame
 			browseAddPictures();
 		} else if ( command.equals( "Upload" ) ) {
 			uploadPictures();
+		} else if ( command.equals( "Sort" ) ) {
+			sortPictures();
 		} else if ( command.equals( "NewGallery" ) ) {
 			showPreferencesDialog(URLPanel.class.getName());
-		//} else if ( command.equals( "Url" ) ) {
-			//Object selectedGallery = jGalleryCombo.getSelectedItem();
-			//if (selectedGallery != null) {
-				//Log.log(Log.TRACE, MODULE, "selected: " + selectedGallery.toString()
-				//	+ " (" + jGalleryCombo.getSelectedIndex() + ")");
-
-				// new url chosen in the popup
-				// updateGalleryParams();
-//			} else {
-//				Log.log(Log.TRACE, MODULE, "Deselected gallery");
-//			}
-		//} else if ( command.equals( "Album" ) ) {
-			//Object selectedAlbum = jAlbumCombo.getSelectedItem();
-			//	Log.log(Log.TRACE, MODULE, "selected: " + selectedAlbum.toString()
-			//		+ " (" + jAlbumCombo.getSelectedIndex() + ")");
-
-			//updatePicturesList( /*(Album) ( (JComboBox) e.getSource() ).getSelectedItem()*/);
 		} else {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Unhandled command " + command );
 		}
@@ -1273,6 +1266,11 @@ public class MainFrame extends javax.swing.JFrame
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
+	}
+
+	public void flushMemory() {
+		thumbnailCache.flushMemory();
+		previewFrame.flushMemory();
 	}
 
 	/**

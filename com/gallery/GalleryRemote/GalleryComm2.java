@@ -530,6 +530,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						GalleryRemote.getInstance().mainFrame.shutdown(true);
 					}
 				}
+
+				GalleryRemote.getInstance().mainFrame.flushMemory();
 			} else {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, grRes.getString(MODULE, "upFailed"));
 			}

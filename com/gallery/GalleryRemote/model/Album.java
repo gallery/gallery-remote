@@ -29,6 +29,7 @@ import javax.swing.*;
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.NaturalOrderComparator;
 
 /**
  *  Album model
@@ -223,6 +224,11 @@ public class Album extends Picture implements ListModel, Serializable
 		} else {
 			pictures.add(index, p);
 		}
+	}
+
+	public void sortPicturesAlphabetically() {
+		Collections.sort(pictures, new NaturalOrderComparator());
+		notifyListeners();
 	}
 
 	/**
