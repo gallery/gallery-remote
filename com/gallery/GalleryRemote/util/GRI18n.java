@@ -6,6 +6,7 @@
 package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import java.util.Locale;
@@ -14,6 +15,8 @@ import java.util.MissingResourceException;
 
 public class GRI18n implements PreferenceNames {
     private static final String RESNAME = "com.gallery.GalleryRemote.resources.GRResources";
+    private static final String MODULE = "MainFrame";
+
     private static GRI18n ourInstance;
     private Locale grLocale;
     private ResourceBundle grResBundle;
@@ -51,10 +54,12 @@ public class GRI18n implements PreferenceNames {
         try {
             msg = grResBundle.getString(key);
         } catch (NullPointerException e) {
-            System.err.println(e.toString());
+            Log.log(Log.ERROR, MODULE, "Key null error");
+            Log.logException(Log.ERROR, MODULE, e);
             msg = "[NULLKEY]";
         } catch (MissingResourceException e) {
-            System.err.println(e.toString());
+            Log.log(Log.INFO, MODULE, "Key [" + key + "] not defined");
+            Log.logException(Log.INFO, MODULE, e);
             msg = "["+key+"]";
         }
 
@@ -66,7 +71,8 @@ public class GRI18n implements PreferenceNames {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
         } catch (MissingResourceException e) {
-            System.err.println(e.toString());
+            Log.log(Log.ERROR, MODULE, "Resource bundle error");
+            Log.logException(Log.ERROR, MODULE, e);
         }
     }
 
