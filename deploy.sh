@@ -30,6 +30,6 @@ if (lynx -dump -head http://jpmullan.com/galleryupdates/remote/gallery_remote_${
 	
 	if ( [ -f deploy_local.sh ] ) then
 		echo -e "\n\nRunning local script...\n\n";
-		deploy_local.sh;
+		. deploy_local.sh;
 	fi
 fi
