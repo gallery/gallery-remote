@@ -81,13 +81,13 @@ public class MainFrame extends javax.swing.JFrame
 
 	PictureSelection ps = null;
 
-	JPanel jPanel1 = new JPanel();
+	JPanel jTopPanel = new JPanel();
 	JMenuBar jMenuBar1 = new JMenuBar();
 	JLabel jLabel1 = new JLabel();
-	JPanel jPanel3 = new JPanel();
+	JPanel jBottomPanel = new JPanel();
 	GridLayout gridLayout1 = new GridLayout();
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
-	JPanel jPanel2 = new JPanel();
+	JPanel jAlbumPanel = new JPanel();
 	JScrollPane jAlbumScroll = new JScrollPane();
 	DroppableTree jAlbumTree = new DroppableTree();
 
@@ -868,10 +868,10 @@ public class MainFrame extends javax.swing.JFrame
 			throws Exception {//{{{
 		setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		getContentPane().setLayout( new GridBagLayout() );
-		jPanel1.setLayout( new GridBagLayout() );
-		jPanel3.setLayout( gridLayout1 );
+		jTopPanel.setLayout( new GridBagLayout() );
+		jBottomPanel.setLayout( gridLayout1 );
 		gridLayout1.setHgap( 5 );
-		jPanel2.setLayout(new BorderLayout());
+		jAlbumPanel.setLayout(new BorderLayout());
 
 		jLabel1.setText( grRes.getString(MODULE, "Gallery_URL") );
 
@@ -890,7 +890,11 @@ public class MainFrame extends javax.swing.JFrame
 		jUploadButton.setToolTipText( grRes.getString(MODULE, "upldBtnTip") );
 		jInspectorDivider.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "inspDvdr") ) );
-		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
+		jInspectorDivider.setOneTouchExpandable(true);
+		jInspectorDivider.setResizeWeight(.66);
+		jAlbumPictureDivider.setOneTouchExpandable(true);
+		jAlbumPictureDivider.setResizeWeight(.5);
+		jTopPanel.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
 		jBrowseButton.setText( grRes.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand( "Browse" );
 		jBrowseButton.setToolTipText(grRes.getString(MODULE, "brwsBtnTip"));
@@ -952,34 +956,34 @@ public class MainFrame extends javax.swing.JFrame
 		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "pictures")));
 		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "albums")));
 
-		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
+		this.getContentPane().add( jTopPanel, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
-		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
+		jTopPanel.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 5 ), 0, 0 ) );
 		this.getContentPane().add( jInspectorDivider, new GridBagConstraints( 0, 1, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 2, 2, 2 ), 0, 0 ) );
 		jInspectorDivider.add(jInspectorPanel, JSplitPane.RIGHT);
 		jInspectorDivider.add(jAlbumPictureDivider, JSplitPane.LEFT);
-		jInspectorPanel.add(jPictureInspector,  CARD_PICTURE);
-		jInspectorPanel.add(jAlbumInspector,  CARD_ALBUM);
+		jInspectorPanel.add(new JScrollPane(jPictureInspector),  CARD_PICTURE);
+		jInspectorPanel.add(new JScrollPane(jAlbumInspector),  CARD_ALBUM);
 		jAlbumPictureDivider.add(jPictureScroll, JSplitPane.RIGHT);
-		jAlbumPictureDivider.add(jPanel2, JSplitPane.LEFT);
-		jPanel2.add(jAlbumScroll, BorderLayout.CENTER);
-		jPanel2.add(jNewAlbumButton,  BorderLayout.SOUTH);
+		jAlbumPictureDivider.add(jAlbumPanel, JSplitPane.LEFT);
+		jAlbumPanel.add(jAlbumScroll, BorderLayout.CENTER);
+		jAlbumPanel.add(jNewAlbumButton,  BorderLayout.SOUTH);
 		jAlbumScroll.getViewport().add(jAlbumTree, null);
 		jPictureScroll.getViewport().add(jPicturesList, null);
-		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
+		this.getContentPane().add( jBottomPanel, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
-		jPanel3.add( jBrowseButton, null );
-		jPanel3.add( jSortButton, null);
-		jPanel3.add( jUploadButton, null );
+		jBottomPanel.add( jBrowseButton, null );
+		jBottomPanel.add( jSortButton, null);
+		jBottomPanel.add( jUploadButton, null );
 		this.getContentPane().add( jStatusBar, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		jPanel1.add( jGalleryCombo,  new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+		jTopPanel.add( jGalleryCombo,  new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
-		jPanel1.add(jNewGalleryButton,     new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0
+		jTopPanel.add(jNewGalleryButton,     new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
-		jPanel1.add(jLoginButton,  new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+		jTopPanel.add(jLoginButton,  new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
 
 		jMenuBar1.add( jMenuFile );
@@ -1223,8 +1227,10 @@ public class MainFrame extends javax.swing.JFrame
 				ObjIn in = new ObjIn(new BufferedReader(new FileReader(fc.getSelectedFile())));
 				Gallery[] galleryArray = (Gallery[]) in.readObject();
 				DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
+
 				for (int i = 0; i < galleryArray.length; i++) {
 					newGalleries.addElement(galleryArray[i]);
+					//galleryArray[i].checkTransients();
 					galleryArray[i].addListDataListener(this);
 					thumbnailCache.preloadThumbnailPictures(Collections.enumeration(galleryArray[i].getAllPictures()));
 				}
@@ -1505,6 +1511,17 @@ public class MainFrame extends javax.swing.JFrame
 					tree, value, sel,
 					expanded, leaf, row,
 					hasFocus);
+			Album album = null;
+
+			if (value instanceof Album) {
+				album = (Album) value;
+			}
+
+			if (album != null && album.getSize() > 0) {
+				setFont(getFont().deriveFont(Font.BOLD));
+			} else {
+				setFont(getFont().deriveFont(Font.PLAIN));
+			}
 
 			setIcon(null);
 			setText(getText().trim());

@@ -59,6 +59,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	ArrayList albumList = null;
 	Album selectedAlbum = null;
 	int type = TYPE_STANDALONE;
+	Object root = new Object();
+	ArrayList rootAlbums = new ArrayList();
 
 	transient GalleryComm comm = null;
 
@@ -66,8 +68,6 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	transient private int prefsIndex;
 	transient private Boolean ambiguousUrl;
 	transient private boolean blockWrites = false;
-	transient Object root = new Object();
-	transient ArrayList rootAlbums = new ArrayList();
 
 	public static String types[] = new String[] {STANDALONE, POSTNUKE, PHPNUKE};
 	public static final int TYPE_STANDALONE = 0;
@@ -81,7 +81,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public Gallery(StatusUpdate su) {
 		this.su = su;
 
-		// when loading from prefs, galleries not yet create. No matter: in that case, the
+		// when loading from prefs, galleries not yet created. No matter: in that case, the
 		// prefsIndex is forced.
 		if (GalleryRemote.getInstance().mainFrame != null) {
 			prefsIndex = GalleryRemote.getInstance().mainFrame.galleries.getSize();
@@ -127,6 +127,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		if (logout) {
 			albumList = null;
+			rootAlbums.clear();
 			selectedAlbum = null;
 			if (comm != null) {
 				comm.logOut();
@@ -702,6 +703,11 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		}
 	}
 
+	/** this no longer works: the JTree is the only object that
+	 * knows what the selected album is. This only works in
+	 * JList context...
+	 * @return
+	 */
 	public Album getSelectedAlbum() {
 		return selectedAlbum;
 	}
@@ -765,12 +771,11 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (albumList != null) {
 			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
 			fireContentsChanged( this, 0, albumList.size() );
-			fireTreeStructureChanged(this, new TreePath(root));
 		} else {
 			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
 			fireContentsChanged( this, 0, 0 );
-			fireTreeStructureChanged(this, null, null, null);
 		}
+		fireTreeStructureChanged(this, new TreePath(root));
 
 		//notifyListeners(lde);
 	}
@@ -927,4 +932,19 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		return new TreePath(path.toArray());
 	}
+
+	/*public void checkTransients() {
+		root = new Object();
+		rootAlbums = new ArrayList();
+
+		if (albumList != null) {
+			for (Iterator it = albumList.iterator(); it.hasNext();) {
+				Album album = (Album) it.next();
+
+				if (album.getParentAlbum() == null) {
+					rootAlbums.add(album);
+				}
+			}
+		}
+	}*/
 }

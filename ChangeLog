@@ -1,3 +1,12 @@
+2003-11-13  Pierre-Luc Paour <gallery@paour.com> (1.3-b3)
+
+	* Fixed a problem with loading state. Saved states from pervious versions can
+	  NOT be loaded, no error dialog is shown, a big exception is dumped to the log.
+	* Fixed logging out of a Gallery.
+	* Made albums with content bold in the JTree.
+	* Inspectors are now scrollable for small trees.
+	* Thanks to Scott Gartner for these suggestions (and others)
+
 2003-11-13  Pierre-Luc Paour <gallery@paour.com> (1.3-b2)
 
 	* Implemented drag-and-drop on Albums. Moving pictures from one album to another

@@ -58,11 +58,13 @@ public class Album extends Picture implements ListModel, Serializable {
 	 * SERVER INFO
 	 */
 	Gallery gallery = null;
+	ArrayList subAlbums = new ArrayList();
 
 	Album parent; // parent Album
 	String title = grRes.getString(MODULE, "title");
 	String name;
 	ArrayList extraFields;
+	String summary;
 
 	Boolean overrideResize = null;
 	Boolean overrideResizeDefault = null;
@@ -77,14 +79,11 @@ public class Album extends Picture implements ListModel, Serializable {
 	transient boolean canDeleteFrom = true;
 	transient boolean canDeleteThisAlbum = true;
 	transient boolean canCreateSubAlbum = true;
-	transient String summary = null;
 
 	transient boolean hasFetchedInfo = false;
 
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
-
-	transient ArrayList subAlbums = new ArrayList();
 
 	public static List extraFieldsNoShow = Arrays.asList(new String[] {grRes.getString(MODULE, "upDate"), grRes.getString(MODULE, "captDate")});
 
@@ -484,12 +483,7 @@ public class Album extends Picture implements ListModel, Serializable {
 			&& ((Album) o).getName().equals(getName()));
 	}
 		
-	
-	//public void setListSelectionModel(ListSelectionModel listSelectionModel) {
-	//	this.listSelectionModel = listSelectionModel;
-	//}
-	
-	
+
 	/* -------------------------------------------------------------------------
 	 *ListModel Implementation
 	 */
@@ -734,5 +728,9 @@ public class Album extends Picture implements ListModel, Serializable {
 			return false;
 		}
 	}
+
+	/*public void checkTransients() {
+		subAlbums = new ArrayList();
+	}*/
 }
 
