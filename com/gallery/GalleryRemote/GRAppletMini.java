@@ -145,7 +145,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 			// probably finished uploading...
 			try {
 				// no update for G2 and for embedded applets (non-embedded applets are TYPE_STANDALONE)
-				if (! (gallery.getComm(null) instanceof GalleryComm2_5) && gallery.getType() == Gallery.TYPE_APPLET) {
+				if (! (gallery.getComm(null) instanceof GalleryComm2_5) && gallery.getType() != Gallery.TYPE_APPLET) {
 					getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
 				}
 			} catch (MalformedURLException e1) {
