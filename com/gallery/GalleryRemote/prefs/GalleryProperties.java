@@ -180,6 +180,27 @@ public class GalleryProperties extends Properties implements PreferenceNames {
     }
 
     /**
+     * setLoadLastMRU sets the current value of LOAD_LAST_FILE to the passed
+     * value.
+     * 
+     * @param loadLastMRU the new value of LOAD_LAST_FILE.
+     */
+    public void setLoadLastMRU (boolean loadLastMRU) {
+        setBooleanProperty(LOAD_LAST_FILE, loadLastMRU);
+    }
+
+    /**
+     * setMRUCountProperty sets the number of MRU items that we will show
+     * in the File menu.  This change will not be seen until the file menu
+     * is rebuilt (this happens on file save, file open, etc.).
+     * 
+     * @param MRUCountProperty The new MRU count property.
+     */
+    public void setMRUCountProperty (int MRUCountProperty) {
+        setIntProperty(MRU_COUNT, MRUCountProperty);
+    }
+
+    /**
      * getMRUCountProperty returns the Most Recently Used count (the number
      * of MRU entries we should show in the menu.
      *
