@@ -184,8 +184,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 	
 	public Image safeGetScaledInstance(Image image, int width, int height, int mode)
 	{
-		System.out.println("safeGetScaledInstance");
-		System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+		//System.out.println("safeGetScaledInstance");
+		//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		try
 		{
 			Image result = image.getScaledInstance(width, height, mode);
@@ -200,7 +200,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 		finally
 		{
-			System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
 	}
 	
@@ -234,7 +234,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			touch(key);
 			super.put(key, value);
 			
-			System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 			if (Runtime.getRuntime().freeMemory() < 2000000)
 			{
 				shrink();
@@ -244,7 +244,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			{
 				shrink();
 			}
-			System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			//System.out.println(Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 			
 			return value;
 		}
