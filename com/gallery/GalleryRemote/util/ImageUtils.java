@@ -689,13 +689,15 @@ public class ImageUtils {
 					return f;
 				}
 
+				long start = System.currentTimeMillis();
+
 				URLConnection conn = pictureUrl.openConnection();
 				int size = conn.getContentLength();
 
 				su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
 						GRI18n.getString(MODULE, "down.start", new Object[]{filename}), false);
 
-				Log.log(Log.LEVEL_TRACE, MODULE, "Saving to " + f.getPath());
+				Log.log(Log.LEVEL_TRACE, MODULE, "Saving " + p + " to " + f.getPath());
 
 				BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
 				BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(f));
@@ -704,7 +706,6 @@ public class ImageUtils {
 				int l;
 				int dl = 0;
 				long t = -1;
-				long start = System.currentTimeMillis();
 				while (!stop && (l = in.read(buffer)) != -1) {
 					out.write(buffer, 0, l);
 					dl += l;
@@ -737,7 +738,7 @@ public class ImageUtils {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Stopped downloading " + p);
 					f.delete();
 				} else {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Downloaded " + p + " (" + dl + ") in " + (System.currentTimeMillis() - start)/1000 + "s");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Downloaded " + p + " (" + dl + ") in " + ((System.currentTimeMillis() - start) / 1000) + "s");
 					toDelete.add(f);
 				}
 			}
@@ -748,7 +749,7 @@ public class ImageUtils {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			f = null;
 
-			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Downloading failed");
+			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, "Downloading " + p + " failed");
 		}
 
 		if (stop) {

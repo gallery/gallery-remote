@@ -8,9 +8,6 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicLabelUI;
-import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.LabelUI;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.event.*;
@@ -18,7 +15,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.io.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -72,8 +68,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	public void showSlideshow() {
-		try {
-			if (GalleryRemote.IS_MAC_OS_X) {
+		//try {
+			/*if (GalleryRemote.IS_MAC_OS_X) {
 				// on the Mac, using a maximized window doesn't take care of the menu bar
 
 				// Java 1.4 only
@@ -89,16 +85,16 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 				// unfortunately, this doesn't work on Mac 1.4.2...
 				// gd.setFullScreenWindow(this);
-			} else {
+			} else {*/
 				DialogUtil.maxSize(this);
 				//setBounds(600, 100, 500, 500);
 				setVisible(true);
-			}
-		} catch (Throwable e) {
+			//}
+		/*} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
 			setVisible(true);
-		}
+		}*/
 
 		// todo: this is a hack to prevent painting problems (the status bar paints
 		// on top of the slide show)
@@ -109,9 +105,16 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	public void hide() {
+		Log.log(Log.LEVEL_TRACE, MODULE, "Stopping slideshow");
+		running = false;
+		shutdown = true;
+
+		if (!isShowing()) {
+			return;
+		}
+
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		gd.setFullScreenWindow(null);
-
 		super.hide();
 
 		if (GalleryRemote._() != null) {
@@ -125,13 +128,15 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public void initComponents() {
 		previewCacheSize = 3;
 		addMouseListener(new MouseAdapter() {
-			public void mousePressed(java.awt.event.MouseEvent mouseEvent) {
+			public void mouseClicked(java.awt.event.MouseEvent mouseEvent) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Got click");
 				nextAsync();
 			}
 		});
 
 		addMouseWheelListener(new MouseWheelListener() {
 			public void mouseWheelMoved(MouseWheelEvent e) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Got wheel: " + e);
 				if (e.getWheelRotation() > 0) {
 					nextAsync();
 				} else {
@@ -147,9 +152,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 				switch (vKey) {
 					case KeyEvent.VK_ESCAPE:
-						Log.log(Log.LEVEL_TRACE, MODULE, "Stopping slideshow");
-						running = false;
-						shutdown = true;
 						hide();
 						break;
 					case KeyEvent.VK_LEFT:
@@ -203,7 +205,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 						if (shutdown) {
 							break;
 						}
-						
+
 						Picture picture = (Picture) it.next();
 						ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
 					}
@@ -214,8 +216,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 	public void run() {
 		running = true;
-		while (running) {
-
+		while (running && !shutdown) {
 			if (!next(false)) {
 				// the slideshow is over
 				hide();
@@ -228,6 +229,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 				while ((sleep = sleepTime - (System.currentTimeMillis() - pictureShownTime)) > 0) {
 					Thread.sleep(sleep);
 				}
+				//Log.log(Log.LEVEL_TRACE, MODULE, "sleepTime: " + sleepTime + " - " + (System.currentTimeMillis() - pictureShownTime));
+				//Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
@@ -254,6 +257,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 	public boolean next(boolean user) {
 		int index = -1;
+		//Log.log(Log.LEVEL_TRACE, MODULE, "running: " + running + " shutdown: " + shutdown + " loadpicture " + loadPicture);
 
 		if (loadPicture != null) {
 			index = pictures.indexOf(loadPicture);
@@ -271,6 +275,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Next picture");
+		//Log.logStack(Log.LEVEL_TRACE, MODULE);
 
 		// display next picture
 		Picture picture = (Picture) pictures.get(index);
@@ -278,6 +283,11 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			userPicture = picture;
 		} else if (userPicture != null && userPicture != picture) {
 			// automatic move trying to move away from user-chosen picture
+
+			// add delay to prevent endless loop
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
 			return true;
 		}
 
@@ -361,6 +371,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			}
 		}
 
+		//Log.log(Log.LEVEL_TRACE, MODULE, "TIMESTAMP");
 		pictureShownTime = System.currentTimeMillis();
 
 		super.pictureReady(image, picture);

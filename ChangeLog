@@ -1,3 +1,8 @@
+2004-05-07  Pierre-Luc Paour <gallery@paour.com> (1.4-b8)
+
+	* Fixed a runaway thread in slideshow that would lock up
+	  the VM.
+
 2004-05-06  Pierre-Luc Paour <gallery@paour.com> (1.4-b7)
 
 	* Added support for cropping before upload! This is done in
