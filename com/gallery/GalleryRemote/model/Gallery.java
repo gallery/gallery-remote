@@ -58,6 +58,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String username;
 	String password;
 	String alias;
+        String userAgent = null;
 	int type = TYPE_STANDALONE;
 
 	transient GalleryComm comm = null;
@@ -443,6 +444,16 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setApUrlString(String urlString) {
 		stUrlString = urlString;
+	}
+
+	/* Desired User-Agent */
+
+	public void setUserAgent(String userAgent) {
+	        this.userAgent = userAgent;
+	}
+
+	public String getUserAgent() {
+	        return userAgent;
 	}
 
 	/* Generic */

@@ -1292,6 +1292,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		// create a connection
 		HTTPConnection mConnection = new HTTPConnection(galUrl);
+		String userAgent = g.getUserAgent();
+		if (userAgent != null) {
+		    mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent) });
+		}
 
 		// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
 		HTTPResponse rsp = null;

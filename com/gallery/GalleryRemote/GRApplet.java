@@ -94,6 +94,7 @@ public class GRApplet extends JApplet {
 		String cookieValue = getParameter("gr_cookie_value");
 		String cookieDomain = getParameter("gr_cookie_domain");
 		String cookiePath = getParameter("gr_cookie_path");
+		String userAgent = getParameter("gr_user_agent");
 
 		info.albumName = getParameter("gr_album");
 
@@ -104,6 +105,7 @@ public class GRApplet extends JApplet {
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain: " + cookieDomain);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path: " + cookiePath);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_album: " + info.albumName);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_user_agent: " + userAgent);
 
 		if (cookieDomain == null || cookieDomain.length() < 1) {
 			try {
@@ -161,6 +163,7 @@ public class GRApplet extends JApplet {
 
 					info.gallery.setType(Gallery.TYPE_APPLET);
 					info.gallery.setApUrlString(urlFull);
+					info.gallery.setUserAgent(userAgent);
 
 					Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
 				} catch (MalformedURLException ee) {
@@ -174,6 +177,7 @@ public class GRApplet extends JApplet {
 			// old versions of Gallery, or bad urlFull
 			info.gallery.setType(Gallery.TYPE_STANDALONE);
 			info.gallery.setStUrlString(url);
+			info.gallery.setUserAgent(userAgent);
 		}
 
 		info.gallery.cookieLogin = true;

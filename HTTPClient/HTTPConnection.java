@@ -3637,8 +3637,12 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	// User-Agent
 
 	if (ua_idx != -1)
-	    dataout.writeBytes("User-Agent: " + hdrs[ua_idx].getValue().trim() + " "
-			       + version + "\r\n");
+	    // Got rid of this behaviour; we want to have full control over the
+	    // user agent.  -BM 1/6/2005
+	    //
+	    // dataout.writeBytes("User-Agent: " + hdrs[ua_idx].getValue().trim() + " "
+	    // 	       + version + "\r\n");
+	    dataout.writeBytes("User-Agent: " + hdrs[ua_idx].getValue().trim() + "\r\n");
 	else
 	    dataout.writeBytes("User-Agent: " + version + "\r\n");
 
