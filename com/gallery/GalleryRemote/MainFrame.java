@@ -256,8 +256,13 @@ public class MainFrame extends JFrame
 		jAlbumTree.setExpandsSelectedPaths(true);
 		jAlbumTree.setEnabled(true);
 		jAlbumTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		jAlbumTree.setCellRenderer(new AlbumTreeRenderer());
-		((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote._().properties.getIntProperty("albumPictureDividerLocation"), -1));
+		AlbumTreeRenderer albumTreeRenderer = new AlbumTreeRenderer();
+		albumTreeRenderer.setLeafIcon(null);
+		albumTreeRenderer.setOpenIcon(null);
+		albumTreeRenderer.setClosedIcon(null);
+		jAlbumTree.setCellRenderer(albumTreeRenderer);
+		//((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote._().properties.getIntProperty("albumPictureDividerLocation"), -1));
+		ToolTipManager.sharedInstance().registerComponent(jAlbumTree);
 
 		jPictureInspector.setMainFrame(this);
 		jAlbumInspector.setMainFrame(this);
@@ -994,6 +999,7 @@ public class MainFrame extends JFrame
 		jPictureScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "pictures")));
 		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "albums")));
+		jAlbumScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		setupKeyboardHandling(jPictureScroll);
 		setupKeyboardHandling(jAlbumScroll);
 
@@ -1908,8 +1914,10 @@ public class MainFrame extends JFrame
 				// setForeground(Color.black);
 			}
 
-			setIcon(null);
-			setText(getText().trim());
+			//setIcon(null);
+			String name = getText().trim();
+			setText(name);
+			setToolTipText(name);
 
 			return this;
 		}

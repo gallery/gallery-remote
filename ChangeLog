@@ -1,3 +1,10 @@
+2004-02-23  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b4)
+
+	* Fixed Linux tree display error. Thanks to "herk" for
+	  finding the problem. The album tree no longer has a horizontal
+	  scrollbar, but uses tooltips. The tooltips only appear if
+	  part of the name is obscured, ala Windows Tree Control.
+
 2004-02-18  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b3)
 
 	* Another try at fixing that Swing error. I now think that this

@@ -26,7 +26,10 @@ import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 
 import javax.swing.*;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -276,5 +279,55 @@ public class DroppableTree
 		}
 
 		return row;
+	}
+
+	public Point getToolTipLocation(MouseEvent event) {
+		try {
+			Point p = event.getPoint();
+			int selRow = getRowForLocation(p.x, p.y);
+
+			TreePath path = getPathForRow(selRow);
+			Rectangle pathBounds = getPathBounds(path);
+
+			Point location = pathBounds.getLocation();
+			location.translate(-4, 0);
+			return location;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public String getToolTipText(MouseEvent event) {
+		// this code is copied from JTree, to only show tooltip when longer than the tree
+		if(event != null) {
+			Point p = event.getPoint();
+			int selRow = getRowForLocation(p.x, p.y);
+			TreeCellRenderer       r = getCellRenderer();
+
+			if(selRow != -1 && r != null) {
+				TreePath     path = getPathForRow(selRow);
+				Object       lastPath = path.getLastPathComponent();
+				Component    rComponent = r.getTreeCellRendererComponent
+					(this, lastPath, isRowSelected(selRow),
+					 isExpanded(selRow), getModel().isLeaf(lastPath), selRow,
+					 true);
+
+				Rectangle pathBounds = getPathBounds(path);
+
+				if(rComponent instanceof JComponent && pathBounds.x + pathBounds.width > getParent().getWidth()) {
+					MouseEvent      newEvent;
+
+					p.translate(-pathBounds.x, -pathBounds.y);
+					newEvent = new MouseEvent(rComponent, event.getID(),
+										  event.getWhen(),
+											  event.getModifiers(),
+											  p.x, p.y, event.getClickCount(),
+											  event.isPopupTrigger());
+
+					return ((JComponent)rComponent).getToolTipText(newEvent);
+				}
+			}
+		}
+		return null;
 	}
 }
