@@ -41,7 +41,8 @@ import javax.swing.event.*;
  *@created    August 16, 2002
  */
 public class MainFrame extends javax.swing.JFrame
-		 implements ActionListener, ItemListener, ListSelectionListener
+		 implements ActionListener, ItemListener, ListSelectionListener, 
+		 ListDataListener
 {
 	public static final String MODULE = "MainFrame";
 	
@@ -135,13 +136,14 @@ public class MainFrame extends javax.swing.JFrame
 
 		picturesList.setModel( mAlbum );
 		picturesList.setCellRenderer( new FileCellRenderer() );
+		picturesList.getModel().addListDataListener( this );
 		( (DroppableList) picturesList ).setMainFrame( this );
 
 		pictureInspector.setMainFrame( this );
 
 		previewFrame.initComponents();
 
-		updateUI();
+		resetUIState();
 
 		jCheckBoxMenuThumbnails.setSelected( GalleryRemote.getInstance().properties.getShowThumbnails() );
 		jCheckBoxMenuPreview.setSelected( GalleryRemote.getInstance().properties.getShowPreview() );
@@ -195,7 +197,7 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	void updateUI() {
+	void resetUIState() {
 		//-- if the list is empty, disable the Upload ---
 		upload.setEnabled( ( mAlbum.sizePictures() > 0 ) &&
 				!mInProgress &&
@@ -203,21 +205,24 @@ public class MainFrame extends javax.swing.JFrame
 		browse.setEnabled( !mInProgress );
 		fetch.setEnabled( !mInProgress );
 
-		pictureInspector.setPictures( picturesList.getSelectedValues() );
-
-		int sel = picturesList.getSelectedIndex();
-		int selN = picturesList.getSelectedIndices().length;
-
-		if ( sel == -1 ) {
-			setStatus( mAlbum.sizePictures() + " pictures, "
+		if (mAlbum.sizePictures() > 0) {
+			pictureInspector.setPictures( picturesList.getSelectedValues() );
+			
+			int sel = picturesList.getSelectedIndex();
+			int selN = picturesList.getSelectedIndices().length;
+			
+			if ( sel == -1 ) {
+				setStatus( mAlbum.sizePictures() + " pictures, "
 				+ ( (int) mAlbum.getPictureFileSize() / 1024 ) + " K" );
-		} else {
-			setStatus( "Selected " + selN + ((selN == 1)?" picture, ":" pictures, ")
+			} else {
+				setStatus( "Selected " + selN + ((selN == 1)?" picture, ":" pictures, ")
 				+ ( (int) mAlbum.getObjectFileSize(picturesList.getSelectedValues()) / 1024 ) + " K" );
+			}
+		} else {
+			pictureInspector.setPictures( null );
+			
+			setStatus( "No selection" );
 		}
-		
-		//jButtonUp.setEnabled( selN == 1 );
-		//jButtonDown.setEnabled( selN == 1 );
 	}
 
 
@@ -320,7 +325,7 @@ public class MainFrame extends javax.swing.JFrame
 			addPictures( files );
 		}
 
-		updateUI();
+		resetUIState();
 	}
 	
 	/**
@@ -330,7 +335,7 @@ public class MainFrame extends javax.swing.JFrame
 	*/
 	public void addPictures( File[] files ) {
 		addPictures( files, -1 );
-		updateUI();
+		resetUIState();
 	}
 	
 
@@ -364,7 +369,7 @@ public class MainFrame extends javax.swing.JFrame
 				} );*/
 		thumbnailCache.preloadThumbnails( files );
 
-		updateUI();
+		resetUIState();
 	}
 
 
@@ -385,7 +390,7 @@ public class MainFrame extends javax.swing.JFrame
 		mGalleryComm.uploadFiles( mAlbum.getFileList() );
 
 		mInProgress = true;
-		updateUI();
+		resetUIState();
 		
 		int pId = startProgress(0, mAlbum.sizePictures(), "Uploading pictures");
 
@@ -403,7 +408,7 @@ public class MainFrame extends javax.swing.JFrame
 						mAlbum.clearPictures();
 						mInProgress = false;
 						picturesList.enable();
-						updateUI();
+						resetUIState();
 						
 						Log.log(Log.INFO, MODULE, "uploadPictures finished");
 					}
@@ -430,7 +435,7 @@ public class MainFrame extends javax.swing.JFrame
 		mGalleryComm.fetchAlbums();
 
 		mInProgress = true;
-		updateUI();
+		resetUIState();
 		
 		int pId = startProgress(0, 0, "Fetching albums");
 
@@ -448,7 +453,7 @@ public class MainFrame extends javax.swing.JFrame
 						mAlbumList = mGalleryComm.getAlbumList();
 						mInProgress = false;
 						updateAlbumCombo();
-						updateUI();
+						resetUIState();
 					}
 				}
 				
@@ -581,8 +586,6 @@ public class MainFrame extends javax.swing.JFrame
 	public void showAboutBox() {
 		try {
 			AboutBox ab = new AboutBox(this);
-			//ab.initComponents();
-			//ab.setVersionString( APP_VERSION_STRING );
 			ab.setVisible( true );
 		} catch ( Exception err ) {
 			err.printStackTrace();
@@ -737,8 +740,6 @@ public class MainFrame extends javax.swing.JFrame
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
 			fetchAlbums();
-		//} else if ( command.equals( "Delete" ) ) {
-		//	deleteSelectedPictures();
 		} else if ( command.equals( "Browse" ) ) {
 			browseAddPictures();
 		} else if ( command.equals( "Upload" ) ) {
@@ -780,6 +781,8 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  ListSelection event
 	 */
 	public void valueChanged( ListSelectionEvent e ) {
+		Log.log(Log.TRACE, MODULE, "List selection changed");
+		
 		int sel = picturesList.getSelectedIndex();
 
 		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
@@ -796,11 +799,26 @@ public class MainFrame extends javax.swing.JFrame
 			}
 		}
 
-		updateUI();
+		resetUIState();
 	}
-
-
+	
+		
 	/**
+	 *  Implementation of the ListDataListener
+	 *
+	 *@param  e  ListSelection event
+	 */
+	public void contentsChanged( ListDataEvent e ) {
+		// Also tell MainFrame (ugly, but works around bug in Swing where when 
+		// the list data changes (and nothing remains to be selected), no
+		// selection change events are fired.
+		resetUIState();
+	}
+	public void intervalAdded(ListDataEvent e) {}
+	public void intervalRemoved(ListDataEvent e) {}
+
+
+ 	/**
 	 *  Listen for key events
 	 *
 	 *@param  e  Key event
