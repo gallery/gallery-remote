@@ -198,7 +198,7 @@ public class GalleryComm1 implements GalleryComm {
 		void runTask() {
 			ArrayList pictures = g.getAllPictures();
 			
-			pId = su.startProgress(0, pictures.size(), "Uploading pictures");
+			pId = su.startProgress(0, pictures.size(), "Uploading pictures", false);
 			
 			// upload each file, one at a time
 			boolean allGood = true;
@@ -281,7 +281,7 @@ public class GalleryComm1 implements GalleryComm {
 	
 	class AlbumListTask extends GalleryTask {
 		void runTask() {
-			status("Fetching albums from " + g.toString());
+			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
 			
 			try {
 				URL url =g.getUrl();
@@ -350,6 +350,8 @@ public class GalleryComm1 implements GalleryComm {
 				Log.logException(Log.ERROR, MODULE, ee);
 				status("Error: " + ee.toString());
 			}
+		
+			su.stopProgress(pId, "Fetch complete");
 		}
 	}
 

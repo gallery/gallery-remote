@@ -59,7 +59,7 @@ public class ThumbnailCache implements Runnable
 	 */
 	public void run() {
 		int loaded = 0;
-		int pId = mf.startProgress(0, toLoad.size(), "Loading thumbnails");
+		int pId = mf.startProgress(0, toLoad.size(), "Loading thumbnails", false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();

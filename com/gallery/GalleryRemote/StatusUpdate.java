@@ -29,7 +29,7 @@ package com.gallery.GalleryRemote;
 public interface StatusUpdate {
 	public void setStatus( String message );
 	
-	public int startProgress( int min, int max, String message);
+	public int startProgress( int min, int max, String message, boolean undetermined);
 	
 	public void updateProgressValue( int progressId, int value );
 	public void updateProgressValue( int progressId, int value, int maxValue );

@@ -30,7 +30,7 @@ public abstract class StatusUpdateAdapter implements StatusUpdate {
 	public void setStatus( String message ) {
 	}
 	
-	public int startProgress( int min, int max, String message) {
+	public int startProgress( int min, int max, String message, boolean undetermined) {
 		return -1; // XXX: what is this? -- tim
 	}
 	

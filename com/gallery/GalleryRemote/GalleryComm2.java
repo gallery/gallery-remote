@@ -358,7 +358,7 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 		void runTask() {
 			ArrayList pictures = g.getAllPictures();
 			
-			pId = su.startProgress(0, pictures.size(), "Uploading pictures");
+			pId = su.startProgress(0, pictures.size(), "Uploading pictures", false);
 			
 			// upload each file, one at a time
 			boolean allGood = true;
@@ -441,7 +441,7 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 		}
 		
 		void runTask() {
-			status(su, "Fetching albums from " + g.toString());
+			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
 			
 			try {
 				// setup the protocol parameters
@@ -523,6 +523,8 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 				Log.logException(Log.ERROR, MODULE, me);
 				error(su, "Error: " + me.toString());
 			}
+			
+			su.stopProgress(pId, "Fetch complete");
 		}
 	}
 	

@@ -1,6 +1,7 @@
 2002-10-19  Pierre-Luc Paour <gallery@paour.com> (1.0-b10)
 	
 	* Fixed adding a Gallery (broken in b9).
+	* Added undetermined progress bar to Fetch Albums.
 
 2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b9)
 	

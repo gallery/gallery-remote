@@ -58,6 +58,7 @@ public class MainFrame extends javax.swing.JFrame
 	private Gallery currentGallery = null;
 	private Album mAlbum = null;
 	private boolean mInProgress = false;
+	private Thread undeterminedThread = null;
 	private javax.swing.Timer mTimer;
 	private boolean progressOn = false;
 
@@ -355,7 +356,7 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	public int startProgress( int min, int max, String message) {
+	public int startProgress( int min, int max, String message, boolean undetermined) {
 		if (progressOn)
 		{
 			Log.log(Log.INFO, "Hijacking progress by creating a new one");
@@ -367,6 +368,28 @@ public class MainFrame extends javax.swing.JFrame
 		progress.setValue(min);
 		progress.setMaximum(max);
 		//progress.setStringPainted( true );
+		
+		if (undetermined && undeterminedThread == null) {
+			undeterminedThread = new Thread() {
+				public void run() {
+					boolean forward = true;
+					while (! interrupted() ) {
+						if (progress.getValue() >= progress.getMaximum()) {
+							forward = false;
+						} else if (progress.getValue() <= progress.getMinimum()) {
+							forward = true;
+						}
+						
+						updateProgressValue(progressId, progress.getValue() + (forward?1:-1));
+						
+						try {
+							sleep(500);
+						} catch (InterruptedException e) {}
+					}
+				}
+			};
+			undeterminedThread.start();
+		}
 
 		status.setText(message + "...");
 
@@ -411,6 +434,11 @@ public class MainFrame extends javax.swing.JFrame
 
 		if ( progressId == this.progressId ) {
 			progressOn = false;
+			
+			if (undeterminedThread != null) {
+				undeterminedThread.interrupt();
+				undeterminedThread = null;
+			}
 
 			//progress.setStringPainted( false );
 			progress.setValue(progress.getMinimum());
@@ -431,6 +459,8 @@ public class MainFrame extends javax.swing.JFrame
 	public void error (String message ) {
 		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
 	}
+	
+	
 
 	/**
 	 *  Open a file selection dialog and load the corresponding files
