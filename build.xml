@@ -15,7 +15,7 @@
   </target>
 
   <target name="compile" depends="init"
-        description="compile the source " >
+        description="compile the source" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}"
 	  includes="com/**,HTTPClient/**" 
@@ -23,6 +23,13 @@
 	
 	<!-- other files needed -->
 	<copy file="${src}/remoteAbout.gif" todir="${build}" />
+  </target>
+
+  <target name="run" depends="compile"
+        description="compile then run" >
+
+	<java classname="com.gallery.GalleryRemote.GalleryRemote"
+	  classpath="${build}" fork="true" />
   </target>
 
   <target name="clean"
