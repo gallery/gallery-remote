@@ -21,8 +21,8 @@ public class DialogUtil {
 		Rectangle r = new Rectangle();
 		r.setSize(d);
 
-		int x = (int) (or.getX() + or.getWidth()/2 - d.getWidth()/2);
-		int y = (int) (or.getY() + or.getHeight()/2 - d.getHeight()/2);
+		int x = (int) (or.getX() + or.getWidth() / 2 - d.getWidth() / 2);
+		int y = (int) (or.getY() + or.getHeight() / 2 - d.getHeight() / 2);
 
 		if (x < 0) x = 0;
 		if (y < 0) y = 0;

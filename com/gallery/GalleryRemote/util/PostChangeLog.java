@@ -1,13 +1,12 @@
 package com.gallery.GalleryRemote.util;
 
-import org.apache.tools.ant.BuildException;
+import HTTPClient.*;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import org.apache.tools.ant.BuildException;
 
+import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.*;
-
-import HTTPClient.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +20,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 
 		// should we even be doing this?
 		boolean active = changeProps.getBooleanProperty("active");
-		if (! active) {
+		if (!active) {
 			System.out.println("Not active");
 			return;
 		}
@@ -32,7 +31,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 
 		Pattern buildPattern = Pattern.compile(".*-b(\\d*)");
 		Matcher m = buildPattern.matcher(currentBuildS);
-		if (! m.matches()) {
+		if (!m.matches()) {
 			System.out.println("Not a beta build");
 			return;
 		}
@@ -49,7 +48,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			String date = null;
 			String author = null;
 			String email = null;
-			String version =  null;
+			String version = null;
 			StringBuffer changes = new StringBuffer();
 
 			changes.append("Changes between b").append(siteBetaBuild).append(" and b").append(currentBetaBuild).append(": ");
@@ -109,10 +108,10 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 
 			NVPair form_data[] = {
 				new NVPair("op", "modload"),
-				new NVPair("name", "GalleryRemoteVersion" ),
-				new NVPair("file", "index" ),
-				new NVPair("action", "save-beta" ),
-				new NVPair("newVersion", betaCheck.toString() ),
+				new NVPair("name", "GalleryRemoteVersion"),
+				new NVPair("file", "index"),
+				new NVPair("action", "save-beta"),
+				new NVPair("newVersion", betaCheck.toString()),
 			};
 
 			// set cookie handling
@@ -121,13 +120,14 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 					System.out.println("Accepting cookie: " + cookie);
 					return true;
 				}
+
 				public boolean sendCookie(Cookie cookie, RoRequest req) {
 					System.out.println("Sending cookie: " + cookie);
 					return true;
 				}
 			});
 
-			HTTPConnection mConnection = new HTTPConnection( "gallery.menalto.com" );
+			HTTPConnection mConnection = new HTTPConnection("gallery.menalto.com");
 			HTTPResponse rsp = null;
 			String response = null;
 

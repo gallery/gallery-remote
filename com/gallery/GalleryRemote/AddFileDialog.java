@@ -23,38 +23,33 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.GRI18n;
 
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
-import javax.swing.JFileChooser;
+public class AddFileDialog {
 
-public class AddFileDialog
-{
-
-	static File[] addFiles(Component parent)
-	{
+	static File[] addFiles(Component parent) {
 		JFileChooser fc = new JFileChooser();
-		
+
 		fc.addChoosableFileFilter(new GalleryFileFilter());
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fc.setMultiSelectionEnabled(true);
-		
+
 		File currentDirectory = GalleryRemote.getInstance().properties.getCurrentDirectory();
-		if (currentDirectory != null)
-		{
+		if (currentDirectory != null) {
 			fc.setCurrentDirectory(currentDirectory);
 		}
 
 		int retval = fc.showDialog(parent, GRI18n.getString("AddFileDialog", "Add"));
-		if (retval != JFileChooser.CANCEL_OPTION)
-		{
+		if (retval != JFileChooser.CANCEL_OPTION) {
 			GalleryRemote.getInstance().properties.setCurrentDirectory(fc.getCurrentDirectory());
-			
+
 			File[] files = fc.getSelectedFiles();
-			
+
 			return files;
 		}
-			
+
 		return null;
 	}
 }

@@ -22,23 +22,18 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
-import java.io.BufferedWriter;
-import java.io.CharArrayWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- *  Log manager
- *
- *@author     paour
- *@created    August 18, 2002
+ * Log manager
+ * 
+ * @author paour
+ * @created August 18, 2002
  */
-public class Log extends Thread implements PreferenceNames
-{
+public class Log extends Thread implements PreferenceNames {
 	public final static int LEVEL_CRITICAL = 0;
 	public final static int LEVEL_ERROR = 1;
 	public final static int LEVEL_INFO = 2;
@@ -55,41 +50,41 @@ public class Log extends Thread implements PreferenceNames
 	public static int maxLevel = LEVEL_TRACE;
 	public static boolean toSysOut;
 
-	static int threadPriority = ( Thread.MIN_PRIORITY + Thread.NORM_PRIORITY ) / 2;
+	static int threadPriority = (Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2;
 	static Log singleton = new Log();
-	
+
 	BufferedWriter writer = null;
-	List logLines = Collections.synchronizedList( new LinkedList() );
+	List logLines = Collections.synchronizedList(new LinkedList());
 	boolean running = false;
 
 	private Log() {
 		try {
-			writer = new BufferedWriter( new FileWriter( "log.txt" ) );
-		} catch ( IOException e ) {
-			System.err.println( "Can't open log file 'log.txt'. Disabling log." );
+			writer = new BufferedWriter(new FileWriter("log.txt"));
+		} catch (IOException e) {
+			System.err.println("Can't open log file 'log.txt'. Disabling log.");
 			maxLevel = -1;
 		}
 
-		setPriority( threadPriority );
+		setPriority(threadPriority);
 		start();
 	}
 
 
-	public static void log( int level, String module, String message ) {
-		if ( level <= maxLevel ) {
-			if ( module == null ) {
+	public static void log(int level, String module, String message) {
+		if (level <= maxLevel) {
+			if (module == null) {
 				module = emptyModule;
 			} else {
-				module = ( module + emptyModule ).substring( 0, moduleLength );
+				module = (module + emptyModule).substring(0, moduleLength);
 			}
 
-			String time = emptyTime + (System.currentTimeMillis()-startTime);
+			String time = emptyTime + (System.currentTimeMillis() - startTime);
 			time = time.substring(time.length() - emptyTime.length());
 
-			singleton.logLines.add( time + "|"
-					 + levelName[level] + "|"
-					 + module + "|"
-					 + message );
+			singleton.logLines.add(time + "|"
+					+ levelName[level] + "|"
+					+ module + "|"
+					+ message);
 		}
 		/*if (singleton.logLines.isEmpty())
 		{
@@ -99,119 +94,119 @@ public class Log extends Thread implements PreferenceNames
 		}*/
 	}
 
-	public static void log( int level, Class c, String message ) {
-		log( level, c.getName(), message );
+	public static void log(int level, Class c, String message) {
+		log(level, c.getName(), message);
 	}
 
-	public static void log( int level, Object o, String message ) {
-		log( level, getShortClassName(o.getClass()), message );
+	public static void log(int level, Object o, String message) {
+		log(level, getShortClassName(o.getClass()), message);
 	}
 
-	public static void log( int level, String message ) {
-		log( level, (String) null, message );
+	public static void log(int level, String message) {
+		log(level, (String) null, message);
 	}
 
-	public static void log( Class c, String message ) {
-		log( LEVEL_TRACE, getShortClassName(c), message );
+	public static void log(Class c, String message) {
+		log(LEVEL_TRACE, getShortClassName(c), message);
 	}
 
-	public static void log( Object o, String message ) {
-		log( LEVEL_TRACE, getShortClassName(o.getClass()), message );
+	public static void log(Object o, String message) {
+		log(LEVEL_TRACE, getShortClassName(o.getClass()), message);
 	}
 
-	public static void log( String module, String message ) {
-		log( LEVEL_TRACE, module, message );
+	public static void log(String module, String message) {
+		log(LEVEL_TRACE, module, message);
 	}
 
-	public static void log( String message ) {
-		log( LEVEL_TRACE, (String) null, message );
+	public static void log(String message) {
+		log(LEVEL_TRACE, (String) null, message);
 	}
-	
+
 	public static void logStack(int level, String module) {
-		if ( level <= maxLevel ) {
+		if (level <= maxLevel) {
 			CharArrayWriter caw = new CharArrayWriter();
 			try {
 				throw new Exception("Dump stack");
 			} catch (Exception e) {
 				e.printStackTrace(new PrintWriter(caw));
 			}
-			
+
 			log(level, module, caw.toString());
 		}
 	}
-	
+
 	public static void logException(int level, String module, Throwable t) {
-		if ( level <= maxLevel ) {
+		if (level <= maxLevel) {
 			//log(level, module, t.toString());
 			
 			CharArrayWriter caw = new CharArrayWriter();
 			t.printStackTrace(new PrintWriter(caw));
-			
+
 			log(level, module, caw.toString());
 		}
 	}
-	
+
 	public static String getShortClassName(Class c) {
 		String name = c.getName();
 		int i = name.lastIndexOf(".");
-		
-		if ( i == -1 ) {
+
+		if (i == -1) {
 			return name;
 		} else {
-			return name.substring( i + 1 );
+			return name.substring(i + 1);
 		}
 	}
-	
+
 	public static void shutdown() {
 		singleton.running = false;
 		try {
 			singleton.join();
-		} catch ( InterruptedException ee) {
-			System.err.println( "Thread killed for some reason" );
+		} catch (InterruptedException ee) {
+			System.err.println("Thread killed for some reason");
 		}
 	}
 
 
 	/**
-	 *  Main processing method for the Log object
+	 * Main processing method for the Log object
 	 */
 	public void run() {
 		running = true;
 		try {
-			while ( running ) {
-				Thread.sleep( sleepInterval );
-				while ( !logLines.isEmpty() ) {
-					String s = (String) logLines.remove( 0 );
-					writer.write( s );
+			while (running) {
+				Thread.sleep(sleepInterval);
+				while (!logLines.isEmpty()) {
+					String s = (String) logLines.remove(0);
+					writer.write(s);
 					writer.newLine();
 
 					if (toSysOut) {
 						System.out.println(s);
 					}
 				}
-				
+
 				writer.flush();
 			}
-			
+
 			writer.close();
-		} catch ( IOException e ) {
-			System.err.println( "Can't write to log file. Disabling log..." );
+		} catch (IOException e) {
+			System.err.println("Can't write to log file. Disabling log...");
 			maxLevel = -1;
-		} catch ( InterruptedException e) {
-			System.err.println( "Thread killed for some reason" );
+		} catch (InterruptedException e) {
+			System.err.println("Thread killed for some reason");
 		}
 	}
 
 	public static void setMaxLevel() {
-		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL )) {
-			maxLevel = GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL );
-			singleton.logLines.add( emptyTime + "|"
+		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty(LOG_LEVEL)) {
+			maxLevel = GalleryRemote.getInstance().properties.getIntProperty(LOG_LEVEL);
+			singleton.logLines.add(emptyTime + "|"
 					+ levelName[LEVEL_TRACE] + "|"
 					+ emptyModule + "|"
-					+ "Setting Log level to " + levelName[maxLevel] );
+					+ "Setting Log level to " + levelName[maxLevel]);
 		}
 
-		toSysOut = GalleryRemote.getInstance().properties.getBooleanProperty( "toSysOut" );
+		toSysOut = GalleryRemote.getInstance().properties.getBooleanProperty("toSysOut");
 	}
 
 	static {

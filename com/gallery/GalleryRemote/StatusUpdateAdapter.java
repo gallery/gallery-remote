@@ -21,30 +21,40 @@
 package com.gallery.GalleryRemote;
 
 /**
- *	This is an event adapter for the StatusUpdateListener class.
- *
- *	@author     <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
- *	@version    $id$
+ * This is an event adapter for the StatusUpdateListener class.
+ * 
+ * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ * @version $id$
  */
 public abstract class StatusUpdateAdapter implements StatusUpdate {
 	/* level-bound methods */
-	public void startProgress( int level, int min, int max, String message, boolean undetermined) {}
+	public void startProgress(int level, int min, int max, String message, boolean undetermined) {
+	}
 
-	public void updateProgressValue( int level, int value ) {}
-	public void updateProgressValue( int level, int value, int maxValue ) {}
+	public void updateProgressValue(int level, int value) {
+	}
 
-	public void setUndetermined( int level, boolean undetermined) {}
+	public void updateProgressValue(int level, int value, int maxValue) {
+	}
 
-	public void updateProgressStatus( int level, String message ) {}
+	public void setUndetermined(int level, boolean undetermined) {
+	}
 
-	public void stopProgress( int level, String message ) {}
+	public void updateProgressStatus(int level, String message) {
+	}
+
+	public void stopProgress(int level, String message) {
+	}
 
 	/* level-independant methods */
-	public void setInProgress(boolean inProgress) {}
+	public void setInProgress(boolean inProgress) {
+	}
 
-	public void setStatus( String message ) {}
+	public void setStatus(String message) {
+	}
 
-	public void error(String message) {}
+	public void error(String message) {
+	}
 
 	public int getProgressValue(int level) {
 		return 0;

@@ -20,25 +20,23 @@
 */
 package com.gallery.GalleryRemote;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
-import java.text.NumberFormat;
-
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.ImageUtils;
 
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
-import javax.swing.*;
 
 /**
  * Bean inspector for Pictures
@@ -109,18 +107,18 @@ public class PictureInspector extends JPanel
 
 		jAlbum.setRows(0);
 		jAlbum.setEditable(false);
-		jAlbum.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jAlbum.setFont(UIManager.getFont("Label.font"));
 		jAlbum.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jSize.setRows(0);
 		jSize.setEditable(false);
-		jSize.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jSize.setFont(UIManager.getFont("Label.font"));
 		jSize.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jCaption.setLineWrap(true);
 		jCaption.setEditable(false);
-		jCaption.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jCaption.setFont(UIManager.getFont("Label.font"));
 		jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jPath.setBackground(UIManager.getColor("TextField.inactiveBackground"));
-		jPath.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jPath.setFont(UIManager.getFont("Label.font"));
 		jPath.setEditable(false);
 		jPath.setLineWrap(true);
 
@@ -175,17 +173,17 @@ public class PictureInspector extends JPanel
 		jFlipButton.setIcon(MainFrame.iFlip);
 
 		add(jLabel5, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
+				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0));
 		add(jLabel6, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0));
 		add(jLabel4, new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0
-				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 2, 0));
+				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 2, 0));
 		add(jLabel8, new GridBagConstraints(0, 4, 1, 2, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
 		add(jLabel1, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0));
 		add(jLabel2, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
 		add(jSpacer, new GridBagConstraints(0, 20, 2, 1, 1.0, 0.1
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
@@ -193,12 +191,16 @@ public class PictureInspector extends JPanel
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jIconAreaPanel.add(jIcon, new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jIconAreaPanel.add(jRotateLeftButton, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jIconAreaPanel.add(jFlipButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jIconAreaPanel.add(jRotateRightButton, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
+		if (ImageUtils.useJpegtran) {
+			jIconAreaPanel.add(jRotateLeftButton, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+					, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			jIconAreaPanel.add(jFlipButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+					, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+			jIconAreaPanel.add(jRotateRightButton, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
+					, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		}
+
 		add(jAlbum, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		add(jSize, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0

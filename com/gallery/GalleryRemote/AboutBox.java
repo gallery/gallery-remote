@@ -23,251 +23,231 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Frame;
-import java.awt.Graphics;
+import javax.swing.*;
+import javax.swing.border.MatteBorder;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.UIManager;
-import javax.swing.border.MatteBorder;
+import java.util.StringTokenizer;
 
 /**
- *  Gallery Remote About Box
- *
- *@author     paour
- *@created    August 18, 2002
+ * Gallery Remote About Box
+ * 
+ * @author paour
+ * @created August 18, 2002
  */
 public class AboutBox extends JDialog {
 	public static final String MODULE = "About";
-    public static int TOP = 5;
-    public static int BOTTOM = 105;
+	public static int TOP = 5;
+	public static int BOTTOM = 105;
 
 
+	/**
+	 * Constructor for the AboutBox object
+	 */
+	public AboutBox() {
+		super();
+		init();
+	}
 
-    /**
-     *  Constructor for the AboutBox object
-     */
-    public AboutBox() {
-        super();
-        init();
-    }
-    
-    
-    /**
-     *  Constructor for the AboutBox object
-     *
-     *@param  owner  Description of Parameter
-     */
-    public AboutBox( Frame owner ) {
-        super( owner );
-        init();
-    }
-    
-    
-    private void init() {
-        setModal( true );
-        getContentPane().add( new AboutPanel(), BorderLayout.CENTER );
-        setTitle( GRI18n.getString(MODULE, "title") );
-        		
-        pack();
-        
-        DialogUtil.center(this);
-        
-        addMouseListener(
-        new java.awt.event.MouseAdapter() {
-            public void mouseClicked( MouseEvent e ) {
-                thisWindowClosing();
-            }
-        } );
-        addWindowListener(
-        new java.awt.event.WindowAdapter() {
-            public void windowClosing( MouseEvent e ) {
-                thisWindowClosing();
-            }
-        } );
-    }
-    
-    // Close the window when the box is clicked
-    void thisWindowClosing() {
-        setVisible( false );
-        dispose();
-    }
-    
-    
-    /**
-     *  AboutPanel: scrolling panel of credits for About boxes
-     *
-     *@author     paour
-     *@created    August 16, 2002
-     */
-    public class AboutPanel extends JComponent {
-        ImageIcon image;
-        ArrayList text;
-        int scrollPosition;
-        AnimationThread thread;
-        int maxWidth;
-        FontMetrics fm;
-        int initialPosition;
-        
-        /**
-         *  Constructor for the AboutPanel object
-         */
-        public AboutPanel() {
-            setFont( UIManager.getFont( "Label.font" ) );
-            fm = getFontMetrics( getFont() );
-            
-			URL imu = getClass().getResource( "/rar_about_gr1.png" );
+
+	/**
+	 * Constructor for the AboutBox object
+	 * 
+	 * @param owner Description of Parameter
+	 */
+	public AboutBox(Frame owner) {
+		super(owner);
+		init();
+	}
+
+
+	private void init() {
+		setModal(true);
+		getContentPane().add(new AboutPanel(), BorderLayout.CENTER);
+		setTitle(GRI18n.getString(MODULE, "title"));
+
+		pack();
+
+		DialogUtil.center(this);
+
+		addMouseListener(
+				new java.awt.event.MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						thisWindowClosing();
+					}
+				});
+		addWindowListener(
+				new java.awt.event.WindowAdapter() {
+					public void windowClosing(MouseEvent e) {
+						thisWindowClosing();
+					}
+				});
+	}
+
+	// Close the window when the box is clicked
+	void thisWindowClosing() {
+		setVisible(false);
+		dispose();
+	}
+
+
+	/**
+	 * AboutPanel: scrolling panel of credits for About boxes
+	 * 
+	 * @author paour
+	 * @created August 16, 2002
+	 */
+	public class AboutPanel extends JComponent {
+		ImageIcon image;
+		ArrayList text;
+		int scrollPosition;
+		AnimationThread thread;
+		int maxWidth;
+		FontMetrics fm;
+		int initialPosition;
+
+		/**
+		 * Constructor for the AboutPanel object
+		 */
+		public AboutPanel() {
+			setFont(UIManager.getFont("Label.font"));
+			fm = getFontMetrics(getFont());
+
+			URL imu = getClass().getResource("/rar_about_gr1.png");
 			Log.log(Log.LEVEL_TRACE, MODULE, "Looking for splash screen in " + imu.toString());
-            image = new ImageIcon( imu );
-            
-            setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );
-            
-            text = new ArrayList( );
-            StringTokenizer st = new StringTokenizer(
-            GalleryRemote.getInstance().properties.getProperty( "aboutText" ), "\n" );
-            while ( st.hasMoreTokens() ) {
-                String line = st.nextToken();
-                text.add( line );
-                maxWidth = Math.max( maxWidth,
-                fm.stringWidth( line ) + 10 );
-            }
-            initialPosition = getHeight() - BOTTOM /*- BOTTOM*/ - TOP - TOP;
-            scrollPosition = initialPosition;
-            
-            thread = new AnimationThread();
-        }
-        
-        /**
-         *  Gets the preferredSize attribute of the AboutPanel object
-         *
-         *@return    The preferredSize value
-         *@since
-         */
-        public Dimension getPreferredSize() {
-            return new Dimension( 1 + image.getIconWidth(),
-            1 + image.getIconHeight() );
-        }
-        
-        /**
-         *  Description of the Method
-         *
-         *@param  g  Description of Parameter
-         *@since
-         */
-        public void paintComponent( Graphics g ) {
-            //g.setColor(new Color(96, 96, 96));
-            image.paintIcon( this, g, 1, 1 );
-            
-            FontMetrics fm = g.getFontMetrics();
-            
-            String version = GalleryRemote.getInstance().properties.getProperty( "version" );
-            g.drawString( version, ( getWidth() - fm.stringWidth( version ) ) / 2,
-            getHeight() - 5 );
-            
-            g = g.create( ( getWidth() - maxWidth ) / 2, TOP, maxWidth,
-            getHeight() - TOP - BOTTOM );
-            
-            int height = fm.getHeight();
-            int firstLine = scrollPosition / height;
-            
-            int firstLineOffset = height - scrollPosition % height;
-            int lines = ( getHeight() - TOP - BOTTOM ) / height;
-            
-            int y = firstLineOffset;
-            g.setColor(new Color(255, 255, 255));
-            for ( int i = 0; i <= lines; i++ ) {
-                if ( i + firstLine >= 0 && i + firstLine < text.size() ) {
-                    String line = (String) text.get( i + firstLine );
-                    g.drawString( line, ( maxWidth - fm.stringWidth( line ) ) / 2, y );
-                }
-                y += fm.getHeight();
-            }
-        }
-        
-        /**
-         *  Adds a feature to the Notify attribute of the AboutPanel object
-         *
-         *@since
-         */
-        public void addNotify() {
-            super.addNotify();
-            thread.start();
-        }
-        
-        /**
-         *  Description of the Method
-         *
-         *@since
-         */
-        public void removeNotify() {
-            super.removeNotify();
-            thread.kill();
-        }
-        
-        /**
-         *  Animation thread
-         *
-         *@author     paour
-         *@created    August 16, 2002
-         */
-        class AnimationThread extends Thread {
-            private boolean running = true;
-            
-            
-            AnimationThread() {
-                super( GRI18n.getString(MODULE, "aboutAnim") );
-                setPriority( Thread.MIN_PRIORITY );
-            }
-            
-            
-            /**
-             *  Description of the Method
-             *
-             *@since
-             */
-            public void kill() {
-                running = false;
-            }
-            
-            
-            /**
-             *  Main processing method for the AnimationThread object
-             *
-             *@since
-             */
-            public void run() {
-                FontMetrics fm = getFontMetrics( getFont() );
-                int max = ( text.size() * fm.getHeight() );
-                
-                while ( running ) {
-                    long start = System.currentTimeMillis();
-                    
-                    scrollPosition += 2;
-                    
-                    if ( scrollPosition > max ) {
-                        scrollPosition = initialPosition;
-                    }
-                    
-                    try {
-                        Thread.sleep( 100 );
-                    } catch ( Exception e ) {
-                    }
-                    
-                    repaint( getWidth() / 2 - maxWidth,
-                    TOP, maxWidth * 2,
-                    getHeight() - TOP - BOTTOM );
-                }
-            }
-        }
-    }
+			image = new ImageIcon(imu);
+
+			setBorder(new MatteBorder(1, 1, 1, 1, Color.gray));
+
+			text = new ArrayList();
+			StringTokenizer st = new StringTokenizer(
+					GalleryRemote.getInstance().properties.getProperty("aboutText"), "\n");
+			while (st.hasMoreTokens()) {
+				String line = st.nextToken();
+				text.add(line);
+				maxWidth = Math.max(maxWidth,
+						fm.stringWidth(line) + 10);
+			}
+			initialPosition = getHeight() - BOTTOM /*- BOTTOM*/ - TOP - TOP;
+			scrollPosition = initialPosition;
+
+			thread = new AnimationThread();
+		}
+
+		/**
+		 * Gets the preferredSize attribute of the AboutPanel object
+		 * 
+		 * @return The preferredSize value
+		 */
+		public Dimension getPreferredSize() {
+			return new Dimension(1 + image.getIconWidth(),
+					1 + image.getIconHeight());
+		}
+
+		/**
+		 * Description of the Method
+		 * 
+		 * @param g Description of Parameter
+		 */
+		public void paintComponent(Graphics g) {
+			//g.setColor(new Color(96, 96, 96));
+			image.paintIcon(this, g, 1, 1);
+
+			FontMetrics fm = g.getFontMetrics();
+
+			String version = GalleryRemote.getInstance().properties.getProperty("version");
+			g.drawString(version, (getWidth() - fm.stringWidth(version)) / 2,
+					getHeight() - 5);
+
+			g = g.create((getWidth() - maxWidth) / 2, TOP, maxWidth,
+					getHeight() - TOP - BOTTOM);
+
+			int height = fm.getHeight();
+			int firstLine = scrollPosition / height;
+
+			int firstLineOffset = height - scrollPosition % height;
+			int lines = (getHeight() - TOP - BOTTOM) / height;
+
+			int y = firstLineOffset;
+			g.setColor(new Color(255, 255, 255));
+			for (int i = 0; i <= lines; i++) {
+				if (i + firstLine >= 0 && i + firstLine < text.size()) {
+					String line = (String) text.get(i + firstLine);
+					g.drawString(line, (maxWidth - fm.stringWidth(line)) / 2, y);
+				}
+				y += fm.getHeight();
+			}
+		}
+
+		/**
+		 * Adds a feature to the Notify attribute of the AboutPanel object
+		 */
+		public void addNotify() {
+			super.addNotify();
+			thread.start();
+		}
+
+		/**
+		 * Description of the Method
+		 */
+		public void removeNotify() {
+			super.removeNotify();
+			thread.kill();
+		}
+
+		/**
+		 * Animation thread
+		 * 
+		 * @author paour
+		 * @created August 16, 2002
+		 */
+		class AnimationThread extends Thread {
+			private boolean running = true;
+
+
+			AnimationThread() {
+				super(GRI18n.getString(MODULE, "aboutAnim"));
+				setPriority(Thread.MIN_PRIORITY);
+			}
+
+
+			/**
+			 * Description of the Method
+			 */
+			public void kill() {
+				running = false;
+			}
+
+
+			/**
+			 * Main processing method for the AnimationThread object
+			 */
+			public void run() {
+				FontMetrics fm = getFontMetrics(getFont());
+				int max = (text.size() * fm.getHeight());
+
+				while (running) {
+					long start = System.currentTimeMillis();
+
+					scrollPosition += 2;
+
+					if (scrollPosition > max) {
+						scrollPosition = initialPosition;
+					}
+
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+
+					repaint(getWidth() / 2 - maxWidth,
+							TOP, maxWidth * 2,
+							getHeight() - TOP - BOTTOM);
+				}
+			}
+		}
+	}
 }
 

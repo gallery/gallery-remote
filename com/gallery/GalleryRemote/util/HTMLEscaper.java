@@ -33,21 +33,21 @@ public class HTMLEscaper {
 	/**
 	 * A little bit of unit testing
 	 */
-	public static void main( String[] args ) {
+	public static void main(String[] args) {
 
 		String text =
-			"This is a test of the html escaper & let's hope it really, " +
-			"really <B><I>works</I></B>! Is there an \u00f7 with an umlaut in the house?" +
-			"This code is \u00a9copyleft. I like to be paid in \u00fa\u00fa\u00fas";
+				"This is a test of the html escaper & let's hope it really, " +
+				"really <B><I>works</I></B>! Is there an \u00f7 with an umlaut in the house?" +
+				"This code is \u00a9copyleft. I like to be paid in \u00fa\u00fa\u00fas";
 
-		System.out.println( "NOTE: Due to differences in ASCII fonts, the text " +
-								  "sent to the escaper may not display properly. Hopefully you will be " +
-								  "able to tell what it should have looked like from the escaped output." );
-		System.out.println( "in: " + text );
+		System.out.println("NOTE: Due to differences in ASCII fonts, the text " +
+				"sent to the escaper may not display properly. Hopefully you will be " +
+				"able to tell what it should have looked like from the escaped output.");
+		System.out.println("in: " + text);
 
-		System.out.println( "out: " + escape( text ) );
+		System.out.println("out: " + escape(text));
 
-		System.out.println( "rev: " + unescape(escape(text) + " & toto"));
+		System.out.println("rev: " + unescape(escape(text) + " & toto"));
 	}
 
 	/**
@@ -55,22 +55,22 @@ public class HTMLEscaper {
 	 * an HTML entity representation.
 	 * It uses a quick string -> array mapping to avoid creating thousands of
 	 * temporary objects.
+	 * 
 	 * @param nonHTMLsrc String containing the text to make HTML-safe
 	 * @return String containing new copy of string with ENTITIES escaped
 	 */
-	public static final String escape( String nonHTMLsrc ) {
+	public static final String escape(String nonHTMLsrc) {
 		StringBuffer res = new StringBuffer();
 		int l = nonHTMLsrc.length();
 		int idx;
 		char c;
-		for ( int i = 0; i < l; i++ ) {
-			c = nonHTMLsrc.charAt( i );
-			idx = entityMap.indexOf( c );
-			if ( idx == -1 ) {
-				res.append( c );
-			}
-			else {
-				res.append( quickEntities[ idx ] );
+		for (int i = 0; i < l; i++) {
+			c = nonHTMLsrc.charAt(i);
+			idx = entityMap.indexOf(c);
+			if (idx == -1) {
+				res.append(c);
+			} else {
+				res.append(quickEntities[idx]);
 			}
 		}
 		return res.toString();
@@ -263,10 +263,10 @@ public class HTMLEscaper {
 		int l = ENTITIES.length;
 		StringBuffer temp = new StringBuffer();
 
-		quickEntities = new String[ l ];
-		for ( int i = 0; i < l; i++ ) {
-			temp.append( ENTITIES[ i ][ 0 ] );
-			quickEntities[ i ] = "&" + ENTITIES[ i ][ 1 ] + ";";
+		quickEntities = new String[l];
+		for (int i = 0; i < l; i++) {
+			temp.append(ENTITIES[i][0]);
+			quickEntities[i] = "&" + ENTITIES[i][1] + ";";
 			quickRevEntities.put(ENTITIES[i][1], ENTITIES[i][0]);
 		}
 		entityMap = temp.toString();

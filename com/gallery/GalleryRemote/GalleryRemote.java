@@ -19,31 +19,29 @@
 *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.gallery.GalleryRemote;
-import com.gallery.GalleryRemote.prefs.PropertiesFile;
-import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
-import java.awt.Image;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
+
+import javax.swing.*;
 import java.io.File;
 
-import javax.swing.ImageIcon;
-import javax.swing.UIManager;
-
 /**
-*  Main class and entry point of Gallery Remote
-*
-*@author     paour
-*@created    11 août 2002
-*/
+ * Main class and entry point of Gallery Remote
+ * 
+ * @author paour
+ * @created 11 août 2002
+ */
 public class GalleryRemote {
 	private static GalleryRemote singleton = null;
-	
+
 	public MainFrame mainFrame = null;
 	public PropertiesFile properties = null;
 	public PropertiesFile defaults = null;
-		
+
 	private GalleryRemote() {
 		defaults = new PropertiesFile("defaults");
-		
+
 		File f = new File(System.getProperty("user.home")
 				+ File.separator + ".GalleryRemote"
 				+ File.separator);
@@ -53,12 +51,13 @@ public class GalleryRemote {
 		properties = new PropertiesFile(defaults, f.getPath()
 				+ File.separator + "GalleryRemote");
 	}
-	
+
 	private void run() {
 		try {
 			try {
-				UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-			} catch ( Exception e ) {}
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {
+			}
 			
 			// log system properties
 			new GalleryProperties(System.getProperties()).logProperties(Log.LEVEL_INFO, "SysProps");
@@ -73,26 +72,32 @@ public class GalleryRemote {
 				Log.shutdown();
 				System.exit(0);
 			}
-		}
-		catch ( Exception e ) {
+		} catch (Exception e) {
 			Log.logException(Log.LEVEL_CRITICAL, "Startup", e);
 			Log.shutdown();
 		}
 
 		Update update = new Update();
-		update.check( true );
+		update.check(true);
 	}
-	
+
 	public static GalleryRemote getInstance() {
 		if (singleton == null) {
 			singleton = new GalleryRemote();
 		}
-		
+
 		return singleton;
 	}
-	
+
 	// Main entry point
-	public static void main( String[] args ) {
+	public static void main(String[] args) {
+		System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Gallery Remote");
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		System.setProperty("apple.awt.showGrowBox", "false");
+		System.setProperty("apple.awt.brushMetalLook", "true");
+
+		// todo: this should not remain this way
+		System.setProperty("apple.awt.fakefullscreen", "true");
 		getInstance().run();
 	}
 }

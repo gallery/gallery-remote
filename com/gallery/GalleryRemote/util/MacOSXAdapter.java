@@ -31,10 +31,10 @@ import java.lang.reflect.Method;
 /**
  * Single class with hooks to handle existing functionality "about", "quit"
  * and "preferences" within the MacOSX application menu
- *
+ * 
  * @author iluvatar
- * Date: Aug 27, 2003
- * Time: 5:52:55 PM
+ *         Date: Aug 27, 2003
+ *         Time: 5:52:55 PM
  */
 public class MacOSXAdapter extends ApplicationAdapter {
 	private static MacOSXAdapter theAdapter;

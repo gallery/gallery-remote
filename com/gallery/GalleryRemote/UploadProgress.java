@@ -1,17 +1,17 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
-import com.gallery.GalleryRemote.util.OsShutdown;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
-	public static final String MODULE= "UploadProgress";
+	public static final String MODULE = "UploadProgress";
 
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -63,31 +63,31 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 		jCancel.setText(GRI18n.getString(MODULE, "Cancel"));
 		jCancel.addActionListener(this);
-        jCancel.setActionCommand("Cancel");
+		jCancel.setActionCommand("Cancel");
 		jShutdown.setToolTipText(GRI18n.getString(MODULE, "shutDownTip"));
 		jShutdown.setText(GRI18n.getString(MODULE, "shutDown"));
 
-		jPanel1.add(jComputer1,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
-		jPanel1.add(jUploading,   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
-		jPanel1.add(jComputer2,     new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 10), 0, 0));
-		jPanel1.add(jLabelGlobal,     new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
-		jPanel1.add(jProgressGlobal,     new GridBagConstraints(0, 2, 3, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
-		jPanel1.add(jLabelDetail,    new GridBagConstraints(0, 3, 3, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 0, 0), 0, 0));
-		jPanel1.add(jProgressDetail,   new GridBagConstraints(0, 4, 3, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
-		jPanel1.add(jPanel2,      new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jComputer1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
+		jPanel1.add(jUploading, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
+		jPanel1.add(jComputer2, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 10), 0, 0));
+		jPanel1.add(jLabelGlobal, new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
+		jPanel1.add(jProgressGlobal, new GridBagConstraints(0, 2, 3, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
+		jPanel1.add(jLabelDetail, new GridBagConstraints(0, 3, 3, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 0, 0), 0, 0));
+		jPanel1.add(jProgressDetail, new GridBagConstraints(0, 4, 3, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
+		jPanel1.add(jPanel2, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		if (OsShutdown.canShutdown()) {
 			jPanel2.add(jShutdown, null);
 		}
-		
+
 		jPanel2.add(jCancel, null);
 	}
 
@@ -98,7 +98,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 			jProgress[level].setMaximum(maxValue);
 			try {
 				jProgress[level].setIndeterminate(undetermined);
-			} catch (Throwable t) {}
+			} catch (Throwable t) {
+			}
 
 			jLabel[level].setText(message);
 		}
@@ -126,7 +127,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	public void setUndetermined(int level, boolean undetermined) {
 		try {
 			jProgress[level].setIndeterminate(undetermined);
-		} catch (Throwable t) {}
+		} catch (Throwable t) {
+		}
 	}
 
 	public void stopProgress(int level, String message) {
@@ -136,7 +138,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 			try {
 				jProgress[level].setIndeterminate(false);
-			} catch (Throwable t) {}
+			} catch (Throwable t) {
+			}
 
 			if (level == LEVEL_UPLOAD_PROGRESS) {
 				// we're done...

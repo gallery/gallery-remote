@@ -26,7 +26,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		this.mf = mf;
 
 		for (int i = 0; i < data.length; i++) {
-			data[i] =  new StatusLevelData();
+			data[i] = new StatusLevelData();
 		}
 
 		data[0].active = true;
@@ -47,11 +47,11 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		return true;
 	}
 
-	public void setStatus( String message ) {
+	public void setStatus(String message) {
 		updateProgressStatus(LEVEL_GENERIC, message);
 	}
 
-	public void startProgress( int level, int minValue, int maxValue, String message, boolean undetermined) {
+	public void startProgress(int level, int minValue, int maxValue, String message, boolean undetermined) {
 		data[level].minValue = minValue;
 		data[level].maxValue = maxValue;
 		data[level].value = 0;
@@ -79,35 +79,35 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		}
 	}
 
-	public void updateProgressValue( int level, int value ) {
+	public void updateProgressValue(int level, int value) {
 		data[level].value = value;
 
 		if (level == currentLevel && data[level].active) {
-			jProgress.setValue( value );
+			jProgress.setValue(value);
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 
-	public void updateProgressValue( int level, int value, int maxValue ) {
+	public void updateProgressValue(int level, int value, int maxValue) {
 		data[level].maxValue = maxValue;
 		data[level].value = value;
 
 		if (level == currentLevel && data[level].active) {
-			jProgress.setValue( value );
-			jProgress.setMaximum( maxValue );
+			jProgress.setValue(value);
+			jProgress.setMaximum(maxValue);
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 
-	public void updateProgressStatus( int level, String message ) {
+	public void updateProgressStatus(int level, String message) {
 		data[level].message = message;
 
 		if (level == currentLevel && data[level].active) {
-			jStatus.setText( message );
+			jStatus.setText(message);
 		} else {
 			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong level");
 			//Log.logStack(Log.TRACE, MODULE);
@@ -130,7 +130,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		return data[level].maxValue;
 	}
 
-	public void stopProgress( int level, String message ) {
+	public void stopProgress(int level, String message) {
 		data[LEVEL_GENERIC].message = message;
 
 		if (level == currentLevel && data[level].active) {
@@ -152,14 +152,16 @@ public class StatusBar extends JPanel implements StatusUpdate {
 
 				try {
 					jProgress.setIndeterminate(false);
-				} catch (Throwable t) {}
+				} catch (Throwable t) {
+				}
 			} else {
 				jProgress.setMinimum(data[currentLevel].minValue);
 				jProgress.setMaximum(data[currentLevel].maxValue);
 				jProgress.setValue(data[currentLevel].value);
 				try {
 					jProgress.setIndeterminate(data[currentLevel].undetermined);
-				} catch (Throwable t) {}
+				} catch (Throwable t) {
+				}
 
 				jStatus.setText(data[currentLevel].message);
 			}
@@ -174,24 +176,24 @@ public class StatusBar extends JPanel implements StatusUpdate {
 		mf.setInProgress(inProgress);
 	}
 
-	public void error(String message ) {
+	public void error(String message) {
 		JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this), message, GRI18n.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void jbInit() {
-		jProgress.setMinimumSize( new Dimension( 10, 18 ) );
-		jProgress.setPreferredSize( new Dimension( 150, 18 ) );
-		jProgress.setStringPainted( false );
+		jProgress.setMinimumSize(new Dimension(10, 18));
+		jProgress.setPreferredSize(new Dimension(150, 18));
+		jProgress.setStringPainted(false);
 
-		jStatus.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, SystemColor.control, SystemColor.control, Color.gray ) );
-		jStatus.setMinimumSize( new Dimension( 100, 18 ) );
-		jStatus.setPreferredSize( new Dimension( 38, 18 ) );
+		jStatus.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, SystemColor.control, SystemColor.control, Color.gray));
+		jStatus.setMinimumSize(new Dimension(100, 18));
+		jStatus.setPreferredSize(new Dimension(38, 18));
 
-		setLayout( new GridBagLayout() );
-		add( jProgress, new GridBagConstraints( 1, 0, 1, 1, 0.25, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jStatus, new GridBagConstraints( 0, 0, 1, 1, 0.75, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+		setLayout(new GridBagLayout());
+		add(jProgress, new GridBagConstraints(1, 0, 1, 1, 0.25, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		add(jStatus, new GridBagConstraints(0, 0, 1, 1, 0.75, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 	}
 
 	class StatusLevelData {
@@ -215,18 +217,19 @@ public class StatusBar extends JPanel implements StatusUpdate {
 
 		public void run() {
 			boolean forward = true;
-			while (! interrupted() ) {
+			while (!interrupted()) {
 				if (su.getProgressValue(level) >= su.getProgressMaxValue(level)) {
 					forward = false;
 				} else if (su.getProgressValue(level) <= su.getProgressMinValue(level)) {
 					forward = true;
 				}
 
-				su.updateProgressValue(level, su.getProgressValue(level) + (forward?1:-1));
+				su.updateProgressValue(level, su.getProgressValue(level) + (forward ? 1 : -1));
 
 				try {
 					sleep(500);
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException e) {
+				}
 			}
 		}
 	}

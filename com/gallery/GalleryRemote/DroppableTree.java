@@ -20,42 +20,27 @@
  */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.ImageUtils;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
-import java.awt.dnd.DragSourceDragEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.*;
-
-import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.model.Album;
-import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.util.ImageUtils;
+import java.util.Iterator;
 
 /**
- *  Drag and drop handler
- *
- *@author     paour
- *@created    August 16, 2002
+ * Drag and drop handler
+ * 
+ * @author paour
+ * @created August 16, 2002
  */
 public class DroppableTree
 		extends JTree implements DropTargetListener {
@@ -68,12 +53,12 @@ public class DroppableTree
 	int scrollPace = 0;
 
 	public DroppableTree() {
-		dropTarget = new DropTarget( this, this );
+		dropTarget = new DropTarget(this, this);
 	}
 
-	public void paint( Graphics g ) {
+	public void paint(Graphics g) {
 		lastRow = -1;
-		super.paint( g );
+		super.paint(g);
 	}
 
 	public boolean isDragOK(DropTargetEvent dropTargetEvent) {
@@ -104,8 +89,8 @@ public class DroppableTree
 
 		if (!result && lastRow != -1) {
 			Graphics g = getGraphics();
-			g.setXORMode( Color.cyan );
-			g.drawRect( 0, lastRow * rowHeight, getWidth(), rowHeight);
+			g.setXORMode(Color.cyan);
+			g.drawRect(0, lastRow * rowHeight, getWidth(), rowHeight);
 
 			lastRow = -1;
 		}
@@ -114,34 +99,43 @@ public class DroppableTree
 	}
 
 	/* ********* TargetListener ********** */
-	public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "dragEnter - dtde" );
-		if (! isDragOK(dropTargetDragEvent)) {
-			dropTargetDragEvent.rejectDrag( );
+	public void dragEnter(DropTargetDragEvent dropTargetDragEvent) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "dragEnter - dtde");
+		for (Iterator it = dropTargetDragEvent.getCurrentDataFlavorsAsList().iterator(); it.hasNext();) {
+			DataFlavor flavor = (DataFlavor) it.next();
+			Log.log(Log.LEVEL_TRACE, MODULE, "Flavor: " + flavor.getHumanPresentableName() + " -- " +
+					flavor.getMimeType());
+		}
+		Log.log(Log.LEVEL_TRACE, MODULE, "Action: " + dropTargetDragEvent.getSourceActions() + " -- " +
+				dropTargetDragEvent.getDropAction());
+
+		if (!isDragOK(dropTargetDragEvent)) {
+			dropTargetDragEvent.rejectDrag();
 			return;
 		}
 
-		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Accepting drag");
+		//dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE | DnDConstants.ACTION_REFERENCE );
 	}
 
-	public void dragExit( DropTargetEvent dropTargetEvent ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "dragExit - dtde" );
+	public void dragExit(DropTargetEvent dropTargetEvent) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "dragExit - dtde");
 
 		repaint();
 	}
 
-	public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
+	public void dragOver(DropTargetDragEvent dropTargetDragEvent) {
 		//Log.log(Log.TRACE, MODULE,"dragOver - dtde");
-		if ( ! isDragOK(dropTargetDragEvent) ) {
-			dropTargetDragEvent.rejectDrag( );
+		if (!isDragOK(dropTargetDragEvent)) {
+			dropTargetDragEvent.rejectDrag();
 			return;
 		}
 
-		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
-		dragOver( (int) dropTargetDragEvent.getLocation().getY() );
+		//dropTargetDragEvent.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+		dragOver((int) dropTargetDragEvent.getLocation().getY());
 	}
 
-	public void dragOver( int y ) {
+	public void dragOver(int y) {
 		int row = snapIndex(y);
 		int rowHeight = getRowHeight();
 		Rectangle r = getVisibleRect();
@@ -168,17 +162,17 @@ public class DroppableTree
 		}*/
 
 		Graphics g = getGraphics();
-		g.setXORMode( Color.cyan );
+		g.setXORMode(Color.cyan);
 		int xStart = 0;
 		int xStop = getWidth() - xStart;
-		if ( lastRow != -1 ) {
-			g.drawRect( xStart, lastRow * rowHeight, xStop, rowHeight);
+		if (lastRow != -1) {
+			g.drawRect(xStart, lastRow * rowHeight, xStop, rowHeight);
 		}
 
 		lastRow = row;
 
-		if ( lastRow != -1 ) {
-			g.drawRect( xStart, lastRow * rowHeight, xStop, rowHeight);
+		if (lastRow != -1) {
+			g.drawRect(xStart, lastRow * rowHeight, xStop, rowHeight);
 		}
 
 		if (scrolled) {
@@ -186,25 +180,29 @@ public class DroppableTree
 
 			try {
 				Thread.sleep(scrollPace > 5 ? 10 : 200);
-			} catch (InterruptedException e) {	}
+			} catch (InterruptedException e) {
+			}
 		} else {
 			scrollPace = 0;
 		}
 	}
 
-	public synchronized void drop( DropTargetDropEvent dropTargetDropEvent ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "drop - dtde" );
-		
-		if ( ! isDragOK(dropTargetDropEvent) ) {
+	public synchronized void drop(DropTargetDropEvent dropTargetDropEvent) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "drop - dtde");
+
+		if (!isDragOK(dropTargetDropEvent)) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Refusing drop");
 			dropTargetDropEvent.rejectDrop();
 			return;
 		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Accepting drop");
 
 		try {
 			Transferable tr = dropTargetDropEvent.getTransferable();
 
 			dropTargetDropEvent.acceptDrop(
-					DnDConstants.ACTION_COPY_OR_MOVE );
+					DnDConstants.ACTION_COPY_OR_MOVE);
 
 			//thanks John Zukowski
 			Point dropLocation = dropTargetDropEvent.getLocation();
@@ -212,68 +210,68 @@ public class DroppableTree
 
 			if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
 				List fileList = (List)
-						tr.getTransferData( DataFlavor.javaFileListFlavor );
+						tr.getTransferData(DataFlavor.javaFileListFlavor);
 
 				/* recursively add contents of directories */
 				try {
-					fileList = ImageUtils.expandDirectories( fileList );
-				} catch ( IOException ioe ) {
-					Log.log( Log.LEVEL_ERROR, MODULE, "i/o exception listing dirs in a drop" );
-					Log.logStack( Log.LEVEL_ERROR, MODULE );
+					fileList = ImageUtils.expandDirectories(fileList);
+				} catch (IOException ioe) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "i/o exception listing dirs in a drop");
+					Log.logStack(Log.LEVEL_ERROR, MODULE);
 					JOptionPane.showMessageDialog(
 							null,
 							GRI18n.getString(MODULE, "imgError"),
 							GRI18n.getString(MODULE, "dragError"),
-							JOptionPane.ERROR_MESSAGE );
+							JOptionPane.ERROR_MESSAGE);
 				}
 
-				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to album " + album );
+				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to album " + album);
 
-				mf.addPictures( album, (File[]) fileList.toArray( new File[0] ), false);
+				mf.addPictures(album, (File[]) fileList.toArray(new File[0]), false);
 			} else {
 				List pictureList = (List)
-						tr.getTransferData( PictureSelection.flavors[0] );
+						tr.getTransferData(PictureSelection.flavors[0]);
 
-				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to album " + album );
+				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to album " + album);
 
-				mf.addPictures( album, (Picture[]) pictureList.toArray( new Picture[0] ), false);
+				mf.addPictures(album, (Picture[]) pictureList.toArray(new Picture[0]), false);
 			}
 
-			dropTargetDropEvent.getDropTargetContext().dropComplete( true );
-		} catch ( IOException io ) {
+			dropTargetDropEvent.getDropTargetContext().dropComplete(true);
+		} catch (IOException io) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, io);
-			dropTargetDropEvent.getDropTargetContext().dropComplete( false );
-		} catch ( UnsupportedFlavorException ufe ) {
+			dropTargetDropEvent.getDropTargetContext().dropComplete(false);
+		} catch (UnsupportedFlavorException ufe) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, ufe);
-			dropTargetDropEvent.getDropTargetContext().dropComplete( false );
+			dropTargetDropEvent.getDropTargetContext().dropComplete(false);
 		}
 
 		repaint();
 	}
 
-	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "dropActionChanged - dtde" );
-		if ( ! isDragOK(dropTargetDragEvent) ) {
+	public void dropActionChanged(DropTargetDragEvent dropTargetDragEvent) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "dropActionChanged - dtde");
+		if (!isDragOK(dropTargetDragEvent)) {
 			dropTargetDragEvent.rejectDrag();
 			return;
 		}
 
-		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
+		//dropTargetDragEvent.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
 	}
 
-	public void setMainFrame( MainFrame mf ) {
+	public void setMainFrame(MainFrame mf) {
 		this.mf = mf;
 	}
 
-	public int snap( int y ) {
-		return snapIndex( y ) * getRowHeight();
+	public int snap(int y) {
+		return snapIndex(y) * getRowHeight();
 	}
 
-	public int snapIndex( int y ) {
+	public int snapIndex(int y) {
 		int height = getRowHeight();
 
-		int row = (int) Math.floor( (float) y / height );
-		if ( row > getRowCount() ) {
+		int row = (int) Math.floor((float) y / height);
+		if (row > getRowCount()) {
 			row = -1;
 		}
 

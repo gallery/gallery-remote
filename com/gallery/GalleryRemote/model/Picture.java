@@ -20,27 +20,27 @@
 */
 package com.gallery.GalleryRemote.model;
 
-import java.awt.Dimension;
+import com.gallery.GalleryRemote.GalleryAbstractListModel;
+import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
+import com.gallery.GalleryRemote.util.ImageUtils;
+
+import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 
-import com.gallery.GalleryRemote.GalleryRemote;
-import com.gallery.GalleryRemote.util.ImageUtils;
-import com.gallery.GalleryRemote.util.HTMLEscaper;
-import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.GalleryAbstractListModel;
-import com.gallery.GalleryRemote.prefs.PreferenceNames;
-
 /**
- *  Picture model
- *
- *@author     paour
- *@created    11 août 2002
+ * Picture model
+ * 
+ * @author paour
+ * @created 11 août 2002
  */
 public class Picture extends GalleryAbstractListModel implements Serializable, PreferenceNames, Cloneable {
-	public static final String MODULE="Picture";
+	public static final String MODULE = "Picture";
 
 	File source = null;
 	String caption = null;
@@ -68,18 +68,19 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	transient int indexCache = -1;
 
 	/**
-	 *  Constructor for the Picture object
+	 * Constructor for the Picture object
 	 */
-	public Picture() { }
+	public Picture() {
+	}
 
 
 	/**
-	 *  Constructor for the Picture object
-	 *
-	 *@param  source  File the Picture is based on
+	 * Constructor for the Picture object
+	 * 
+	 * @param source File the Picture is based on
 	 */
-	public Picture( File source ) {
-		setSource( source );
+	public Picture(File source) {
+		setSource(source);
 	}
 
 	public Object clone() {
@@ -94,13 +95,13 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 		clone.flipped = flipped;
 		clone.suppressServerAutoRotate = suppressServerAutoRotate;
 
-		clone. online = online;
-		clone. urlFull = urlFull;
-		clone. sizeFull = sizeFull;
-		clone. urlResized = urlResized;
-		clone. sizeResized = sizeResized;
-		clone. urlThumbnail = urlThumbnail;
-		clone. sizeThumbnail = sizeThumbnail;
+		clone.online = online;
+		clone.urlFull = urlFull;
+		clone.sizeFull = sizeFull;
+		clone.urlResized = urlResized;
+		clone.sizeResized = sizeResized;
+		clone.urlThumbnail = urlThumbnail;
+		clone.sizeThumbnail = sizeThumbnail;
 
 		clone.fileSize = fileSize;
 		clone.escapedCaption = escapedCaption;
@@ -110,11 +111,11 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 
 	/**
-	 *  Sets the source file the Picture is based on
-	 *
-	 *@param  source  The new file
+	 * Sets the source file the Picture is based on
+	 * 
+	 * @param source The new file
 	 */
-	public void setSource( File source ) {
+	public void setSource(File source) {
 		this.source = source;
 
 		if (GalleryRemote.getInstance().properties.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES)) {
@@ -136,30 +137,30 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 
 	/**
-	 *  Sets the caption attribute of the Picture object
-	 *
-	 *@param  caption  The new caption value
+	 * Sets the caption attribute of the Picture object
+	 * 
+	 * @param caption The new caption value
 	 */
-	public void setCaption( String caption ) {
+	public void setCaption(String caption) {
 		this.caption = caption;
 		this.escapedCaption = null;
 	}
 
 
 	/**
-	 *  Sets the album this Picture is inside of
-	 *
-	 *@param  album  The new album value
+	 * Sets the album this Picture is inside of
+	 * 
+	 * @param album The new album value
 	 */
-	public void setAlbum( Album album ) {
+	public void setAlbum(Album album) {
 		this.album = album;
 	}
 
 
 	/**
-	 *  Gets the source file the Picture is based on
-	 *
-	 *@return    The source value
+	 * Gets the source file the Picture is based on
+	 * 
+	 * @return The source value
 	 */
 	public File getSource() {
 		if (online) {
@@ -170,37 +171,37 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	/**
-	 *  Gets the fource file of the picture, prepared for upload.
-	 *  Called by GalleryComm to upload the picture.
-	 *
-	 *@return    The source value
+	 * Gets the fource file of the picture, prepared for upload.
+	 * Called by GalleryComm to upload the picture.
+	 * 
+	 * @return The source value
 	 */
 	public File getUploadSource() {
 		File picture = getSource();
 
-		if ( album.getResize() ) {
+		if (album.getResize()) {
 			Dimension d = album.getResizeDimension();
 
-			if ( d == null || d.equals( new Dimension( 0, 0 ) ) ) {
+			if (d == null || d.equals(new Dimension(0, 0))) {
 				d = null;
 				int l = album.getServerAutoResize();
 
-				if ( l != 0 ) {
-					d = new Dimension( l, l );
+				if (l != 0) {
+					d = new Dimension(l, l);
 				} else {
 					// server can't tell us how to resize, try default
 					d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO_DEFAULT);
 
-					if ( d.equals( new Dimension( 0, 0 ) ) ) {
+					if (d.equals(new Dimension(0, 0))) {
 						d = null;
 					}
 				}
 			}
 
 
-			if ( d != null ) {
+			if (d != null) {
 				try {
-					picture = ImageUtils.resize( picture.getPath(), d );
+					picture = ImageUtils.resize(picture.getPath(), d);
 				} catch (UnsupportedOperationException e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -210,7 +211,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 		if (angle != 0 || flipped) {
 			try {
-				picture = ImageUtils.rotate( picture.getPath(), angle, flipped, true);
+				picture = ImageUtils.rotate(picture.getPath(), angle, flipped, true);
 			} catch (UnsupportedOperationException e) {
 				Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -221,9 +222,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	/**
-	 *  Gets the caption attribute of the Picture object
-	 *
-	 *@return    The caption value
+	 * Gets the caption attribute of the Picture object
+	 * 
+	 * @return The caption value
 	 */
 	public String getCaption() {
 		return caption;
@@ -231,6 +232,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	/**
 	 * Cache the escapedCaption because the escaping is lengthy and this is called by a frequent UI method
+	 * 
 	 * @return the HTML escaped version of the caption
 	 */
 	public String getEscapedCaption() {
@@ -244,12 +246,12 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	/**
-	 *  Gets the size of the file
-	 *
-	 *@return    The size value
+	 * Gets the size of the file
+	 * 
+	 * @return The size value
 	 */
 	public double getFileSize() {
-		if ( fileSize == 0 && source != null && source.exists() ) {
+		if (fileSize == 0 && source != null && source.exists()) {
 			fileSize = source.length();
 		}
 
@@ -266,9 +268,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 
 	/**
-	 *  Gets the album this Picture is inside of
-	 *
-	 *@return    The album
+	 * Gets the album this Picture is inside of
+	 * 
+	 * @return The album
 	 */
 	public Album getAlbum() {
 		return album;
@@ -300,7 +302,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public void flip() {
-		flipped = ! flipped;
+		flipped = !flipped;
 	}
 
 	public int getAngle() {
@@ -360,7 +362,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public URL getUrlFull() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get URL for a local file!");
 		}
 
@@ -372,7 +374,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public Dimension getSizeFull() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get dimension for a local file!");
 		}
 
@@ -384,7 +386,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public URL getUrlResized() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get URL for a local file!");
 		}
 
@@ -396,7 +398,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public Dimension getSizeResized() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get dimension for a local file!");
 		}
 
@@ -408,7 +410,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public URL getUrlThumbnail() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get URL for a local file!");
 		}
 
@@ -420,7 +422,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public Dimension getSizeThumbnail() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get dimension for a local file!");
 		}
 
@@ -449,7 +451,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public Album getAlbumOnServer() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get dimension for a local file!");
 		}
 
@@ -461,7 +463,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public int getIndexOnServer() {
-		if (! online) {
+		if (!online) {
 			throw new RuntimeException("Can't get dimension for a local file!");
 		}
 

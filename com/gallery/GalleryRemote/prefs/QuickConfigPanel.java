@@ -2,8 +2,8 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +20,6 @@ import java.util.Iterator;
  */
 public class QuickConfigPanel extends PreferencePanel implements ActionListener {
 	public static final String MODULE = "QuickCPa";
-
 
 
 	GalleryProperties newProps = null;
@@ -58,14 +57,14 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 		jLabel2.setText(GRI18n.getString(MODULE, "info"));
 		jLabel2.setVerticalAlignment(SwingConstants.TOP);
 		jLabel2.setPreferredSize(new Dimension(200, 100));
-		this.add(jLabel1,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 2, 0, 2), 0, 0));
-		this.add(jURL,    new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jSetup,         new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
-		this.add(jLabel2,     new GridBagConstraints(0, 1, 3, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0));
+		this.add(jLabel1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 2, 0, 2), 0, 0));
+		this.add(jURL, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jSetup, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
+		this.add(jLabel2, new GridBagConstraints(0, 1, 3, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0));
 
 		jSetup.addActionListener(this);
 	}
@@ -108,7 +107,7 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 
 				overridden.append("</ul>");
 
-				JOptionPane.showMessageDialog(this, GRI18n.getString(MODULE, "confLoaded")+ overridden.toString() + "</html>", GRI18n.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(this, GRI18n.getString(MODULE, "confLoaded") + overridden.toString() + "</html>", GRI18n.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
 
 				dialog.setVisible(false);
 			} else {
@@ -117,7 +116,7 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, "Could not find configuration file.", GRI18n.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
 			Log.log(Log.LEVEL_ERROR, MODULE, "Fetching configuration failed");
-			Log.logException( Log.LEVEL_ERROR, MODULE, ex );
+			Log.logException(Log.LEVEL_ERROR, MODULE, ex);
 		}
 	}
 

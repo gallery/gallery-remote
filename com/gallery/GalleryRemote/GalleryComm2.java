@@ -21,38 +21,36 @@
 
 package com.gallery.GalleryRemote;
 
-import java.io.IOException;
-import java.io.StringBufferInputStream;
-import java.net.URL;
-import java.net.SocketException;
-import java.util.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.*;
-
 import HTTPClient.*;
-
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.util.HTMLEscaper;
-import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.*;
 
 /**
- *	The GalleryComm2 class implements the client side of the Gallery remote
- *	protocol <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote.php?rev=HEAD&content-type=text/vnd.viewcvs-text">
- *  version 2</a>.
- *	
- *  @author jackodog
- *  @author paour
- *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ * The GalleryComm2 class implements the client side of the Gallery remote
+ * protocol <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote.php?rev=HEAD&content-type=text/vnd.viewcvs-text">
+ * version 2</a>.
+ * 
+ * @author jackodog
+ * @author paour
+ * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
 public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
-	GalleryCommCapabilities, PreferenceNames {
+		GalleryCommCapabilities, PreferenceNames {
 	/* Implementation notes:  One GalleryComm2 instance is needed per Gallery
 	 * server (since the protocol only logs into each server once).  So the 
 	 * constructor requires a Gallery instance and is immutable with respect
@@ -64,9 +62,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 * CLASS CONSTANTS
 	 */
 	 
-	/**
-	 * Module name for logging.
-	 */
+	/** Module name for logging. */
 	private static final String MODULE = "GalComm2";
 
 
@@ -74,21 +70,17 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 *	INSTANCE VARIABLES
 	 */
 	
-	/**
-	 *	The gallery this GalleryComm2 instance is attached to.
-	 */
+	/** The gallery this GalleryComm2 instance is attached to. */
 	protected final Gallery g;
 
 	/**
-	 *  The minor revision of the server (2.x)
-	 *	Use this to decide whether some functionality
-	 *	should be disabled (because the server would not understand.
+	 * The minor revision of the server (2.x)
+	 * Use this to decide whether some functionality
+	 * should be disabled (because the server would not understand.
 	 */
 	protected int serverMinorVersion = 0;
-	
-	/**
-	 *	The capabilities for 2.1
-	 */
+
+	/** The capabilities for 2.1 */
 	private static int[] capabilities1;
 	private static int[] capabilities2;
 	private static int[] capabilities5;
@@ -100,31 +92,31 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */ 
 	
 	/**
-	 *	Create an instance of GalleryComm2 by supplying an instance of Gallery.
+	 * Create an instance of GalleryComm2 by supplying an instance of Gallery.
 	 */
-	protected GalleryComm2( Gallery g ) {
-		if ( g == null ) {
-			throw new IllegalArgumentException( "Must supply a non-null gallery." );
+	protected GalleryComm2(Gallery g) {
+		if (g == null) {
+			throw new IllegalArgumentException("Must supply a non-null gallery.");
 		}
-		
+
 		this.g = g;
 		
 		/*	Initialize the capabilities array with what protocol 2.0 supports.
 		 *	Once we're logged in and we know what the minor revision of the
 		 *	protocol is, we'll be able to add more capabilities, such as
 		 *	CAPA_NEW_ALBUM (since 2.1) */
-		capabilities = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO };
-		capabilities1 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM };
-		capabilities2 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE };
-		capabilities5 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-			CAPA_FORCE_FILENAME};
-		capabilities9 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-			CAPA_FORCE_FILENAME, CAPA_FETCH_ALBUM_IMAGES};
+		capabilities = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								 CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO};
+		capabilities1 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM};
+		capabilities2 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE};
+		capabilities5 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FORCE_FILENAME};
+		capabilities9 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FORCE_FILENAME, CAPA_FETCH_ALBUM_IMAGES};
 		Arrays.sort(capabilities);
 	}
 	
@@ -134,80 +126,81 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */ 
 	
 	/**
-	 *	Causes the GalleryComm2 instance to upload the pictures in the
-	 *	associated Gallery to the server.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm2 instance to upload the pictures in the
+	 * associated Gallery to the server.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void uploadFiles( StatusUpdate su, boolean async ) {
-		doTask( new UploadTask( su ), async );
+	public void uploadFiles(StatusUpdate su, boolean async) {
+		doTask(new UploadTask(su), async);
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm2 instance to fetch the albums contained by
-	 *	associated Gallery from the server.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm2 instance to fetch the albums contained by
+	 * associated Gallery from the server.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void fetchAlbums( StatusUpdate su, boolean async ) {
-		doTask( new AlbumListTask( su ), async );
+	public void fetchAlbums(StatusUpdate su, boolean async) {
+		doTask(new AlbumListTask(su), async);
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm2 instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm2 instance to fetch the album properties
+	 * for the given Album.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
-		doTask( new AlbumPropertiesTask( su, a ), async );
+	public void albumInfo(StatusUpdate su, Album a, boolean async) {
+		doTask(new AlbumPropertiesTask(su, a), async);
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm instance to create a new album as a child of
-	 *	the specified album (or at the root if album is null)
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 *	@param a if null, create the album in the root of the gallery; otherwise
-	 *				create as a child of the given album
+	 * Causes the GalleryComm instance to create a new album as a child of
+	 * the specified album (or at the root if album is null)
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
+	 * @param a  if null, create the album in the root of the gallery; otherwise
+	 *           create as a child of the given album
 	 */
-	public String newAlbum( StatusUpdate su, Album parentAlbum,
-			String newAlbumName, String newAlbumTitle,
-			String newAlbumDesc, boolean async ) {
-		NewAlbumTask newAlbumTask = new NewAlbumTask( su, parentAlbum, newAlbumName,
-				newAlbumTitle, newAlbumDesc );
-		doTask( newAlbumTask, async );
+	public String newAlbum(StatusUpdate su, Album parentAlbum,
+						   String newAlbumName, String newAlbumTitle,
+						   String newAlbumDesc, boolean async) {
+		NewAlbumTask newAlbumTask = new NewAlbumTask(su, parentAlbum, newAlbumName,
+				newAlbumTitle, newAlbumDesc);
+		doTask(newAlbumTask, async);
 
 		return newAlbumTask.getNewAlbumName();
 	}
-		
+
 	public void fetchAlbumImages(StatusUpdate su, Album a, boolean async) {
-		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask( su,
+		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask(su,
 				a);
-		doTask( fetchAlbumImagesTask, async);
+		doTask(fetchAlbumImagesTask, async);
 	}
+
 	/* -------------------------------------------------------------------------
 	 * UTILITY METHODS
-	 */ 
-	void doTask( GalleryTask task, boolean async ) {
-		if ( async ) {
-			Thread t = new Thread( task );
+	 */
+	void doTask(GalleryTask task, boolean async) {
+		if (async) {
+			Thread t = new Thread(task);
 			t.start();
 		} else {
 			task.run();
 		}
 	}
-	
-	void status( StatusUpdate su, int level, String message) {
+
+	void status(StatusUpdate su, int level, String message) {
 		Log.log(Log.LEVEL_INFO, MODULE, message);
 		su.updateProgressStatus(level, message);
 	}
-	
-	void error( StatusUpdate su, String message) {
+
+	void error(StatusUpdate su, String message) {
 		status(su, StatusUpdate.LEVEL_GENERIC, message);
-		su.error( message );
+		su.error(message);
 	}
-	
+
 	void trace(String message) {
 		Log.log(Log.LEVEL_TRACE, MODULE, message);
 	}
@@ -218,7 +211,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	
 	/**
-	 *	This class serves as the base class for each GalleryComm2 task.
+	 * This class serves as the base class for each GalleryComm2 task.
 	 */
 	abstract class GalleryTask implements Runnable {
 
@@ -228,24 +221,25 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		boolean terminated = false;
 		Thread thread = null;
 
-		public GalleryTask( StatusUpdate su ) {
-			if ( su == null ) {
-				this.su = new StatusUpdateAdapter(){};
+		public GalleryTask(StatusUpdate su) {
+			if (su == null) {
+				this.su = new StatusUpdateAdapter() {
+				};
 			} else {
-				this.su = su;	
+				this.su = su;
 			}
 		}
-		
+
 		public void run() {
 			thread = Thread.currentThread();
 			su.setInProgress(true);
-			if ( ! isLoggedIn ) {
-				if ( !login() ) {
+			if (!isLoggedIn) {
+				if (!login()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Failed to log in to " + g.toString());
 					su.setInProgress(false);
 					return;
 				}
-				
+
 				isLoggedIn = true;
 			} else {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Still logged in to " + g.toString());
@@ -255,7 +249,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			cleanUp();
 		}
-		
+
 		public void interrupt() {
 			thread.interrupt();
 			interrupt = true;
@@ -267,39 +261,39 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		abstract void runTask();
-		
-		/**
-		 *	POSTSs a request to the Gallery server with the given form data.
-		 */	
-		GalleryProperties requestResponse( NVPair form_data[] ) throws GR2Exception, ModuleException, IOException {
-			return requestResponse( form_data, null, g.getGalleryUrl(SCRIPT_NAME), true);
-		}
-
-		GalleryProperties requestResponse( NVPair form_data[], URL galUrl ) throws GR2Exception, ModuleException, IOException {
-			return requestResponse( form_data, null, galUrl, true);
-		}
 
 		/**
-		 *	POSTSs a request to the Gallery server with the given form data.  If data is
-		 *	not null, a multipart MIME post is performed.
-		 */	
-		GalleryProperties requestResponse( NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
+		 * POSTSs a request to the Gallery server with the given form data.
+		 */
+		GalleryProperties requestResponse(NVPair form_data[]) throws GR2Exception, ModuleException, IOException {
+			return requestResponse(form_data, null, g.getGalleryUrl(SCRIPT_NAME), true);
+		}
+
+		GalleryProperties requestResponse(NVPair form_data[], URL galUrl) throws GR2Exception, ModuleException, IOException {
+			return requestResponse(form_data, null, galUrl, true);
+		}
+
+		/**
+		 * POSTSs a request to the Gallery server with the given form data.  If data is
+		 * not null, a multipart MIME post is performed.
+		 */
+		GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
 			// assemble the URL
 			String urlPath = galUrl.getFile();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath );
+			Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath);
 
 			if (data != null) {
 				su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, GRI18n.getString(MODULE, "upStart"), false);
 			}
 
 			// create a connection
-			HTTPConnection mConnection = new HTTPConnection( galUrl );
+			HTTPConnection mConnection = new HTTPConnection(galUrl);
 
 			// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
 			HTTPResponse rsp = null;
 
 			// post multipart if there is data
-			if ( data == null ) {
+			if (data == null) {
 				if (form_data == null) {
 					rsp = mConnection.Get(urlPath);
 				} else {
@@ -313,7 +307,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 				// retry, the library will have fixed the URL
 				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "redirect"));
-				if ( data == null ) {
+				if (data == null) {
 					if (form_data == null) {
 						rsp = mConnection.Get(urlPath);
 					} else {
@@ -325,9 +319,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 			
 			// handle response
-			if (rsp.getStatusCode() >= 300)	{
-                Object [] params = {new Integer(rsp.getStatusCode()), rsp.getReasonLine() };
-				throw new GR2Exception( GRI18n.getString(MODULE, "httpPostErr", params));
+			if (rsp.getStatusCode() >= 300) {
+				Object[] params = {new Integer(rsp.getStatusCode()), rsp.getReasonLine()};
+				throw new GR2Exception(GRI18n.getString(MODULE, "httpPostErr", params));
 			} else {
 				// load response 
 				String response = new String(rsp.getData()).trim();
@@ -337,16 +331,16 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					// validate response
 					int i = response.indexOf(PROTOCOL_MAGIC);
 
-					if ( i == -1 ) {
-                        Object [] params = {galUrl.toString() };
+					if (i == -1) {
+						Object[] params = {galUrl.toString()};
 						throw new GR2Exception(GRI18n.getString(MODULE, "gllryNotFound", params));
-					} else if ( i > 0 ) {
+					} else if (i > 0) {
 						response = response.substring(i);
 						Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);
 					}
 
 					GalleryProperties p = new GalleryProperties();
-					p.load( new StringBufferInputStream( response ) );
+					p.load(new StringBufferInputStream(response));
 
 					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgOk"));
 
@@ -358,22 +352,22 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 			}
 		}
-		
+
 		private boolean login() {
-            Object [] params = {g.toString()};
+			Object[] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "logIn", params));
 
 			if (g.getType() != Gallery.TYPE_STANDALONE) {
 				try {
-					requestResponse( null, null, g.getLoginUrl(SCRIPT_NAME), false );
+					requestResponse(null, null, g.getLoginUrl(SCRIPT_NAME), false);
 				} catch (IOException ioe) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                    Object [] params2 = {ioe.toString() };
+					Object[] params2 = {ioe.toString()};
 					error(su, GRI18n.getString(MODULE, "error", params2));
 				} catch (ModuleException me) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                    Object [] params2 = {me.getMessage()};
-					error(su, GRI18n.getString(MODULE, "errReq" , params2));
+					Object[] params2 = {me.getMessage()};
+					error(su, GRI18n.getString(MODULE, "errReq", params2));
 				}
 			}
 
@@ -383,13 +377,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			if (username == null || username.length() == 0) {
 				username = (String) JOptionPane.showInputDialog(
-                    GalleryRemote.getInstance().mainFrame,
-                    GRI18n.getString(MODULE, "usernameLbl"),
-                    GRI18n.getString(MODULE, "username"),
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    null,
-                    null);
+						GalleryRemote.getInstance().mainFrame,
+						GRI18n.getString(MODULE, "usernameLbl"),
+						GRI18n.getString(MODULE, "username"),
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						null);
 
 				if (username != null) {
 					g.setUsername(username);
@@ -398,13 +392,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			if (username != null && (password == null || password.length() == 0)) {
 				password = (String) JOptionPane.showInputDialog(
-                    GalleryRemote.getInstance().mainFrame,
-                    GRI18n.getString(MODULE, "passwdLbl"),
-                    GRI18n.getString(MODULE, "passwd"),
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    null,
-                    null);
+						GalleryRemote.getInstance().mainFrame,
+						GRI18n.getString(MODULE, "passwdLbl"),
+						GRI18n.getString(MODULE, "passwd"),
+						JOptionPane.PLAIN_MESSAGE,
+						null,
+						null,
+						null);
 
 				g.setPassword(password);
 			}
@@ -425,22 +419,22 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 
 			// make the request
-			try	{
+			try {
 				// load and validate the response
-				Properties p = requestResponse( form_data, g.getGalleryUrl(SCRIPT_NAME) );
-				if ( GR_STAT_SUCCESS.equals( p.getProperty( "status" ) )
-						|| GR_STAT_LOGIN_MISSING.equals( p.getProperty( "status" ))) {
+				Properties p = requestResponse(form_data, g.getGalleryUrl(SCRIPT_NAME));
+				if (GR_STAT_SUCCESS.equals(p.getProperty("status"))
+						|| GR_STAT_LOGIN_MISSING.equals(p.getProperty("status"))) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "loggedIn"));
 					try {
-						String serverVersion = p.getProperty( "server_version" );
-						int i = serverVersion.indexOf( "." );
-						serverMinorVersion = Integer.parseInt( serverVersion.substring( i+1 ) );
+						String serverVersion = p.getProperty("server_version");
+						int i = serverVersion.indexOf(".");
+						serverMinorVersion = Integer.parseInt(serverVersion.substring(i + 1));
 
 						Log.log(Log.LEVEL_TRACE, MODULE, "Server minor version: " + serverMinorVersion);
 
 						handleCapabilities();
 					} catch (Exception e) {
-						Log.log( Log.LEVEL_ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
+						Log.log(Log.LEVEL_ERROR, MODULE, "Malformed server_version: " + p.getProperty("server_version"));
 						Log.logException(Log.LEVEL_ERROR, MODULE, e);
 					}
 					return true;
@@ -448,21 +442,21 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					error(su, GRI18n.getString(MODULE, "usrpwdErr"));
 					return false;
 				} else {
-                    Object [] params2 = {p.getProperty( "status_text" ) };
+					Object[] params2 = {p.getProperty("status_text")};
 					error(su, GRI18n.getString(MODULE, "loginErr", params2));
 					return false;
 				}
-			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params2 = {gr2e.getMessage() };
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params2 = {gr2e.getMessage()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params2 = {ioe.toString() };
+				Object[] params2 = {ioe.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params2 = {me.getMessage() };
+				Object[] params2 = {me.getMessage()};
 				error(su, GRI18n.getString(MODULE, "errReq", params2));
 			}
 
@@ -485,18 +479,18 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 		}
 	}
-	
+
 	/**
-	 *	An extension of GalleryTask to handle uploading photos.
+	 * An extension of GalleryTask to handle uploading photos.
 	 */
-	class UploadTask extends GalleryTask {		
-		UploadTask( StatusUpdate su ) {
-			super(su);	
+	class UploadTask extends GalleryTask {
+		UploadTask(StatusUpdate su) {
+			super(su);
 		}
-		
+
 		void runTask() {
 			ArrayList pictures = g.getAllUploadablePictures();
-			
+
 			su.startProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, 0, pictures.size(), GRI18n.getString(MODULE, "upPic"), false);
 
 			if (su instanceof UploadProgress) {
@@ -510,7 +504,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						while (!terminated && System.currentTimeMillis() < startTime + 10000) {
 							try {
 								Thread.sleep(1000);
-							} catch (InterruptedException e1) {	}
+							} catch (InterruptedException e1) {
+							}
 						}
 
 						if (!terminated) {
@@ -533,18 +528,18 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			while (iter.hasNext() && allGood && !interrupt) {
 				Picture p = (Picture) iter.next();
 
-                Object [] params = {p.toString(), new Integer((uploadedCount + 1)), new Integer(pictures.size()) };
+				Object[] params = {p.toString(), new Integer((uploadedCount + 1)), new Integer(pictures.size())};
 				su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upStatus", params));
-				
+
 				allGood = uploadPicture(p);
-				
+
 				su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_PROGRESS, ++uploadedCount);
-				
+
 				if (allGood) {
 					p.getAlbum().removePicture(p);
 				}
 			}
-			
+
 			if (allGood) {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upComplete"));
 
@@ -559,9 +554,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upFailed"));
 			}
 		}
-		
+
 		boolean uploadPicture(Picture p) {
-			try	{
+			try {
 				boolean escapeCaptions = GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 
 				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upPrep"));
@@ -579,7 +574,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("cmd", "add-item"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", p.getAlbum().getName()),
-					new NVPair("caption", caption ),
+					new NVPair("caption", caption),
 					new NVPair("force_filename", p.getSource().getName()),
 					null
 				};
@@ -613,56 +608,55 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
 				
 				// setup the multipart form data
-				NVPair[] afile = { new NVPair("userfile", p.getUploadSource().getAbsolutePath()) };
+				NVPair[] afile = {new NVPair("userfile", p.getUploadSource().getAbsolutePath())};
 				NVPair[] hdrs = new NVPair[1];
-				byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
+				byte[] data = Codecs.mpFormDataEncode(opts, afile, hdrs);
 				
 				// load and validate the response
-				Properties props = requestResponse( hdrs, data, g.getGalleryUrl(SCRIPT_NAME), true );
-				if ( props.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(SCRIPT_NAME), true);
+				if (props.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upSucc"));
 					return true;
 				} else {
-                    Object [] params = {props.getProperty( "status_text" )};
+					Object[] params = {props.getProperty("status_text")};
 					error(su, GRI18n.getString(MODULE, "upErr", params));
 					return false;
 				}
-				
-			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params = {gr2e.getMessage()};
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params = {gr2e.getMessage()};
 				error(su, GRI18n.getString(MODULE, "error", params));
 			} catch (SocketException swe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, swe);
-                Object [] params = {swe.toString()};
-				error(su, GRI18n.getString(MODULE, "confErr" , params));
-			} catch (IOException ioe)	{
+				Object[] params = {swe.toString()};
+				error(su, GRI18n.getString(MODULE, "confErr", params));
+			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params = {ioe.toString()};
+				Object[] params = {ioe.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params = {me.getMessage()};
+				Object[] params = {me.getMessage()};
 				error(su, GRI18n.getString(MODULE, "errReq", params));
-			}		
-			
+			}
+
 			return false;
 		}
 	}
-	
+
 	/**
-	 *	An extension of GalleryTask to handle fetching albums.
+	 * An extension of GalleryTask to handle fetching albums.
 	 */
 	class AlbumListTask extends GalleryTask {
-		
-		AlbumListTask( StatusUpdate su ) {
-			super(su);	
+
+		AlbumListTask(StatusUpdate su) {
+			super(su);
 		}
-		
+
 		void runTask() {
-            Object [] params = {g.toString()};
+			Object[] params = {g.toString()};
 			su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, 10, GRI18n.getString(MODULE, "albmFtchng", params), true);
-			
+
 			try {
 				long startTime = System.currentTimeMillis();
 
@@ -673,20 +667,20 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 
 				Log.log(Log.LEVEL_INFO, MODULE, "execution time for AlbumList: " + (System.currentTimeMillis() - startTime));
-			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params2 = {gr2e.getMessage()};
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params2 = {gr2e.getMessage()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params2 = {ioe.toString()};
+				Object[] params2 = {ioe.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params2 = {me.toString()};
+				Object[] params2 = {me.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			}
-			
+
 			su.stopProgress(StatusUpdate.LEVEL_BACKGROUND, GRI18n.getString(MODULE, "fetchComplete"));
 		}
 
@@ -694,21 +688,21 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			// setup the protocol parameters
 			NVPair form_data[] = {
 				new NVPair("cmd", "fetch-albums"),
-				new NVPair("protocol_version", PROTOCOL_VERSION )
+				new NVPair("protocol_version", PROTOCOL_VERSION)
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
 			// load and validate the response
-			Properties p = requestResponse( form_data );
-			if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+			Properties p = requestResponse(form_data);
+			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList mAlbumList = new ArrayList();
 
 				// parse and store the data
-				int albumCount = Integer.parseInt( p.getProperty( "album_count" ) );
+				int albumCount = Integer.parseInt(p.getProperty("album_count"));
 //	System.err.println( "### albumCount = " + albumCount );
 				HashMap ref2parKey = new HashMap();
 				HashMap ref2album = new HashMap();
-				for ( int i = 1; i < albumCount + 1; i++ ) {
+				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
 
 					String nameKey = "album.name." + i;
@@ -721,38 +715,40 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String permsCreateSubKey = "album.perms.create_sub." + i;
 					String infoExtraFieldsKey = "album.info.extrafields." + i;
 
-					a.setCanAdd( isTrue( p.getProperty( permsAddKey ) ) );
-					a.setCanWrite( isTrue( p.getProperty( permsWriteKey ) ) );
-					a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
-					a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
-					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
-					a.setExtraFieldsString( HTMLEscaper.unescape(p.getProperty( infoExtraFieldsKey )) );
+					a.setCanAdd(isTrue(p.getProperty(permsAddKey)));
+					a.setCanWrite(isTrue(p.getProperty(permsWriteKey)));
+					a.setCanDeleteFrom(isTrue(p.getProperty(permsDelItemKey)));
+					a.setCanDeleteThisAlbum(isTrue(p.getProperty(permsDelAlbKey)));
+					a.setCanCreateSubAlbum(isTrue(p.getProperty(permsCreateSubKey)));
+					a.setExtraFieldsString(HTMLEscaper.unescape(p.getProperty(infoExtraFieldsKey)));
 
-					a.setName( p.getProperty( nameKey ) );
-					a.setTitle( HTMLEscaper.unescape( p.getProperty( titleKey ) ) );
+					a.setName(p.getProperty(nameKey));
+					a.setTitle(HTMLEscaper.unescape(p.getProperty(titleKey)));
 
-					mAlbumList.add( a );
+					mAlbumList.add(a);
 
 					// map album ref nums to albums
-					ref2album.put( "" + i, a );
+					ref2album.put("" + i, a);
 
 					// map album refs to parent refs
-					String parentRefS = p.getProperty( parentKey );
-					int parentRef = Integer.parseInt( parentRefS );
-					if ( parentRef != 0 ) {
-						ref2parKey.put( "" + i, parentRefS );
+					String parentRefS = p.getProperty(parentKey);
+					int parentRef = Integer.parseInt(parentRefS);
+					if (parentRef != 0) {
+						ref2parKey.put("" + i, parentRefS);
 					} else {
 						a.setParentAlbum(null);
 					}
 				}
 
 				// link albums to parents
-				for ( int i = 1; i < albumCount + 1; i++ ) {
-					String parentKey = (String)ref2parKey.get( "" + i );
-					if ( parentKey != null ) {
-						Album a = (Album)ref2album.get( "" + i );
-						Album pa = (Album)ref2album.get( parentKey );
-						a.setParentAlbum( pa );
+				for (int i = 1; i < albumCount + 1; i++) {
+					String parentKey = (String) ref2parKey.get("" + i);
+					if (parentKey != null) {
+						Album a = (Album) ref2album.get("" + i);
+						if (a != null) {
+							Album pa = (Album) ref2album.get(parentKey);
+							a.setParentAlbum(pa);
+						}
 					}
 				}
 
@@ -760,7 +756,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				g.setAlbumList(mAlbumList);
 			} else {
-                Object [] params = {p.getProperty( "status_text" )};
+				Object[] params = {p.getProperty("status_text")};
 				error(su, GRI18n.getString(MODULE, "error", params));
 			}
 		}
@@ -769,21 +765,21 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			// setup the protocol parameters
 			NVPair form_data[] = {
 				new NVPair("cmd", "fetch-albums-prune"),
-				new NVPair("protocol_version", PROTOCOL_VERSION )
+				new NVPair("protocol_version", PROTOCOL_VERSION)
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
 			// load and validate the response
-			Properties p = requestResponse( form_data );
-			if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+			Properties p = requestResponse(form_data);
+			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList albums = new ArrayList();
 
 				// parse and store the data
-				int albumCount = Integer.parseInt( p.getProperty( "album_count" ) );
+				int albumCount = Integer.parseInt(p.getProperty("album_count"));
 //	System.err.println( "### albumCount = " + albumCount );
 				HashMap name2parentName = new HashMap();
 				HashMap name2album = new HashMap();
-				for ( int i = 1; i < albumCount + 1; i++ ) {
+				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
 
 					String nameKey = "album.name." + i;
@@ -796,26 +792,26 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String permsCreateSubKey = "album.perms.create_sub." + i;
 					String infoExtraFieldKey = "album.info.extrafields." + i;
 
-					a.setCanAdd( isTrue( p.getProperty( permsAddKey ) ) );
-					a.setCanWrite( isTrue( p.getProperty( permsWriteKey ) ) );
-					a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
-					a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
-					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
+					a.setCanAdd(isTrue(p.getProperty(permsAddKey)));
+					a.setCanWrite(isTrue(p.getProperty(permsWriteKey)));
+					a.setCanDeleteFrom(isTrue(p.getProperty(permsDelItemKey)));
+					a.setCanDeleteThisAlbum(isTrue(p.getProperty(permsDelAlbKey)));
+					a.setCanCreateSubAlbum(isTrue(p.getProperty(permsCreateSubKey)));
 
-					String name = p.getProperty( nameKey );
-					a.setName( name );
-					a.setTitle( HTMLEscaper.unescape( p.getProperty(titleKey) ) );
-					a.setExtraFieldsString( HTMLEscaper.unescape(p.getProperty(infoExtraFieldKey)));
+					String name = p.getProperty(nameKey);
+					a.setName(name);
+					a.setTitle(HTMLEscaper.unescape(p.getProperty(titleKey)));
+					a.setExtraFieldsString(HTMLEscaper.unescape(p.getProperty(infoExtraFieldKey)));
 
-					albums.add( a );
+					albums.add(a);
 
 					// map album names to parent albums
-					name2album.put( name, a );
+					name2album.put(name, a);
 
 					// map album refs to parent refs
-					String parentName = p.getProperty( parentKey );
-					if ( parentName != null && parentName.length() > 0 && !parentName.equals("0")) {
-						name2parentName.put( name, parentName );
+					String parentName = p.getProperty(parentKey);
+					if (parentName != null && parentName.length() > 0 && !parentName.equals("0")) {
+						name2parentName.put(name, parentName);
 					} else {
 						a.setParentAlbum(null);
 					}
@@ -869,66 +865,66 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				g.setAlbumList(orderedAlbums);
 			} else {
-                Object [] params = {p.getProperty( "status_text" )};
+				Object[] params = {p.getProperty("status_text")};
 				error(su, GRI18n.getString(MODULE, "error", params));
 			}
 		}
 	}
-	
+
 	/**
-	 *	An extension of GalleryTask to handle getting album information.
+	 * An extension of GalleryTask to handle getting album information.
 	 */
 	class AlbumPropertiesTask extends GalleryTask {
 		Album a;
-		
-		AlbumPropertiesTask( StatusUpdate su, Album a ) {
+
+		AlbumPropertiesTask(StatusUpdate su, Album a) {
 			super(su);
 			this.a = a;
 		}
-		
+
 		void runTask() {
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo"));
-			
+
 			try {
 				// setup the protocol parameters
 				NVPair form_data[] = {
 					new NVPair("cmd", "album-properties"),
-					new NVPair("protocol_version", PROTOCOL_VERSION ),
-					new NVPair("set_albumName", a.getName() )
+					new NVPair("protocol_version", PROTOCOL_VERSION),
+					new NVPair("set_albumName", a.getName())
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "album-info parameters: " + Arrays.asList(form_data));
 				
 				// load and validate the response
-				Properties p = requestResponse( form_data );
-				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+				Properties p = requestResponse(form_data);
+				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
-					int autoResize = Integer.parseInt( p.getProperty( "auto_resize" ) );
-					a.setServerAutoResize( autoResize );
-					
+					int autoResize = Integer.parseInt(p.getProperty("auto_resize"));
+					a.setServerAutoResize(autoResize);
+
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "ftchdAlbmProp"));
-					
+
 				} else {
-					error(su, "Error: " + p.getProperty( "status_text" ));
+					error(su, "Error: " + p.getProperty("status_text"));
 				}
-				
-			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params2 = {gr2e.getMessage()};
+
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params2 = {gr2e.getMessage()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params2 = {ioe.toString()};
+				Object[] params2 = {ioe.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params2 = {me.toString()};
+				Object[] params2 = {me.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			}
 		}
 	}
-	
+
 	/**
-	 *	An extension of GalleryTask to handle creating a new album.
+	 * An extension of GalleryTask to handle creating a new album.
 	 */
 	class NewAlbumTask extends GalleryTask {
 		Album parentAlbum;
@@ -937,17 +933,17 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		String albumDesc;
 		private String newAlbumName;
 
-		NewAlbumTask( StatusUpdate su, Album parentAlbum, String albumName,
-				String albumTitle, String albumDesc ) {
+		NewAlbumTask(StatusUpdate su, Album parentAlbum, String albumName,
+					 String albumTitle, String albumDesc) {
 			super(su);
 			this.parentAlbum = parentAlbum;
 			this.albumName = albumName;
 			this.albumTitle = albumTitle;
 			this.albumDesc = albumDesc;
 		}
-		
+
 		void runTask() {
-            Object [] params = {g.toString()};
+			Object[] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo", params));
 
 			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
@@ -964,51 +960,51 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// setup the protocol parameters
 				NVPair form_data[] = {
 					new NVPair("cmd", "new-album"),
-					new NVPair("protocol_version", PROTOCOL_VERSION ),
-					new NVPair("set_albumName", parentAlbumName ),
-					new NVPair("newAlbumName", albumName ),
-					new NVPair("newAlbumTitle", albumTitle ),
-					new NVPair("newAlbumDesc", albumDesc )
+					new NVPair("protocol_version", PROTOCOL_VERSION),
+					new NVPair("set_albumName", parentAlbumName),
+					new NVPair("newAlbumName", albumName),
+					new NVPair("newAlbumTitle", albumTitle),
+					new NVPair("newAlbumDesc", albumDesc)
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 				
 				// load and validate the response
-				Properties p = requestResponse( form_data );
-				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+				Properties p = requestResponse(form_data);
+				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "crateAlbmOk"));
 					newAlbumName = p.getProperty("album_name");
 				} else {
-                    Object [] params2 = {p.getProperty( "status_text" )};
+					Object[] params2 = {p.getProperty("status_text")};
 					error(su, GRI18n.getString(MODULE, "error", params2));
 				}
 
-            } catch ( GR2Exception gr2e ) {
-                Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params2 = {gr2e.getMessage()};
-                error(su, GRI18n.getString(MODULE, "error", params2));
-            } catch (IOException ioe) {
-                Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params2 = {ioe.toString()};
-                error(su, GRI18n.getString(MODULE, "error", params2));
-            } catch (ModuleException me) {
-                Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params2 = {me.toString()};
-                error(su, GRI18n.getString(MODULE, "error", params2));
-            }
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params2 = {gr2e.getMessage()};
+				error(su, GRI18n.getString(MODULE, "error", params2));
+			} catch (IOException ioe) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
+				Object[] params2 = {ioe.toString()};
+				error(su, GRI18n.getString(MODULE, "error", params2));
+			} catch (ModuleException me) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
+				Object[] params2 = {me.toString()};
+				error(su, GRI18n.getString(MODULE, "error", params2));
+			}
 		}
 
 		public String getNewAlbumName() {
 			return newAlbumName;
 		}
 	}
-	
+
 	/**
-	 *	An extension of GalleryTask to handle getting album information.
+	 * An extension of GalleryTask to handle getting album information.
 	 */
 	class FetchAlbumImagesTask extends GalleryTask {
 		Album a;
 
-		FetchAlbumImagesTask( StatusUpdate su, Album a ) {
+		FetchAlbumImagesTask(StatusUpdate su, Album a) {
 			super(su);
 			this.a = a;
 		}
@@ -1016,21 +1012,21 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		void runTask() {
 			status(su, StatusUpdate.LEVEL_GENERIC,
 					GRI18n.getString(MODULE, "fetchAlbImages",
-							new String[] {a.getName()}));
+							new String[]{a.getName()}));
 
 			try {
 				// setup the protocol parameters
 				NVPair form_data[] = {
 					new NVPair("cmd", "fetch-album-images"),
-					new NVPair("protocol_version", PROTOCOL_VERSION ),
-					new NVPair("set_albumName", a.getName() )
+					new NVPair("protocol_version", PROTOCOL_VERSION),
+					new NVPair("set_albumName", a.getName())
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
 						Arrays.asList(form_data));
 
 				// load and validate the response
-				GalleryProperties p = requestResponse( form_data );
-				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+				GalleryProperties p = requestResponse(form_data);
+				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
 					int numImages = p.getIntProperty("image_count");
 					String baseUrl = p.getProperty("baseurl");
@@ -1079,33 +1075,33 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					status(su, StatusUpdate.LEVEL_GENERIC,
 							GRI18n.getString(MODULE, "fetchAlbImagesDone",
-									new String[] {"" + numImages}));
+									new String[]{"" + numImages}));
 
 					a.setHasFetchedImages(true);
 					a.addPictures(newPictures);
-					GalleryRemote.getInstance().mainFrame.thumbnailCache.preloadThumbnails( newPictures.iterator() );
+					GalleryRemote.getInstance().mainFrame.thumbnailCache.preloadThumbnails(newPictures.iterator());
 				} else {
-					error(su, "Error: " + p.getProperty( "status_text" ));
+					error(su, "Error: " + p.getProperty("status_text"));
 				}
 
-			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
-                Object [] params2 = {gr2e.getMessage()};
+			} catch (GR2Exception gr2e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
+				Object[] params2 = {gr2e.getMessage()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-                Object [] params2 = {ioe.toString()};
+				Object[] params2 = {ioe.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
-                Object [] params2 = {me.toString()};
+				Object[] params2 = {me.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			}
 		}
 	}
 
-	boolean isTrue( String s ){
-		return s.equals( "true" );	
+	boolean isTrue(String s) {
+		return s.equals("true");
 	}
 
 	class MyTransferListener implements TransferListener {
@@ -1117,12 +1113,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			this.su = su;
 		}
 
-		public void dataTransferred(int transferred, int overall, double kbPerSecond)
-		{
-            Object [] params = {
-                df.format(transferred / 1024),
-                df.format(overall / 1024),
-                ff.format(kbPerSecond / 1024.0) };
+		public void dataTransferred(int transferred, int overall, double kbPerSecond) {
+			Object[] params = {
+				df.format(transferred / 1024),
+				df.format(overall / 1024),
+				ff.format(kbPerSecond / 1024.0)};
 			su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "trnsfrStat", params));
 			su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_ONE, transferred);
 		}

@@ -1,12 +1,12 @@
 package com.gallery.GalleryRemote.util;
 
-import com.gallery.GalleryRemote.GalleryFileFilter;
-import com.gallery.GalleryRemote.Log;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Directory;
-import com.drew.metadata.exif.ExifDirectory;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifDirectory;
+import com.gallery.GalleryRemote.GalleryFileFilter;
+import com.gallery.GalleryRemote.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +18,7 @@ import java.io.FileNotFoundException;
  */
 public class ExifImageUtils {
 	public static final String MODULE = "ExifUtils";
-	
+
 	public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
 		if (GalleryFileFilter.canManipulateJpeg(filename)) {
 			File jpegFile = new File(filename);

@@ -34,7 +34,7 @@ public class OsShutdown {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmd);
 				Runtime.getRuntime().exec(cmd);
 			}
-		} catch(java.io.IOException io) {
+		} catch (java.io.IOException io) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, io);
 		}
 	}
@@ -72,6 +72,6 @@ public class OsShutdown {
 	}
 
 	public static boolean canShutdown() {
-		return isWin9x() || isWinNT() || isUnix();
+		return isWin9x() || isWinNT() || (isUnix() && !isMacOSX());
 	}
 }

@@ -21,17 +21,18 @@
 
 package com.gallery.GalleryRemote;
 
-import com.gallery.GalleryRemote.util.ImageUtils;
-import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Picture;
-
-import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.*;
-import java.io.File;
+import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.ImageUtils;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class PreviewFrame extends javax.swing.JFrame {
 	public static final String MODULE = "PreviewFrame";

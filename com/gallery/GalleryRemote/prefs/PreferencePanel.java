@@ -24,7 +24,7 @@ public abstract class PreferencePanel extends JPanel {
 	public abstract void buildUI();
 
 	public void readPropertiesFirst(GalleryProperties props) {
-		if (! hasBeenRead) {
+		if (!hasBeenRead) {
 			hasBeenRead = true;
 			readProperties(props);
 		}

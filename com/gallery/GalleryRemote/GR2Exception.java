@@ -24,13 +24,13 @@ package com.gallery.GalleryRemote;
 import java.io.IOException;
 
 /**
- *	An exception for protocol-related problems.
- *
- *	@author     <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
- *	@version    $id$
- */ 
+ * An exception for protocol-related problems.
+ * 
+ * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ * @version $id$
+ */
 public class GR2Exception extends IOException {
-	public GR2Exception( String message ) {
-		super( message );	
+	public GR2Exception(String message) {
+		super(message);
 	}
 }

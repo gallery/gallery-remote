@@ -20,31 +20,22 @@
 */
 package com.gallery.GalleryRemote;
 
-import java.awt.event.*;
-import java.text.NumberFormat;
-
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import com.gallery.GalleryRemote.model.Album;
-import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.text.Document;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
- *  Bean inspector for Pictures
- *
- *@author     paour
- *@created    August 16, 2002
+ * Bean inspector for Pictures
+ * 
+ * @author paour
+ * @created August 16, 2002
  */
 public class AlbumInspector extends JPanel
 		implements ActionListener, ItemListener, DocumentListener {
@@ -63,7 +54,7 @@ public class AlbumInspector extends JPanel
 
 	JTextArea jTitle = new JTextArea();
 	JTextArea jPictures = new JTextArea();
-	JTextArea jName	= new JTextArea();
+	JTextArea jName = new JTextArea();
 	JTextArea jSummary = new JTextArea();
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JButton jFetch = new JButton();
@@ -83,7 +74,7 @@ public class AlbumInspector extends JPanel
 	boolean ignoreItemChanges = false;
 
 	/**
-	 *  Constructor for the PictureInspector object
+	 * Constructor for the PictureInspector object
 	 */
 	public AlbumInspector() {
 		jbInit();
@@ -92,11 +83,11 @@ public class AlbumInspector extends JPanel
 
 
 	private void jbInit() {
-		setLayout( new GridBagLayout() );
-		jLabelName.setText(GRI18n.getString(MODULE, "Name") );
-		jLabelTitle.setText(GRI18n.getString(MODULE, "Title") );
-		jLabelPictures.setText(GRI18n.getString(MODULE, "Pictures") );
-		jLabelSummary.setText(GRI18n.getString(MODULE, "Summary") );
+		setLayout(new GridBagLayout());
+		jLabelName.setText(GRI18n.getString(MODULE, "Name"));
+		jLabelTitle.setText(GRI18n.getString(MODULE, "Title"));
+		jLabelPictures.setText(GRI18n.getString(MODULE, "Pictures"));
+		jLabelSummary.setText(GRI18n.getString(MODULE, "Summary"));
 
 		jName.setFont(new Font("SansSerif", 0, 11));
 		jName.setLineWrap(true);
@@ -134,62 +125,62 @@ public class AlbumInspector extends JPanel
 		jResizeToForce.setText(GRI18n.getString(MODULE, "res2Frc"));
 
 		jBeginning.setText(GRI18n.getString(MODULE, "Beginning"));
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "Override")));
-		jPanelProps.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "Props")));
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "Override")));
+		jPanelProps.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "Props")));
 
-    	jPanelProps.add( jLabelName,               new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0) );
-		jPanelProps.add(new JScrollPane(jName),                new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
-		jPanelProps.add( jLabelTitle,              new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0) );
-		jPanelProps.add(new JScrollPane(jTitle),           new GridBagConstraints(1, 1, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
-		jPanelProps.add(jLabelSummary,        new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 0, 0));
-		jPanelProps.add(new JScrollPane(jSummary),       new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		jPanelProps.add( jLabelPictures,              new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 2, 0) );
-		jPanelProps.add(jPictures,            new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 3, 0), 0, 0));
-		jPanelProps.add(jApply,  new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		jPanelProps.add(jLabelName, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0));
+		jPanelProps.add(new JScrollPane(jName), new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
+		jPanelProps.add(jLabelTitle, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0));
+		jPanelProps.add(new JScrollPane(jTitle), new GridBagConstraints(1, 1, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
+		jPanelProps.add(jLabelSummary, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 0, 0));
+		jPanelProps.add(new JScrollPane(jSummary), new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jPanelProps.add(jLabelPictures, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 2, 0));
+		jPanelProps.add(jPictures, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 3, 0), 0, 0));
+		jPanelProps.add(jApply, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
 
-		jPanel1.add(jResizeToWidth,             new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(jLabel7,              new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-		jPanel1.add(jResizeToHeight,             new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(jPanel6,          new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(jResizeBeforeUpload,         new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(jResizeToDefault,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
-		jPanel1.add(jResizeToForce,      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
-		jPanel1.add(jBeginning,      new GridBagConstraints(0, 3, 4, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jResizeToWidth, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jLabel7, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
+		jPanel1.add(jResizeToHeight, new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jPanel6, new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jResizeBeforeUpload, new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jResizeToDefault, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
+		jPanel1.add(jResizeToForce, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
+		jPanel1.add(jBeginning, new GridBagConstraints(0, 3, 4, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
-		this.add(jPanelProps,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jPanel1,      new GridBagConstraints(0, 1, 2, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jFetch,    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
-		this.add(jSlideshow,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		this.add(jPanelProps, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jPanel1, new GridBagConstraints(0, 1, 2, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jFetch, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		this.add(jSlideshow, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
 		//this.add(jNew,    new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 		//		,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
-		add( jSpacer,              new GridBagConstraints(0, 5, 1, 1, 1.0, 0.1
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
+		add(jSpacer, new GridBagConstraints(0, 5, 1, 1, 1.0, 0.1
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		buttonGroup1.add(jResizeToDefault);
 		buttonGroup1.add(jResizeToForce);
 
-		this.setMinimumSize( new Dimension( 150, 0 ) );
+		this.setMinimumSize(new Dimension(150, 0));
 
 		setupKeyboardHandling(jName);
 		setupKeyboardHandling(jTitle);
@@ -226,14 +217,14 @@ public class AlbumInspector extends JPanel
 
 	// Event handling
 	/**
-	 *  Menu and button handling
-	 *
-	 *@param  e  Action event
+	 * Menu and button handling
+	 * 
+	 * @param e Action event
 	 */
-	public void actionPerformed( ActionEvent e ) {
+	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
 		JComponent source = (JComponent) e.getSource();
-		Log.log(Log.LEVEL_TRACE, MODULE, "Action selected " + command );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Action selected " + command);
 
 		if (source == jFetch) {
 			mf.fetchAlbumImages();
@@ -259,7 +250,7 @@ public class AlbumInspector extends JPanel
 		}
 
 		JComponent source = (JComponent) e.getSource();
-		Log.log(Log.LEVEL_TRACE, MODULE, "Item state changed " + source );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Item state changed " + source);
 
 		if (source == jBeginning) {
 			album.setOverrideAddToBeginning(new Boolean(jBeginning.isSelected()));
@@ -280,7 +271,7 @@ public class AlbumInspector extends JPanel
 		boolean oldIgnoreItemChanges = ignoreItemChanges;
 		ignoreItemChanges = true;
 
-		if (album!= null && jResizeBeforeUpload.isSelected()) {
+		if (album != null && jResizeBeforeUpload.isSelected()) {
 			jResizeToDefault.setEnabled(true);
 			jResizeToForce.setEnabled(true);
 
@@ -308,11 +299,11 @@ public class AlbumInspector extends JPanel
 	}
 
 	/**
-	 *  Sets the mainFrame attribute of the PictureInspector object
-	 *
-	 *@param  mf  The new mainFrame value
+	 * Sets the mainFrame attribute of the PictureInspector object
+	 * 
+	 * @param mf The new mainFrame value
 	 */
-	public void setMainFrame( MainFrame mf ) {
+	public void setMainFrame(MainFrame mf) {
 		this.mf = mf;
 	}
 
@@ -322,7 +313,7 @@ public class AlbumInspector extends JPanel
 
 		this.album = album;
 
-		if ( album == null ) {
+		if (album == null) {
 			/*setActive(jName, false);
 			setActive(jTitle, false);
 			setActive(jSummary, false);*/
@@ -349,7 +340,7 @@ public class AlbumInspector extends JPanel
 
 			jResizeBeforeUpload.setSelected(album.getResize());
 			jResizeToDefault.setSelected(album.getResizeDefault());
-			jResizeToForce.setSelected(! album.getResizeDefault());
+			jResizeToForce.setSelected(!album.getResizeDefault());
 			jResizeToWidth.setText("" + album.getResizeDimension().width);
 			jResizeToHeight.setText("" + album.getResizeDimension().height);
 			jBeginning.setSelected(album.getAddToBeginning());
@@ -410,14 +401,14 @@ public class AlbumInspector extends JPanel
 	// Focus traversal actions
 	public Action nextFocusAction = new AbstractAction("Move Focus Forwards") {
 		public void actionPerformed(ActionEvent evt) {
-			((Component)evt.getSource()).transferFocus();
+			((Component) evt.getSource()).transferFocus();
 		}
 	};
 
 	public Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
 		public void actionPerformed(ActionEvent evt) {
 			try {
-				((Component)evt.getSource()).transferFocusBackward();
+				((Component) evt.getSource()).transferFocusBackward();
 			} catch (NoSuchMethodError e) {
 				Log.log(Log.LEVEL_ERROR, MODULE, "Can't transfer focus backwards on 1.3");
 			}
@@ -437,7 +428,7 @@ public class AlbumInspector extends JPanel
 	};
 
 	/**
-	 *	Caption JTextArea events.
+	 * Caption JTextArea events.
 	 */
 	public void insertUpdate(DocumentEvent e) {
 		textUpdate(e);

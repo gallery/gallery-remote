@@ -21,13 +21,7 @@
 
 package com.gallery.GalleryRemote;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.awt.*;
-
 import HTTPClient.*;
-
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
@@ -35,25 +29,27 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 /**
- *	This interface is a temporary mechanism to let us use version
- *	1 and 2 of the protocol by changing a little code -- a replacement for
- *	this is under development that will allow a GalleryRemote client
- *	to automatically determine what protocol it should use given
- *	a Gallery and to use the appropriate implementation.
- *	
- *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ * This interface is a temporary mechanism to let us use version
+ * 1 and 2 of the protocol by changing a little code -- a replacement for
+ * this is under development that will allow a GalleryRemote client
+ * to automatically determine what protocol it should use given
+ * a Gallery and to use the appropriate implementation.
+ * 
+ * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
 public abstract class GalleryComm implements PreferenceNames {
 	private static final String MODULE = "GalComm";
 
 	int[] capabilities = null;
 	private static int lastRespCode = 0;
-	
-	/**
-	 *	Flag to hold logged in status.  Only need to log in once.
-	 */
+
+	/** Flag to hold logged in status.  Only need to log in once. */
 	protected boolean isLoggedIn = false;
 
 	/* -------------------------------------------------------------------------
@@ -72,6 +68,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Accepting cookie: " + cookie);
 				return true;
 			}
+
 			public boolean sendCookie(Cookie cookie, RoRequest req) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Sending cookie: " + cookie);
 				return true;
@@ -80,72 +77,74 @@ public abstract class GalleryComm implements PreferenceNames {
 	}
 
 	/**
-	 *	Causes the GalleryComm instance to upload the pictures in the
-	 *	associated Gallery to the server.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm instance to upload the pictures in the
+	 * associated Gallery to the server.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void uploadFiles( StatusUpdate su, boolean async ) {
-		throw new RuntimeException( "This method is not available on this protocol" );
+	public void uploadFiles(StatusUpdate su, boolean async) {
+		throw new RuntimeException("This method is not available on this protocol");
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm instance to fetch the albums contained by
-	 *	associated Gallery from the server.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm instance to fetch the albums contained by
+	 * associated Gallery from the server.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void fetchAlbums( StatusUpdate su, boolean async ) {
-		throw new RuntimeException( "This method is not available on this protocol" );
+	public void fetchAlbums(StatusUpdate su, boolean async) {
+		throw new RuntimeException("This method is not available on this protocol");
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
+	 * Causes the GalleryComm instance to fetch the album properties
+	 * for the given Album.
+	 * 
+	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
-		throw new RuntimeException( "This method is not available on this protocol" );
+	public void albumInfo(StatusUpdate su, Album a, boolean async) {
+		throw new RuntimeException("This method is not available on this protocol");
 	}
-	
+
 	/**
-	 *	Causes the GalleryComm instance to create a new album as a child of
-	 *	the specified album (or at the root if album is null)
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 *	@param parentAlbum if null, create the album in the root of the gallery; otherwise
-	 *				create as a child of the given album
+	 * Causes the GalleryComm instance to create a new album as a child of
+	 * the specified album (or at the root if album is null)
+	 * 
+	 * @param su          an instance that implements the StatusUpdate interface.
+	 * @param parentAlbum if null, create the album in the root of the gallery; otherwise
+	 *                    create as a child of the given album
 	 */
-	public String newAlbum( StatusUpdate su, Album parentAlbum,
-			String newAlbumName, String newAlbumTitle,
-			String newAlbumDesc, boolean async ) {
-		throw new RuntimeException( "This method is not available on this protocol" );
+	public String newAlbum(StatusUpdate su, Album parentAlbum,
+						   String newAlbumName, String newAlbumTitle,
+						   String newAlbumDesc, boolean async) {
+		throw new RuntimeException("This method is not available on this protocol");
 	}
 
 	public void fetchAlbumImages(StatusUpdate su, Album a, boolean async) {
-		throw new RuntimeException( "This method is not available on this protocol" );
+		throw new RuntimeException("This method is not available on this protocol");
 	}
 
 	public void logOut() {
 		isLoggedIn = false;
 		CookieModule.discardAllCookies();
 	}
-	
+
 	public boolean isLoggedIn() {
 		return isLoggedIn;
 	}
-		
+
 	public boolean hasCapability(int capability) {
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
 	}
-	
-	/** Return true if the last communication attempt failed with authorization error */
-	public static boolean wasAuthFailure () {
+
+	/**
+	 * Return true if the last communication attempt failed with authorization error
+	 */
+	public static boolean wasAuthFailure() {
 		boolean result = (lastRespCode == 401);
 		return result;
 	}
-	
+
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
 			GalleryProperties p = GalleryRemote.getInstance().properties;
@@ -153,13 +152,16 @@ public abstract class GalleryComm implements PreferenceNames {
 			if (p.getBooleanProperty(USE_PROXY)) {
 				String hostname = p.getProperty(PROXY_HOST);
 				int port = 80;
-				try { port = p.getIntProperty(PROXY_PORT); } catch (NumberFormatException e) {}
+				try {
+					port = p.getIntProperty(PROXY_PORT);
+				} catch (NumberFormatException e) {
+				}
 				String username = p.getProperty(PROXY_USERNAME);
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy to " + hostname + ":" + port);
 
 				HTTPConnection.setProxyServer(hostname, port);
-				
+
 				if (username != null && username.length() > 0) {
 					String password = p.getBase64Property(PROXY_PASSWORD);
 					Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy auth to " + username + ":" + password);
@@ -171,7 +173,7 @@ public abstract class GalleryComm implements PreferenceNames {
 			}
 
 			// create a connection
-			HTTPConnection mConnection = new HTTPConnection( url );
+			HTTPConnection mConnection = new HTTPConnection(url);
 
 			if (g.getType() == Gallery.TYPE_STANDALONE) {
 				// assemble the URL
@@ -179,7 +181,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2 for " + url);
 				// Test GalleryComm2
-				String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
+				String urlPath2 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME);
 				if (tryComm(su, mConnection, urlPath2)) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
 					return new GalleryComm2(g);
@@ -188,7 +190,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
 				// Test GalleryComm1
 				// BUT: only if first try was not status code 401 = authorization failure
-				String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
+				String urlPath1 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME);
 				if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 1");
 					return new GalleryComm1(g);
@@ -200,10 +202,10 @@ public abstract class GalleryComm implements PreferenceNames {
 		} catch (HTTPClient.ProtocolNotSuppException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
-		
+
 		return null;
 	}
-	
+
 	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath) {
 		try {
 			HTTPResponse rsp = null;

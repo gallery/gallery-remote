@@ -21,10 +21,10 @@
 package com.gallery.GalleryRemote;
 
 /**
- *	This interface decouples the status updating methods from MainFrame.
- *
- *	@author     <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
- *	@version    $id$
+ * This interface decouples the status updating methods from MainFrame.
+ * 
+ * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ * @version $id$
  */
 public interface StatusUpdate {
 	public static final int LEVEL_GENERIC = 0;
@@ -36,25 +36,28 @@ public interface StatusUpdate {
 	public static final int NUM_LEVELS = 6;
 
 	/* level-bound methods */
-	public void setStatus( String message );
-	
-	public void startProgress( int level, int min, int max, String message, boolean undetermined);
-	
-	public void updateProgressValue( int level, int value );
-	public void updateProgressValue( int level, int value, int maxValue );
-	
-	public void updateProgressStatus( int level, String message );
+	public void setStatus(String message);
 
-	public void setUndetermined( int level, boolean undetermined);
+	public void startProgress(int level, int min, int max, String message, boolean undetermined);
+
+	public void updateProgressValue(int level, int value);
+
+	public void updateProgressValue(int level, int value, int maxValue);
+
+	public void updateProgressStatus(int level, String message);
+
+	public void setUndetermined(int level, boolean undetermined);
 
 	public int getProgressValue(int level);
+
 	public int getProgressMinValue(int level);
+
 	public int getProgressMaxValue(int level);
 
-	public void stopProgress( int level, String message );
+	public void stopProgress(int level, String message);
 
 	/* level-independant methods */
 	public void setInProgress(boolean inProgress);
-	
+
 	public void error(String message);
 }

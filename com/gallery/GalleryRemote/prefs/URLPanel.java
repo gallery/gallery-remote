@@ -1,16 +1,16 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.border.*;
+import java.awt.event.ActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +19,6 @@ import javax.swing.border.*;
  */
 public class URLPanel extends PreferencePanel implements ListSelectionListener, ActionListener {
 	public static final String MODULE = "URLPa";
-
 
 
 	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
@@ -60,23 +59,23 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		jNew.setText(GRI18n.getString(MODULE, "new"));
 		jDelete.setActionCommand("Delete");
 		jDelete.setText(GRI18n.getString(MODULE, "delete"));
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),GRI18n.getString(MODULE, "details")));
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "details")));
 		jPanel1.setLayout(gridLayout1);
 		gridLayout1.setColumns(1);
 		jDetails.setMinimumSize(new Dimension(0, 50));
 		jDetails.setPreferredSize(new Dimension(0, 50));
 		jDetails.setHorizontalAlignment(SwingConstants.LEFT);
 		jDetails.setVerticalAlignment(SwingConstants.TOP);
-		this.add(jScrollPane1,    new GridBagConstraints(0, 0, 1, 3, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jModify,    new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-		this.add(jNew,   new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-		this.add(jDelete,   new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-		this.add(jPanel1,   new GridBagConstraints(0, 3, 2, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jScrollPane1, new GridBagConstraints(0, 0, 1, 3, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jModify, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
+		this.add(jNew, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
+		this.add(jDelete, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
+				, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
+		this.add(jPanel1, new GridBagConstraints(0, 3, 2, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(jDetails, null);
 		jScrollPane1.getViewport().add(jGalleries, null);
 
@@ -127,7 +126,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				resetUIState();
 			}
 		} else if (cmd.equals("Delete")) {
-            Object [] params = {g.getStUrlString() };
+			Object[] params = {g.getStUrlString()};
 			int n = JOptionPane.showConfirmDialog(this, GRI18n.getString(MODULE, "delConfirm", params),
 					GRI18n.getString(MODULE, "delete"),
 					JOptionPane.WARNING_MESSAGE,
@@ -189,24 +188,22 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		jDetails.setText(sb.toString());
 	}
 
-	public class GalleryCellRenderer extends DefaultListCellRenderer
-	{
+	public class GalleryCellRenderer extends DefaultListCellRenderer {
 		/**
-		 *  Gets the listCellRendererComponent attribute of the FileCellRenderer
-		 *  object
-		 *
-		 *@param  list      Description of Parameter
-		 *@param  value     Description of Parameter
-		 *@param  index     Description of Parameter
-		 *@param  selected  Description of Parameter
-		 *@param  hasFocus  Description of Parameter
-		 *@return           The listCellRendererComponent value
-		 *@since
+		 * Gets the listCellRendererComponent attribute of the FileCellRenderer
+		 * object
+		 * 
+		 * @param list     Description of Parameter
+		 * @param value    Description of Parameter
+		 * @param index    Description of Parameter
+		 * @param selected Description of Parameter
+		 * @param hasFocus Description of Parameter
+		 * @return The listCellRendererComponent value
 		 */
 		public Component getListCellRendererComponent(
 				JList list, Object value, int index,
-				boolean selected, boolean hasFocus ) {
-			super.getListCellRendererComponent( list, value, index, selected, hasFocus );
+				boolean selected, boolean hasFocus) {
+			super.getListCellRendererComponent(list, value, index, selected, hasFocus);
 
 			Gallery g = (Gallery) value;
 

@@ -5,8 +5,8 @@ import com.gallery.GalleryRemote.util.DialogUtil;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 /**
@@ -25,11 +25,18 @@ public class SlideshowFrame extends PreviewFrame implements Runnable {
 		try {
 			// Java 1.4 only
 			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+			if (! gd.isFullScreenSupported()) {
+				throw new NoSuchMethodError();
+			}
+
+			Log.log(Log.LEVEL_TRACE, MODULE, "Switching to full-screen mode");
 			gd.setFullScreenWindow(this);
 
 			//setBounds(500, 20, 200, 200);
 			//show();
 		} catch (NoSuchMethodError e) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
 			show();
 		}

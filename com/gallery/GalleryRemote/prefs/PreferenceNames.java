@@ -15,10 +15,10 @@ public interface PreferenceNames {
 	public static final String UPDATE_CHECK_BETA = "updateCheckBeta";
 	public static final String UPDATE_URL = "updateUrl";
 	public static final String UPDATE_URL_BETA = "updateUrlBeta";
-    public static final String UI_LOCALE = "uiLocale";
-    public static final String MRU_COUNT = "mruCount";
-    public static final String MRU_BASE = "mruItem.";
-    public static final String LOAD_LAST_FILE = "loadLastMRU";
+	public static final String UI_LOCALE = "uiLocale";
+	public static final String MRU_COUNT = "mruCount";
+	public static final String MRU_BASE = "mruItem.";
+	public static final String LOAD_LAST_FILE = "loadLastMRU";
 
 	// Upload panel
 	public static final String RESIZE_BEFORE_UPLOAD = "resizeBeforeUpload";
@@ -48,4 +48,8 @@ public interface PreferenceNames {
 	public static final String PROXY_PORT = "proxyPort";
 	public static final String PROXY_USERNAME = "proxyUsername";
 	public static final String PROXY_PASSWORD = "proxyPassword";
+
+	// Other
+	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
+	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
 }

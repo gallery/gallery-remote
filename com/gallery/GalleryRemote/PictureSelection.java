@@ -20,38 +20,37 @@
 */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.model.Picture;
+
+import javax.swing.*;
 import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.ListIterator;
 import java.util.Iterator;
-
-import com.gallery.GalleryRemote.model.Picture;
-
-import javax.swing.*;
 
 
 /**
- *  Picture model
- *
- *@author     paour
- *@created    11 août 2002
+ * Picture model
+ * 
+ * @author paour
+ * @created 11 août 2002
  */
 public class PictureSelection extends ArrayList implements Transferable, ClipboardOwner {
 
-	public static final DataFlavor[] flavors = { new DataFlavor(Picture.class, "Gallery Picture object (local)") };
-	private static final java.util.List flavorList = Arrays.asList( flavors );
+	public static final DataFlavor[] flavors = {new DataFlavor(Picture.class, "Gallery Picture object (local)")};
+	private static final java.util.List flavorList = Arrays.asList(flavors);
 
-	public PictureSelection() {}
+	public PictureSelection() {
+	}
 
 	public PictureSelection(JList list) {
 		int[] selIndices = list.getSelectedIndices();
-		for ( int i = 0; i < selIndices.length; i++ ) {
+		for (int i = 0; i < selIndices.length; i++) {
 			int selIndex = selIndices[i];
-			if ( selIndex != -1 ) {
-				Picture p = (Picture) list.getModel().getElementAt( selIndex );
-				add( p );
+			if (selIndex != -1) {
+				Picture p = (Picture) list.getModel().getElementAt(selIndex);
+				add(p);
 			}
 		}
 	}
@@ -62,7 +61,7 @@ public class PictureSelection extends ArrayList implements Transferable, Clipboa
 		return flavors;
 	}
 
-	public boolean isDataFlavorSupported( DataFlavor flavor ) {
+	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		return (flavorList.contains(flavor));
 	}
 

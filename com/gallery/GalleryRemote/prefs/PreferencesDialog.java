@@ -1,22 +1,21 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.Properties;
-import java.util.ArrayList;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.io.IOException;
+import java.util.Properties;
 
 /**
  * The Preferences dialog
@@ -26,7 +25,6 @@ import java.io.IOException;
 
 public class PreferencesDialog extends JDialog implements ListSelectionListener, ActionListener {
 	public static final String MODULE = "PrefsDlog";
-
 
 
 	DefaultListModel panels = new DefaultListModel();
@@ -50,7 +48,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 		try {
 			jbInit();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 
@@ -107,21 +105,21 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 		jOK.setMnemonic('0');
 		jOK.setText(GRI18n.getString(MODULE, "OK"));
-        jOK.setActionCommand("OK");
+		jOK.setActionCommand("OK");
 		jPanel2.setLayout(gridLayout1);
 		jRevert.setToolTipText(GRI18n.getString(MODULE, "revertTip"));
 		jRevert.setText(GRI18n.getString(MODULE, "revert"));
-        jRevert.setActionCommand("revert");
+		jRevert.setActionCommand("revert");
 		jCancel.setText(GRI18n.getString(MODULE, "cancel"));
-        jCancel.setActionCommand("cancel");
+		jCancel.setActionCommand("cancel");
 		gridLayout1.setHgap(5);
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
-		jPanel1.add(jScrollPane1,      new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(10, 10, 0, 0), 0, 0));
-		jPanel1.add(jPanels,      new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 0, 10), 0, 0));
-		jPanel1.add(jPanel2,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
+		jPanel1.add(jScrollPane1, new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(10, 10, 0, 0), 0, 0));
+		jPanel1.add(jPanels, new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 0, 10), 0, 0));
+		jPanel1.add(jPanel2, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 		jPanel2.add(jOK, null);
 		jScrollPane1.getViewport().add(jIcons, null);
 		jPanel2.add(jCancel, null);
@@ -190,13 +188,12 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 	}
 
 	/**
-	 *  Cell renderer
-	 *
-	 *@author     paour
-	 *@created    11 août 2002
+	 * Cell renderer
+	 * 
+	 * @author paour
+	 * @created 11 août 2002
 	 */
-	public class IconsCellRenderer extends DefaultListCellRenderer
-	{
+	public class IconsCellRenderer extends DefaultListCellRenderer {
 		public IconsCellRenderer() {
 			super();
 			setHorizontalTextPosition(JLabel.CENTER);
@@ -205,21 +202,20 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		}
 
 		/**
-		 *  Gets the listCellRendererComponent attribute of the FileCellRenderer
-		 *  object
-		 *
-		 *@param  list      Description of Parameter
-		 *@param  value     Description of Parameter
-		 *@param  index     Description of Parameter
-		 *@param  selected  Description of Parameter
-		 *@param  hasFocus  Description of Parameter
-		 *@return           The listCellRendererComponent value
-		 *@since
+		 * Gets the listCellRendererComponent attribute of the FileCellRenderer
+		 * object
+		 * 
+		 * @param list     Description of Parameter
+		 * @param value    Description of Parameter
+		 * @param index    Description of Parameter
+		 * @param selected Description of Parameter
+		 * @param hasFocus Description of Parameter
+		 * @return The listCellRendererComponent value
 		 */
 		public Component getListCellRendererComponent(
 				JList list, Object value, int index,
-				boolean selected, boolean hasFocus ) {
-			super.getListCellRendererComponent( list, value, index, selected, hasFocus );
+				boolean selected, boolean hasFocus) {
+			super.getListCellRendererComponent(list, value, index, selected, hasFocus);
 
 			if (value != null && index != -1) {
 				PreferencePanel pp = (PreferencePanel) value;

@@ -22,19 +22,19 @@ package com.gallery.GalleryRemote;
 
 
 /**
- *    This interface includes capacity keys for various versions of 
- *    the Gallery Remote protocols.
- *    
- *    @author    Pierre-Luc Paour
- *    @version  $id$
+ * This interface includes capacity keys for various versions of
+ * the Gallery Remote protocols.
+ * 
+ * @author Pierre-Luc Paour
+ * @version $id$
  */
 public interface GalleryCommCapabilities {
-	public static final int CAPA_UPLOAD_FILES       = 1;
-	public static final int CAPA_FETCH_ALBUMS       = 2;
-	public static final int CAPA_UPLOAD_CAPTION     = 3;
+	public static final int CAPA_UPLOAD_FILES = 1;
+	public static final int CAPA_FETCH_ALBUMS = 2;
+	public static final int CAPA_UPLOAD_CAPTION = 3;
 	public static final int CAPA_FETCH_HIERARCHICAL = 4;
-	public static final int CAPA_ALBUM_INFO         = 5;
-	public static final int CAPA_NEW_ALBUM          = 6;
+	public static final int CAPA_ALBUM_INFO = 5;
+	public static final int CAPA_NEW_ALBUM = 6;
 	public static final int CAPA_FETCH_ALBUMS_PRUNE = 7;
 	public static final int CAPA_FORCE_FILENAME = 8;
 	public static final int CAPA_FETCH_ALBUM_IMAGES = 9;
