@@ -170,7 +170,7 @@ public class AboutBox extends JDialog {
             int lines = ( getHeight() - TOP - BOTTOM ) / height;
             
             int y = firstLineOffset;
-            
+            g.setColor(new Color(255, 255, 255));
             for ( int i = 0; i <= lines; i++ ) {
                 if ( i + firstLine >= 0 && i + firstLine < text.size() ) {
                     String line = (String) text.get( i + firstLine );
