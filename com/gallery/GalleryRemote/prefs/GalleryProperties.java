@@ -198,6 +198,14 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		}
 	}
 
+	public boolean getBooleanProperty( String key, boolean defaultValue ) {
+		try {
+			return getBooleanProperty(key);
+		} catch (NumberFormatException e) {
+			return defaultValue;
+		}
+	}
+
 	public void setBooleanProperty( String key, boolean value ) {
 		setProperty( key, value?"true":"false" );
 	}
@@ -209,6 +217,14 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			return Integer.valueOf( intS ).intValue();
 		} catch ( Exception e ) {
 			throw new NumberFormatException( "Parameter " + key + " is missing or malformed (should be an integer value)" );
+		}
+	}
+
+	public int getIntProperty( String key, int defaultValue ) {
+		try {
+			return getIntProperty(key);
+		} catch (NumberFormatException e) {
+			return defaultValue;
 		}
 	}
 
