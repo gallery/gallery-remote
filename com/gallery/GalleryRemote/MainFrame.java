@@ -808,7 +808,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Upload" ) ) {
 			uploadPictures();
 		} else if ( command.equals( "NewGallery" ) ) {
-			Gallery g = new Gallery();
+			Gallery g = new Gallery(null, null, null, this);
 			galleries.addElement( g );
 			gallery.setSelectedItem( g );
 			updateGalleryParams();

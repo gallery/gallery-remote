@@ -109,10 +109,6 @@ public class Gallery implements ComboBoxModel
 	 *
 	 */
 	public void setUrl( URL url ) {
-		if ( url == null ) {
-			throw new IllegalArgumentException( "urlString must not be null" );
-		}
-		
 		this.url = url;
 	}
 	
@@ -123,8 +119,8 @@ public class Gallery implements ComboBoxModel
 	 *@param  username  The new username value
 	 */
 	public void setUsername( String username ) {
-		if ( username != null && this.username != null
-			&& username.length() > 0 && this.username.length() > 0
+		Log.log(Log.TRACE, MODULE, "setusername: " + username);
+		if ( username != null && username.length() > 0
 			&& ! username.equals( this.username ) ) {
 			
 			this.username = username;
@@ -140,8 +136,8 @@ public class Gallery implements ComboBoxModel
 	 *@param  password  The new password value
 	 */
 	public void setPassword( String password ) {
-		if ( password != null && this.password != null
-			&& password.length() > 0 && this.password.length() > 0
+		Log.log(Log.TRACE, MODULE, "setpassword: " + password);
+		if ( password != null && password.length() > 0 
 			&& ! password.equals( this.password ) ) {
 			
 			this.password = password;
