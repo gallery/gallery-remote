@@ -88,6 +88,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	private static int[] capabilities1;
 	private static int[] capabilities2;
+	private static int[] capabilities5;
 
 	
 	/* -------------------------------------------------------------------------
@@ -114,6 +115,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM };
 		capabilities2 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE };
+		capabilities5 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+			CAPA_FORCE_FILENAME};
 		Arrays.sort(capabilities);
 	}
 	
@@ -160,11 +164,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 *	@param a if null, create the album in the root of the gallery; otherwise
 	 *				create as a child of the given album
 	 */
-	public void newAlbum( StatusUpdate su, Album parentAlbum,
+	public String newAlbum( StatusUpdate su, Album parentAlbum,
 			String newAlbumName, String newAlbumTitle,
 			String newAlbumDesc, boolean async ) {
-		doTask( new NewAlbumTask( su, parentAlbum, newAlbumName,
-			newAlbumTitle, newAlbumDesc ), async );
+		NewAlbumTask newAlbumTask = new NewAlbumTask( su, parentAlbum, newAlbumName,
+				newAlbumTitle, newAlbumDesc );
+		doTask( newAlbumTask, async );
+
+		return newAlbumTask.getNewAlbumName();
 	}
 		
 	/* -------------------------------------------------------------------------
@@ -405,13 +412,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 						Log.log(Log.TRACE, MODULE, "Server minor version: " + serverMinorVersion);
 
-						if (serverMinorVersion == 1) {
-							// we have more than the 2.0 capabilities, we have 2.1 capabilities.
-							capabilities = capabilities1;
-						} else if (serverMinorVersion >= 2) {
-							// we have more than the 2.1 capabilities, we have 2.2 capabilities.
-							capabilities = capabilities2;
-						}
+						handleCapabilities();
 					} catch (Exception e) {
 						Log.log( Log.ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
 						Log.logException(Log.ERROR, MODULE, e);
@@ -440,6 +441,19 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 
 			return false;
+		}
+
+		private void handleCapabilities() {
+			if (serverMinorVersion >= 5) {
+				// we have more than the 2.2 capabilities, we have 2.5 capabilities.
+				capabilities = capabilities5;
+			} else if (serverMinorVersion >= 2) {
+				// we have more than the 2.1 capabilities, we have 2.2 capabilities.
+				capabilities = capabilities2;
+			} else if (serverMinorVersion == 1) {
+				// we have more than the 2.0 capabilities, we have 2.1 capabilities.
+				capabilities = capabilities1;
+			}
 		}
 	}
 	
@@ -528,7 +542,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("cmd", "add-item"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", p.getAlbum().getName()),
-					new NVPair("caption", caption )
+					new NVPair("caption", caption ),
+					new NVPair("force_filename", p.getSource().getName())
 				};
 
 				// set up extra fields
@@ -860,7 +875,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		String albumName;
 		String albumTitle;
 		String albumDesc;
-		
+		private String newAlbumName;
+
 		NewAlbumTask( StatusUpdate su, Album parentAlbum, String albumName,
 				String albumTitle, String albumDesc ) {
 			super(su);
@@ -899,6 +915,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Properties p = requestResponse( form_data );
 				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
 					status(su, StatusUpdate.LEVEL_GENERIC, "Create album successful.");
+					newAlbumName = p.getProperty("album_name");
 				} else {
 					error(su, "Error: " + p.getProperty( "status_text" ));
 				}
@@ -913,6 +930,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.logException(Log.ERROR, MODULE, me);
 				error(su, "Error: " + me.toString());
 			}
+		}
+
+		public String getNewAlbumName() {
+			return newAlbumName;
 		}
 	}
 	

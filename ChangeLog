@@ -1,3 +1,15 @@
+2003-09-22  Pierre-Luc Paour <gallery@paour.com> (1.2-b3)
+
+	* Fixed PHPNuke default URLs (thanks docmattman).
+	* When a read-only album is selected, drag-and-drop is not allowed
+	  and the Add Pictures... button is disabled.
+	* When creating a new album, select the album in the popup rather
+	  than the first root album (only with G 1.4.1-b75 and later,
+	  remote protocol 2.5).
+	* Forcing file name on uploaded files to original filename, rather
+	  than the temp file used when resizing and/or rotating (only with
+	  G 1.4.1-b75 and later, remote protocol 2.5).
+
 2003-09-21  Pierre-Luc Paour <gallery@paour.com> (1.2-b2)
 
 	* Implemented PHPNuke support (thanks docmattman).

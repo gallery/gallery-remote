@@ -77,6 +77,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	JButton ok = new JButton();
 	JButton cancel = new JButton();
 	GridLayout gridLayout1 = new GridLayout();
+	private String newAlbumName;
 
 
 	/**
@@ -206,10 +207,14 @@ public class NewAlbumDialog extends javax.swing.JDialog
 				a.setParentAlbum(selectedAlbum);
 			}
 			
-			gallery.newAlbum(a, ((MainFrame) this.getOwner()).jStatusBar);
+			newAlbumName = gallery.newAlbum(a, ((MainFrame) this.getOwner()).jStatusBar);
 			
 			setVisible(false);
 		}
+	}
+
+	public String getNewAlbumName() {
+		return newAlbumName;
 	}
 }
 

@@ -320,9 +320,9 @@ public class MainFrame extends javax.swing.JFrame
 
 				// if the selected album is uploading, disable everything
 				boolean enabled = ! inProgress && getCurrentAlbum() != null && jAlbumCombo.getModel().getSize() >= 1;
-				jBrowseButton.setEnabled( enabled );
+				jBrowseButton.setEnabled( enabled && getCurrentAlbum().getCanAdd());
 				jPictureInspector.setEnabled( enabled );
-				jPicturesList.setEnabled( enabled );
+				jPicturesList.setEnabled( enabled && getCurrentAlbum().getCanAdd());
 				jAlbumCombo.setEnabled( enabled );
 				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
 					&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
@@ -518,7 +518,22 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 	public void newAlbum() {
-		new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
+		NewAlbumDialog dialog = new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
+		final String newAlbumName = dialog.getNewAlbumName();
+
+		Log.log(Log.TRACE, MODULE, "Album '" + newAlbumName + "' created. Selecting it...");
+		// there is probably a better way... this is needed to give the UI time to catch up
+		// and load the combo up with the reloaded album list
+		new Thread() {
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				jAlbumCombo.setSelectedItem(getCurrentGallery().getAlbumByName(newAlbumName));
+			}
+		}.start();
 	}
 
 
@@ -679,10 +694,13 @@ public class MainFrame extends javax.swing.JFrame
 		jLabel1.setText( grRes.getString("Gallery_URL") );
 		jLabel7.setText( grRes.getString("Select_Album") );
 		jLoginButton.setText( "Log in" );
+		jLoginButton.setToolTipText("Connect or disconnect from the selected Gallery. " +
+				"You can be connected to more than one Gallery simultaneously.");
 		//jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );
 		jLoginButton.setIcon(iLogin);
 		jNewAlbumButton.setText("New Album..." );
+		jNewAlbumButton.setToolTipText("Create a new Album in the selected Gallery");
 		//jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
 		jNewAlbumButton.setIcon(iNewAlbum);
@@ -690,12 +708,18 @@ public class MainFrame extends javax.swing.JFrame
 		jUploadButton.setAlignmentX( (float) 2.0 );
 		jUploadButton.setText( "Upload pictures" );
 		jUploadButton.setActionCommand( "Upload" );
+		jUploadButton.setToolTipText( "Upload images that have been added to any and all " +
+				"albums, even if they are not currently showing" );
 		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
 		jBrowseButton.setAlignmentX( (float) 1.0 );
 		jBrowseButton.setText( "Add pictures..." );
 		jBrowseButton.setActionCommand( "Browse" );
+		jBrowseButton.setToolTipText("Find images to add to the currently selected album.\n" +
+				"This button is disabled, if the currently selected album " +
+				"is read-only or you're not logged in.");
 		jGalleryCombo.setActionCommand("Url");
+		jGalleryCombo.setToolTipText("Select a Gallery to which you want to log in");
 		gridLayout1.setHgap( 5 );
 		jMenuFile.setText( "File" );
 		jMenuItemQuit.setText( "Quit" );
@@ -726,6 +750,8 @@ public class MainFrame extends javax.swing.JFrame
 		jNewGalleryButton.setActionCommand("NewGallery");
 		jNewGalleryButton.setIcon(iNewGallery);
 		jAlbumCombo.setActionCommand("Album");
+		jAlbumCombo.setToolTipText("Select an Album here and add pictures to it. The number in parenthesis " +
+				"after the name of the album is the number of pictures that you've added to it.");
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
 		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0

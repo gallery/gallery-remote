@@ -36,4 +36,5 @@ public interface GalleryCommCapabilities {
 	public static final int CAPA_ALBUM_INFO         = 5;
 	public static final int CAPA_NEW_ALBUM          = 6;
 	public static final int CAPA_FETCH_ALBUMS_PRUNE = 7;
+	public static final int CAPA_FORCE_FILENAME = 8;
 }

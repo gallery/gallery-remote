@@ -87,15 +87,17 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		getComm( su ).fetchAlbums( su, true );
 	}
 
-	public void newAlbum( Album a, StatusUpdate su) {
+	public String newAlbum( Album a, StatusUpdate su) {
 		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
-		getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
+		String newAlbumName = getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
 				a.getTitle(), a.getCaption(), false );
 
 		// refresh album list asynchronously
 		fetchAlbums( su );
+
+		return newAlbumName;
 	}
 
 	public void logOut() {
@@ -322,7 +324,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (phpnGalleryUrlString != null) {
 			return phpnGalleryUrlString.toString();
 		} else {
-			return "http://your.host.com/nuke/modules.php?name=$GALLERYFILE$";
+			return "http://your.host.com/nuke/modules.php?name=gallery&include=$GALLERYFILE$";
 		}
 	}
 
@@ -346,7 +348,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (phpnLoginUrlString != null) {
 			return phpnLoginUrlString.toString();
 		} else {
-			return "http://your.host.com/nuke/modules.php?name=Your_Account&op=login&username=$USERNAME$&password=$PASSWORD$";
+			return "http://your.host.com/nuke/modules.php?name=Your_Account&op=login&username=$USERNAME$&user_password=$PASSWORD$";
 		}
 	}
 
@@ -663,6 +665,23 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public Object getElementAt( int index ) {
 		return albumList.get( index );
+	}
+
+	public Album getAlbumByName(String name) {
+		if (albumList == null || name == null) {
+			return null;
+		}
+
+		Iterator it = albumList.iterator();
+		while (it.hasNext()) {
+			Album a = (Album) it.next();
+
+			if (name.equals(a.getName())) {
+				return a;
+			}
+		}
+
+		return null;
 	}
 
 //	void notifyListeners(ListDataEvent lde) {
