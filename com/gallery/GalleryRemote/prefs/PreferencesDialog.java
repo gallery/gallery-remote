@@ -4,6 +4,7 @@ import com.gallery.GalleryRemote.PropertiesFile;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.MainFrame;
+import com.gallery.GalleryRemote.util.DialogUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -52,12 +53,10 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 		loadPanes();
 
-		jIcons.setSelectedIndex(0);
+		jIcons.setSelectedIndex(0); // this must be done to call valueChanged
 
-		pack();
-		Dimension s = owner.getSize();
-		setLocation( (int) ( s.getWidth() - getWidth() ) / 2, (int) ( s.getHeight() - getHeight() ) / 2 );
-
+		DialogUtil.center(this, owner);
+		
 		setVisible( true );
 	}
 
@@ -72,8 +71,9 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 				try {
 					PreferencePanel pp = (PreferencePanel) Class.forName(className).newInstance();
 
+					pp.setMainFrame((MainFrame) getOwner());
+					pp.setDialog(this);
 					pp.buildUI();
-					pp.readProperties(GalleryRemote.getInstance().properties);
 
 					panels.addElement(pp);
 
@@ -99,6 +99,8 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		jOK.setMnemonic('0');
 		jOK.setText("OK");
 		jPanel2.setLayout(gridLayout1);
+		jRevert.setToolTipText("Revert this panel to its state before current changes. If the button " +
+				"is disabled, all or part of the changes in this panel cannot be reverted.");
 		jRevert.setText("Revert");
 		jCancel.setText("Cancel");
 		gridLayout1.setHgap(5);
@@ -124,10 +126,15 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 	}
 
 	public void valueChanged(ListSelectionEvent e) {
-		String className = jIcons.getSelectedValue().getClass().getName();
+		PreferencePanel pp = (PreferencePanel) jIcons.getSelectedValue();
+
+		String className = pp.getClass().getName();
 		Log.log(Log.TRACE, MODULE, "Showing panel: " + className);
 
+		pp.readPropertiesFirst(GalleryRemote.getInstance().properties);
 		jPanelsLayout.show(jPanels, className);
+
+		jRevert.setEnabled(pp.isReversible());
 
 		pack();
 	}
@@ -138,12 +145,16 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 		if (cmd.equals("OK")) {
 			GalleryRemote.getInstance().properties.uncache();
-			
+
 			Enumeration enum = panels.elements();
 			while (enum.hasMoreElements()) {
 				PreferencePanel pp = (PreferencePanel) enum.nextElement();
 
-				pp.writeProperties(GalleryRemote.getInstance().properties);
+				if (pp.hasBeenRead()) {
+					Log.log(Log.TRACE, MODULE, "Writing properties for panel " + pp.getClass());
+
+					pp.writeProperties(GalleryRemote.getInstance().properties);
+				}
 			}
 
 			setVisible(false);
@@ -153,12 +164,9 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		} else if (cmd.equals("Cancel")) {
 			setVisible(false);
 		} else if (cmd.equals("Revert")) {
-			Enumeration enum = panels.elements();
-			while (enum.hasMoreElements()) {
-				PreferencePanel pp = (PreferencePanel) enum.nextElement();
-
-				pp.readProperties(GalleryRemote.getInstance().properties);
-			}
+			PreferencePanel pp = (PreferencePanel) jIcons.getSelectedValue();
+			Log.log(Log.TRACE, MODULE, "Reverting panel " + pp.getClass());
+			pp.readProperties(GalleryRemote.getInstance().properties);
 		}
 	}
 
