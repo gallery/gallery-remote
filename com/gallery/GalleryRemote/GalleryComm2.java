@@ -363,7 +363,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 			}
 
-			form_data = fudgeParameters(form_data);
+			form_data = fudgeFormParameters(form_data);
 
 			// make the request
 			try {
@@ -567,7 +567,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// setup the multipart form data
 				NVPair[] afile = {new NVPair("userfile", p.getUploadSource().getAbsolutePath())};
 				NVPair[] hdrs = new NVPair[1];
-				byte[] data = Codecs.mpFormDataEncode(fudgeParameters(opts), afile, hdrs);
+				byte[] data = Codecs.mpFormDataEncode(fudgeFormParameters(opts), fudgeParameters(afile), hdrs);
 
 				// load and validate the response
 				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su);
@@ -651,7 +651,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
-			form_data = fudgeParameters(form_data);
+			form_data = fudgeFormParameters(form_data);
 
 			// load and validate the response
 			Properties p = requestResponse(form_data, su);
@@ -735,7 +735,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
-			form_data = fudgeParameters(form_data);
+			form_data = fudgeFormParameters(form_data);
 
 			// load and validate the response
 			Properties p = requestResponse(form_data, su);
@@ -912,7 +912,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "album-info parameters: " + Arrays.asList(form_data));
 
-				form_data =  fudgeParameters(form_data);
+				form_data =  fudgeFormParameters(form_data);
 
 				// load and validate the response
 				Properties p = requestResponse(form_data, su);
@@ -987,7 +987,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 
-				form_data = fudgeParameters(form_data);
+				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
 				Properties p = requestResponse(form_data, su);
@@ -1073,7 +1073,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
 						Arrays.asList(form_data));
 
-				form_data = fudgeParameters(form_data);
+				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
 				GalleryProperties p = requestResponse(form_data, su);
@@ -1196,7 +1196,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "move-album parameters: " +
 						Arrays.asList(form_data));
 
-				form_data = fudgeParameters(form_data);
+				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
 				GalleryProperties p = requestResponse(form_data, su);
@@ -1326,9 +1326,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 	}
 
-	public NVPair[] fudgeParameters(NVPair[] form_data) {
+	public NVPair[] fudgeFormParameters(NVPair[] form_data) {
 		return form_data;
 	}
+
+    public NVPair[] fudgeParameters(NVPair[] data) {
+        return data;
+    }
 
 	class MyTransferListener implements TransferListener {
 		StatusUpdate su;

@@ -32,7 +32,17 @@ public class GalleryComm2_5 extends GalleryComm2 {
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM*/, CAPA_FETCH_ALBUMS_PRUNE};
 	}
 
-	public NVPair[] fudgeParameters(NVPair form_data[]) {
+    public NVPair[] fudgeParameters(NVPair[] data) {
+        NVPair[] data_modified = new NVPair[data.length];
+        for (int i = 0; i < data.length; i++) {
+            NVPair nvPair = data[i];
+            data_modified[i] = new NVPair("g2_" + nvPair.getName(), nvPair.getValue());
+        }
+
+        return data_modified;
+    }
+
+	public NVPair[] fudgeFormParameters(NVPair form_data[]) {
 		NVPair[] form_data_modified;
 		if (ZEND_DEBUG) {
 			form_data_modified = new NVPair[form_data.length + 6];
