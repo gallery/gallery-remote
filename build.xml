@@ -56,6 +56,10 @@
 			<fileset dir="." includes="ReadMe.html" />
 			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
 			<zipfileset dir="./img" includes="*" prefix="img"/>
+
+			<!-- temporary -->
+			<zipfileset dir="./jpegtran/win32" includes="jpegtran.exe" prefix="jpegtran/win32"/>
+			<zipfileset dir="./jpegtran/win32" includes="jpegtran.properties" prefix="jpegtran"/>
 		</zip>
 	</target>
 
