@@ -69,6 +69,23 @@ public class MainFrame extends javax.swing.JFrame
 
 	PreviewFrame previewFrame = null;
 
+    private static final String DIALOGTITLE = "Gallery Remote  --  ";
+
+    /**
+     * This File is the last opened file or null if the user has not opened
+     * a file or has just pressed New.
+     */
+	private File m_lastOpenedFile = null;
+
+    /**
+     * This flag indicates whether the currently loaded file is dirty
+     * or clean.  Dirty means that the logical contents of the file have
+     * changed and we need to prevent the user from doing something that
+     * will lose their changes.  If we are clean then there is no possibility
+     * of losing changes.
+     */
+	private boolean m_isDirty = false;
+
 	public DefaultComboBoxModel galleries = null;
 	//private Gallery currentGallery = null;
 	//private Album currentAlbum = null;
@@ -103,9 +120,12 @@ public class MainFrame extends javax.swing.JFrame
 	JButton jNewAlbumButton = new JButton();
 
 	JMenu jMenuFile = new JMenu();
-	JMenuItem jMenuItemQuit = new JMenuItem();
-	JMenuItem jMenuItemSave = new JMenuItem();
+	JMenuItem jMenuItemNew    = new JMenuItem();
 	JMenuItem jMenuItemOpen = new JMenuItem();
+	JMenuItem jMenuItemSave   = new JMenuItem();
+	JMenuItem jMenuItemSaveAs = new JMenuItem();
+	JMenuItem jMenuItemClose  = new JMenuItem();
+	JMenuItem jMenuItemQuit   = new JMenuItem();
 
 	JMenu jMenuEdit = new JMenu();
 	JMenuItem jMenuItemCut = new JMenuItem();
@@ -208,7 +228,6 @@ public class MainFrame extends javax.swing.JFrame
 
 		setBounds( GalleryRemote.getInstance().properties.getMainBounds() );
 		setJMenuBar( jMenuBar1 );
-		setTitle( "Gallery Remote" );
 
 		jPicturesList.setMainFrame( this );
 		jPicturesList.setCellRenderer( new FileCellRenderer() );
@@ -252,6 +271,10 @@ public class MainFrame extends javax.swing.JFrame
 		toFront();
 
 		readPreferences(GalleryRemote.getInstance().properties);
+
+        resetUIState();
+
+		//new UploadProgress();
 	}
 
 	private void setGalleries(DefaultComboBoxModel galleries) {
@@ -260,6 +283,9 @@ public class MainFrame extends javax.swing.JFrame
 		jGalleryCombo.setModel( galleries );
 		galleries.addListDataListener(this);
 		updateGalleryParams();
+
+        // We've been initalized, we are now clean.
+        m_isDirty = false;
 	}
 
 
@@ -283,20 +309,12 @@ public class MainFrame extends javax.swing.JFrame
 	private void shutdown(boolean halt, boolean shutdownOs) {
 		// check that we don't have galleries with data
 		if (!shutdownOs) {
-			boolean hasGalleryWithData = false;
-
-			for (int i = 0; i < galleries.getSize(); i++) {
-				Gallery g = (Gallery) galleries.getElementAt(i);
-
-				if (g.hasPictures()) {
-					hasGalleryWithData = true;
-					break;
-				}
-			}
-
-			if (hasGalleryWithData) {
-				if (JOptionPane.showConfirmDialog((JFrame) this, GRI18n.getString(MODULE, "quitQuestion"),
-						"Warning", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+            if (null != m_lastOpenedFile || m_isDirty) {
+				if (JOptionPane.showConfirmDialog(
+				      (JFrame) this,
+				      GRI18n.getString(MODULE, "quitQuestion"),
+					  "Warning",
+					  JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
 			}
@@ -354,19 +372,47 @@ public class MainFrame extends javax.swing.JFrame
 	void resetUIState() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				Album currentAlbum = getCurrentAlbum();
+				Gallery currentGallery = getCurrentGallery();
+
 				// if the list is empty or comm, disable upload
-				jUploadButton.setEnabled( getCurrentAlbum() != null
-						&& getCurrentAlbum().sizePictures() > 0
+				jUploadButton.setEnabled( currentAlbum != null
+						&& currentAlbum.sizePictures() > 0
 						&& !inProgress
 						&& jAlbumTree.getSelectionCount() > 0 );
 				jSortButton.setEnabled(jUploadButton.isEnabled());
 
-				Gallery currentGallery = getCurrentGallery();
+				if (null == m_lastOpenedFile) {
+					setTitle(DIALOGTITLE
+							+ GRI18n.getString(MODULE, "noTitleHeader")
+							+ (m_isDirty ? "*" : ""));
+				} else {
+					setTitle(DIALOGTITLE
+							+ m_lastOpenedFile.getName()
+							+ (m_isDirty ? "*" : ""));
+				}
 
 				// during comm, don't change Gallery or do any other comm
 				jLoginButton.setEnabled( !inProgress && currentGallery != null);
 				jGalleryCombo.setEnabled( !inProgress );
 				jNewGalleryButton.setEnabled( !inProgress );
+
+                // Disable New, Open, and Close
+                jMenuItemNew.setEnabled( !inProgress );
+                jMenuItemOpen.setEnabled( !inProgress );
+                jMenuItemSave.setEnabled( !inProgress );
+                jMenuItemSaveAs.setEnabled( !inProgress );
+				jMenuItemClose.setEnabled( !inProgress
+						&& null != m_lastOpenedFile );
+
+                // in the event the library we use to save is missing, dim the menus
+                try {
+                    new JSX.ObjOut();
+                } catch (Throwable t) {
+                    jMenuItemOpen.setEnabled(false);
+                    jMenuItemSave.setEnabled(false);
+                    jMenuItemSaveAs.setEnabled(false);
+                }
 
 				if (currentGallery != null
 						&& currentGallery.getUsername() != null
@@ -380,25 +426,25 @@ public class MainFrame extends javax.swing.JFrame
 				jAlbumTree.setEnabled( ! inProgress && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
 
 				// if the selected album is uploading, disable everything
-				boolean enabled = ! inProgress && getCurrentAlbum() != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
-				jBrowseButton.setEnabled( enabled && getCurrentAlbum().getCanAdd());
+				boolean enabled = ! inProgress && currentAlbum != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
+				jBrowseButton.setEnabled( enabled && currentAlbum.getCanAdd());
 				jPictureInspector.setEnabled( enabled );
-				jPicturesList.setEnabled( enabled && getCurrentAlbum().getCanAdd());
+				jPicturesList.setEnabled( enabled && currentAlbum.getCanAdd());
 				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
 					&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
-				/*if (mAlbum != null && mAlbum.getSize() < 1) {
-				// if album was just emptied, it takes a while for the pictureList
-				// to notice...
-				// this is fixed by using invokeLater
-				sel = -1;
-				}*/
+				if (currentAlbum != null && currentAlbum.getSize() < 1) {
+					// if album was just emptied, it takes a while for the pictureList
+					// to notice...
+					// this is fixed by using invokeLater [apparently not anymore]
+					sel = -1;
+				}
 
 				if ( GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null ) {
 					if ( sel != -1 ) {
-						previewFrame.displayPicture( getCurrentAlbum().getPicture( sel ) );
+						previewFrame.displayPicture( currentAlbum.getPicture( sel ) );
 					} else {
 						previewFrame.displayPicture( null );
 					}
@@ -409,19 +455,19 @@ public class MainFrame extends javax.swing.JFrame
 				}
 
 				// status
-				if ( getCurrentAlbum() == null) {
+				if ( currentAlbum == null) {
 					jPictureInspector.setPictures( null );
 
 					jStatusBar.setStatus(GRI18n.getString(MODULE, "notLogged") );
-				} else if ( getCurrentAlbum().sizePictures() > 0 ) {
+				} else if ( currentAlbum.sizePictures() > 0 ) {
 					jPictureInspector.setPictures( jPicturesList.getSelectedValues() );
 
 					int selN = jPicturesList.getSelectedIndices().length;
 
 
 					if ( sel == -1 ) {
-						Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
-											new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
+						Object [] params = {new Integer(currentAlbum.sizePictures()),
+											new Integer((int)(currentAlbum.getPictureFileSize() / 1024))};
 						jStatusBar.setStatus(GRI18n.getString(MODULE, "statusBarNoSel", params ));
 					} else {
 						Object [] params = {new Integer(selN),
@@ -436,7 +482,7 @@ public class MainFrame extends javax.swing.JFrame
 					jStatusBar.setStatus(GRI18n.getString(MODULE, "noSelection"));
 				}
 
-				jAlbumInspector.setAlbum(getCurrentAlbum());
+				jAlbumInspector.setAlbum(currentAlbum);
 
 				jAlbumTree.repaint();
 			}});
@@ -533,6 +579,9 @@ public class MainFrame extends javax.swing.JFrame
 		if (select) {
 			selectAddedPictures(files, index);
 		}
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 	public void addPictures( Picture[] pictures, boolean select) {
@@ -561,6 +610,9 @@ public class MainFrame extends javax.swing.JFrame
 		if (select) {
 			selectAddedPictures(pictures, index);
 		}
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 	private void selectAddedPictures(Object[] objects, int index) {
@@ -584,9 +636,12 @@ public class MainFrame extends javax.swing.JFrame
 	public void uploadPictures() {
 		Log.log(Log.LEVEL_INFO, MODULE, "uploadPictures starting");
 
-		File f = new File(System.getProperty("user.home")
-				+ File.separator + ".GalleryRemote"
-				+ File.separator + "backup.grg");
+        File f = m_lastOpenedFile;
+
+		if (null == f) {
+			// No open file, use the default
+			f = getCurrentGallery().getGalleryDefaultFile();
+		}
 
 		saveState(f);
 
@@ -599,6 +654,9 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void sortPictures() {
 		getCurrentAlbum().sortPicturesAlphabetically();
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 
@@ -640,16 +698,22 @@ public class MainFrame extends javax.swing.JFrame
 
 				//SwingUtilities.invokeLater(new Runnable() {
 				//	public void run() {
-						Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbumName);
+				// todo: none of the calls below seem to have any effect
+				Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbumName);
 
-						TreePath path = getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName));
-						jAlbumTree.expandPath(path);
-						jAlbumTree.makeVisible(path);
-						jAlbumTree.setSelectionPath(path);
+				TreePath path = getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName));
+				jAlbumTree.expandPath(path);
+				jAlbumTree.makeVisible(path);
+				jAlbumTree.setSelectionPath(path);
+
+				//jAlbumTree.repaint();
 				//	}
 				//});
 			}
 		}.start();
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 
@@ -693,6 +757,9 @@ public class MainFrame extends javax.swing.JFrame
 
 		getCurrentAlbum().removePictures( indices );
 
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
+
 		if (reselect != null) {
 			jPicturesList.setSelectedValue(reselect, true);
 		}
@@ -721,6 +788,9 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		jPicturesList.setSelectedIndices(reselect);
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 
@@ -746,6 +816,9 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		jPicturesList.setSelectedIndices(reselect);
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 	public void selectNextPicture() {
@@ -868,6 +941,9 @@ public class MainFrame extends javax.swing.JFrame
 	public void doCut() {
 		doCopy();
 		deleteSelectedPictures();
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 	public void doCopy() {
@@ -880,6 +956,9 @@ public class MainFrame extends javax.swing.JFrame
 		if (jPicturesList.isEnabled() && ps != null && !ps.isEmpty()) {
 			getCurrentAlbum().addPictures(ps, jPicturesList.getSelectedIndex());
 		}
+
+        // We've been modified, we are now dirty.
+        m_isDirty = true;
 	}
 
 
@@ -924,14 +1003,27 @@ public class MainFrame extends javax.swing.JFrame
 		jGalleryCombo.setToolTipText(GRI18n.getString(MODULE, "gllryCombo"));
 
 		jMenuFile.setText( GRI18n.getString(MODULE, "menuFile" ));
-		jMenuItemSave.setText( GRI18n.getString(MODULE, "menuSave" ));
-		jMenuItemSave.setActionCommand( "File.Save" );
-		jMenuItemSave.setIcon(iSave);
-		jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+
+		jMenuItemNew.setText( GRI18n.getString(MODULE, "menuNew"));
+		jMenuItemNew.setActionCommand( "File.New" );
+
 		jMenuItemOpen.setText( GRI18n.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuItemOpen.setIcon(iOpen);
 		jMenuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+
+		jMenuItemSave.setText( GRI18n.getString(MODULE, "menuSave" ));
+		jMenuItemSave.setActionCommand( "File.Save" );
+		jMenuItemSave.setIcon(iSave);
+		jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+
+		jMenuItemSaveAs.setText( GRI18n.getString(MODULE, "menuSaveAs" ));
+		jMenuItemSaveAs.setActionCommand( "File.SaveAs" );
+
+		jMenuItemClose.setText( GRI18n.getString(MODULE, "menuClose" ));
+		jMenuItemClose.setActionCommand( "File.Close" );
+		jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
+
 		jMenuItemQuit.setText( GRI18n.getString(MODULE, "menuQuit" ));
 		jMenuItemQuit.setActionCommand( "File.Quit" );
 		jMenuItemQuit.setIcon(iQuit);
@@ -1010,16 +1102,12 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuBar1.add( jMenuOptions );
 		jMenuBar1.add( jMenuHelp );
 
+        jMenuFile.add( jMenuItemNew    );
 		jMenuFile.add( jMenuItemOpen );
 		jMenuFile.add( jMenuItemSave );
-
-		// in the event the library we use to save is missing, dim the menus
-		try {
-			new JSX.ObjOut();
-		} catch (Throwable t) {
-			jMenuItemOpen.setEnabled(false);
-			jMenuItemSave.setEnabled(false);
-		}
+        jMenuFile.add( jMenuItemSaveAs );
+        jMenuFile.add( jMenuItemClose  );
+        jMenuFile.add( jMenuItemQuit   );
 
 		if (!IS_MAC_OS_X) {
 			jMenuFile.addSeparator();
@@ -1053,8 +1141,11 @@ public class MainFrame extends javax.swing.JFrame
 		//jGalleryCombo.addActionListener( this );
 		jAlbumTree.addTreeSelectionListener( this );
 		jMenuItemPrefs.addActionListener( this );
-		jMenuItemSave.addActionListener( this );
+        jMenuItemNew.addActionListener( this );
 		jMenuItemOpen.addActionListener( this );
+        jMenuItemSave.addActionListener( this );
+        jMenuItemSaveAs.addActionListener( this );
+        jMenuItemClose.addActionListener( this );
 		jMenuItemQuit.addActionListener( this );
 		jMenuItemAbout.addActionListener( this );
 		jMenuItemCut.addActionListener( this );
@@ -1089,6 +1180,54 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
+    /**
+     * If we are dirty then ask the user if we should save the
+     * data before doing the dangerous thing we are about to do (new, open,
+     * etc.).  If we are not dirty this method
+     * is a NOP.  If the user says they want to save, this method will save
+     * to the currently open file before returning.
+     *
+     * @return one of CANCEL_OPTION, OK_OPTION (from the JOptionPane
+     *         class). On CANCEL_OPTION you should stop the current
+     *         process. OK_OPTION means that either we are not dirty)
+     *         or that we just saved for the user.
+     */
+	private int saveOnPermission() {
+		if (!m_isDirty) {
+			return (JOptionPane.OK_OPTION);
+		}
+
+		int response = JOptionPane.showConfirmDialog(
+				MainFrame.this,
+				GRI18n.getString(MODULE, "OK_toSaveBeforeClose"),
+				m_lastOpenedFile.getName(),
+				JOptionPane.YES_NO_CANCEL_OPTION);
+
+		if (JOptionPane.YES_OPTION == response) {
+			if (null == m_lastOpenedFile) {
+				saveAsState();
+
+				// If we are still dirty, they cancelled out of save as
+				// so act as if they cancelled this dialog.
+				if (m_isDirty) {
+					return (JOptionPane.CANCEL_OPTION);
+				}
+			} else {
+				saveState();
+			}
+
+			return (JOptionPane.OK_OPTION);
+		}
+
+		if (JOptionPane.NO_OPTION == response) {
+			// No action requested, tell the caller to go ahead
+			return (JOptionPane.OK_OPTION);
+		}
+
+		// User reneges, stop the action
+		return (JOptionPane.CANCEL_OPTION);
+	}
+
 	// Event handling
 	/**
 	 *  Menu, button and field handling
@@ -1102,10 +1241,34 @@ public class MainFrame extends javax.swing.JFrame
 
 		if ( command.equals( "File.Quit" ) ) {
 			thisWindowClosing( null );
-		} else if ( command.equals( "File.Save" ) ) {
-			saveState();
+		} else if ( command.equals( "File.New" ) ) {
+            int response = saveOnPermission();
+
+			if (JOptionPane.CANCEL_OPTION == response) {
+				return;
+			}
+
+			resetState();
 		} else if ( command.equals( "File.Open" ) ) {
+
 			openState();
+		} else if ( command.equals( "File.Save" ) ) {
+            // Do Save As if the file is the default
+            if (m_lastOpenedFile == null) {
+				saveAsState();
+			} else {
+				saveState();
+			}
+		} else if ( command.equals( "File.SaveAs" ) ) {
+			saveAsState();
+		} else if ( command.equals( "File.Close" ) ) {
+            int response = saveOnPermission();
+
+            if (JOptionPane.CANCEL_OPTION == response) {
+				return;
+			}
+
+            resetState();
 		} else if ( command.equals( "Edit.Cut" ) ) {
 			doCut();
 		} else if ( command.equals( "Edit.Copy" ) ) {
@@ -1118,8 +1281,20 @@ public class MainFrame extends javax.swing.JFrame
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
+
 				// we're currently logged in: log out
+                int response = saveOnPermission();
+
+                if (JOptionPane.CANCEL_OPTION == response) {
+					return;
+				}
+
 				getCurrentGallery().logOut();
+
+                m_lastOpenedFile = null;
+
+                // We've been logged out, we are now clean.
+                m_isDirty = false;
 			} else {
 				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -1194,7 +1369,26 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	};
 
-	private void saveState() {
+    /**
+     * Reset the program to clean (unload any data associated with a
+     * file).  We assume that the UI portion has already asked the user
+     * if this is OK.
+     *
+     */
+    private void resetState () {
+        getCurrentGallery().deleteAllPictures();
+
+        m_lastOpenedFile = null;
+
+        // We've been reset, we are now clean.
+        m_isDirty = false;
+
+        updateAlbumCombo();
+        resetUIState();
+    }
+
+
+	private void saveAsState () {
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.setFileFilter(galleryFileFilter);
@@ -1208,13 +1402,45 @@ public class MainFrame extends javax.swing.JFrame
 				name += FILE_TYPE;
 			}
 
-			saveState(new File(name));
+            // Remember the file
+            m_lastOpenedFile = new File(name);
+
+            resetUIState();
+
+            saveState(m_lastOpenedFile);
+
+            // We've been saved, we are now clean.
+            m_isDirty = false;
 		}
 	}
 
+    private void saveState () {
+        if (null == m_lastOpenedFile)
+          {
+            Log.log(Log.LEVEL_ERROR, MODULE,
+                    "Trying to save with no file open");
+            return;
+          }
+
+        saveState(m_lastOpenedFile);
+
+        // We've been saved, we are now clean.
+        m_isDirty = false;
+    }
+
+    /**
+     * This is an internal worker function to save the state to a file.
+     * Note that we specifically do *not* set m_isDirty = false in this
+     * method because we use this to temporarily backup the current state
+     * to the default file (and we want the user to remember that they should
+     * save the state to a "real" save file if they want to keep it).
+     *
+     * @param f the file to store the current dialog data.
+     */
 	private void saveState(File f) {
 		try {
-			Log.log(Log.LEVEL_INFO, MODULE, "Saving state to file " + f.getPath());
+			Log.log(Log.LEVEL_INFO, MODULE,
+                    "Saving state to file " + f.getPath());
 
 			Gallery[] galleryArray = new Gallery[galleries.getSize()];
 
@@ -1243,7 +1469,19 @@ public class MainFrame extends javax.swing.JFrame
 			if(returnVal == JFileChooser.APPROVE_OPTION) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Opening state from file " + fc.getSelectedFile().getPath());
 
-				ObjIn in = new ObjIn(new BufferedReader(new FileReader(fc.getSelectedFile())));
+                // Before we change galleries, ask them if they want to save.
+                int response = saveOnPermission();
+
+                if (JOptionPane.CANCEL_OPTION == response) {
+					return;
+				}
+
+                // Remember the file
+                m_lastOpenedFile = fc.getSelectedFile();
+
+                resetUIState();
+
+				ObjIn in = new ObjIn(new BufferedReader(new FileReader(m_lastOpenedFile)));
 				Gallery[] galleryArray = (Gallery[]) in.readObject();
 				DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
 

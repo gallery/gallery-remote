@@ -23,6 +23,7 @@ package com.gallery.GalleryRemote.model;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.io.File;
 import java.io.Serializable;
 
 import javax.swing.*;
@@ -116,12 +117,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public void logOut() {
 		boolean logout = true;
 
-		if (hasPictures()) {
-			if (JOptionPane.showConfirmDialog(null, GRI18n.getString(MODULE, "logoutQuestion"),
-					GRI18n.getString(MODULE, "logoutQuestion.title"), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-				logout = false;
-			}
+		albumList = null;
+		selectedAlbum = null;
+		if (comm != null) {
+			comm.logOut();
 		}
+		comm = null;
 
 		if (logout) {
 			albumList = null;
@@ -207,6 +208,22 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		notifyListeners();
 	}
 
+    public File getGalleryDefaultFile() {
+        StringBuffer defaultFilePath = new StringBuffer();
+
+        defaultFilePath.append(System.getProperty("user.home"));
+        defaultFilePath.append(File.separator);
+        defaultFilePath.append(".GalleryRemote");
+        defaultFilePath.append(File.separator);
+        defaultFilePath.append("backup.");
+        defaultFilePath.append(getPrefsIndex());
+        defaultFilePath.append(".grg");
+
+        // Define which file is used to store the current state if
+        // the user does not provide a specific file.
+        return(new File(defaultFilePath.toString()));
+    }
+
 	public ArrayList getAllPictures() {
 		return getAllPictures(false);
 	}
@@ -248,6 +265,22 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		return files;
 	}*/
+
+    /**
+     * Delete all of the pictures from the current gallery without
+     * effecting the list of albums that are loaded.  This is used
+     * by the "New" function in the UI.
+     *
+     */
+    public void deleteAllPictures () {
+        if (albumList != null) {
+            Iterator i = albumList.iterator();
+            while (i.hasNext()) {
+                Album a = (Album) i.next();
+                a.clearPictures();
+            }
+        }
+    }
 
 	public int countAllPictures() {
 		int c = 0;
@@ -637,6 +670,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public void setPrefsIndex(int prefsIndex) {
 		this.prefsIndex = prefsIndex;
 	}
+
+    protected int getPrefsIndex () {
+        return(this.prefsIndex);
+    }
 
 	public String toString() {
 		return toString(true);
