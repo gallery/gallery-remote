@@ -22,7 +22,9 @@
 	  listfiles="on" debug="on" source="1.3" />
 	
 	<!-- other files needed -->
-	<copy file="${src}/remoteAbout.gif" todir="${build}" />
+	<copy file="${src}/rar_about_gr1.png" todir="${build}" />
+	<copy file="${src}/rar_icon_32.gif" todir="${build}" />
+	<copy file="${src}/rar_icon_16.gif" todir="${build}" />
   </target>
 
   <target name="run" depends="compile"
