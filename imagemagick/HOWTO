@@ -10,3 +10,16 @@ installation.
 If you compiled ImageMagick for a platform we don't already have support for, 
 please get in touch with me at paour@sourceforge.net so we can include your 
 binaries in our standard distributions.
+
+Unless Gallery Remote was installed with the installer, you should perform these
+post-install steps:
+
+Win32:
+
+- in the main gallery_remote directory, run 'ant imReg'
+
+Linux:
+
+- ImageMagick is not automatically installed on Linux. You need to download it and 
+install it yourself, then edit the "im.properties.preinstalled" file to 
+tell Gallery Remote where it was installed.
