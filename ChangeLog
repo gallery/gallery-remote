@@ -3,6 +3,7 @@
 	* Added multi-selection support to the PictureInspector. Fixed buttons.
 	* Switched to an Ant-based build system
 	* Fixed inspector state when deleting pictures
+	* Now saving multiple profiles for different Galleries (use the URL combo box)
 
 2002-09-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b2)
 	
