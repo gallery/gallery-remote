@@ -120,7 +120,13 @@ public class NewAlbumDialog extends javax.swing.JDialog
 
 		album = new JComboBox(albums);
 		album.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
-		album.setSelectedItem(defaultAlbum);
+		
+		if (defaultAlbum == null) {
+			album.setSelectedItem(rootAlbum);
+		} else {
+			album.setSelectedItem(defaultAlbum);
+		}
+
 		cancel.setText( "Cancel" );
 		description.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray ) );
 		description.setLineWrap(true);
@@ -194,6 +200,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			
 			Album selectedAlbum = (Album) album.getSelectedItem();
 			if (selectedAlbum == rootAlbum) {
+				Log.log(Log.TRACE, MODULE, "Selected root album");
 				a.setParentAlbum(null);
 			} else {
 				a.setParentAlbum(selectedAlbum);

@@ -668,8 +668,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		
 		void runTask() {
 			status(su, "Getting album information from " + g.toString());
-			
-			String parentAlbumName = (parentAlbum == null) ? "" : parentAlbum.getName();
+
+			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
+			// by Gallery. Using an empty string doesn't work, because then the HTTP parameter is not
+			// parsed, and the session album is kept the same as before (from the cookie).
+			String parentAlbumName = (parentAlbum == null) ? "hack_null_albumName" : parentAlbum.getName();
 
 			if (GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
 				albumTitle = HTMLEscaper.escape(albumTitle);
