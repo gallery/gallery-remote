@@ -32,6 +32,25 @@
 	  classpath="${build}" fork="true" />
   </target>
   
+  <target name="jar" depends="compile"
+  		description="create a jar of the source">
+	
+	<jar destfile="GalleryRemote.jar" basedir="${build}" />
+  </target>
+  
+  <target name="zip" depends="jar"
+  		description="create a zip patch of the Gallery Remote install">
+	
+	<zip destfile="gallery_remote.zip">
+	  <zipfileset dir="imagemagick" prefix="imagemagick" />
+	  <fileset dir="." includes="run.*" />
+	  <fileset dir="." includes="defaults.properties" />
+	  <fileset dir="." includes="ChangeLog" />
+	  <fileset dir="." includes="default.gif" />
+	  <fileset dir="." includes="GalleryRemote.jar" />
+	</zip>
+  </target>
+  
   <target name="testWin">
     <condition property="onWin">
 	  <os family="windows" />
