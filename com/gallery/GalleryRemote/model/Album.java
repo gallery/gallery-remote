@@ -77,7 +77,8 @@ public class Album extends Picture implements ListModel, Serializable
 	/* -------------------------------------------------------------------------
 	 * INSTANCE VARIABLES
 	 */ 
-	transient long pictureFileSize = -1;
+	transient private Long pictureFileSize;
+	transient private Integer albumDepth;
 	
 
 	/* -------------------------------------------------------------------------
@@ -355,11 +356,11 @@ public class Album extends Picture implements ListModel, Serializable
 	 *@return    The file size (bytes)
 	 */
 	public long getPictureFileSize() {
-		if ( pictureFileSize == -1 ) {
-			pictureFileSize = getPictureFileSize( (Picture[]) pictures.toArray( new Picture[0] ) );
+		if ( pictureFileSize == null ) {
+			pictureFileSize = new Long(getPictureFileSize( (Picture[]) pictures.toArray( new Picture[0] ) ));
 		}
 
-		return pictureFileSize;
+		return pictureFileSize.longValue();
 	}
 
 	/**
@@ -531,7 +532,23 @@ public class Album extends Picture implements ListModel, Serializable
 		
 		notifyListeners();
 	}
-	
+
+	public int getAlbumDepth() {
+		if (albumDepth == null) {
+			albumDepth = new Integer(depthHelper(0));
+		}
+
+		return albumDepth.intValue();
+	}
+
+	int depthHelper(int depth) {
+		if ( getParentAlbum() != null ) {
+			return getParentAlbum().depthHelper( depth + 1 );
+		} else {
+			return depth;
+		}
+	}
+
 	public static final String INDENT_QUANTUM = "     ";
 	String indentHelper( String indent ) {
 		if ( getParentAlbum() != null ) {
