@@ -273,9 +273,11 @@ public class PictureInspector extends JPanel
 			icon.setIcon( mf.getThumbnail( p ) );
 			path.setText( p.getSource().getParent() );
 			album.setText( p.getAlbum().getTitle() );
-			caption.setText( p.getCaption() );
-			caption.setEditable(true);
-			caption.setBackground(UIManager.getColor("TextField.background"));
+			if (p.getAlbum().getGallery().getComm() instanceof GalleryComm2) {
+				caption.setText( p.getCaption() );
+				caption.setEditable(true);
+				caption.setBackground(UIManager.getColor("TextField.background"));
+			}
 			size.setText( NumberFormat.getInstance().format( 
 				(int) p.getFileSize() ) + " bytes" );
 
@@ -307,6 +309,7 @@ public class PictureInspector extends JPanel
 		up.setEnabled(enabled);
 		down.setEnabled(enabled);
 		delete.setEnabled(enabled);
+		caption.setEnabled(enabled);
 		
 		super.setEnabled(enabled);
 	}
