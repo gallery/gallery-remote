@@ -9,14 +9,15 @@ h2 { font-family: sans-serif; font-size: 14pt; font-weight: bold; }
 h3 { font-family: sans-serif; font-size: 12pt; font-weight: bold; }
 h4 { font-family: sans-serif; font-size: 11pt; font-weight: bold; }
 p,ol,ul,body{ font-family: serif; font-size: 11pt; }
-li { font-family: serif; font-size: 11pt; margin: 4px; }
+li { font-family: serif; font-size: 11pt; margin: 4px; } 
 .since { background-color: #FFcccc; color: #FF0000; }
-
+.weasel { color: #888888; background-color: #ffffff; font-size: 9pt; }
 samp { font-family: monospace; color: #0000aa; background-color: #FFFF99; }
 body { background-color: #FFFFFF; margin: 8px; }
 hr { color: black; height: 1px; width: 100%; }
 
-table { border-style: solid; border-width: 1px; border-color: black; margin: 20px;  }
+table { border-style: solid; border-width: 1px; border-color: black; margin: 10px;  }
+td	{ border-style: solid; border-width: 1px; border-color: black; margin: 5px;  }
 
 img { border-width: 0px; }
 </style>
@@ -30,9 +31,7 @@ img { border-width: 0px; }
   <cite>Pierre-Luc Paour</cite> &lt;<a href="mailto:paour at users.sourceforge.net">paour 
   at users dot sourceforge dot net</a>&gt;</p>
 
-<hr>
-
-<h2><a name="toc" />Contents</a></h2>  
+<h2><a name="toc">Contents</a></h2>  
 
 <ul>
   <li>1. <a href="#intro">Introduction</a></li>
@@ -45,7 +44,7 @@ img { border-width: 0px; }
       <li><a href="#login"><samp>login</samp> command</a></li>
       <li><a href="#fetch-albums"><samp>fetch-albums</samp> command</a></li>
       <li><a href="#add-item"><samp>add-item</samp> command</a></li>
-      <li><a href="#album-info"><samp>album-info</samp> command</a></li>
+      <li><a href="#album-properties"><samp>album-properties</samp> command</a></li>
     </ol>
   </li>
   <li>Appendix A: <a href="#appendix_a">Response Status Codes</a></li>
@@ -53,18 +52,25 @@ img { border-width: 0px; }
 
 <hr>
 
-<h2><a name="intro" />1. Introduction</a></h2>  
+<h2><a name="intro">1. Introduction</a></h2>  
 
 <p>This document describes version 2 of the <a href="http://gallery.menalto.com/">Gallery</a> 
-  remote application protocol as of version 1.3.2 of Gallery.</p>
+  remote application protocol.</p>
 <p>Also see documentation of the <a href="gal_remote_proto-1.html">previous version</a> 
   of the protocol.</p>
-  
-
+<p>The "Gallery Remote" remote administration program is this protocol's 
+<em>raison d'&ecirc;tre</em>.  Version 1 of the protocol was tied very tightly to
+that application.  It is clear that in addition to 
+Gallery Remote users, there is a growing number of users that would like to
+query and control Gallery installations with their own programs.</p>
+<p>Version 2 adds some extra features but (hopefully) greater potential
+for other remote applications based on Gallery.  If you would like to make suggestions
+for future work on the Gallery Remote protocol, please submit them to
+either of the authors.</p>
 
 <hr>
 
-<h2><a name="overview" />2. Overview</a></h2>
+<h2><a name="overview">2. Overview</a></h2>
 
 <p>Gallery remote queries and sends information from a Gallery server through 
   a protocol based on HTTP and form-data. The protocol leverages the same user 
@@ -83,7 +89,7 @@ login request before any other requests will succeed.</p>
 
 <hr>
 
-<h2><a name="interaction" />3. Client-Server Interaction</a></h2>
+<h2><a name="interaction">3. Client-Server Interaction</a></h2>
 
 <p>All client-server interaction follows the standard HTTP model.  The client initiates all interactions with a <em><a href="#requests">request</a></em>.  The server always responds with one <em><a href="#responses">response</a></em>.  The data format of each request is HTTP form-data key/value pairs.  The data format of each response is plain text key/value pairs.</p>
 
@@ -91,7 +97,7 @@ login request before any other requests will succeed.</p>
 
 <hr>
 
-<h2><a name="requests" />4. Requests</a></h2>
+<h2><a name="requests">4. Requests</a></h2>
 
 <p>Each request from the client is sent to the server through an HTTP POST. 
 Parameters of the request are expressed as HTTP form data. Form data uses a
@@ -117,9 +123,13 @@ set (as parameters).</p>
 
 <hr>
 
-<h2><a name="responses" />5. Responses</a></h2>
+<h2><a name="responses">5. Responses</a></h2>
 
-<p>After the client POSTs a request, the server sends a <em>response</em> to the client.  The format of the response is a key/value format compatible with the Java "<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/Properties.html">Properties</a>" stream format.</p>
+<p>After the client POSTs a request, the server sends a <em>response</em> to the client.  The format of the response is a key/value format compatible with the Java "<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/Properties.html">Properties</a>" stream format.<p>
+
+<p>In a nutshell: lines beginning with a <samp>#</samp> character are ignored. The text before the first <samp>=</samp> character is the <em>key</em>.  The remainder of the text after the <samp>=</samp> until the end-of-line character(s) is the <em>value</em>.</p>
+
+<p>Each response must begin with the text <samp>#__GR2PROTO__</samp>.
 
 <p>Each response must contain at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
 
@@ -135,11 +145,11 @@ server was able to complete the command in the client's request, the value of th
 
 <hr>
 
-<h2><a name="commands" />6. Commands</a></h2>
+<h2><a name="commands">6. Commands</a></h2>
 
 <ol>
   <li> 
-    <h3><a name="login" /><samp>login</samp></a> command</h3>
+    <h3><a name="login"><samp>login</samp></a> command</h3>
     <p>This command adds the proper user object to the 
       session (if the username and password are correct). It also returns to the client the version of the protocol the server 
       is prepared to support.</p>
@@ -164,6 +174,7 @@ server was able to complete the command in the client's request, the value of th
       <li> 
         <h4>Results</h4>
         <p>
+        <samp>#__GR2PROTO__</samp><br>
         <samp>status=</samp><em>result-code</em><br>
         <samp>status_text=</samp><em>explanatory-text</em><br>
         <samp>server_version=</samp><em>major-version</em><samp>.</samp><em>minor-version</em><br>
@@ -175,7 +186,7 @@ server was able to complete the command in the client's request, the value of th
     </ul>
   </li>
   <li> 
-    <h3><a name="fetch-albums" /><samp>fetch-albums</samp></a> command</h3>
+    <h3><a name="fetch-albums"><samp>fetch-albums</samp></a> command</h3>
     <p>The <samp>fetch-albums</samp> command asks the server to return a list 
       of all albums (visible with the client's logged in user permissions).</p>
     <ul>
@@ -192,7 +203,7 @@ server was able to complete the command in the client's request, the value of th
       <li>
         <h4>Results</h4>
         <p>
-        
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>#__GR2PROTO__</samp><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status=</samp><em>result-code</em><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status_text=</samp><em>explanatory-text</em><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
@@ -203,14 +214,14 @@ server was able to complete the command in the client's request, the value of th
 		
         <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, the album data was fetched successfully</p>
         <p>If successful, a response to the <samp>fetch-albums</samp> command 
-          returns three keys for each album in the gallery, where <br></p>
+          returns three keys for each album in the gallery, where</p>
           
           <ul>
           	<li><em>ref-num</em> is a reference number,</li>
           	<li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
           	<li><em>album-display-name</em> is the gallery's visual name,</li>
           	<li>and <em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
-          </ul><br>
+          </ul>
           <p>A <em>parent-ref-num</em> of <samp>0</samp> indicates that the album is a "top-level" album (it has no parent).
         </p>
           <p>The number of albums in the response is returned as
@@ -219,7 +230,7 @@ server was able to complete the command in the client's request, the value of th
     </ul>
   </li>
   <li> 
-    <h3><a name="add-item" /><samp>add-item</samp></a> command</h3>
+    <h3><a name="add-item"><samp>add-item</samp></a> command</h3>
     <p>This command asks the server to add a photo to a specified album.</p>
     <ul>
       <li> 
@@ -239,8 +250,11 @@ server was able to complete the command in the client's request, the value of th
       </li>
       <li> 
         <h4>Results</h4>
-         <samp>status=</samp><em>result-code</em><br>
-        <samp>status_text=</samp><em>explanatory-text</em><br>
+        <p>
+	        <samp>#__GR2PROTO__</samp><br>
+	        <samp>status=</samp><em>result-code</em><br>
+	        <samp>status_text=</samp><em>explanatory-text</em><br>
+        </p>
        <p>If the <em>result-code</em> equal to
 <a href="#appendix_a">GR_STAT_SUCCESS</a>, the file upload succeeded.
         </p>
@@ -248,27 +262,44 @@ server was able to complete the command in the client's request, the value of th
     </ul>
   </li>
   <li> 
-    <h3><a name="album-info" id="album-info" /><samp>album-info</samp></a> command [since 2.0]</h3>
-    <p>This command asks the server for information on an album.</p>
+    <h3><a name="album-properties" id="album-properties"><samp>album-properties</samp></a> command [since 2.0]</h3>
+    <p>
+    	This command asks the server for information on an album.
+    </p>
     <ul>
       <li> 
         <h4>Context</h4>
-        <p>A request with the <samp>login</samp> command must be made before the 
-          <samp>album-info</samp> command is used.</p>
+        <p>
+        	A request with the <samp>login</samp> command must be made before the 
+          	<samp>album-properties</samp> command is used.
+        </p>
       </li>
       <li> 
         <h4>Form Data</h4>
-        <p><samp>cmd=album-info<br>
-          protocol_version=2.0<br>
-          set_albumName=</samp><em>album name</em></p>
+        <p>
+        	<samp>cmd=album-properties<br>
+			protocol_version=2.0<br>
+			set_albumName=</samp><em>album name</em>
+		</p>
       </li>
       <li> 
         <h4>Results</h4>
-        <samp>status=</samp><em>result-code</em><br>
-        <samp>status_text=</samp><em>explanatory-text</em><br>
-        <p>If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request succeeded.
+        <p>
+	        <samp>#__GR2PROTO__</samp><br>
+	        <samp>status=</samp><em>result-code</em><br>
+	        <samp>status_text=</samp><em>explanatory-text</em><br>
+	        <samp>auto_resize=</samp><em>resize-dimension</em>
+	    </p>
+        <p>
+        	If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request succeeded.
         </p>
-        <p><samp>auto-resize=</samp>size, in pixels, to which the server will resize pictures on upload.</p><p>If the value is <samp>0</samp> (zero), the Gallery server does not intend to resize uploaded images.</p>
+        <p>
+	      	If the an image uploaded with the <samp>add-item</samp> command's largest dimension
+	      	is greater than <em>resize-dimension</em>, the server will resize it.
+       	</p>
+       	<p>
+       		If the value is <samp>0</samp> (zero), the Gallery server does not intend to resize uploaded images.
+       	</p>
       </li>
     </ul>
   </li>
@@ -276,7 +307,7 @@ server was able to complete the command in the client's request, the value of th
 
 <hr>
 
-<h2><a name="appendix_a" />Appendix A: Response Status Codes</a></h2>
+<h2><a name="appendix_a">Appendix A: Response Status Codes</a></h2>
 
 <table>
 <thead>
@@ -296,8 +327,18 @@ server was able to complete the command in the client's request, the value of th
 
 <tr><td>GR_STAT_PASSWD_WRONG</td><td>201</td><td>The password and/or username the client send in the request is invalid.</td></tr>
 <tr><td>GR_STAT_LOGIN_MISSING</td><td>202</td><td>The client used the login command in the request but failed to include either the username or password (or both) in the request.</td></tr>
+
+<tr><td>GR_STAT_UNKNOWN_CMD</td><td>301</td><td>The value of the <samp>cmd</samp> key is not valid.</td></tr>
+
+<tr><td>GR_STAT_NO_ADD_PERMISSION</td><td>401</td><td>The user does not have permission to add an item to the gallery.</td></tr>
+<tr><td>GR_STAT_NO_FILENAME</td><td>402</td><td>No filename was specified.</td></tr>
+<tr><td>GR_STAT_UPLOAD_PHOTO_FAIL</td><td>403</td><td>The file was received, but could not be processed or added to the album.</td></tr>
+
 </tbody>
 </table>
+
+<hr>
+<p><samp class="weasel">$Id$</samp></p>
 
 </body>
 </html>
