@@ -47,6 +47,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
     String caption = null;
     Album album = null;
 
+	int angle = 0;
+	boolean flipped = false;
+
 	transient double fileSize = 0;
 	transient String escapedCaption = null;
 
@@ -226,6 +229,26 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	public Object getElementAt(int index) {
 		return null;
+	}
+
+	public void rotateRight() {
+		angle = (angle + 1) % 4;
+	}
+
+	public void rotateLeft() {
+		angle = (angle + 3) % 4;
+	}
+
+	public void flip() {
+		flipped = ! flipped;
+	}
+
+	public int getAngle() {
+		return angle;
+	}
+
+	public boolean isFlipped() {
+		return flipped;
 	}
 }
 
