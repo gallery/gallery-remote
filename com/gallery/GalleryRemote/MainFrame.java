@@ -311,7 +311,7 @@ public class MainFrame extends javax.swing.JFrame
 		updateGalleryParams();
 
         // We've been initalized, we are now clean.
-        m_isDirty = false;
+        setDirtyFlag(false);
 	}
 
 
@@ -394,6 +394,16 @@ public class MainFrame extends javax.swing.JFrame
 		resetUIState();
 	}
 
+    /**
+     * <p>This method updates the dirty flag and also causes the UI
+     * to be updated to reflect the new state.
+     *
+     * @param newDirtyState the new state (true means the document is dirty).
+     */
+    private void setDirtyFlag (boolean newDirtyState) {
+        m_isDirty = newDirtyState;
+        resetUIState();
+    }
 
 	void resetUIState() {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -607,7 +617,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 	public void addPictures( Picture[] pictures, boolean select) {
@@ -638,7 +648,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 	private void selectAddedPictures(Object[] objects, int index) {
@@ -682,7 +692,7 @@ public class MainFrame extends javax.swing.JFrame
 		getCurrentAlbum().sortPicturesAlphabetically();
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 
@@ -739,7 +749,7 @@ public class MainFrame extends javax.swing.JFrame
 		}.start();
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 	public void slideshow() {
@@ -788,7 +798,7 @@ public class MainFrame extends javax.swing.JFrame
 		getCurrentAlbum().removePictures( indices );
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 
 		if (reselect != null) {
 			jPicturesList.setSelectedValue(reselect, true);
@@ -820,7 +830,7 @@ public class MainFrame extends javax.swing.JFrame
 		jPicturesList.setSelectedIndices(reselect);
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 
@@ -848,7 +858,7 @@ public class MainFrame extends javax.swing.JFrame
 		jPicturesList.setSelectedIndices(reselect);
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 	public void selectNextPicture() {
@@ -973,7 +983,7 @@ public class MainFrame extends javax.swing.JFrame
 		deleteSelectedPictures();
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 	public void doCopy() {
@@ -988,7 +998,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
         // We've been modified, we are now dirty.
-        m_isDirty = true;
+        setDirtyFlag(true);
 	}
 
 
@@ -1336,7 +1346,7 @@ public class MainFrame extends javax.swing.JFrame
                 m_lastOpenedFile = null;
 
                 // We've been logged out, we are now clean.
-                m_isDirty = false;
+                setDirtyFlag(false);
 			} else {
 				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -1423,7 +1433,7 @@ public class MainFrame extends javax.swing.JFrame
         m_lastOpenedFile = null;
 
         // We've been reset, we are now clean.
-        m_isDirty = false;
+        setDirtyFlag(false);
 
         updateAlbumCombo();
         resetUIState();
@@ -1454,7 +1464,7 @@ public class MainFrame extends javax.swing.JFrame
             saveMRUItem(m_lastOpenedFile);
 
             // We've been saved, we are now clean.
-            m_isDirty = false;
+            setDirtyFlag(false);
 		}
 	}
 
@@ -1469,7 +1479,7 @@ public class MainFrame extends javax.swing.JFrame
         saveState(m_lastOpenedFile);
 
         // We've been saved, we are now clean.
-        m_isDirty = false;
+        setDirtyFlag(false);
     }
 
     /**
