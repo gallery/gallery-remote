@@ -1042,7 +1042,10 @@ public class MainFrame extends JFrame
 		jTopPanel.add(jLoginButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
 
-		jMenuBar1.add(jMenuFile);
+        if (!GalleryRemote.IS_MAC_OS_X) {
+            // nothing in File menu on the mac...
+            jMenuBar1.add(jMenuFile);
+        }
 		jMenuBar1.add(jMenuEdit);
 		jMenuBar1.add(jMenuOptions);
 		if (!GalleryRemote.IS_MAC_OS_X) {
@@ -1068,7 +1071,6 @@ public class MainFrame extends JFrame
 
 			jMenuHelp.add(jMenuItemAbout);
 		}
-
 
 		jMenuEdit.add(jMenuItemCut);
 		jMenuEdit.add(jMenuItemCopy);
