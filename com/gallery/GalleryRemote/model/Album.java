@@ -23,6 +23,8 @@ package com.gallery.GalleryRemote.model;
 import java.io.File;
 import java.io.Serializable;
 import java.util.*;
+import java.util.List;
+import java.awt.*;
 
 import javax.swing.*;
 
@@ -38,8 +40,7 @@ import com.gallery.GalleryRemote.util.NaturalOrderComparator;
  *@created    11 août 2002
  */
 
-public class Album extends Picture implements ListModel, Serializable
-{
+public class Album extends Picture implements ListModel, Serializable {
 	/* -------------------------------------------------------------------------
 	 * CONSTANTS
 	 */
@@ -62,6 +63,11 @@ public class Album extends Picture implements ListModel, Serializable
 	String title = grRes.getString(MODULE, "title");
 	String name;
 	ArrayList extraFields;
+
+	Boolean overrideResize = null;
+	Boolean overrideResizeDefault = null;
+	Dimension overrideResizeDimension = null;
+	Boolean overrideAddToBeginning = null;
 
 	transient int autoResize = 0;
 	// permissions -- default to true for the sake of old protocols ...
@@ -662,6 +668,71 @@ public class Album extends Picture implements ListModel, Serializable
 
 	public ArrayList getSubAlbums() {
 		return subAlbums;
+	}
+
+	public Boolean getOverrideResize() {
+		return overrideResize;
+	}
+
+	public void setOverrideResize(Boolean overrideResize) {
+		this.overrideResize = overrideResize;
+	}
+
+	public Boolean getOverrideResizeDefault() {
+		return overrideResizeDefault;
+	}
+
+	public void setOverrideResizeDefault(Boolean overrideResizeDefault) {
+		this.overrideResizeDefault = overrideResizeDefault;
+	}
+
+	public Dimension getOverrideResizeDimension() {
+		return overrideResizeDimension;
+	}
+
+	public void setOverrideResizeDimension(Dimension overrideResizeDimension) {
+		this.overrideResizeDimension = overrideResizeDimension;
+	}
+
+	public Boolean getOverrideAddToBeginning() {
+		return overrideAddToBeginning;
+	}
+
+	public void setOverrideAddToBeginning(Boolean overrideAddToBeginning) {
+		this.overrideAddToBeginning = overrideAddToBeginning;
+	}
+
+	public boolean getResize() {
+		if (overrideResize != null) {
+			return overrideResize.booleanValue();
+		} else {
+			return GalleryRemote.getInstance().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD);
+		}
+	}
+
+	public boolean getResizeDefault() {
+		if (overrideResizeDefault != null) {
+			return overrideResizeDefault.booleanValue();
+		} else {
+			return new Dimension(0,0).equals(GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO));
+		}
+	}
+
+	public Dimension getResizeDimension() {
+		if (overrideResizeDimension != null) {
+			return overrideResizeDimension;
+		} else {
+			return GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO);
+		}
+	}
+
+	public boolean getAddToBeginning() {
+		if (overrideAddToBeginning != null) {
+			return overrideAddToBeginning.booleanValue();
+		} else {
+			// todo
+			return false;
+		}
 	}
 }
 

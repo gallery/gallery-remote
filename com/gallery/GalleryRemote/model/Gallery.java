@@ -720,13 +720,14 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public void albumChanged(Album a) {
-		// todo: we should probably do something here to make sure the tree is resized...
-
 		// this doesn't seem to be effective
-		// fireTreeStructureChanged(this, getPathForAlbum(a));
+		fireTreeStructureChanged(this, getPathForAlbum(a));
 
 		// this either...
 		//GalleryRemote.getInstance().mainFrame.jAlbumTree.treeDidChange();
+
+		// ugly... didn't want to have to implement TreeModelListener in MainFrame
+		GalleryRemote.getInstance().mainFrame.albumChanged(a);
 	}
 
 
@@ -912,17 +913,17 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public TreePath getPathForAlbum(Album album) {
-		Stack path = new Stack();
+		LinkedList path = new LinkedList();
 
-		path.push(album);
+		path.addFirst(album);
 
 		Album parent = null;
 		while ((parent = album.getParentAlbum()) != null) {
-			path.push(parent);
+			path.addFirst(parent);
 			album = parent;
 		}
 
-		path.push(root);
+		path.addFirst(root);
 
 		return new TreePath(path.toArray());
 	}

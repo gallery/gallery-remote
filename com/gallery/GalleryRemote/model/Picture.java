@@ -150,8 +150,8 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
     public File getUploadSource() {
 		File picture = getSource();
 
-		if ( GalleryRemote.getInstance().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD) ) {
-			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty(RESIZE_TO);
+		if ( album.getResize() ) {
+			Dimension d = album.getResizeDimension();
 			
 			if ( d == null || d.equals( new Dimension( 0, 0 ) ) ) {
 				d = null;

@@ -177,6 +177,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jType.addActionListener(this);
 		jOk.addActionListener(this);
 		jCancel.addActionListener(this);
+
+		getRootPane().setDefaultButton(jOk);
 	}
 
 	public void resetUIState() {

@@ -20,10 +20,7 @@
 */
 package com.gallery.GalleryRemote;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.InputEvent;
+import java.awt.event.*;
 import java.text.NumberFormat;
 
 import javax.swing.event.DocumentEvent;
@@ -39,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.text.Document;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
@@ -49,37 +47,40 @@ import javax.swing.border.TitledBorder;
  *@created    August 16, 2002
  */
 public class AlbumInspector extends JPanel
-		implements ActionListener {
+		implements ActionListener, ItemListener, DocumentListener {
 	public static final String MODULE = "AlbmInspec";
 	public static GRI18n grRes = GRI18n.getInstance();
 
-	JLabel jLabel5 = new JLabel();
-	JLabel jLabel6 = new JLabel();
+	JLabel jLabelName = new JLabel();
+	JLabel jLabelTitle = new JLabel();
 	JPanel jSpacer = new JPanel();
-	JLabel jLabel1 = new JLabel();
+	JLabel jLabelPictures = new JLabel();
+	JLabel jLabelSummary = new JLabel();
+	JPanel jPanel1 = new JPanel();
+	JPanel jPanelProps = new JPanel();
+	JPanel jPanel6 = new JPanel();
+	JLabel jLabel7 = new JLabel();
+	ButtonGroup buttonGroup1 = new ButtonGroup();
 
 	JTextArea jTitle = new JTextArea();
-	JTextField jPictures = new JTextField();
+	JTextArea jPictures = new JTextArea();
 	JTextArea jName	= new JTextArea();
-	JLabel jLabel2 = new JLabel();
 	JTextArea jSummary = new JTextArea();
-	JPanel jPanel1 = new JPanel();
-	JPanel jPanel2 = new JPanel();
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JButton jFetch = new JButton();
-
-	JCheckBox resizeBeforeUpload = new JCheckBox();
-	ButtonGroup buttonGroup1 = new ButtonGroup();
-	JRadioButton resizeToDefault = new JRadioButton();
-	JRadioButton resizeToForce = new JRadioButton();
-	JTextField resizeToWidth = new JTextField();
-	JLabel jLabel7 = new JLabel();
-	JTextField resizeToHeight = new JTextField();
-	JPanel jPanel6 = new JPanel();
+	JButton jNew = new JButton();
+	JButton jApply = new JButton();
+	JCheckBox jResizeBeforeUpload = new JCheckBox();
+	JRadioButton jResizeToDefault = new JRadioButton();
+	JRadioButton jResizeToForce = new JRadioButton();
+	JTextField jResizeToWidth = new JTextField();
+	JTextField jResizeToHeight = new JTextField();
 	JCheckBox jBeginning = new JCheckBox();
 
 	MainFrame mf = null;
 	Album album = null;
+
+	boolean ignoreItemChanges = false;
 
 	/**
 	 *  Constructor for the PictureInspector object
@@ -92,97 +93,98 @@ public class AlbumInspector extends JPanel
 
 	private void jbInit() {
 		setLayout( new GridBagLayout() );
-		jLabel5.setText(grRes.getString(MODULE, "Name") );
-		jLabel6.setText(grRes.getString(MODULE, "Title") );
-		jLabel1.setText(grRes.getString(MODULE, "Pictures") );
-		jLabel2.setText(grRes.getString(MODULE, "Summary") );
+		jLabelName.setText(grRes.getString(MODULE, "Name") );
+		jLabelTitle.setText(grRes.getString(MODULE, "Title") );
+		jLabelPictures.setText(grRes.getString(MODULE, "Pictures") );
+		jLabelSummary.setText(grRes.getString(MODULE, "Summary") );
 
-		jName.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jName.setFont(new Font("SansSerif", 0, 11));
-		jName.setEditable(false);
-		jName.setText("");
 		jName.setLineWrap(true);
 
-		jTitle.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jTitle.setFont(new Font("SansSerif", 0, 11));
-		jTitle.setEditable(false);
-		jTitle.setText("");
 		jTitle.setLineWrap(true);
 
 		jSummary.setLineWrap(true);
-		jSummary.setEditable(false);
 		jSummary.setFont(new java.awt.Font("SansSerif", 0, 11));
-		jSummary.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 
 		jPictures.setEditable(false);
+		jPictures.setFont(new java.awt.Font("SansSerif", 0, 11));
+		jPictures.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 
 		jPanel1.setLayout(new GridBagLayout());
-		jPanel2.setLayout(new GridBagLayout());
-		jFetch.setText(grRes.getString(MODULE, "Fetch"));
+		jPanelProps.setLayout(new GridBagLayout());
 
-		resizeToWidth.setMinimumSize(new Dimension(25, 21));
-		resizeToWidth.setPreferredSize(new Dimension(25, 21));
-		resizeToWidth.setToolTipText(grRes.getString(MODULE, "res2W"));
+		jFetch.setText(grRes.getString(MODULE, "Fetch"));
+		jNew.setText(grRes.getString(MODULE, "New"));
+		jApply.setText(grRes.getString(MODULE, "Apply"));
+
+		jResizeToWidth.setMinimumSize(new Dimension(25, 21));
+		jResizeToWidth.setPreferredSize(new Dimension(25, 21));
+		jResizeToWidth.setToolTipText(grRes.getString(MODULE, "res2W"));
 		jLabel7.setText("x");
-		resizeToHeight.setMinimumSize(new Dimension(25, 21));
-		resizeToHeight.setPreferredSize(new Dimension(25, 21));
-		resizeToHeight.setToolTipText(grRes.getString(MODULE, "res2H"));
-		resizeBeforeUpload.setToolTipText(grRes.getString(MODULE, "resBfrUpldTip"));
-		resizeBeforeUpload.setText(grRes.getString(MODULE, "resBfrUpld"));
-		resizeToDefault.setToolTipText(grRes.getString(MODULE, "res2Def"));
-		resizeToDefault.setText(grRes.getString(MODULE, "res2Def"));
-		resizeToForce.setToolTipText(grRes.getString(MODULE, "res2FrcTip"));
-		resizeToForce.setText(grRes.getString(MODULE, "res2Frc"));
+		jResizeToHeight.setMinimumSize(new Dimension(25, 21));
+		jResizeToHeight.setPreferredSize(new Dimension(25, 21));
+		jResizeToHeight.setToolTipText(grRes.getString(MODULE, "res2H"));
+		jResizeBeforeUpload.setToolTipText(grRes.getString(MODULE, "resBfrUpldTip"));
+		jResizeBeforeUpload.setText(grRes.getString(MODULE, "resBfrUpld"));
+		jResizeToDefault.setToolTipText(grRes.getString(MODULE, "res2Def"));
+		jResizeToDefault.setText(grRes.getString(MODULE, "res2Def"));
+		jResizeToForce.setToolTipText(grRes.getString(MODULE, "res2FrcTip"));
+		jResizeToForce.setText(grRes.getString(MODULE, "res2Frc"));
 
 		jBeginning.setText(grRes.getString(MODULE, "Beginning"));
 		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "Override")));
-		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "Props")));
+		jPanelProps.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),grRes.getString(MODULE, "Props")));
 
-		jPanel2.add( jLabel5,              new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-				,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
-		jPanel2.add( jLabel6,             new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
-		jPanel2.add( jLabel1,             new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
-		jPanel2.add(new JScrollPane(jName),                new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
+    	jPanelProps.add( jLabelName,               new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0) );
+		jPanelProps.add(new JScrollPane(jName),                new GridBagConstraints(1, 0, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
-		jPanel2.add(new JScrollPane(jTitle),           new GridBagConstraints(1, 1, 1, 1, 1.0, 1.0
+		jPanelProps.add( jLabelTitle,              new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 2, 0) );
+		jPanelProps.add(new JScrollPane(jTitle),           new GridBagConstraints(1, 1, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 3, 0), 0, 0));
-		jPanel2.add(jPictures,           new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 3, 0), 0, 0));
-		jPanel2.add(jLabel2,       new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
-		jPanel2.add(new JScrollPane(jSummary),       new GridBagConstraints(1, 3, 1, 1, 1.0, 1.0
+		jPanelProps.add(jLabelSummary,        new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(2, 0, 0, 5), 0, 0));
+		jPanelProps.add(new JScrollPane(jSummary),       new GridBagConstraints(1, 2, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jPanelProps.add( jLabelPictures,              new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 2, 5), 2, 0) );
+		jPanelProps.add(jPictures,            new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 3, 0), 0, 0));
+		jPanelProps.add(jApply,  new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
 
-		jPanel1.add(resizeToWidth,             new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
+		jPanel1.add(jResizeToWidth,             new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(jLabel7,              new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-		jPanel1.add(resizeToHeight,             new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0
+		jPanel1.add(jResizeToHeight,             new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(jPanel6,          new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(resizeBeforeUpload,         new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0
+		jPanel1.add(jResizeBeforeUpload,         new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(resizeToDefault,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jPanel1.add(jResizeToDefault,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
-		jPanel1.add(resizeToForce,      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+		jPanel1.add(jResizeToForce,      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
 		jPanel1.add(jBeginning,      new GridBagConstraints(0, 3, 4, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
-		this.add(jPanel2,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+		this.add(jPanelProps,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel1,      new GridBagConstraints(0, 1, 2, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jFetch,    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
-		add( jSpacer,              new GridBagConstraints(0, 3, 1, 1, 1.0, 0.1
+		//this.add(jNew,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+		//		,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 0, 0));
+		add( jSpacer,              new GridBagConstraints(0, 4, 1, 1, 1.0, 0.1
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
 
-		buttonGroup1.add(resizeToDefault);
-		buttonGroup1.add(resizeToForce);
+		buttonGroup1.add(jResizeToDefault);
+		buttonGroup1.add(jResizeToForce);
 
 		this.setMinimumSize( new Dimension( 150, 0 ) );
 
@@ -206,6 +208,16 @@ public class AlbumInspector extends JPanel
 
 	private void jbInitEvents() {
 		jFetch.addActionListener(this);
+		jNew.addActionListener(this);
+		jApply.addActionListener(this);
+
+		jBeginning.addItemListener(this);
+		jResizeBeforeUpload.addItemListener(this);
+		jResizeToDefault.addItemListener(this);
+		jResizeToForce.addItemListener(this);
+
+		jResizeToWidth.getDocument().addDocumentListener(this);
+		jResizeToHeight.getDocument().addDocumentListener(this);
 	}
 
 	// Event handling
@@ -216,7 +228,77 @@ public class AlbumInspector extends JPanel
 	 */
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
-		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command );
+		JComponent source = (JComponent) e.getSource();
+		Log.log(Log.LEVEL_TRACE, MODULE, "Action selected " + command );
+
+		if (source == jFetch) {
+			// todo
+		} else if (source == jNew) {
+			mf.newAlbum();
+		} else if (source == jApply) {
+			// todo
+		} else {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Unknown source " + source);
+		}
+	}
+
+	/**
+	 * Invoked when an item has been selected or deselected by the user.
+	 * The code written for this method performs the operations
+	 * that need to occur when an item is selected (or deselected).
+	 */
+	public void itemStateChanged(ItemEvent e) {
+		if (ignoreItemChanges) {
+			return;
+		}
+
+		JComponent source = (JComponent) e.getSource();
+		Log.log(Log.LEVEL_TRACE, MODULE, "Item state changed " + source );
+
+		if (source == jBeginning) {
+			album.setOverrideAddToBeginning(new Boolean(jBeginning.isSelected()));
+		} else if (source == jResizeBeforeUpload) {
+			album.setOverrideResize(new Boolean(jResizeBeforeUpload.isSelected()));
+
+			resetUIState();
+		} else if (source == jResizeToDefault || source == jResizeToForce) {
+			album.setOverrideResizeDefault(new Boolean(jResizeToDefault.isSelected()));
+
+			resetUIState();
+		} else {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Unknown source " + source);
+		}
+	}
+
+	public void resetUIState() {
+		boolean oldIgnoreItemChanges = ignoreItemChanges;
+		ignoreItemChanges = true;
+
+		if (album!= null && jResizeBeforeUpload.isSelected()) {
+			jResizeToDefault.setEnabled(true);
+			jResizeToForce.setEnabled(true);
+
+			if (jResizeToForce.isSelected()) {
+				jResizeToHeight.setEnabled(true);
+				jResizeToWidth.setEnabled(true);
+				jResizeToHeight.setBackground(UIManager.getColor("TextField.background"));
+				jResizeToWidth.setBackground(UIManager.getColor("TextField.background"));
+			} else {
+				jResizeToHeight.setEnabled(false);
+				jResizeToWidth.setEnabled(false);
+				jResizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+				jResizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			}
+		} else {
+			jResizeToDefault.setEnabled(false);
+			jResizeToForce.setEnabled(false);
+			jResizeToHeight.setEnabled(false);
+			jResizeToWidth.setEnabled(false);
+			jResizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			jResizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		}
+
+		ignoreItemChanges = oldIgnoreItemChanges;
 	}
 
 	/**
@@ -229,26 +311,43 @@ public class AlbumInspector extends JPanel
 	}
 
 	public void setAlbum(Album album) {
+		boolean oldIgnoreItemChanges = ignoreItemChanges;
+		ignoreItemChanges = true;
+
 		this.album = album;
 
 		if ( album == null ) {
-			setActive(jName, false);
+			/*setActive(jName, false);
 			setActive(jTitle, false);
 			setActive(jSummary, false);
 
-			jPictures.setText("");
+			jPictures.setText("");*/
+			setEnabledInternal(false);
 		} else {
-			setActive(jName, true);
+			setEnabledInternal(true);
+
+			//setActive(jName, true);
 			jName.setText(album.getName());
 
-			setActive(jTitle, true);
+			//setActive(jTitle, true);
 			jTitle.setText(album.getTitle());
 
-			setActive(jSummary, true);
+			//setActive(jSummary, true);
 			jSummary.setText(album.getSummary());
 
 			jPictures.setText("" + album.getSize());
+
+			jResizeBeforeUpload.setSelected(album.getResize());
+			jResizeToDefault.setSelected(album.getResizeDefault());
+			jResizeToForce.setSelected(! album.getResizeDefault());
+			jResizeToWidth.setText("" + album.getResizeDimension().width);
+			jResizeToHeight.setText("" + album.getResizeDimension().height);
+			jBeginning.setSelected(album.getAddToBeginning());
 		}
+
+		resetUIState();
+
+		ignoreItemChanges = oldIgnoreItemChanges;
 	}
 
 	public void setActive(JTextArea t, boolean active) {
@@ -262,12 +361,33 @@ public class AlbumInspector extends JPanel
 		}
 	}
 
-	public void setEnabled(boolean enabled) {
+	public void setEnabledInternal(boolean enabled) {
 		//Log.log(Log.TRACE, MODULE, "setEnabled " + enabled);
 		jName.setEnabled(enabled);
 		jTitle.setEnabled(enabled);
 		jSummary.setEnabled(enabled);
+		jPictures.setEnabled(enabled);
+		jFetch.setEnabled(enabled);
+		jNew.setEnabled(enabled);
+		jApply.setEnabled(enabled);
+		jResizeBeforeUpload.setEnabled(enabled);
+		jResizeToDefault.setEnabled(enabled);
+		jResizeToForce.setEnabled(enabled);
+		jResizeToWidth.setEnabled(enabled);
+		jResizeToHeight.setEnabled(enabled);
+		jBeginning.setEnabled(enabled);
 
+		if (enabled) {
+			jResizeToHeight.setBackground(UIManager.getColor("TextField.background"));
+			jResizeToWidth.setBackground(UIManager.getColor("TextField.background"));
+		} else {
+			jResizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			jResizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		}
+	}
+
+	public void setEnabled(boolean enabled) {
+		setEnabledInternal(enabled);
 		super.setEnabled(enabled);
 	}
 
@@ -299,5 +419,68 @@ public class AlbumInspector extends JPanel
 			mf.selectPrevPicture();
 		}
 	};
+
+	/**
+	 *	Caption JTextArea events.
+	 */
+	public void insertUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	/**
+	 * Caption JTextArea events.
+	 */
+	public void removeUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	/**
+	 * Caption JTextArea events.
+	 */
+	public void changedUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	public void textUpdate(DocumentEvent e) {
+		Document doc = e.getDocument();
+
+		if (doc == jResizeToWidth.getDocument()) {
+			try {
+				Dimension d = album.getOverrideResizeDimension();
+
+				if (d == null) {
+					d = new Dimension();
+				}
+
+				String text = jResizeToWidth.getText();
+
+				if (text.length() > 0) {
+					d.width = Integer.parseInt(text);
+
+					album.setOverrideResizeDimension(d);
+				}
+			} catch (NumberFormatException ee) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, ee);
+			}
+		} else if (doc == jResizeToHeight.getDocument()) {
+			try {
+				Dimension d = album.getOverrideResizeDimension();
+
+				if (d == null) {
+					d = new Dimension();
+				}
+
+				String text = jResizeToHeight.getText();
+
+				if (text.length() > 0) {
+					d.height = Integer.parseInt(jResizeToHeight.getText());
+
+					album.setOverrideResizeDimension(d);
+				}
+			} catch (NumberFormatException ee) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, ee);
+			}
+		}
+	}
 }
 

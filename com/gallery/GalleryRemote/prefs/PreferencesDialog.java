@@ -134,6 +134,8 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		jRevert.addActionListener(this);
 
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+		getRootPane().setDefaultButton(jOK);
 	}
 
 	public void valueChanged(ListSelectionEvent e) {

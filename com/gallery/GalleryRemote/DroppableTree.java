@@ -44,10 +44,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JList;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 
@@ -57,41 +57,61 @@ import com.gallery.GalleryRemote.util.ImageUtils;
  *@author     paour
  *@created    August 16, 2002
  */
-public class DroppableList
-		extends JList implements DropTargetListener, DragSourceListener, DragGestureListener {
+public class DroppableTree
+		extends JTree implements DropTargetListener {
 
-	protected final static String MODULE = "Droplist";
+	protected final static String MODULE = "Droptree";
 	protected static GRI18n grRes = GRI18n.getInstance();
 	MainFrame mf = null;
 
-	DragSource dragSource;
 	DropTarget dropTarget;
-	int lastY = -1;
+	int lastRow = -1;
 	int scrollPace = 0;
 
-	public DroppableList() {
-		dragSource = new DragSource();
-		dragSource.createDefaultDragGestureRecognizer( this, DnDConstants.ACTION_MOVE, this );
+	public DroppableTree() {
 		dropTarget = new DropTarget( this, this );
 	}
 
 	public void paint( Graphics g ) {
-		lastY = -1;
+		lastRow = -1;
 		super.paint( g );
 	}
 
 	public boolean isDragOK(DropTargetEvent dropTargetEvent) {
+		boolean result;
+
 		if (!isEnabled()) {
+			// return immediately, no painting is likely to have been done
 			return false;
 		}
 
 		if (dropTargetEvent instanceof DropTargetDragEvent) {
-			return ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
-					|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+			Point dropLocation = ((DropTargetDragEvent) dropTargetEvent).getLocation();
+			if (getPathForLocation((int) dropLocation.getX(), (int) dropLocation.getY()) == null) {
+				result = false;
+			} else {
+				result = ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+						|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+			}
 		} else {
-			return ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
-					|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+			Point dropLocation = ((DropTargetDropEvent) dropTargetEvent).getLocation();
+			if (getPathForLocation((int) dropLocation.getX(), (int) dropLocation.getY()) == null) {
+				result = false;
+			} else {
+				result = ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+						|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+			}
 		}
+
+		if (!result && lastRow != -1) {
+			Graphics g = getGraphics();
+			g.setXORMode( Color.cyan );
+			g.drawRect( 0, lastRow * rowHeight, getWidth(), rowHeight);
+
+			lastRow = -1;
+		}
+
+		return result;
 	}
 
 	/* ********* TargetListener ********** */
@@ -123,38 +143,44 @@ public class DroppableList
 	}
 
 	public void dragOver( int y ) {
-		int i = locationToIndex(new Point(1, y));
+		int row = snapIndex(y);
+		int rowHeight = getRowHeight();
 		Rectangle r = getVisibleRect();
 		boolean scrolled = false;
 
-		if (y < r.getY() + safeGetFixedCellHeight() && i > 0) {
-			int tmpLastY = lastY;
-			ensureIndexIsVisible(i - 1);
-			lastY = tmpLastY;
+		Log.log(Log.LEVEL_TRACE, MODULE, "row: " + row + " lastRow: " + lastRow + " rowHeight: " + rowHeight);
+		if (y < r.getY() + getRowHeight() && row > 0) {
+			int tmpLastRow = lastRow;
+			//scrollRowToVisible(row - 1);
+			scrollRectToVisible(new Rectangle(0, (int) r.getY() - rowHeight, 0, 0));
+			lastRow = tmpLastRow;
 			scrolled = true;
 		}
-		if (y > r.getY() + r.getHeight() - safeGetFixedCellHeight() && i < getModel().getSize() - 1) {
-			int tmpLastY = lastY;
-			ensureIndexIsVisible(i + 1);
-			lastY = tmpLastY;
+		if (y > r.getY() + r.getHeight() - getRowHeight() && row < getRowCount() - 1) {
+			int tmpLastRow = lastRow;
+			//scrollRowToVisible(row + 1);
+			scrollRectToVisible(new Rectangle(0, (int) (r.getY() + r.getHeight() + rowHeight), 0, 0));
+			lastRow = tmpLastRow;
 			scrolled = true;
 		}
+		/*if (scrolled) {
+			r = getVisibleRect();
+			scrollRectToVisible(new Rectangle(0, (int) r.getY(), 0, 0));
+		}*/
 
 		Graphics g = getGraphics();
 		g.setXORMode( Color.cyan );
-		int xStart = 10;
-		int xStop = ( (int) this.getVisibleRect().getWidth() ) - xStart;
-		if ( lastY != -1 ) {
-			int ySnap = snap( lastY );
-			g.drawLine( xStart, ySnap, xStop, ySnap );
-			g.drawLine( xStart, ySnap + 1, xStop, ySnap + 1 );
+		int xStart = 0;
+		int xStop = getWidth() - xStart;
+		if ( lastRow != -1 ) {
+			g.drawRect( xStart, lastRow * rowHeight, xStop, rowHeight);
 		}
 
-		lastY = y;
+		lastRow = row;
 
-		int ySnap = snap( lastY );
-		g.drawLine( xStart, ySnap, xStop, ySnap );
-		g.drawLine( xStart, ySnap + 1, xStop, ySnap + 1 );
+		if ( lastRow != -1 ) {
+			g.drawRect( xStart, lastRow * rowHeight, xStop, rowHeight);
+		}
 
 		if (scrolled) {
 			scrollPace++;
@@ -183,7 +209,7 @@ public class DroppableList
 
 			//thanks John Zukowski
 			Point dropLocation = dropTargetDropEvent.getLocation();
-			int listIndex = snapIndex( (int) dropLocation.getY() );
+			Album album = (Album) getPathForLocation((int) dropLocation.getX(), (int) dropLocation.getY()).getLastPathComponent();
 
 			if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
 				List fileList = (List)
@@ -202,16 +228,16 @@ public class DroppableList
 							JOptionPane.ERROR_MESSAGE );
 				}
 
-				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to list at index " + listIndex );
+				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to album " + album );
 
-				mf.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex, false);
+				mf.addPictures( album, (File[]) fileList.toArray( new File[0] ), false);
 			} else {
 				List pictureList = (List)
 						tr.getTransferData( PictureSelection.flavors[0] );
 
-				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to list at index " + listIndex );
+				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to album " + album );
 
-				mf.addPictures( (Picture[]) pictureList.toArray( new Picture[0] ), listIndex, true);
+				mf.addPictures( album, (Picture[]) pictureList.toArray( new Picture[0] ), false);
 			}
 
 			dropTargetDropEvent.getDropTargetContext().dropComplete( true );
@@ -222,6 +248,8 @@ public class DroppableList
 			Log.logException(Log.LEVEL_ERROR, MODULE, ufe);
 			dropTargetDropEvent.getDropTargetContext().dropComplete( false );
 		}
+
+		repaint();
 	}
 
 	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) {
@@ -234,66 +262,20 @@ public class DroppableList
 		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
 	}
 
-	
-	/* ********* DragSourceListener ********** */
-	public void dragDropEnd( DragSourceDropEvent dragSourceDropEvent ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "dragDropEnd - dsde" );
-
-		if (dragSourceDropEvent.getDropSuccess() && dragSourceDropEvent.getDropAction() == DnDConstants.ACTION_MOVE) {
-			PictureSelection ps = (PictureSelection) dragSourceDropEvent.getDragSourceContext().getTransferable();
-
-			for (Iterator it = ps.iterator(); it.hasNext();) {
-				mf.getCurrentAlbum().removePicture((Picture) it.next());
-			}
-		}
-	}
-
-	public void dragEnter( DragSourceDragEvent dragSourceDragEvent ) {}
-
-	public void dragExit( DragSourceEvent dragSourceEvent ) {}
-
-	public void dragOver( DragSourceDragEvent dragSourceDragEvent ) {}
-
-	public void dropActionChanged( DragSourceDragEvent dragSourceDragEvent ) { }
-
-	/* ********* DragGestureListener ********** */
-	public void dragGestureRecognized( DragGestureEvent event ) {
-		Log.log( Log.LEVEL_TRACE, MODULE, "dragGestureRecognized" );
-		PictureSelection ps = new PictureSelection(this);
-
-		//pull out existing pictures
-		if ( !ps.isEmpty() ) {
-			dragSource.startDrag( event, DragSource.DefaultMoveDrop, ps, this );
-		} else {
-			Log.log( Log.LEVEL_TRACE, MODULE, "nothing was selected" );
-		}
-	}
-
 	public void setMainFrame( MainFrame mf ) {
 		this.mf = mf;
 	}
 
-	int safeGetFixedCellHeight() {
-		int height = getFixedCellHeight();
-		if (height == -1) {
-			height = (int) getCellRenderer()
-				.getListCellRendererComponent(this, null, -1, false, false)
-				.getPreferredSize().getHeight();
-		}
-
-		return height;
-	}
-
 	public int snap( int y ) {
-		return snapIndex( y ) * safeGetFixedCellHeight();
+		return snapIndex( y ) * getRowHeight();
 	}
 
 	public int snapIndex( int y ) {
-		int height = safeGetFixedCellHeight();
+		int height = getRowHeight();
 
-		int row = (int) Math.floor( ( (float) y / height ) + .5 );
-		if ( row > getModel().getSize() ) {
-			row = getModel().getSize();
+		int row = (int) Math.floor( (float) y / height );
+		if ( row > getRowCount() ) {
+			row = -1;
 		}
 
 		return row;

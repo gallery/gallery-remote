@@ -1,3 +1,12 @@
+2003-11-13  Pierre-Luc Paour <gallery@paour.com> (1.3-b2)
+
+	* Implemented drag-and-drop on Albums. Moving pictures from one album to another
+	  is finally very easy.
+	* Finished hooking up the UI in the AlbumInspector. Downloading pictures
+	  from the server and updating album settings is not yet implemented.
+	* Set default button for each dialog, so hitting Enter is the same as
+	  clicking OK.
+
 2003-11-11  Pierre-Luc Paour <gallery@paour.com> (1.3-b1)
 
 	* Albums are now displayed as a tree control

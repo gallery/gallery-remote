@@ -33,8 +33,8 @@ import com.drew.metadata.exif.ExifDirectory;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 
@@ -588,5 +588,57 @@ public class ImageUtils {
 		}
 
 		return 1;
+	}
+
+	/* ********* Utilities ********** */
+	public static List expandDirectories( List filesAndFolders )
+		throws IOException {
+		ArrayList allFilesList = new ArrayList();
+
+		Iterator iter = filesAndFolders.iterator();
+		while ( iter.hasNext() ) {
+			File f = (File) iter.next();
+			if ( f.isDirectory() ) {
+				allFilesList.addAll( listFilesRecursive( f ) );
+			} else {
+				allFilesList.add( f );
+			}
+		}
+
+		return allFilesList;
+	}
+
+	public static java.util.List listFilesRecursive( File dir )
+		throws IOException {
+		ArrayList ret = new ArrayList();
+
+		/* File.listFiles: stupid call returns null if there's an
+				   i/o exception *or* if the file is not a directory, making a mess.
+				   http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
+		File[] fileArray = dir.listFiles();
+		if ( fileArray == null ) {
+			if ( dir.isDirectory() ) {
+				/* convert to exception */
+				throw new IOException( "i/o exception listing directory: " + dir.getPath() );
+			} else {
+				/* this method should only be called on a directory */
+				Log.log( Log.LEVEL_CRITICAL, MODULE, "assertion failed: listFilesRecursive called on a non-dir file" );
+				return ret;
+			}
+		}
+
+		java.util.List files = Arrays.asList( fileArray );
+
+		Iterator iter = files.iterator();
+		while ( iter.hasNext() ) {
+			File f = (File) iter.next();
+			if ( f.isDirectory() ) {
+				ret.addAll( listFilesRecursive( f ) );
+			} else {
+				ret.add( f );
+			}
+		}
+
+		return ret;
 	}
 }
