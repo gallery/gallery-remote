@@ -32,7 +32,8 @@ import com.gallery.GalleryRemote.model.*;
  *	
  *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
-public interface GalleryComm {
+public abstract class GalleryComm {
+	int[] capabilities = null;
 
 	/**
 	 *	Causes the GalleryComm instance to upload the pictures in the
@@ -40,7 +41,9 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void uploadFiles( StatusUpdate su, boolean async );
+	public void uploadFiles( StatusUpdate su, boolean async ) {
+		throw new RuntimeException( "This method is not available on this protocol" );
+	}
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the albums contained by
@@ -48,7 +51,9 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void fetchAlbums( StatusUpdate su, boolean async );
+	public void fetchAlbums( StatusUpdate su, boolean async ) {
+		throw new RuntimeException( "This method is not available on this protocol" );
+	}
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the album properties
@@ -56,7 +61,9 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a, boolean async );
+	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
+		throw new RuntimeException( "This method is not available on this protocol" );
+	}
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the album properties
@@ -64,5 +71,11 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void logOut();
+	public void logOut() {
+		throw new RuntimeException( "This method is not available on this protocol" );
+	}
+	
+	public boolean hasCapability(int capability) {
+		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
+	}
 }

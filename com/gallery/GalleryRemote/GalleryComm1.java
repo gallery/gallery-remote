@@ -28,7 +28,7 @@ import java.net.*;
 import javax.swing.*;
 import com.gallery.GalleryRemote.model.*;
 
-public class GalleryComm1 implements GalleryComm {
+public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities {
 	private static final String MODULE = "GalleryCom";
 	
 	private static final String PROTOCAL_VERSION = "1";
@@ -67,6 +67,9 @@ public class GalleryComm1 implements GalleryComm {
 	public GalleryComm1(StatusUpdate su, Gallery g) {
 		this.su = su;
 		this.g = g;
+		
+		capabilities = new int[] {CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS};
+		Arrays.sort(capabilities);
 	}
 	
 	void doTask(GalleryTask task, boolean async) {
@@ -84,30 +87,7 @@ public class GalleryComm1 implements GalleryComm {
 
 	public void fetchAlbums( StatusUpdate su, boolean async ) {
 		doTask(new AlbumListTask(), async);
-	}
-	
-	/**
-	 *	Causes the GalleryComm instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 */
-	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
-		/* TEMPORARY */	
-		throw new RuntimeException( "This method is not implemented yet" );
-	}
-	
-	/**
-	 *	Causes the GalleryComm instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 */
-	public void logOut() {
-		/* TEMPORARY */	
-		throw new RuntimeException( "This method is not implemented yet" );
-	}
-	
+	}	
 	
 	
 	//-------------------------------------------------------------------------

@@ -37,7 +37,8 @@ import com.gallery.GalleryRemote.model.*;
  *  @author paour
  *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
-public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
+public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
+	GalleryCommCapabilities {
 	/* Implementation notes:  One GalleryComm2 instance is needed per Gallery
 	 * server (since the protocol only logs into each server once).  So the 
 	 * constructor requires a Gallery instance and is immutable with respect
@@ -115,6 +116,14 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 		}
 		
 		this.g = g;
+		
+		/*	Initialize the capabilities array with what protocol 2.0 supports.
+		 *	Once we're logged in and we know what the minor revision of the
+		 *	protocol is, we'll be able to add more capabilities, such as
+		 *	CAPA_NEW_ALBUM (since 2.1) */
+		capabilities = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO/*, CAPA_NEW_ALBUM */ };
+		Arrays.sort(capabilities);
 	}
 	
 	
