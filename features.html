@@ -1,0 +1,106 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Gallery Remote roadmap</title>
+<style>
+<!--
+h2           {
+	list-style-type: decimal;
+	display: list-item;
+}
+h3           {
+	list-style-type: decimal;
+	display: list-item;
+}
+h4           {
+	list-style-type: lower-alpha;
+	display: list-item;
+}
+p {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+-->
+</style>
+</head>
+
+<body>
+
+<h1 align="center">Gallery Remote 1.0 features</h1>
+<h2>Document goal</h2>
+<p>Serve as a basis for team and community discussions about GR 1.0 features, 
+  how they will be implemented, and by whom. </p>
+<h2>Prerequisite</h2>
+<p>Right now, GR is pretty monolythic. Before I can open development to other 
+  developers, I need to make the code more modular. This has already started, 
+  but any and all suggestions are welcome.</p>
+<h2>Feature list</h2>
+<table width="100%" border="1">
+  <tr> 
+    <th>Name</th>
+    <th>Priority</th>
+    <th>Status</th>
+    <th>Who</th>
+    <th>Description</th>
+    <th>Comments</th>
+  </tr>
+  <tr valign="top"> 
+    <td>Preferences</td>
+    <td>P2</td>
+    <td>10%</td>
+    <td>&nbsp;</td>
+    <td>A preferences dialog, that allows users to set most or all the preferences 
+      that are exposed in the properties files, and create/edit Gallery connection 
+      profiles. </td>
+    <td>The structure for this is starting to emerge: all or most preferences 
+      should be read directly from the Preferences class, and a system of defaults 
+      exists. </td>
+  </tr>
+  <tr valign="top"> 
+    <td>Main UI</td>
+    <td>P1</td>
+    <td>10%</td>
+    <td>paour</td>
+    <td>The main UI needs to be rewritten using Layouts, in order to allow more 
+      flexibility.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top"> 
+    <td>XML serialization</td>
+    <td>P2</td>
+    <td>10%</td>
+    <td>paour</td>
+    <td>Album objects need to be able to serialize themselves, so batch uploads 
+      can be considered</td>
+    <td>Data is now stored in Bean classes that could be serialized automatically 
+      (Castor) or by hand (lighter).</td>
+  </tr>
+  <tr valign="top">
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+</table>
+<p>&nbsp;</p>
+</body>
+
+</html>
