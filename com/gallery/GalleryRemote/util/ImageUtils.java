@@ -18,12 +18,21 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.gallery.GalleryRemote;
+package com.gallery.GalleryRemote.util;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import javax.swing.*;
+import com.gallery.GalleryRemote.GalleryFileFilter;
+import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.PropertiesFile;
+import com.gallery.GalleryRemote.GalleryRemote;
+
+import java.awt.Dimension;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.swing.ImageIcon;
 
 /**
  *  Interface to common image manipulation routines
@@ -46,8 +55,8 @@ public class ImageUtils {
 	public static final int PREVIEW = 1;
 	public static final int UPLOAD = 2;
 	
-	static String[] filterName = new String[3]; 
-	static String[] format = new String[3]; 
+	static String[] filterName = new String[3];
+	static String[] format = new String[3];
 	
 	public final static String DEFAULT_IMAGE = "default.gif";
 	public final static String UNRECOGNIZED_IMAGE = "default.gif";
