@@ -144,7 +144,10 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		if (! inProgress && hasHadPictures) {
 			// probably finished uploading...
 			try {
-				getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
+				// no update for G2
+				if (! (gallery.getComm(null) instanceof GalleryComm2_5)) {
+					getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
+				}
 			} catch (MalformedURLException e1) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			}
