@@ -27,7 +27,7 @@ public class GRI18n implements PreferenceNames {
     private ResourceBundle grResBundle;
     private MessageFormat grMsgFrmt;
 
-    private static List lAvailLoc = initAvailableLocales();
+    private static List lAvailLoc = null;
 
 
     public static GRI18n getInstance() {
@@ -129,6 +129,8 @@ public class GRI18n implements PreferenceNames {
 
 
     public static List getAvailableLocales() {
+        if (lAvailLoc == null)
+            lAvailLoc = initAvailableLocales();
         return lAvailLoc;
     }
 
