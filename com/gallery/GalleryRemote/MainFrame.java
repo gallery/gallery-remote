@@ -45,6 +45,7 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
@@ -131,6 +132,9 @@ public class MainFrame extends javax.swing.JFrame
 
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
 	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
+    public static GRI18n grRes = GRI18n.getInstance();
+
 
 	/**
 	 *  Constructor for the MainFrame object
@@ -305,7 +309,7 @@ public class MainFrame extends javax.swing.JFrame
 					&& currentGallery.getUsername() != null
 					&& currentGallery.hasComm()
 					&& currentGallery.getComm(MainFrame.this).isLoggedIn()) {
-					jLoginButton.setText("Log out");
+					jLoginButton.setText(grRes.getString("Log_out"));
 				} else {
 					jLoginButton.setText("Log in");
 				}
@@ -790,8 +794,8 @@ public class MainFrame extends javax.swing.JFrame
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		this.getContentPane().setLayout( gridBagLayout1 );
 		jPanel1.setLayout( gridBagLayout2 );
-		jLabel1.setText( "Gallery URL" );
-		jLabel7.setText( "Select Album" );
+		jLabel1.setText( grRes.getString("Gallery_URL") );
+		jLabel7.setText( grRes.getString("Select_Album") );
 		jLoginButton.setText( "Log in" );
 		//jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );

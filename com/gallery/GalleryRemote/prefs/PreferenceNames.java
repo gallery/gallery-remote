@@ -15,6 +15,7 @@ public interface PreferenceNames {
 	public static final String UPDATE_CHECK_BETA = "updateCheckBeta";
 	public static final String UPDATE_URL = "updateUrl";
 	public static final String UPDATE_URL_BETA = "updateUrlBeta";
+    public static final String GR_LOCALE = "grLocale";
 
 	// Upload panel
 	public static final String RESIZE_BEFORE_UPLOAD = "resizeBeforeUpload";

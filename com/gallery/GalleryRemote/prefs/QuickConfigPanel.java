@@ -1,20 +1,16 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import javax.swing.border.*;
-import java.awt.event.*;
-import java.util.Properties;
-import java.util.Enumeration;
-import java.util.Iterator;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
