@@ -1,86 +1,91 @@
 <project name="GalleryRemote" default="compile" basedir=".">
-    <description>
-        A part of the Gallery project
-    </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="."/>
-  <property name="build" location="build"/>
-  <property name="dist"  location="dist"/>
+	<description>
+		A part of the Gallery project
+	</description>
+	<!-- set global properties for this build -->
+	<property name="src" location="."/>
+	<property name="build" location="build"/>
+	<property name="dist"  location="dist"/>
 
-  <target name="init">
-    <!-- Create the time stamp -->
-    <tstamp/>
-    <!-- Create the build directory structure used by compile -->
-    <mkdir dir="${build}"/>
-  </target>
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
 
-  <target name="compile" depends="init"
-        description="compile the source" >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}"
-	  includes="com/**,HTTPClient/**,edu/**" 
-	  listfiles="on" debug="on" source="1.3" />
-	
-	<!-- other files needed -->
-	<copy file="${src}/rar_about_gr1.png" todir="${build}" />
-	<copy file="${src}/rar_icon_32.gif" todir="${build}" />
-	<copy file="${src}/rar_icon_16.gif" todir="${build}" />
-  </target>
+	<target name="compile" depends="init"
+		description="compile the source" >
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}"
+			includes="com/**,HTTPClient/**,edu/**" classpath="lib/JSX1.0.7.4.jar"
+			listfiles="on" debug="on" source="1.3" />
 
-  <target name="run" depends="compile"
-        description="compile then run" >
+		<!-- other files needed -->
+		<copy file="${src}/rar_about_gr1.png" todir="${build}" />
+		<copy file="${src}/rar_icon_32.gif" todir="${build}" />
+		<copy file="${src}/rar_icon_16.gif" todir="${build}" />
+	</target>
 
-	<java classname="com.gallery.GalleryRemote.GalleryRemote"
-	  classpath="${build}" fork="true" />
-  </target>
-  
-  <target name="jar" depends="clean,compile"
-  		description="create a jar of the source">
-	
-	<jar destfile="GalleryRemote.jar" basedir="${build}" />
-  </target>
-  
-  <target name="zip" depends="jar"
-  		description="create a zip patch of the Gallery Remote install">
-	
-	<zip destfile="gallery_remote.zip">
-	  <fileset dir="." includes="run.*" />
-	  <fileset dir="." includes="defaults.properties" />
-	  <fileset dir="." includes="ChangeLog" />
-	  <fileset dir="." includes="default.gif" />
-	  <fileset dir="." includes="GalleryRemote.jar" />
-	  <fileset dir="." includes="ReadMe.html" />
-	</zip>
-  </target>
-  
-  <target name="testWin">
-    <condition property="onWin">
-	  <os family="windows" />
-	</condition>
-  </target>
-  
-  <target name="imReg" depends="init,testWin" if="onWin"
-        description="import registry stuff for ImageMagick">
-    <pathconvert dirsep="\\" property="impath">
-	  <path>
-	    <pathelement path="imagemagick/win32" />
-      </path>
-	</pathconvert>
-	
-	<filter token="PATH" value="${impath}" />
-	<copy file="magick.reg" toFile="myMagick.reg" filtering="true" overwrite="true"/>
-    
-	<exec executable="regedit">
-	  <arg value="/s" />
-	  <arg value="myMagick.reg" />
-	</exec>
-  </target>
+	<target name="run" depends="compile"
+		description="compile then run" >
 
-  <target name="clean"
-        description="clean up" >
-    <!-- Delete the ${build} and ${dist} directory trees -->
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-  </target>
+		<java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true">
+			<classpath>
+				<pathelement location="lib/JSX1.0.7.4.jar"/>
+				<pathelement path="${build}"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="jar" depends="clean,compile"
+		description="create a jar of the source">
+
+		<jar destfile="GalleryRemote.jar" basedir="${build}" />
+	</target>
+
+	<target name="zip" depends="jar"
+		description="create a zip patch of the Gallery Remote install">
+
+		<zip destfile="gallery_remote.zip">
+			<fileset dir="." includes="run.*" />
+			<fileset dir="." includes="defaults.properties" />
+			<fileset dir="." includes="ChangeLog" />
+			<fileset dir="." includes="default.gif" />
+			<fileset dir="." includes="GalleryRemote.jar" />
+			<fileset dir="." includes="ReadMe.html" />
+			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
+		</zip>
+	</target>
+
+	<target name="testWin">
+		<condition property="onWin">
+			<os family="windows" />
+		</condition>
+	</target>
+
+	<target name="imReg" depends="init,testWin" if="onWin"
+		description="import registry stuff for ImageMagick">
+		<pathconvert dirsep="\\" property="impath">
+			<path>
+				<pathelement path="imagemagick/win32" />
+			</path>
+		</pathconvert>
+
+		<filter token="PATH" value="${impath}" />
+		<copy file="magick.reg" toFile="myMagick.reg" filtering="true" overwrite="true"/>
+
+		<exec executable="regedit">
+			<arg value="/s" />
+			<arg value="myMagick.reg" />
+		</exec>
+	</target>
+
+	<target name="clean"
+		description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
 </project>
 
