@@ -75,7 +75,7 @@ th {
   <tr valign="top"> 
     <td>Main UI</td>
     <td>P1</td>
-    <td>10%</td>
+    <td>50%</td>
     <td>paour</td>
     <td>The main UI needs to be rewritten using Layouts, in order to allow more 
       flexibility.</td>
@@ -135,7 +135,7 @@ th {
   <tr valign="top"> 
     <td>Inspector</td>
     <td>P2</td>
-    <td>0%</td>
+    <td>10%</td>
     <td>&nbsp;</td>
     <td>In the UI, have an inspector pane for each Picture, that can display full 
       filename, file size, thumbnail, caption, order ID, resize/rotate buttons, 
@@ -178,14 +178,32 @@ th {
     <td>Change captions on the server using GR.</td>
     <td>Needs protocol upgrade</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>Create album</td>
     <td>P3</td>
     <td>0%</td>
     <td>&nbsp;</td>
-    <td>Provide UI to create albums on server.</td>
+    <td><p>Provide UI to create albums on server.</p>
+      <p>Option to create albums before existing albums, or after.</p></td>
     <td><p>Would be more elegant in Explorer UI.</p>
       <p>Needs protocol upgrade</p></td>
+  </tr>
+  <tr valign="top"> 
+    <td>Upload file names</td>
+    <td>P1</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>File names need to be uploaded along with files, so the server has the 
+      option of preserving the file name.</td>
+    <td>Needs protocol upgrade?</td>
+  </tr>
+  <tr valign="top">
+    <td>Shutdown after upload</td>
+    <td>P4</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Optionally shutdown the machine after upload is complete.</td>
+    <td>Architecture-dependant.</td>
   </tr>
 </table>
 <h2>gallery_remote.php changes</h2>
@@ -262,7 +280,7 @@ th {
     <td>We need to make sure the protocol can handle double-byte chars.</td>
     <td>Bug <a href="http://sourceforge.net/tracker/?func=detail&aid=480880&group_id=7130&atid=107130">480880</a></td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>Create album</td>
     <td>P3</td>
     <td>0%</td>
@@ -278,6 +296,15 @@ th {
     <td>&nbsp;</td>
     <td>Move to SOAP for the protocol.</td>
     <td>Probably not useful until GR2.</td>
+  </tr>
+  <tr valign="top">
+    <td>Honor Filename retention</td>
+    <td>P1</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>The server needs to allow retaining filenames of uploaded files (if that 
+      is the server setting).</td>
+    <td>Probably needs GR to upload the file name along with the file.</td>
   </tr>
 </table>
 <p>&nbsp;</p>
