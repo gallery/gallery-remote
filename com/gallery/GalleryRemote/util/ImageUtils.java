@@ -26,16 +26,13 @@ import com.gallery.GalleryRemote.model.ExifData;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
-import com.sun.imageio.plugins.jpeg.JPEGImageWriter;
 
 import javax.swing.*;
 import javax.imageio.*;
-import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.awt.image.ImageObserver;
 import java.awt.geom.AffineTransform;
 import java.io.*;
@@ -45,7 +42,6 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.List;
 
-import HTTPClient.TransferListener;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
@@ -983,7 +979,7 @@ public class ImageUtils {
 			Method m = c.getMethod("getExifData", new Class[]{String.class});
 			return (ExifData) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
+			Log.log(Log.LEVEL_ERROR, MODULE, "Exif library is not installed.");
 			return null;
 		}
 	}

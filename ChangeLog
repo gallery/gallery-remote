@@ -1,3 +1,14 @@
+2005-01-09  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b9)
+
+	* Fixed drop target indication when dropping to the last
+	  item in the list and the list is taller than the window.
+	* When connecting to an HTTPS server that uses a certificate
+	  that is not signed by a trusted root-CA, no longer displaying
+	  alert (the URL in the alert was no longer valid, anyway).
+	* Decode HTML entities in captions for slideshow.
+	* Added a patch by Frode Tviberg that finally fixes Linux DnD.
+	* Added Romanian language support from Dragos Neagu.
+
 2005-01-06  Bharat Mediratta  <bharat@menalto.com> (1.4.2-b8)
 
 	* Added support for passing the browser's User-Agent string into the

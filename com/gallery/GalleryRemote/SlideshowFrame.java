@@ -4,6 +4,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
@@ -395,7 +396,7 @@ public class SlideshowFrame extends PreviewFrame
 
 		if (picture != null) {
 			// todo: captions are not printed outline because they are HTML and that's a fucking mess
-			caption = stripTags(picture.getCaption());
+			caption = HTMLEscaper.unescape(stripTags(picture.getCaption()));
 			Log.log(Log.LEVEL_TRACE, MODULE, caption);
 			updateProgress(picture, STATE_NONE);
 			extra = picture.getExtraFieldsString();

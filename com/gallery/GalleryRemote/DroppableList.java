@@ -1,23 +1,23 @@
 /*
- *  Gallery Remote - a File Upload Utility for Gallery
- *
- *  Gallery - a web based photo album viewer and editor
- *  Copyright (C) 2000-2001 Bharat Mediratta
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*  Gallery Remote - a File Upload Utility for Gallery
+*
+*  Gallery - a web based photo album viewer and editor
+*  Copyright (C) 2000-2001 Bharat Mediratta
+*
+*  This program is free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or (at
+*  your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful, but
+*  WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*  General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program; if not, write to the Free Software
+*  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.model.Picture;
@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.net.URI;
 
 /**
  * Drag and drop handler
@@ -54,7 +56,7 @@ public class DroppableList
 
 	public DroppableList() {
 		dragSource = new DragSource();
-		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
+		dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_COPY_OR_MOVE, this);
 		dropTarget = new DropTarget(this, this);
 	}
 
@@ -70,10 +72,12 @@ public class DroppableList
 
 		if (dropTargetEvent instanceof DropTargetDragEvent) {
 			return ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
-					|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+					|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0])
+					|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.stringFlavor);
 		} else {
 			return ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
-					|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+					|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0])
+					|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.stringFlavor);
 		}
 	}
 
@@ -190,28 +194,46 @@ public class DroppableList
 						tr.getTransferData(DataFlavor.javaFileListFlavor);
 
 				/* recursively add contents of directories */
-				try {
-					fileList = ImageUtils.expandDirectories(fileList);
-				} catch (IOException ioe) {
-					Log.log(Log.LEVEL_ERROR, MODULE, "i/o exception listing dirs in a drop");
-					Log.logStack(Log.LEVEL_ERROR, MODULE);
-					JOptionPane.showMessageDialog(
-							null,
-							GRI18n.getString(MODULE, "imgError"),
-							GRI18n.getString(MODULE, "dragError"),
-							JOptionPane.ERROR_MESSAGE);
-				}
+				fileList = expandDirectories(fileList);
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to list at index " + listIndex);
 
 				GalleryRemote._().getCore().addPictures((File[]) fileList.toArray(new File[0]), listIndex, false);
-			} else {
+			} else if (tr.isDataFlavorSupported(PictureSelection.flavors[0])) {
 				List pictureList = (List)
 						tr.getTransferData(PictureSelection.flavors[0]);
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to list at index " + listIndex);
 
 				GalleryRemote._().getCore().addPictures((Picture[]) pictureList.toArray(new Picture[0]), listIndex, true);
+			} else if(tr.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				/* stringFlavour Data is expected in the form of file URIs delimited by \r\n (even on Linux systems)
+				See the Java API for a formal definition of a URI.
+				Informally, it is generally expected to be something like "file:///home/user/image.jpg".
+				*/
+
+				// Tokenize the string data using "\r\n" (i.e. Carriage Return, NewLine) as the delimeter
+				String fileStrings[] = ((String) tr.getTransferData(DataFlavor.stringFlavor)).split("\r\n");
+
+				// Create a file list using the tokenized URI strings
+				List fileList = new ArrayList();
+				for (int i=0; i < fileStrings.length; i++) {
+					try {
+						/* This is probably extremely inefficient, however it seems somewhat more likely to be
+						compatible with more file browsers because of it's use of URI's
+						*/
+						fileList.add( new File(new URI(fileStrings[i])) );
+					} catch (java.net.URISyntaxException ue) {
+						// URI creation failed, ignore that file
+					}
+				}
+
+				/* recursively add contents of directories */
+				fileList = expandDirectories(fileList);
+
+				Log.log(Log.LEVEL_TRACE,MODULE,"Adding " + fileList.size() + " new files(s) to list at index " + listIndex);
+
+				GalleryRemote._().getCore().addPictures((File[]) fileList.toArray(new File[0]), listIndex, false);
 			}
 
 			dropTargetDropEvent.getDropTargetContext().dropComplete(true);
@@ -289,7 +311,12 @@ public class DroppableList
 	}
 
 	public int snap(int y) {
-		return snapIndex(y) * safeGetFixedCellHeight();
+		int snap = snapIndex(y) * safeGetFixedCellHeight();
+		//System.out.println(snap + " - " + getVisibleRect());
+		if (snap >= getHeight()) {
+			snap = getHeight() - 2;
+		}
+		return snap;
 	}
 
 	public int snapIndex(int y) {
@@ -301,5 +328,22 @@ public class DroppableList
 		}
 
 		return row;
+	}
+
+	public List expandDirectories( List fileList ) {
+		/* recursively add contents of directories */
+		try {
+			return ImageUtils.expandDirectories(fileList);
+		} catch (IOException ioe) {
+			Log.log(Log.LEVEL_ERROR, MODULE, "i/o exception listing dirs in a drop");
+			Log.logStack(Log.LEVEL_ERROR, MODULE);
+			JOptionPane.showMessageDialog(
+					null,
+					GRI18n.getString(MODULE, "imgError"),
+					GRI18n.getString(MODULE, "dragError"),
+					JOptionPane.ERROR_MESSAGE);
+
+			return fileList;
+		}
 	}
 }
