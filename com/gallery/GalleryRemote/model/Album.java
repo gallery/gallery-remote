@@ -239,11 +239,16 @@ public class Album extends Picture implements ListModel, Serializable {
 	 */
 	public ArrayList addPictures(File[] files, int index) {
 		List expandedFiles = Arrays.asList(files);
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "addPictures: " + expandedFiles);
+
 		try {
 			expandedFiles = ImageUtils.expandDirectories(Arrays.asList(files));
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "addPictures (expanded): " + expandedFiles);
 
 		ArrayList pictures = new ArrayList(expandedFiles.size());
 

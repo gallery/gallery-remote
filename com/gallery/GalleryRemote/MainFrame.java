@@ -622,6 +622,8 @@ public class MainFrame extends JFrame
 			album = getCurrentAlbum();
 		}
 
+		Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + files.length + " pictures to album " + album);
+
 		ArrayList newPictures = null;
 		if (index == -1) {
 			newPictures = album.addPictures(files);

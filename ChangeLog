@@ -1,3 +1,9 @@
+2004-02-25  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b5)
+
+	* Updated French translation by Alex Lemaresquier.
+	* Added debugging info to trace bug where adding pictures via
+	  Browse... doesn't work but DnD'ing them does.
+
 2004-02-23  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b4)
 
 	* Fixed Linux tree display error. Thanks to "herk" for
