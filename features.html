@@ -82,16 +82,6 @@ th {
       exists. </td>
   </tr>
   <tr valign="top"> 
-    <td>XML serialization</td>
-    <td>P2</td>
-    <td>10%</td>
-    <td>paour</td>
-    <td>Album objects need to be able to serialize themselves, so batch uploads 
-      can be considered</td>
-    <td>Data is now stored in Bean classes that could be serialized automatically 
-      (Castor) or by hand (lighter).</td>
-  </tr>
-  <tr valign="top"> 
     <td>Inspector</td>
     <td>P2</td>
     <td>50%</td>
@@ -137,7 +127,7 @@ th {
     <td>P2</td>
     <td>0%</td>
     <td>&nbsp;</td>
-    <td>Change captions on the server using GR.</td>
+    <td>When a picture is uploaded, also upload a caption.</td>
     <td>Needs protocol upgrade</td>
   </tr>
   <tr valign="top"> 
@@ -150,6 +140,16 @@ th {
     <td>Default Java resizing quality is not great, and not very flexible. We 
       may need to use an external app. It may be worth investigating the plug-in 
       mechanism in G2 for resizing.</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Multi-album upload</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>paour</td>
+    <td>Allow pictures to be uploaded to different albums within one session. 
+      This can be done without a protocol upgrade, and is slightly different than 
+      batch upload.</td>
+    <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
     <td>Pre-upload rotate</td>
@@ -171,18 +171,6 @@ th {
       <p>Needs protocol upgrade</p></td>
   </tr>
   <tr valign="top"> 
-    <td>Batch uploading</td>
-    <td>P3</td>
-    <td>0%</td>
-    <td>&nbsp;</td>
-    <td>Allow pictures to be uploaded using command-line tools, all in one go, 
-      using saved files (XML) containing the upload parameters.</td>
-    <td><p>Alternately, it could be interesting to allow more than one album to 
-        be viewed in the UI at the same time, and to set up uploads to more than 
-        one album.</p>
-      <p>Also see Explorer UI</p></td>
-  </tr>
-  <tr valign="top"> 
     <td>Proxy support</td>
     <td>P3</td>
     <td>0%</td>
@@ -202,10 +190,32 @@ th {
     <td>Explorer UI</td>
     <td>P4</td>
     <td>0%</td>
-    <td>dolan</td>
+    <td>&nbsp;</td>
     <td>In the long run, I want to use a Windows Explorer-like UI, with albums 
       on the right, and their contents on the left.</td>
     <td>Depends on Download Album</td>
+  </tr>
+  <tr valign="top"> 
+    <td>XML serialization</td>
+    <td>P4</td>
+    <td>10%</td>
+    <td>paour</td>
+    <td>Album objects need to be able to serialize themselves, so batch uploads 
+      can be considered</td>
+    <td>Data is now stored in Bean classes that could be serialized automatically 
+      (Castor) or by hand (lighter).</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Batch uploading</td>
+    <td>P4</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td>Allow pictures to be uploaded using command-line tools, all in one go, 
+      using saved files (XML) containing the upload parameters.</td>
+    <td><p>Alternately, it could be interesting to allow more than one album to 
+        be viewed in the UI at the same time, and to set up uploads to more than 
+        one album.</p>
+      <p>Also see Explorer UI</p></td>
   </tr>
   <tr valign="top"> 
     <td>Shutdown after upload</td>
