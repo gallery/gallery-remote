@@ -87,6 +87,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	private static int[] capabilities5;
 	private static int[] capabilities7;
 	private static int[] capabilities9;
+	private static int[] capabilities13;
 
 
 	/* -------------------------------------------------------------------------
@@ -122,6 +123,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		capabilities9 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES};
+		capabilities13 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES,
+								  CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_NON_WRITEABLE_ALBUMS};
 
 		// the algorithm for search needs the ints to be sorted.
 		Arrays.sort(capabilities);
@@ -130,6 +135,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		Arrays.sort(capabilities5);
 		Arrays.sort(capabilities7);
 		Arrays.sort(capabilities9);
+		Arrays.sort(capabilities13);
 	}
 
 
@@ -185,9 +191,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		return newAlbumTask.getNewAlbumName();
 	}
 
-	public void fetchAlbumImages(StatusUpdate su, Album a, boolean async) {
+	public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async) {
 		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask(su,
-				a);
+				a, recusive);
 		doTask(fetchAlbumImagesTask, async);
 	}
 
@@ -490,7 +496,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		private void handleCapabilities() {
-			if (serverMinorVersion >= 9) {
+			if (serverMinorVersion >= 13) {
+				capabilities = capabilities13;
+			} else if (serverMinorVersion >= 9) {
 				capabilities = capabilities9;
 			} else if (serverMinorVersion >= 7) {
 				capabilities = capabilities7;
@@ -1068,10 +1076,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	class FetchAlbumImagesTask extends GalleryTask {
 		Album a;
+		boolean recursive = false;
 
-		FetchAlbumImagesTask(StatusUpdate su, Album a) {
+		FetchAlbumImagesTask(StatusUpdate su, Album a, boolean recursive) {
 			super(su);
+
 			this.a = a;
+			this.recursive = recursive;
 		}
 
 		void runTask() {
@@ -1079,12 +1090,33 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							new String[]{a.getName()}), true);
 
 			try {
+				ArrayList newPictures = new ArrayList();
+				fetch(a, a.getName(), newPictures);
+
+				a.setHasFetchedImages(true);
+				a.addPictures(newPictures);
+				GalleryRemote._().getCore().preloadThumbnails(newPictures.iterator());
+
+				su.stopProgress(StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "fetchAlbImagesDone",
+								new String[]{"" + newPictures.size()}));
+			} catch (GR2Exception e) {
+				error(su, GRI18n.getString(MODULE, "error", new String[] {e.getMessage()}));
+				su.stopProgress(StatusUpdate.LEVEL_GENERIC, e.getMessage());
+			}
+
+		}
+
+		private void fetch(Album a, String albumName, ArrayList newPictures)
+		throws GR2Exception {
+			try {
 				// setup the protocol parameters
-				NVPair form_data[] = {
+				NVPair[] form_data = new NVPair[] {
 					new NVPair("cmd", "fetch-album-images"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
-					new NVPair("set_albumName", a.getName())
+					new NVPair("set_albumName", albumName),
+					new NVPair("albums_too", recursive?"yes":"no")
 				};
+
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
 						Arrays.asList(form_data));
 
@@ -1097,62 +1129,60 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					int width;
 					int height;
 					ArrayList extraFields = a.getExtraFields();
-					ArrayList newPictures = new ArrayList();
 					for (int i = 1; i <= numImages; i++) {
-						Picture picture = new Picture();
-						picture.setOnline(true);
-						picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
-						width = p.getIntProperty("image.raw_width." + i);
-						height = p.getIntProperty("image.raw_height." + i);
-						picture.setSizeFull(new Dimension(width, height));
+						String subAlbumName = p.getProperty("album.name." + i);
 
-						String resizedName = p.getProperty("image.resizedName." + i);
-						if (resizedName != null) {
-							picture.setUrlResized(new URL(baseUrl + resizedName));
-							width = p.getIntProperty("image.resized_width." + i);
-							height = p.getIntProperty("image.resized_height." + i);
-							picture.setSizeResized(new Dimension(width, height));
-						}
+						if (subAlbumName != null) {
+							fetch(a, subAlbumName, newPictures);
+						} else {
+							Picture picture = new Picture();
+							picture.setOnline(true);
+							picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
+							width = p.getIntProperty("image.raw_width." + i);
+							height = p.getIntProperty("image.raw_height." + i);
+							picture.setSizeFull(new Dimension(width, height));
 
-						picture.setUrlThumbnail(new URL(baseUrl + p.getProperty("image.thumbName." + i)));
-						width = p.getIntProperty("image.thumb_width." + i);
-						height = p.getIntProperty("image.thumb_height." + i);
-						picture.setSizeThumbnail(new Dimension(width, height));
+							String resizedName = p.getProperty("image.resizedName." + i);
+							if (resizedName != null) {
+								picture.setUrlResized(new URL(baseUrl + resizedName));
+								width = p.getIntProperty("image.resized_width." + i);
+								height = p.getIntProperty("image.resized_height." + i);
+								picture.setSizeResized(new Dimension(width, height));
+							}
 
-						picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
-						picture.setCaption(p.getProperty("image.caption." + i));
+							picture.setUrlThumbnail(new URL(baseUrl + p.getProperty("image.thumbName." + i)));
+							width = p.getIntProperty("image.thumb_width." + i);
+							height = p.getIntProperty("image.thumb_height." + i);
+							picture.setSizeThumbnail(new Dimension(width, height));
 
-						if (extraFields != null) {
-							for (Iterator it = extraFields.iterator(); it.hasNext();) {
-								String name = (String) it.next();
-								String value = p.getProperty("image.extrafield." + name + "." + i);
+							picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
+							picture.setCaption(p.getProperty("image.caption." + i));
 
-								if (value != null) {
-									picture.setExtraField(name, value);
+							if (extraFields != null) {
+								for (Iterator it = extraFields.iterator(); it.hasNext();) {
+									String name = (String) it.next();
+									String value = p.getProperty("image.extrafield." + name + "." + i);
+
+									if (value != null) {
+										picture.setExtraField(name, value);
+									}
 								}
 							}
+
+							picture.setAlbumOnServer(a);
+							picture.setIndexOnServer(i - 1);
+
+							newPictures.add(picture);
 						}
-
-						picture.setAlbumOnServer(a);
-						picture.setIndexOnServer(i - 1);
-
-						newPictures.add(picture);
 					}
-
-					su.stopProgress(StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "fetchAlbImagesDone",
-									new String[]{"" + numImages}));
-
-					a.setHasFetchedImages(true);
-					a.addPictures(newPictures);
-					GalleryRemote._().getCore().preloadThumbnails(newPictures.iterator());
 				} else {
-					error(su, "Error: " + p.getProperty("status_text"));
+					throw new GR2Exception(p.getProperty("error"));
 				}
 
-			} catch (GR2Exception gr2e) {
+			/*} catch (GR2Exception gr2e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
 				Object[] params2 = {gr2e.getMessage()};
-				error(su, GRI18n.getString(MODULE, "error", params2));
+				error(su, GRI18n.getString(MODULE, "error", params2));*/
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 				Object[] params2 = {ioe.toString()};

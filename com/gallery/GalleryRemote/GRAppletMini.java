@@ -71,6 +71,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		album = new Album(gallery);
 		album.setName(info.albumName);
+		gallery.addAlbum(album);
 
 		jPicturesList.setModel(album);
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);

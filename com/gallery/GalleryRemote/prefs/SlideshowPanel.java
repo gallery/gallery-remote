@@ -117,7 +117,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		url.setToolTipText(GRI18n.getString(MODULE, "urlHelp"));
 
 		jLowRez.setText(GRI18n.getString(MODULE, "lowRez"));
-		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lewRezHelp"));
+		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lowRezHelp"));
 
 		this.add(delayPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));

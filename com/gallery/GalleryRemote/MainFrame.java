@@ -728,7 +728,7 @@ public class MainFrame extends JFrame
 	public void fetchAlbumImages() {
 		Log.log(Log.LEVEL_INFO, MODULE, "fetchAlbumImages starting");
 
-		getCurrentAlbum().fetchAlbumImages(jStatusBar);
+		getCurrentAlbum().fetchAlbumImages(jStatusBar, false);
 	}
 
 	public void newAlbum() {

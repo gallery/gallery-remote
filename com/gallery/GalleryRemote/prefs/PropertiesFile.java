@@ -38,7 +38,7 @@ public class PropertiesFile extends GalleryProperties {
 	protected boolean written = false;
 	protected String mFilename;
 	protected boolean readOnly = false;
-	
+
 	/**
 	 * Constructor for the PropertiesFile object
 	 * 
@@ -98,7 +98,7 @@ public class PropertiesFile extends GalleryProperties {
 	 * @param name The new filename value
 	 */
 	public synchronized void setFilename(String name) {
-		if (name.length() < 5 || name.length() - name.lastIndexOf('.') > 5) {
+		if (! name.endsWith(".lax") && ! name.endsWith(".properties")) {
 			mFilename = name + ".properties";
 		} else {
 			mFilename = name;

@@ -51,7 +51,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		album = new Album(gallery);
 		album.setName(info.albumName);
 
-		album.fetchAlbumImages(jStatusBar);
+		album.fetchAlbumImages(jStatusBar, true);
 	}
 
 	protected void jbInit() {

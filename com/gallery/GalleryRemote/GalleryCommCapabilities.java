@@ -39,4 +39,6 @@ public interface GalleryCommCapabilities {
 	public static final int CAPA_FORCE_FILENAME = 8;
 	public static final int CAPA_FETCH_ALBUM_IMAGES = 9;
 	public static final int CAPA_MOVE_ALBUM = 10;
+	public static final int CAPA_FETCH_ALBUMS_TOO = 11;
+	public static final int CAPA_FETCH_NON_WRITEABLE_ALBUMS = 12;
 }
