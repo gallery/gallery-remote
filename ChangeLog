@@ -1,6 +1,27 @@
+2003-06-04  Pierre-Luc Paour <gallery@paour.com> (1.1-b2)
+
+	* Added Upload, URLs, Proxy prefs panel.
+	* Time in the logs is now in ms since application launch.
+	* Sorted preferences files, for better readability.
+	* Now pre-loading thumbnails and accurate file size when opening
+	  saved state.
+	* Reworked the Gallery class for more consistency and robustness.
+	* Proxy panel is not yet functional.
+	* Logging on to a PostNuke-embedded Gallery fails (I need help with this).
+	* Fixed dialog centering code.
+
 2003-05-08  Pierre-Luc Paour <gallery@paour.com> (1.1-b1)
 
 	* Added first embryo of a preferences dialog.
+
+2003-05-25  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b6)
+
+	* When an auth error occurs, made the error message more informative.
+
+2003-05-09  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b5)
+
+	* No changes, just updated the automated build system to build the 1.0.x
+	  branch rather than the new 1.1.x branch.
 
 2003-05-06  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b4)
 
@@ -20,30 +41,30 @@
 	* GR no longer checks the version before actual login.
 
 2002-12-15  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b2)
-	
+
 	* Fixed selecting "Gallery main page" in the New Album dialog.
 
 2002-12-14  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b1)
-	
+
 	* Fixed dropping files when thumbnails are off.
 	* Fixed application closing problem.
 
 2002-11-11  Pierre-Luc Paour <gallery@paour.com> (1.0)
-	
+
 	* Changed icons and about box (thanks to Ross A. Reyman)
 	* Made the 'Log in' button a flip-flop to 'Log out'
 	* When adding a new album, pictures that were added to the list
 	  of pictures to upload are no longer forgotten.
 
 2002-11-10  Pierre-Luc Paour <gallery@paour.com> (1.0-b12)
-	
+
 	* Added protocol auto-detection.
 
 2002-11-02 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b11)
-	
+
 	* Added support for the "new-album" command to GalleryComm2.
 	* Corrected a small path problem in ImageUtils.
-	* Bumped GalleryComm2 protocol version to 2.1.	
+	* Bumped GalleryComm2 protocol version to 2.1.
 	* Added client UI support for creating new albums.
 	  The corresponding protocol support is not yet ready
 	  so the button will remain disabled.
@@ -51,15 +72,15 @@
 	  protocol 1 and using default album size with protocol 2.
 
 2002-10-19  Pierre-Luc Paour <gallery@paour.com> (1.0-b10)
-	
+
 	* Fixed adding a Gallery (broken in b9).
 	* Added undetermined progress bar to Fetch Albums.
 
 2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b9)
-	
-	* NOTE: GR CAN BE RUN IN GR PROTO 2 MODE BY CHANGING THE 
+
+	* NOTE: GR CAN BE RUN IN GR PROTO 2 MODE BY CHANGING THE
 	  protocolVersion IN THE PROPERTIES FILE.
-	  THIS WILL ALL PAN OUT WITH THE NEXT CHECKIN -- GR WILL DYNAMICALLY 
+	  THIS WILL ALL PAN OUT WITH THE NEXT CHECKIN -- GR WILL DYNAMICALLY
 	  BIND TO THE NEWEST SERVER PROTOCOL. FOR NOW, CAVEAT EMPTOR.
 	* Made GalleryComm and interface, moved GalleryComm implementation to
 	  GalleryComm1.java.
@@ -76,7 +97,7 @@
 	* Added support for Albums actually being in a tree (this is supported
 	  by proto version 2.
 	* Updated Gallery Remote proto version 2 document to describe
-	  user permission attributes (read, write, change, delete) on 
+	  user permission attributes (read, write, change, delete) on
 	  Album objects.
 	* paour: Added support for resizing images based on server autoResize
 	  size (only with protocol 2)
@@ -85,12 +106,12 @@
 	  will use the image filename by default.
 
 2002-10-03  Pierre-Luc Paour <gallery@paour.com> (1.0-b8)
-	
+
 	* Fixed another Java 1.3 bug where the Album combo box was not working
 
 2002-10-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b7)
-	
-	* Added image resize before upload (this requires ImageMagick and can be enabled by 
+
+	* Added image resize before upload (this requires ImageMagick and can be enabled by
 		changing the variables resizeTo and resizeBeforeUpload in
 		GalleryRemote.properties.
 	* Added automatic update notification for betas, too. Beta builds will come with
@@ -98,7 +119,7 @@
 		otherwise specified.
 
 2002-09-22  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
-	
+
 	* Added multi-album upload! Add pictures to different albums and click Upload
 		Albums.
 	* Almost complete rewrite of GalleryComm. Maybe it will be more robust, maybe
@@ -112,30 +133,30 @@
 	* Fixed bug 521237: non-unique album titles would confuse the Albums combo-box.
 
 2002-09-17  Pierre-Luc Paour <gallery@paour.com> (1.0-b5)
-	
+
 	* Corrected problems on JDK 1.3 with url combo box
 	* Added more logging for communications, in order to help detect comm problems.
 
 2002-09-09  Pierre-Luc Paour <gallery@paour.com> (1.0-b4, released as 1.0 preview)
-	
+
 	* Added a new version check at launch
 	* Added readme
 
 2002-09-02  Pierre-Luc Paour <gallery@paour.com> (1.0-b3)
-	
+
 	* Added multi-selection support to the PictureInspector. Fixed buttons.
 	* Switched to an Ant-based build system
 	* Fixed inspector state when deleting pictures
 	* Now saving multiple profiles for different Galleries (use the URL combo box)
 
 2002-09-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b2)
-	
+
 	* Now optionally using ImageMagick to load thumbnails and preview, for a 5x speedup
 	  and better memory management. In the future, we'll use IM to also
 	  offer client-side resize and rotate.
 
 2002-08-18  Pierre-Luc Paour <gallery@paour.com> (1.0-b1)
-	
+
 	* Reorganized storage of list of files to upload in preparation for XML serialization
 	* Reorganized preferences storage in preparation for preferences dialog
 	* Rewrote main frame UI for flexibility and robustness
@@ -143,14 +164,14 @@
 	* Added unix make and run shell scripts
 
 2002-08-06  Pierre-Luc Paour <gallery@paour.com> (0.4-b2)
-	
+
 	* Fixed bug 523219: protocol is no longer needed in gallery URL
 	* Fixed thumbnail loading when using the options menu to enable or disable thumbnails
 
 2002-07-30  Pierre-Luc Paour <gallery@paour.com> (0.4-b1)
-	
+
 	* Renewed development of Gallery Remote!
-	
+
 	* Added:
 		- preview window (enabled/disabled by showpreview property)
 		- thumbnails in the list (enabled disabled by showthumbnails property)
@@ -164,19 +185,19 @@
 		- disabling Drag&Drop while uploading; reorganized top frame (Dolan Halbrook)
 
 2001-11-21  Chris Smith <chris@jacko.com> (0.3)
-	
+
 	* v0.3 ships!
 
 2001-11-20  Chris Smith <chris@jacko.com> (0.3-b2)
-	
+
 	* App now remembers the last used Gallery URL, username and password.
-	
-	* Bug fixes: 
+
+	* Bug fixes:
 		- Trailing slash no longer required on Gallery URL.
-		- Fixed race condtion where if login took too long the ui 
+		- Fixed race condtion where if login took too long the ui
 		  thread would think that the upload was done and reset the
 		  file list before the upload thread got a chance to upload.
-		- Fetching Albums more than once will no longer append to the 
+		- Fetching Albums more than once will no longer append to the
 		  existing list.
 
 2001-11-14  Chris Smith <chris@jacko.com> (0.3-b1)
