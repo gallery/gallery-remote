@@ -459,6 +459,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			}
 
 			currentPicture.setCropTo(null);
+			cacheRect = null;
 			repaint();
 		}
 
@@ -469,6 +470,10 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void mousePressed(MouseEvent e) {
 			if (currentPicture == null || imageRect == null || currentPicture.isOnline()) {
 				return;
+			}
+
+			if (cacheRect == null) {
+				movingEdge = 0;
 			}
 
 			inDrag = true;
@@ -533,6 +538,10 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void mouseDragged(MouseEvent e) {
 			if (imageRect == null) {
 				return;
+			}
+
+			if (cacheRect == null) {
+				movingEdge = 0;
 			}
 
 			int modifiers = e.getModifiersEx();
@@ -621,6 +630,8 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 		public void mouseMoved(MouseEvent e) {
 			if (currentPicture == null || currentImage == null || currentPicture.isOnline() || cacheRect == null) {
+				movingEdge = 0;
+				setCursor(Cursor.getDefaultCursor());
 				return;
 			}
 
