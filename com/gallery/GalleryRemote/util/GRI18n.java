@@ -9,108 +9,107 @@ import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
-import java.io.*;
-import java.text.MessageFormat;
 import java.text.ChoiceFormat;
+import java.text.MessageFormat;
+import java.text.Format;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 
 public class GRI18n implements PreferenceNames {
-	private static final String RESNAME =
-		"com.gallery.GalleryRemote.resources.GRResources";
-	private static final String MODULE = "MainFrame";
+    private static final String RESNAME =
+            "com.gallery.GalleryRemote.resources.GRResources";
+    private static final String MODULE = "MainFrame";
 
-	private static GRI18n ourInstance;
-	private static double[] pluralsLimit = { 0, 1, 2 };
+    private static GRI18n ourInstance;
 
-	private Locale grLocale;
-	private ResourceBundle grResBundle;
-	private MessageFormat grMsgFrmt;
-	private ChoiceFormat grChoiceFrmt;
+    private Locale grLocale;
+    private ResourceBundle grResBundle;
+    private MessageFormat grMsgFrmt;
 
-	public synchronized static GRI18n getInstance() {
-		if (ourInstance == null) {
-			ourInstance = new GRI18n();
-		}
-		return ourInstance;
-	}
+    public static GRI18n getInstance() {
+        if (ourInstance == null) {
+            ourInstance = new GRI18n();
+        }
+        return ourInstance;
+    }
 
-	private GRI18n() {
-		String myLocale, myLang, myCountry;
-		myLocale =
-			GalleryRemote.getInstance().properties.getProperty(GR_LOCALE);
+    private GRI18n() {
+        String myLocale, myLang, myCountry;
+        myLocale =
+                GalleryRemote.getInstance().properties.getProperty(GR_LOCALE);
 
-		if (myLocale == null) {
-			grLocale = Locale.getDefault();
-		} else {
-			myLang = myLocale.substring(0, myLocale.indexOf("_"));
-			myCountry = myLocale.substring(myLocale.indexOf("_") + 1);
-			grLocale = new Locale(myLang, myCountry);
-		}
+        if (myLocale == null) {
+            grLocale = Locale.getDefault();
+        } else {
+            myLang = myLocale.substring(0, myLocale.indexOf("_"));
+            myCountry = myLocale.substring(myLocale.indexOf("_") + 1);
+            grLocale = new Locale(myLang, myCountry);
+        }
 
-		grMsgFrmt = new MessageFormat("");
-		setResBundle();
+        grMsgFrmt = new MessageFormat("");
+        setResBundle();
 
-	}
+    }
 
-	public void setLocale(String language, String country) {
-		grLocale = new Locale(language, country);
-		setResBundle();
-	}
+    public void setLocale(String language, String country) {
+        grLocale = new Locale(language, country);
+        setResBundle();
+    }
 
 
-	public String getString(String className, String key) {
-		String msg;
-		String extKey = className + "." + key;
-		try {
-			msg = grResBundle.getString(extKey);
-		} catch (NullPointerException e) {
-			Log.log(Log.ERROR, MODULE, "Key null error");
-			Log.logException(Log.ERROR, MODULE, e);
-			msg = "[NULLKEY]";
-		} catch (MissingResourceException e) {
-			Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
-			Log.logException(Log.INFO, MODULE, e);
-			msg = "[" + extKey + "]";
-		}
+    public String getString(String className, String key) {
+        String msg;
+        String extKey = className + "." + key;
+        try {
+            msg = grResBundle.getString(extKey);
+        } catch (NullPointerException e) {
+            Log.log(Log.ERROR, MODULE, "Key null error");
+            Log.logException(Log.ERROR, MODULE, e);
+            msg = "[NULLKEY]";
+        } catch (MissingResourceException e) {
+            Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
+            Log.logException(Log.INFO, MODULE, e);
+            msg = "[" + extKey + "]";
+        }
 
-		return msg;
+        return msg;
 
-	}
+    }
 
-	public String getString(String className, String key, Object[] params) {
-		String template, msg;
-		String extKey = className + "." + key;
-		try {
-			template = grResBundle.getString(extKey);
-			grMsgFrmt.applyPattern(template);
-			msg = grMsgFrmt.format(params);
-		} catch (NullPointerException e) {
-			Log.log(Log.ERROR, MODULE, "Key null error");
-			Log.logException(Log.ERROR, MODULE, e);
-			msg = "[NULLKEY]";
-		} catch (MissingResourceException e) {
-			Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
-			Log.logException(Log.INFO, MODULE, e);
-			msg = "[" + extKey + "]";
-		}
+    public String getString(String className, String key, Object[] params) {
+        String template, msg;
+        String extKey = className + "." + key;
+        try {
+            template = grResBundle.getString(extKey);
+            grMsgFrmt.applyPattern(template);
+            msg = grMsgFrmt.format(params);
+        } catch (NullPointerException e) {
+            Log.log(Log.ERROR, MODULE, "Key null error");
+            Log.logException(Log.ERROR, MODULE, e);
+            msg = "[NULLKEY]";
+        } catch (MissingResourceException e) {
+            Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
+            Log.logException(Log.INFO, MODULE, e);
+            msg = "[" + extKey + "]";
+        }
 
-		return msg;
-	}
+        return msg;
+    }
 
-	private void setResBundle() {
-		try {
-			grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
-		} catch (MissingResourceException e) {
-			Log.log(Log.ERROR, MODULE, "Resource bundle error");
-			Log.logException(Log.ERROR, MODULE, e);
-		}
 
-		grMsgFrmt.setLocale(grLocale);
+    private void setResBundle() {
+        try {
+            grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
+        } catch (MissingResourceException e) {
+            Log.log(Log.ERROR, MODULE, "Resource bundle error");
+            Log.logException(Log.ERROR, MODULE, e);
+        }
 
-	}
+        grMsgFrmt.setLocale(grLocale);
+
+    }
 
 
 }

@@ -29,6 +29,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.NumberFormat;
+import java.text.ChoiceFormat;
+import java.text.Format;
 import java.util.Collections;
 import java.lang.reflect.Method;
 
@@ -366,22 +368,22 @@ public class MainFrame extends javax.swing.JFrame
 
 					int selN = jPicturesList.getSelectedIndices().length;
 
-                    String statusMsg;
-                    Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
-                                        new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
 
 					if ( sel == -1 ) {
+                        Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
+                                            new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
 						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarNoSel", params ));
 					} else {
-						jStatusBar.setStatus("Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
-						+ NumberFormat.getInstance().format(
-						( (int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 ) )
-						+ " K" );
+                        Object [] params = {new Integer(selN),
+                                            grRes.getString(MODULE, (selN==1)?"oneSel":"manySel"),
+                                            new Integer((int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 )};
+
+						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarSel", params));
 					}
 				} else {
 					jPictureInspector.setPictures( null );
 
-					jStatusBar.setStatus("No selection" );
+					jStatusBar.setStatus(grRes.getString(MODULE, "noSelection"));
 				}
 		}});
 	}
@@ -440,7 +442,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Open a file selection dialog and load the corresponding files
 	 */
 	public void browseAddPictures() {
-		jStatusBar.setStatus("Select pictures to add to the list" );
+		jStatusBar.setStatus(grRes.getString(MODULE, "selPicToAdd") );
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
@@ -702,65 +704,60 @@ public class MainFrame extends javax.swing.JFrame
 		jPanel1.setLayout( new GridBagLayout() );
 		jLabel1.setText( grRes.getString(MODULE, "Gallery_URL") );
 		jLabel7.setText( grRes.getString(MODULE, "Select_Album") );
-		jLoginButton.setText( "Log in" );
-		jLoginButton.setToolTipText("Connect or disconnect from the selected Gallery. " +
-				"You can be connected to more than one Gallery simultaneously.");
+		jLoginButton.setText( grRes.getString(MODULE, "Log_in") );
+		jLoginButton.setToolTipText(grRes.getString(MODULE, "loginButtonTip") );
 		//jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );
 		jLoginButton.setIcon(iLogin);
-		jNewAlbumButton.setText("New Album..." );
-		jNewAlbumButton.setToolTipText("Create a new Album in the selected Gallery");
+		jNewAlbumButton.setText(grRes.getString(MODULE, "newAlbmBtnTxt"));
+		jNewAlbumButton.setToolTipText(grRes.getString(MODULE, "newAlbmBtnTip"));
 		//jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
 		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );
 		jUploadButton.setAlignmentX( (float) 2.0 );
-		jUploadButton.setText( "Upload pictures" );
+		jUploadButton.setText( grRes.getString(MODULE, "upldBtnTxt") );
 		jUploadButton.setActionCommand( "Upload" );
-		jUploadButton.setToolTipText( "Upload images that have been added to any and all " +
-				"albums, even if they are not currently showing" );
-		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
-		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
+		jUploadButton.setToolTipText( grRes.getString(MODULE, "upldBtnTip") );
+		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "inspDvdr") ) );
+		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
 		jBrowseButton.setAlignmentX( (float) 1.0 );
-		jBrowseButton.setText( "Add pictures..." );
+		jBrowseButton.setText( grRes.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand( "Browse" );
-		jBrowseButton.setToolTipText("Find images to add to the currently selected album.\n" +
-				"This button is disabled, if the currently selected album " +
-				"is read-only or you're not logged in.");
+		jBrowseButton.setToolTipText(grRes.getString(MODULE, "brwsBtnTip"));
 		jGalleryCombo.setActionCommand("Url");
-		jGalleryCombo.setToolTipText("Select a Gallery to which you want to log in");
+		jGalleryCombo.setToolTipText(grRes.getString(MODULE, "gllryCombo"));
 		gridLayout1.setHgap( 5 );
-		jMenuFile.setText( "File" );
-		jMenuItemQuit.setText( "Quit" );
+		jMenuFile.setText( grRes.getString(MODULE, "menuFile" ));
+		jMenuItemQuit.setText( grRes.getString(MODULE, "menuQuit" ));
 		jMenuItemQuit.setActionCommand( "File.Quit" );
 		jMenuItemQuit.setIcon(iQuit);
-		jMenuItemSave.setText( "Save..." );
+		jMenuItemSave.setText( grRes.getString(MODULE, "menuSave" ));
 		jMenuItemSave.setActionCommand( "File.Save" );
 		jMenuItemSave.setIcon(iSave);
-		jMenuItemPrefs.setText( "Preferences..." );
+		jMenuItemPrefs.setText( grRes.getString(MODULE, "menuPref"));
 		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
 		jMenuItemPrefs.setIcon(iPreferences);
-		jMenuItemOpen.setText( "Open..." );
+		jMenuItemOpen.setText( grRes.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuItemOpen.setIcon(iOpen);
-		jMenuHelp.setText( "Help" );
+		jMenuHelp.setText( grRes.getString(MODULE, "menuHelp") );
 		jMenuItemAbout.setActionCommand( "Help.About" );
-		jMenuItemAbout.setText( "About Gallery Remote..." );
+		jMenuItemAbout.setText( grRes.getString(MODULE, "menuAbout") );
 		jMenuItemAbout.setIcon(iAbout);
-		jMenuOptions.setText( "Options" );
+		jMenuOptions.setText( grRes.getString(MODULE, "menuOptions") );
 		jCheckBoxMenuThumbnails.setActionCommand( "Options.Thumbnails" );
-		jCheckBoxMenuThumbnails.setText( "Show Thumbnails" );
+		jCheckBoxMenuThumbnails.setText( grRes.getString(MODULE, "cbmenuThumb") );
 		jCheckBoxMenuPreview.setActionCommand( "Options.Preview" );
-		jCheckBoxMenuPreview.setText( "Show Preview" );
+		jCheckBoxMenuPreview.setText( grRes.getString(MODULE, "cbmenuPreview") );
 		jCheckBoxMenuPath.setActionCommand( "Options.Path" );
-		jCheckBoxMenuPath.setText( "Show Path" );
+		jCheckBoxMenuPath.setText( grRes.getString(MODULE, "cbmenuPath") );
 		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
-		jNewGalleryButton.setText("Add Gallery URL...");
+		jNewGalleryButton.setText(grRes.getString(MODULE, "newGalleryBtn"));
 		jNewGalleryButton.setActionCommand("NewGallery");
 		jNewGalleryButton.setIcon(iNewGallery);
 		jAlbumCombo.setActionCommand("Album");
-		jAlbumCombo.setToolTipText("Select an Album here and add pictures to it. The number in parenthesis " +
-				"after the name of the album is the number of pictures that you've added to it.");
+		jAlbumCombo.setToolTipText(grRes.getString(MODULE, "albumCombo"));
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
 		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
