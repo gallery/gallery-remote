@@ -100,7 +100,7 @@ public class PictureInspector extends JPanel
 		jLabel4.setText( "Caption:" );
 		jLabel8.setText( "Move:" );
 		jLabel1.setText( "Size:" );
-		jLabel2.setText("Delete:");
+		jLabel2.setText( "Delete:" );
 
 		jAlbum.setRows(0);
 		jAlbum.setText("");
@@ -126,6 +126,7 @@ public class PictureInspector extends JPanel
 		jUpButton.setMaximumSize(new Dimension( 120, 23 ) );
 		jUpButton.setMinimumSize( new Dimension( 120, 23 ) );
 		jUpButton.setPreferredSize( new Dimension( 120, 23 ) );
+		jUpButton.setToolTipText("Move selected picture up");
 		jUpButton.setText( "Move up" );
 		jUpButton.setActionCommand( "Up" );
 		jUpButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -133,6 +134,7 @@ public class PictureInspector extends JPanel
 		jDownButton.setMaximumSize(new Dimension( 120, 23 ) );
 		jDownButton.setMinimumSize( new Dimension( 120, 23 ) );
 		jDownButton.setPreferredSize( new Dimension( 120, 23 ) );
+		jDownButton.setToolTipText("Move selected picture down");
 		jDownButton.setText( "Move down" );
 		jDownButton.setActionCommand( "Down" );
 		jDownButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -140,6 +142,7 @@ public class PictureInspector extends JPanel
 		jDeleteButton.setMaximumSize(new Dimension( 120, 23 ) );
 		jDeleteButton.setMinimumSize(new Dimension( 120, 23 ) );
 		jDeleteButton.setPreferredSize(new Dimension( 120, 23 ) );
+		jDeleteButton.setToolTipText("Remove selected picture(s) from the album");
 		jDeleteButton.setActionCommand("Delete");
 		jDeleteButton.setHorizontalAlignment(SwingConstants.LEFT);
 		jDeleteButton.setText("Delete");
@@ -156,12 +159,16 @@ public class PictureInspector extends JPanel
 		jIcon.setText("icon");
 		jIcon.setVerticalTextPosition(SwingConstants.BOTTOM);
 		jRotateLeftButton.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		jRotateLeftButton.setToolTipText("Rotate the selected picture(s) 90° counter-clockwise");
 		jRotateLeftButton.setActionCommand("Left");
 		jRotateLeftButton.setIcon(MainFrame.iLeft);
 		jRotateRightButton.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		jRotateRightButton.setToolTipText("Rotate the selected picture(s) 90° clockwise");
 		jRotateRightButton.setActionCommand("Right");
 		jRotateRightButton.setIcon(MainFrame.iRight);
 		jFlipButton.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
+		jFlipButton.setToolTipText("Flip the selected picture(s) horizontally (before rotation, which " +
+				"may be surprising)");
 		jFlipButton.setActionCommand("Flip");
 		jFlipButton.setIcon(MainFrame.iFlip);
 
@@ -183,7 +190,7 @@ public class PictureInspector extends JPanel
 		add( jIconAreaPanel,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
 		jIconAreaPanel.add(jIcon,           new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jIconAreaPanel.add(jRotateLeftButton,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		jIconAreaPanel.add(jFlipButton,   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
