@@ -1,3 +1,12 @@
+2003-11-06  Pierre-Luc Paour <gallery@paour.com> (1.2-b14)
+
+	* Almost complete rewrite of drag and drop code, fixing all the known bugs
+	* Implemented cut-copy-paste for the list of pictures, so pictures can
+	  now at long last be moved between albums (before upload)!
+	* Fixed the QuickConfig preference not updating the other preference panels.
+	  The fix is to close the preference dialog after QuickConfig is used, to
+	  prevent conflicts.
+
 2003-11-03  Pierre-Luc Paour <gallery@paour.com> (1.2-b13)
 
 	* Better memory management for thumbnails and previews. Memory errors

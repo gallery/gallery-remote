@@ -56,14 +56,9 @@ public class GalleryRemote {
 	
 	private void run() {
 		try {
-			// For native Look and Feel, uncomment the following code.
-			/// *
 			try {
 				UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-			}
-			catch ( Exception e ) {
-			}
-			//* /
+			} catch ( Exception e ) {}
 			
 			// log system properties
 			new GalleryProperties(System.getProperties()).logProperties(Log.LEVEL_INFO, "SysProps");

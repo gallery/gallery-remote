@@ -21,12 +21,8 @@
 package com.gallery.GalleryRemote;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.datatransfer.Clipboard;
+import java.awt.event.*;
 import java.io.*;
 import java.text.NumberFormat;
 import java.text.ChoiceFormat;
@@ -82,6 +78,8 @@ public class MainFrame extends javax.swing.JFrame
 
 	public StatusBar jStatusBar = new StatusBar(this);
 
+	PictureSelection ps = null;
+
 	JPanel jPanel1 = new JPanel();
 	JMenuBar jMenuBar1 = new JMenuBar();
 	JLabel jLabel1 = new JLabel();
@@ -91,7 +89,7 @@ public class MainFrame extends javax.swing.JFrame
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
 	JScrollPane jScrollPane1 = new JScrollPane();
 
-	JList jPicturesList = new DroppableList();
+	DroppableList jPicturesList = new DroppableList();
 	JComboBox jAlbumCombo = new JComboBox();
 	JComboBox jGalleryCombo = new JComboBox();
 	JButton jNewGalleryButton = new JButton();
@@ -102,17 +100,24 @@ public class MainFrame extends javax.swing.JFrame
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
 	JButton jSortButton = new JButton();
+
 	JMenu jMenuFile = new JMenu();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 	JMenuItem jMenuItemSave = new JMenuItem();
 	JMenuItem jMenuItemOpen = new JMenuItem();
-	JMenuItem jMenuItemPrefs = new JMenuItem();
-	JMenu jMenuHelp = new JMenu();
-	JMenuItem jMenuItemAbout = new JMenuItem();
+
+	JMenu jMenuEdit = new JMenu();
+	JMenuItem jMenuItemCut = new JMenuItem();
+	JMenuItem jMenuItemCopy = new JMenuItem();
+	JMenuItem jMenuItemPaste = new JMenuItem();
+
 	JMenu jMenuOptions = new JMenu();
 	JCheckBoxMenuItem jCheckBoxMenuThumbnails = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPreview = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPath = new JCheckBoxMenuItem();
+	JMenuItem jMenuItemPrefs = new JMenuItem();
+	JMenu jMenuHelp = new JMenu();
+	JMenuItem jMenuItemAbout = new JMenuItem();
 
 	public static ImageIcon iLogin;
 	public static ImageIcon iNewGallery;
@@ -122,6 +127,9 @@ public class MainFrame extends javax.swing.JFrame
 	public static ImageIcon iPreferences;
 	public static ImageIcon iNewAlbum;
 	public static ImageIcon iQuit;
+	public static ImageIcon iCut;
+	public static ImageIcon iCopy;
+	public static ImageIcon iPaste;
 	public static ImageIcon iUp;
 	public static ImageIcon iDown;
 	public static ImageIcon iDelete;
@@ -188,6 +196,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void initComponents()
 		throws Exception {
+
 		try {
 			jbInit();
 			jbInitEvents();
@@ -199,11 +208,12 @@ public class MainFrame extends javax.swing.JFrame
 		setJMenuBar( jMenuBar1 );
 		setTitle( "Gallery Remote" );
 
+		jPicturesList.setMainFrame( this );
 		jPicturesList.setCellRenderer( new FileCellRenderer() );
-		( (DroppableList) jPicturesList ).setMainFrame( this );
-
+		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+		jPicturesList.setInputMap(JComponent.WHEN_FOCUSED, null);
+		jPicturesList.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, null);
 		jPictureInspector.setMainFrame( this );
-
 
 		setGalleries(galleries);
 
@@ -471,54 +481,56 @@ public class MainFrame extends javax.swing.JFrame
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
-			addPictures( files );
+			addPictures( files, false);
 		}
-
-		//resetUIState();
 	}
 
-	/**
-	*  Adds a feature to the Pictures attribute of the MainFrame object
-	*
-	*@param  files  The feature to be added to the Pictures attribute
-	*/
-	public void addPictures( File[] files ) {
-		addPictures( files, -1 );
-		//resetUIState();
+	public void addPictures( File[] files, boolean select) {
+		addPictures( files, -1, select);
 	}
 
-
-	/**
-	 *  Adds a feature to the Pictures attribute of the MainFrame object
-	 *
-	 *@param  files  The feature to be added to the Pictures attribute
-	 *@param  index  The index in the list of Pictures at which to begin adding
-	 */
-	public void addPictures( File[] files, int index ) {
+	public void addPictures( File[] files, int index, boolean select) {
 		if (index == -1) {
 			getCurrentAlbum().addPictures( files );
 		} else {
 			getCurrentAlbum().addPictures( files, index );
 		}
-		/*Arrays.sort( items,
-				new Comparator()
-				{
-					public int compare( Object o1, Object o2 )
-					{
-						String f1 = ( (File) o1 ).getAbsolutePath();
-						String f2 = ( (File) o2 ).getAbsolutePath();
-						return ( f1.compareToIgnoreCase( f2 ) );
-					}
-					public boolean equals( Object o1, Object o2 )
-					{
-						String f1 = ( (File) o1 ).getAbsolutePath();
-						String f2 = ( (File) o2 ).getAbsolutePath();
-						return ( f1.equals( f2 ) );
-					}
-				} );*/
+
 		thumbnailCache.preloadThumbnailFiles( files );
 
-		//resetUIState();
+		if (select) {
+			selectAddedPictures(files, index);
+		}
+	}
+
+	public void addPictures( Picture[] pictures, boolean select) {
+		addPictures( pictures, -1, select );
+	}
+
+	public void addPictures( Picture[] pictures, int index, boolean select) {
+		if (index == -1) {
+			getCurrentAlbum().addPictures( pictures );
+		} else {
+			getCurrentAlbum().addPictures( pictures, index );
+		}
+
+		if (select) {
+			selectAddedPictures(pictures, index);
+		}
+	}
+
+	private void selectAddedPictures(Object[] objects, int index) {
+		int[] indices = new int[objects.length];
+
+		if (index == -1) {
+			index = getCurrentAlbum().getSize() - 1;
+		}
+
+		for (int i = 0; i < objects.length; i++) {
+			indices[i] = index + i;
+		}
+
+		jPicturesList.setSelectedIndices(indices);
 	}
 
 
@@ -785,6 +797,23 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}
 
+	public void doCut() {
+		doCopy();
+		deleteSelectedPictures();
+	}
+
+	public void doCopy() {
+		if (jPicturesList.isEnabled() && jPicturesList.getSelectedIndices().length > 0) {
+			ps = new PictureSelection(jPicturesList);
+		}
+	}
+
+	public void doPaste() {
+		if (jPicturesList.isEnabled() && ps != null && !ps.isEmpty()) {
+			getCurrentAlbum().addPictures((Picture[]) ps.toArray(new Picture[0]), jPicturesList.getSelectedIndex());
+		}
+	}
+
 
 	private void jbInit()
 		throws Exception {//{{{
@@ -820,23 +849,35 @@ public class MainFrame extends javax.swing.JFrame
 		jGalleryCombo.setActionCommand("Url");
 		jGalleryCombo.setToolTipText(grRes.getString(MODULE, "gllryCombo"));
 		gridLayout1.setHgap( 5 );
+
 		jMenuFile.setText( grRes.getString(MODULE, "menuFile" ));
-		jMenuItemQuit.setText( grRes.getString(MODULE, "menuQuit" ));
-		jMenuItemQuit.setActionCommand( "File.Quit" );
-		jMenuItemQuit.setIcon(iQuit);
 		jMenuItemSave.setText( grRes.getString(MODULE, "menuSave" ));
 		jMenuItemSave.setActionCommand( "File.Save" );
 		jMenuItemSave.setIcon(iSave);
-		jMenuItemPrefs.setText( grRes.getString(MODULE, "menuPref"));
-		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
-		jMenuItemPrefs.setIcon(iPreferences);
+		jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		jMenuItemOpen.setText( grRes.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuItemOpen.setIcon(iOpen);
-		jMenuHelp.setText( grRes.getString(MODULE, "menuHelp") );
-		jMenuItemAbout.setActionCommand( "Help.About" );
-		jMenuItemAbout.setText( grRes.getString(MODULE, "menuAbout") );
-		jMenuItemAbout.setIcon(iAbout);
+		jMenuItemOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		jMenuItemQuit.setText( grRes.getString(MODULE, "menuQuit" ));
+		jMenuItemQuit.setActionCommand( "File.Quit" );
+		jMenuItemQuit.setIcon(iQuit);
+		jMenuItemQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+
+		jMenuEdit.setText( grRes.getString(MODULE, "menuEdit" ));
+		jMenuItemCut.setText( grRes.getString(MODULE, "menuCut" ));
+		jMenuItemCut.setActionCommand( "Edit.Cut" );
+		jMenuItemCut.setIcon(iCut);
+		jMenuItemCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+		jMenuItemCopy.setText( grRes.getString(MODULE, "menuCopy" ));
+		jMenuItemCopy.setActionCommand( "Edit.Copy" );
+		jMenuItemCopy.setIcon(iCopy);
+		jMenuItemCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+		jMenuItemPaste.setText( grRes.getString(MODULE, "menuPaste" ));
+		jMenuItemPaste.setActionCommand( "Edit.Paste" );
+		jMenuItemPaste.setIcon(iPaste);
+		jMenuItemPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+
 		jMenuOptions.setText( grRes.getString(MODULE, "menuOptions") );
 		jCheckBoxMenuThumbnails.setActionCommand( "Options.Thumbnails" );
 		jCheckBoxMenuThumbnails.setText( grRes.getString(MODULE, "cbmenuThumb") );
@@ -844,6 +885,15 @@ public class MainFrame extends javax.swing.JFrame
 		jCheckBoxMenuPreview.setText( grRes.getString(MODULE, "cbmenuPreview") );
 		jCheckBoxMenuPath.setActionCommand( "Options.Path" );
 		jCheckBoxMenuPath.setText( grRes.getString(MODULE, "cbmenuPath") );
+		jMenuItemPrefs.setText( grRes.getString(MODULE, "menuPref"));
+		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
+		jMenuItemPrefs.setIcon(iPreferences);
+
+		jMenuHelp.setText( grRes.getString(MODULE, "menuHelp") );
+		jMenuItemAbout.setActionCommand( "Help.About" );
+		jMenuItemAbout.setText( grRes.getString(MODULE, "menuAbout") );
+		jMenuItemAbout.setIcon(iAbout);
+
 		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		jNewGalleryButton.setText(grRes.getString(MODULE, "newGalleryBtn"));
 		jNewGalleryButton.setActionCommand("NewGallery");
@@ -880,6 +930,7 @@ public class MainFrame extends javax.swing.JFrame
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
 
 		jMenuBar1.add( jMenuFile );
+		jMenuBar1.add( jMenuEdit );
 		jMenuBar1.add( jMenuOptions );
 		jMenuBar1.add( jMenuHelp );
 
@@ -900,6 +951,10 @@ public class MainFrame extends javax.swing.JFrame
 
 			jMenuHelp.add( jMenuItemAbout );
 		}
+
+		jMenuEdit.add( jMenuItemCut );
+		jMenuEdit.add( jMenuItemCopy );
+		jMenuEdit.add( jMenuItemPaste );
 
 		jMenuOptions.add( jCheckBoxMenuThumbnails );
 		jMenuOptions.add( jCheckBoxMenuPreview );
@@ -925,6 +980,9 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuItemOpen.addActionListener( this );
 		jMenuItemQuit.addActionListener( this );
 		jMenuItemAbout.addActionListener( this );
+		jMenuItemCut.addActionListener( this );
+		jMenuItemCopy.addActionListener( this );
+		jMenuItemPaste.addActionListener( this );
 
 		jCheckBoxMenuThumbnails.addItemListener( this );
 		jCheckBoxMenuPreview.addItemListener( this );
@@ -937,15 +995,13 @@ public class MainFrame extends javax.swing.JFrame
 		jPicturesList.addListSelectionListener( this );
 
 		addWindowListener(
-			new java.awt.event.WindowAdapter()
-			{
+			new java.awt.event.WindowAdapter() {
 				public void windowClosing( java.awt.event.WindowEvent e ) {
 					thisWindowClosing( e );
 				}
 			} );
 		jPicturesList.addKeyListener(
-			new KeyAdapter()
-			{
+			new KeyAdapter() {
 				public void keyPressed( KeyEvent e ) {
 					jListKeyPressed( e );
 				}
@@ -970,6 +1026,12 @@ public class MainFrame extends javax.swing.JFrame
 			saveState();
 		} else if ( command.equals( "File.Open" ) ) {
 			openState();
+		} else if ( command.equals( "Edit.Cut" ) ) {
+			doCut();
+		} else if ( command.equals( "Edit.Copy" ) ) {
+			doCopy();
+		} else if ( command.equals( "Edit.Paste" ) ) {
+			doPaste();
 		} else if ( command.equals( "Options.Prefs" ) ) {
 			showPreferencesDialog();
 		} else if ( command.equals( "Help.About" ) ) {
@@ -1338,6 +1400,9 @@ public class MainFrame extends javax.swing.JFrame
 			iOpen = new ImageIcon(MainFrame.class.getResource("/Open16.gif"));
 			iPreferences = new ImageIcon(MainFrame.class.getResource("/Preferences16.gif"));
 			iQuit = new ImageIcon(MainFrame.class.getResource("/Stop16.gif"));
+			iCut = new ImageIcon(MainFrame.class.getResource("/Cut16.gif"));
+			iCopy = new ImageIcon(MainFrame.class.getResource("/Copy16.gif"));
+			iPaste = new ImageIcon(MainFrame.class.getResource("/Paste16.gif"));
 
 			iNewGallery = new ImageIcon(MainFrame.class.getResource("/WebComponentAdd16.gif"));
 			iLogin = new ImageIcon(MainFrame.class.getResource("/WebComponent16.gif"));

@@ -182,7 +182,7 @@ public class Album extends Picture implements ListModel, Serializable
 	public void addPictures( File[] files ) {
 		addPictures(files, -1);
 	}
-        
+
     /**
 	 *  Adds pictures to the album at a specified index
 	 *
@@ -197,6 +197,35 @@ public class Album extends Picture implements ListModel, Serializable
 				addPictureInternal( p );
 			} else {
 				addPictureInternal( index++, p );
+			}
+		}
+
+		notifyListeners();
+	}
+
+	/**
+	 *  Adds picturesA to the album
+	 *
+	 *@param  picturesA the picturesA
+	 */
+	public void addPictures( Picture[] picturesA ) {
+		addPictures(picturesA, -1);
+	}
+
+    /**
+	 *  Adds pictures to the album at a specified index
+	 *
+	 *@param  pictures  the pictures
+     *@param  index  the index in the list at which to begin adding
+	 */
+	public void addPictures( Picture[] picturesA, int index ) {
+		for ( int i = 0; i < picturesA.length; i++ ) {
+			Picture p = picturesA[i];
+			p.setAlbum( this );
+			if (index == -1) {
+				pictures.add(p);
+			} else {
+				pictures.add( index++, p );
 			}
 		}
 

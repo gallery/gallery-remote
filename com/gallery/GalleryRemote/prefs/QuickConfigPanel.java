@@ -109,6 +109,8 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 				overridden.append("</ul>");
 
 				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "confLoaded")+ overridden.toString() + "</html>", grRes.getString(MODULE, "done"), JOptionPane.PLAIN_MESSAGE);
+
+				dialog.setVisible(false);
 			} else {
 				JOptionPane.showMessageDialog(this, grRes.getString(MODULE, "emptyConfFile"), "Error", JOptionPane.ERROR_MESSAGE);
 			}

@@ -20,9 +20,7 @@
  */
 package com.gallery.GalleryRemote;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -58,17 +56,17 @@ import com.gallery.GalleryRemote.util.GRI18n;
  *@author     paour
  *@created    August 16, 2002
  */
-public class DroppableList extends JList
-		 implements DropTargetListener, DragSourceListener, DragGestureListener {
-	private final static String MODULE = "Droplist";
-    private static GRI18n grRes = GRI18n.getInstance();
+public class DroppableList
+		extends JList implements DropTargetListener, DragSourceListener, DragGestureListener {
 
+	protected final static String MODULE = "Droplist";
+	protected static GRI18n grRes = GRI18n.getInstance();
 	MainFrame mf = null;
+
 	DragSource dragSource;
 	DropTarget dropTarget;
-	PictureSelection ps;
 	int lastY = -1;
-
+	int scrollPace = 0;
 
 	public DroppableList() {
 		dragSource = new DragSource();
@@ -76,82 +74,71 @@ public class DroppableList extends JList
 		dropTarget = new DropTarget( this, this );
 	}
 
-	public void setMainFrame( MainFrame mf ) {
-		this.mf = mf;
-	}
-	
-	int safeGetFixedCellHeight() {
-		int height = getFixedCellHeight();
-		if (height == -1) {
-			height = (int) getCellRenderer()
-				.getListCellRendererComponent(this, null, -1, false, false)
-				.getPreferredSize().getHeight();
-		}
-		
-		return height;
-	}
-
-	public int snap( int y ) {
-		return snapIndex( y ) * safeGetFixedCellHeight();
-	}
-
-	public int snapIndex( int y ) {
-		int height = safeGetFixedCellHeight();
-
-		int row = (int) Math.floor( ( (float) y / height ) + .5 );
-		if ( row > getModel().getSize() ) {
-			row = getModel().getSize();
-		}
-
-		return row;
-	}
-
 	public void paint( Graphics g ) {
 		lastY = -1;
 		super.paint( g );
 	}
 
+	public boolean isDragOK(DropTargetEvent dropTargetEvent) {
+		if (!isEnabled()) {
+			return false;
+		}
+
+		if (dropTargetEvent instanceof DropTargetDragEvent) {
+			return ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+					|| ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+		} else {
+			return ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+					|| ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(PictureSelection.flavors[0]);
+		}
+	}
 
 	/* ********* TargetListener ********** */
 	public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "dragEnter - dtde" );
-		if ( isEnabled() ) {
-			dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
-		} else {
+		if (! isDragOK(dropTargetDragEvent)) {
 			dropTargetDragEvent.rejectDrag( );
+			return;
 		}
+
+		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
 	}
 
 	public void dragExit( DropTargetEvent dropTargetEvent ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "dragExit - dtde" );
-		
-		if ( ps != null ) {
-			//add pictures back
-			Log.log( Log.LEVEL_INFO, MODULE, "dragging internal selection out..." );
-			try {
-				java.util.List fileList = (java.util.List) ps.getTransferData( DataFlavor.javaFileListFlavor );
-				if ( !ps.isEmpty() ) {
-					mf.addPictures( (File[]) fileList.toArray( new File[0] ) );
-				}
-				//kill dragEvent
-				//need to figure out why MainFrame becomes dropTarget for internal drops??!!
-			} catch ( Exception e ) {
-				Log.log( Log.LEVEL_INFO, MODULE, "coudn't kill drag " + e );
-			}
-		}
-		ps = null;
-		
+
 		repaint();
 	}
 
 	public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
 		//Log.log(Log.TRACE, MODULE,"dragOver - dtde");
-		if ( isEnabled() ) {
-			dragOver( (int) dropTargetDragEvent.getLocation().getY() );
+		if ( ! isDragOK(dropTargetDragEvent) ) {
+			dropTargetDragEvent.rejectDrag( );
+			return;
 		}
+
+		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
+		dragOver( (int) dropTargetDragEvent.getLocation().getY() );
 	}
 
 	public void dragOver( int y ) {
+		int i = locationToIndex(new Point(1, y));
+		Rectangle r = getVisibleRect();
+		boolean scrolled = false;
+
+		if (y < r.getY() + safeGetFixedCellHeight() && i > 0) {
+			int tmpLastY = lastY;
+			ensureIndexIsVisible(i - 1);
+			lastY = tmpLastY;
+			scrolled = true;
+		}
+		if (y > r.getY() + r.getHeight() - safeGetFixedCellHeight() && i < getModel().getSize() - 1) {
+			int tmpLastY = lastY;
+			ensureIndexIsVisible(i + 1);
+			lastY = tmpLastY;
+			scrolled = true;
+		}
+
 		Graphics g = getGraphics();
 		g.setXORMode( Color.cyan );
 		int xStart = 10;
@@ -167,22 +154,38 @@ public class DroppableList extends JList
 		int ySnap = snap( lastY );
 		g.drawLine( xStart, ySnap, xStop, ySnap );
 		g.drawLine( xStart, ySnap + 1, xStop, ySnap + 1 );
+
+		if (scrolled) {
+			scrollPace++;
+
+			try {
+				Thread.sleep(scrollPace > 5 ? 10 : 200);
+			} catch (InterruptedException e) {	}
+		} else {
+			scrollPace = 0;
+		}
 	}
 
 	public synchronized void drop( DropTargetDropEvent dropTargetDropEvent ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "drop - dtde" );
 		
-		if ( !isEnabled() ) {
-			// for some reason this crappy system doesn't take rejectDrag for an answer
+		if ( ! isDragOK(dropTargetDropEvent) ) {
+			dropTargetDropEvent.rejectDrop();
 			return;
 		}
-		
+
 		try {
 			Transferable tr = dropTargetDropEvent.getTransferable();
-			if ( tr.isDataFlavorSupported( DataFlavor.javaFileListFlavor ) ) {
-				dropTargetDropEvent.acceptDrop(
-						DnDConstants.ACTION_COPY_OR_MOVE );
-				java.util.List fileList = (java.util.List)
+
+			dropTargetDropEvent.acceptDrop(
+					DnDConstants.ACTION_COPY_OR_MOVE );
+
+			//thanks John Zukowski
+			Point dropLocation = dropTargetDropEvent.getLocation();
+			int listIndex = snapIndex( (int) dropLocation.getY() );
+
+			if (tr.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+				List fileList = (List)
 						tr.getTransferData( DataFlavor.javaFileListFlavor );
 
 				/* recursively add contents of directories */
@@ -198,88 +201,76 @@ public class DroppableList extends JList
 							JOptionPane.ERROR_MESSAGE );
 				}
 
-				//thanks John Zukowski
-				Point dropLocation = dropTargetDropEvent.getLocation();
-				int listIndex = snapIndex( (int) dropLocation.getY() );
+				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to list at index " + listIndex );
 
-				Log.log( Log.LEVEL_TRACE, MODULE, "Adding new image(s) to list at index " + listIndex );
-
-				mf.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
-
-				dropTargetDropEvent.getDropTargetContext().dropComplete( true );
+				mf.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex, false);
 			} else {
-				Log.log( Log.LEVEL_TRACE, MODULE, "rejecting drop: javaFileListFlavor is not supported for this data" );
-				dropTargetDropEvent.rejectDrop();
+				List pictureList = (List)
+						tr.getTransferData( PictureSelection.flavors[0] );
+
+				Log.log( Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to list at index " + listIndex );
+
+				mf.addPictures( (Picture[]) pictureList.toArray( new Picture[0] ), listIndex, true);
 			}
+
+			dropTargetDropEvent.getDropTargetContext().dropComplete( true );
 		} catch ( IOException io ) {
-			io.printStackTrace();
-			dropTargetDropEvent.rejectDrop();
+			Log.logException(Log.LEVEL_ERROR, MODULE, io);
+			dropTargetDropEvent.getDropTargetContext().dropComplete( false );
 		} catch ( UnsupportedFlavorException ufe ) {
-			ufe.printStackTrace();
-			dropTargetDropEvent.rejectDrop();
+			Log.logException(Log.LEVEL_ERROR, MODULE, ufe);
+			dropTargetDropEvent.getDropTargetContext().dropComplete( false );
 		}
 	}
 
 	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "dropActionChanged - dtde" );
+		if ( ! isDragOK(dropTargetDragEvent) ) {
+			dropTargetDragEvent.rejectDrag();
+			return;
+		}
+
+		dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
 	}
 
 	
 	/* ********* DragSourceListener ********** */
 	public void dragDropEnd( DragSourceDropEvent dragSourceDropEvent ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "dragDropEnd - dsde" );
+
+		if (dragSourceDropEvent.getDropSuccess() && dragSourceDropEvent.getDropAction() == DnDConstants.ACTION_MOVE) {
+			PictureSelection ps = (PictureSelection) dragSourceDropEvent.getDragSourceContext().getTransferable();
+
+			for (Iterator it = ps.iterator(); it.hasNext();) {
+				mf.getCurrentAlbum().removePicture((Picture) it.next());
+			}
+		}
 	}
 
-	public void dragEnter( DragSourceDragEvent dragSourceDragEvent ) {
-		/*Log.log(Log.TRACE, MODULE,"dragEnter - dsde");
-		lastY = -1;*/
-	}
+	public void dragEnter( DragSourceDragEvent dragSourceDragEvent ) {}
 
-	public void dragExit( DragSourceEvent dragSourceEvent ) {
-		/*Log.log(Log.TRACE, MODULE,"dragExit - dse");
-		lastY = -1;*/
-	}
+	public void dragExit( DragSourceEvent dragSourceEvent ) {}
 
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  dragSourceDragEvent  Description of Parameter
-	 */
-	public void dragOver( DragSourceDragEvent dragSourceDragEvent ) {
-		//Log.log(Log.TRACE, MODULE,"dragOver - dsde");
-		//dragOver((int) dragSourceDragEvent.getLocation().getY());
-	}
+	public void dragOver( DragSourceDragEvent dragSourceDragEvent ) {}
 
 	public void dropActionChanged( DragSourceDragEvent dragSourceDragEvent ) { }
-
 
 	/* ********* DragGestureListener ********** */
 	public void dragGestureRecognized( DragGestureEvent event ) {
 		Log.log( Log.LEVEL_TRACE, MODULE, "dragGestureRecognized" );
-		int[] selIndices = this.getSelectedIndices();
-		ps = new PictureSelection();
-		for ( int i = 0; i < selIndices.length; i++ ) {
-			int selIndex = selIndices[i];
-			if ( selIndex != -1 ) {
-				Picture p = (Picture) this.getModel().getElementAt( selIndex );
-				ps.add( p );
-			}
-		}
+		PictureSelection ps = new PictureSelection(this);
 
 		//pull out existing pictures
 		if ( !ps.isEmpty() ) {
 			dragSource.startDrag( event, DragSource.DefaultMoveDrop, ps, this );
-			mf.deleteSelectedPictures();
 		} else {
 			Log.log( Log.LEVEL_TRACE, MODULE, "nothing was selected" );
 		}
-
 	}
 
 
 	/* ********* Utilities ********** */
-	List expandDirectories( java.util.List filesAndFolders )
+	List expandDirectories( List filesAndFolders )
 		throws IOException {
 		ArrayList allFilesList = new ArrayList();
 
@@ -295,7 +286,6 @@ public class DroppableList extends JList
 
 		return allFilesList;
 	}
-
 
 	static List listFilesRecursive( File dir )
 		throws IOException {
@@ -330,5 +320,34 @@ public class DroppableList extends JList
 
 		return ret;
 	}
-}
 
+	public void setMainFrame( MainFrame mf ) {
+		this.mf = mf;
+	}
+
+	int safeGetFixedCellHeight() {
+		int height = getFixedCellHeight();
+		if (height == -1) {
+			height = (int) getCellRenderer()
+				.getListCellRendererComponent(this, null, -1, false, false)
+				.getPreferredSize().getHeight();
+		}
+
+		return height;
+	}
+
+	public int snap( int y ) {
+		return snapIndex( y ) * safeGetFixedCellHeight();
+	}
+
+	public int snapIndex( int y ) {
+		int height = safeGetFixedCellHeight();
+
+		int row = (int) Math.floor( ( (float) y / height ) + .5 );
+		if ( row > getModel().getSize() ) {
+			row = getModel().getSize();
+		}
+
+		return row;
+	}
+}

@@ -38,7 +38,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
  *@author     paour
  *@created    11 août 2002
  */
-public class Picture extends GalleryAbstractListModel implements Serializable, PreferenceNames {
+public class Picture extends GalleryAbstractListModel implements Serializable, PreferenceNames, Cloneable {
 	public static final String MODULE="Picture";
 
     File source = null;
@@ -68,8 +68,23 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
     public Picture( File source ) {
         setSource( source );
     }
-    
-    
+
+	public Object clone() {
+		Picture clone = new Picture();
+		clone.source = source;
+		clone.caption = caption;
+		clone.album = album;
+		clone.extraFields = extraFields;
+		clone.angle = angle;
+		clone.flipped = flipped;
+		clone.suppressServerAutoRotate = suppressServerAutoRotate;
+		clone.fileSize = fileSize;
+		clone.escapedCaption = escapedCaption;
+
+		return clone;
+	}
+
+
     /**
      *  Sets the source file the Picture is based on
      *
