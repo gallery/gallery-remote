@@ -2,24 +2,47 @@
 <html>
 <head>
 <title>Gallery Remote Protocol version 2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<style type="text/css">
+h1 { font-family: sans-serif; font-size: 17pt; font-weight: bold; }
+h2 { font-family: sans-serif; font-size: 14pt; font-weight: bold; }
+h3 { font-family: sans-serif; font-size: 12pt; font-weight: bold; }
+h4 { font-family: sans-serif; font-size: 11pt; font-weight: bold; }
+p,ol,ul,body{ font-family: serif; font-size: 11pt; }
+li { font-family: serif; font-size: 11pt; margin: 4px; }
+.since { background-color: #FFcccc; color: #FF0000; }
+samp { font-family: monospace; color: #0000aa; background-color: #FFFF99; }
+body { background-color: #FFFFFF; margin: 8px; }
+hr { color: black; height: 1px; width: 100%; }
+table { border-style: solid; border-width: 1px; border-color: black; margin: 20px;  }
+td {
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	padding: 9px; }
+img { border-width: 0px; }
+</style>
 </head>
 <body>
+
 <h1>Gallery Remote Protocol version 2</h1>
 
 <p><cite>Tim Miller</cite> &lt;<a href="mailto:tim_miller at users.sourceforge.net">tim_miller 
   at users dot sourceforge dot net</a>&gt;<br>
   <cite>Pierre-Luc Paour</cite> &lt;<a href="mailto:paour at users.sourceforge.net">paour 
   at users dot sourceforge dot net</a>&gt;</p>
-<p>This document describes the new <a href="http://gallery.menalto.com/">gallery</a> 
-  remote application protocol, which is layered over HTTP, as of version 1.3.2 
-  of gallery.</p>
-<p>Also see documentation of the <a href="gal_remote_proto-1.html">previous version</a> 
-  of the protocol.</p>
+
+<hr>
+
+<h2><a name="toc" />Contents</h2>  
 
 <ul>
-  <li><a href="#summary">Summary</a></li>
-  <li><a href="#requests">Requests</a></li>
-  <li><a href="#commands">Commands</a> 
+  <li>1. <a href="#intro">Introduction</a></li>
+  <li>2. <a href="#overview">Overview</a></li>
+  <li>3. <a href="#interaction">Client-Server Interaction</a></li>
+  <li>4. <a href="#requests">Requests</a></li>
+  <li>5. <a href="#responses">Responses</a></li>
+  <li>6. <a href="#commands">Commands</a> 
     <ol>
       <li><a href="#login"><samp>login</samp> command</a></li>
       <li><a href="#fetch-albums"><samp>fetch-albums</samp> command</a></li>
@@ -27,95 +50,112 @@
       <li><a href="#album-info"><samp>album-info</samp> command</a></li>
     </ol>
   </li>
+  <li>Appendix A: <a href="#appendix_a">Response Status Codes</a></li>
 </ul>
 
 <hr>
 
-<h2><a name="summary" />Summary</h2>
+<h2><a name="intro" />1. Introduction</h2>  
 
-<p>Gallery remote queries and sends information from a gallery installation through 
+<p>This document describes the new <a href="http://gallery.menalto.com/">Gallery</a> 
+  remote application protocol, which is layered over HTTP, as of version 1.3.2 
+  of Gallery.</p>
+<p>Also see documentation of the <a href="gal_remote_proto-1.html">previous version</a> 
+  of the protocol.</p>
+  
+
+
+<hr>
+
+<h2><a name="overview" />2. Overview</h2>
+
+<p>Gallery remote queries and sends information from a Gallery installation through 
   a protcol based on HTTP and form-data. The protocol leverages the same user 
   authentication (and session cookies) as the web/HTML interface to the site. 
-  It is implemented in one PHP source file, <samp><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote2.php?rev=1.6&content-type=text/vnd.viewcvs-markup">gallery_remote2.php</a></samp>.</p>
+  It is implemented in the PHP source file <samp><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote2.php?rev=1.6&content-type=text/vnd.viewcvs-markup">gallery_remote2.php</a></samp>.</p>
 
-<p>Every query from client to server corresponds to one action.  Multiple actions require multiple HTTP requests.</p>
+<p>Each query from client to server corresponds to one action.  Multiple actions require multiple HTTP requests.</p>
 
-<p>The protocol is stateful; the client must acquire the gallery session cookie by performing a login request before any other requests will succeed.</p>
+<p>The protocol is stateful; the client must acquire the Gallery session cookie by performing a login request before any other requests will succeed.</p>
 
 <p>Permissions for actions performed by gallery_remote2.php are controlled in 
   the same way they are controlled for regular web/HTML users. <samp>init.php</samp> 
-  is called at the top of each request.</p>
+  is called before each request is processed by the server.</p>
 
 <hr>
 
-<h2><a name="requests" />Requests</h2>
+<h2><a name="interaction" />3. Client-Server Interaction</h2>
 
-<p>Each request is expressed through an HTTP POST -- parameters are expressed as HTTP form data (control-name/current value) pairs (we'll call them "key" and "value").</p>
+<p>All client-server interaction follows the standard HTTP model.  The client initiates all interactions with a <em><a href="#requests">request</a></em>.  The server always responds with one <em><a href="#responses">response</a></em>.  The data format of each request is HTTP form-data key/value pairs.  The data format of each response is plain text key/value pairs.</p>
 
-<p>Each request specifies a command (the "<samp>cmd</samp>" key).  Depending on which command is specified, other parameters are required in the form-data set.</p>
+<p>Each request specifies a <em><a href="#commands">command</a></em> value (and possibly some corresponding parameters) which determines the content of the response.Command-specific responses are defined in the context of each <em>command</em> below).</p>
+
+<hr>
+
+<h2><a name="requests" />4. Requests</h2>
+
+<p>Each request is expressed through an HTTP POST &mdash; parameters are expressed as HTTP form data (control-name/current value) pairs (we'll call them "key" and "value").</p>
+
+<p>Each request specifies a command (the "<samp>cmd</samp>" key).  Depending on which command is specified, other key/value pairs are required in the form-data set (the parameters).</p>
 
 <p>Each request also specifies a protocol version (the <samp>protocol_version</samp> 
-  key). The protocol is negociated in the <a href="#login">login</a> command, 
-  where the server sends back the version of the protocol it implements. Protocol 
-  numbers obey the following convention: <samp><em>maj</em>.<em>min</em></samp>, 
+  key).</p>
+  
+<p>The server's response to the <a href="#login">login</a> command includes the version of the protocol it implements (with the <samp>server_version</samp> key). Protocol 
+  numbers obey the following convention:<br><br><em>maj</em><samp>.</samp><em>min</em> <br><br>
   where <em>maj</em> is the major version number and <em>min</em> is the minor 
-  version number. Different major versions of the protocol use different <samp>gallery_remote<em>maj</em>.php</samp> 
+  version number. Different major versions of the protocol use different <samp>gallery_remote</samp><em>maj</em><samp>.php</samp> 
   files. Each such file may provide support for various minor versions.</p>
 
-<p>Each command is described below.  After a brief description of the command, template form data appears and the result format (if any) is described.</p>
+<p>Each command is described in the <a href="#commands">Commands</a> section below.  After a brief description of the command, template form data appears and the contents of the server's response is described.</p>
 
 <hr>
 
-<h2>Notes</h2>
-The results sections below assume a HTTP <samp>200 OK</samp> status code was returned, although a <samp>4xx</samp> or <samp>5xx</samp> result is possible.  Additionally, if the protocol version is not correct, regardless of the command, an English textual error message is returned, with no other results.<p></p>
+<h2><a name="responses" />5. Responses</h2>
+
+<p>After the client POSTs a request, the server sends a <em>response</em> to the client.  The format of the response is a key/value format compatible with the Java "<a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/Properties.html">Properties</a>" stream format.</p>
+
+<p>Each response contains at least the keys: <samp>status</samp> and <samp>status_text</samp>.</p>
+
+<p>The value associated with the status key is an integer status code.  If the server was able to complete the command in the client's request, The status will be <samp>0</samp> (zero).</p>
+
+<p>The <samp>status</samp> key is definitive, yet the <samp>status_text</samp> may contain human-readable additional information (but will likely be English language only).</p>
+
+<p>Otherwise, if the server was not able to successfully complete the request, the status will be a non-zero integer (see <a href="#appendix_a">Appendix A: Response Status Codes</a>).
+</p>
 
 <hr>
 
-<h2><a name="commands" />Commands</h2>
+<h2><a name="commands" />6. Commands</h2>
 
 <ol>
   <li> 
     <h3><a name="login" /><samp>login</samp> command</h3>
-    <p>This command ensures a session cookie has been given to the client and, 
-      if the account information is correct, adds the proper user object to the 
-      session. It also returns to the client the version of the protocol the server 
-      is prepared to support. Ideally, the login command would be implemented 
-      only in gallery_remote.php (version 1) and return the server protocol version, 
-      allowing the client to then select a different gallery_remote<em>maj</em>.php 
-      implementation while conserving only one entry point. This may not be possible 
-      for backward compatibility reasons with the 0.3 version of Gallery Remote.</p>
+    <p>This command adds the proper user object to the 
+      session (if the username and password are correct). It also returns to the client the version of the protocol the server 
+      is prepared to support.</p>
     <ul>
       <li> 
         <h4>Context</h4>
         <p>A request with the <samp>login</samp> command may be made at any time 
-          -- there are no prerequisites.</p>
+          &mdash; there are no prerequisites.</p>
       </li>
       <li> 
         <h4>Form Data</h4>
         <p><samp>cmd=login<br>
           protocol_version=2.0</samp><em></em><br>
-          <samp>uname=</samp><em>gallery user name</em><samp><br>
+          <samp>uname=</samp><em>Gallery user name</em><samp><br>
           password=</samp><em>cleartext password</em><br>
         </p>
       </li>
       <li> 
         <h4>Results</h4>
-        <p>If the login succeeds, the value <br>
-          <br>
-          <samp>server_version=</samp><em>server protocol version</em> [since 
-          2.0] <br>
-          <samp>SUCCESS</samp><br>
-          <br>
-          is returned. If the login fails, the value <br>
-          <br>
-          <samp>Login Incorrect</samp> <br>
-          <br>
-          is returned. If either the <samp>uname</samp> or <samp>password</samp> 
-          keys are missing, the value <br>
-          <br>
-          <samp>Missing Parameters</samp> <br>
-          <br>
-          is returned.</p>
+        <p>
+        <samp>status=</samp>result code<br>
+        <samp>server_version=</samp><em>major-version</em><samp>.</samp><em>minor-version</em><br>
+        </p>
+        <p>If the <samp>status</samp> key's value is GR_STAT_SUCCESS, the login completed successfully and the user's session has been updated.  Any other command can now be used in requests to this server.
+        </p>
       </li>
     </ul>
   </li>
@@ -136,15 +176,23 @@ The results sections below assume a HTTP <samp>200 OK</samp> status code was ret
       </li>
       <li> 
         <h4>Results</h4>
-        <p>If successful, the a request using the <samp>fetch-albums</samp> command 
-          returns tab- and newline-delimited data. Each line consists of an album 
-          name, a tab character, the album title and a newline, except the last 
-          line which will contain the value<br>
-          <br>
-          <samp>SUCCESS</samp> <br>
-          <br>
-          If the "<samp>SUCCESS</samp>" value is not present, the list of albums 
-          should not be considered complete and the request to have failed.</p>
+        <p>If the <samp>status</samp> key's value is GR_STAT_SUCCESS, the login completed successfully and the user's session has been updated.  Any other command can now be used in requests to this server.
+        </p>
+        <p>If successful, a request using the <samp>fetch-albums</samp> command 
+          returns three keys for each album in the gallery:<br><br>
+          
+			<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
+			<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
+			<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-ref-num</em><br><br>
+
+          where
+          <ul>
+          	<li><em>ref-num</em> is a reference number,</li>
+          	<li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
+          	<li><em>album-display-name</em> is the gallery's visual name,</li>
+          	<li>and <em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
+          </ul><br>
+          A <em>parent-ref-num</em> of <samp>0</samp> indicates that the album is a "top-level" album (it has no parent).</p>
       </li>
     </ul>
   </li>
@@ -169,20 +217,13 @@ The results sections below assume a HTTP <samp>200 OK</samp> status code was ret
       </li>
       <li> 
         <h4>Results</h4>
-        <p>If the file upload succeeds the value <br>
-          <br>
-          <samp>SUCCESS</samp><br>
-          <br>
-          is returned. If the file upload fails, a line beginning with the value<br>
-          <br>
-          <samp>ERROR:</samp><br>
-          <br>
-          and followed by an English-language description of the reason is returned.</p>
+        <p>If the <samp>status</samp> key's value is GR_STAT_SUCCESS, the the file upload succeeded.
+        </p>
       </li>
     </ul>
   </li>
   <li> 
-    <h3><a name="album-info" id="album-info" /><samp>album-info</samp> command</h3>
+    <h3><a name="album-info" id="album-info" /><samp>album-info</samp> command [since 2.0]</h3>
     <p>This command asks the server for information on an album.</p>
     <ul>
       <li> 
@@ -198,24 +239,38 @@ The results sections below assume a HTTP <samp>200 OK</samp> status code was ret
       </li>
       <li> 
         <h4>Results</h4>
-        <p>If the file upload succeeds the value <br>
-          <br>
-          <samp>auto-resize=</samp><em>0 for off, or integer pixel value images 
-          are resized to when server recieves them</em><br>
-          <samp>SUCCESS</samp><br>
-          <br>
-          is returned. If the file upload fails, a line beginning with the value<br>
-          <br>
-          <samp>ERROR:</samp><br>
-          <br>
-          and followed by an English-language description of the reason is returned.</p>
+        <p>If the <samp>status</samp> key's value is GR_STAT_SUCCESS, the the request succeeded.
+        </p>
+        <p><samp>auto-resize=</samp>size, in pixels, to which the server will resize pictures on upload.</p><p>If the value is <samp>0</samp>, Gallery will not resize uploaded images.</p>
       </li>
-      <li><strong>Since</strong> 2.0</li>
     </ul>
   </li>
 </ol>
 
 <hr>
+
+<h2><a name="appendix_a" />Appendix A: Response Status Codes</h2>
+
+<table>
+<thead>
+<tr>
+	<th>Status name</th>
+	<th>Code</th>
+	<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>GR_STAT_SUCCESS</td><td>0</td><td>The command the client sent in the request completed successfully.  The data (if any) in the response should be considered valid.</td></tr>
+
+<tr><td>GR_STAT_PROTO_MAJ_VER_INVAL</td><td>101</td><td>The protocol major version the client is using is not supported.</td></tr>
+<tr><td>GR_STAT_PROTO_MIN_VER_INVAL</td><td>102</td><td>The protocol minor version the client is using is not supported.</td></tr>
+<tr><td>GR_STAT_PROTO_VER_FMT_INVAL</td><td>103</td><td>The format of the protocol version string the client sent in the request is invalid.</td></tr>
+<tr><td>GR_STAT_PROTO_VER_MISSING</td><td>104</td><td>The request did not contain the required <samp>protocol_version</samp> key.</td></tr>
+
+<tr><td>GR_STAT_PASSWD_WRONG</td><td>201</td><td>The password and/or username the client send in the request is invalid.</td></tr>
+<tr><td>GR_STAT_LOGIN_MISSING</td><td>202</td><td>The client used the login command in the request but failed to include either the username or password (or both) in the request.</td></tr>
+</tbody>
+</table>
 
 </body>
 </html>
