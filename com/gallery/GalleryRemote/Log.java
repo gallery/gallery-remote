@@ -47,9 +47,11 @@ public class Log extends Thread
 	public final static int sleepInterval = 500;
 	public final static int moduleLength = 10;
 	public final static String emptyModule = "          ";
+	public final static String emptyTime = "       ";
+	public final static long startTime = System.currentTimeMillis();
 
-	public static int maxLevel = GalleryRemote.getInstance().properties.getIntProperty( "logLevel" );
-	public static boolean toSysOut = GalleryRemote.getInstance().properties.getBooleanProperty( "toSysOut" );
+	public static int maxLevel;
+	public static boolean toSysOut;
 
 	static int threadPriority = ( Thread.MIN_PRIORITY + Thread.NORM_PRIORITY ) / 2;
 	static Log singleton = new Log();
@@ -79,7 +81,10 @@ public class Log extends Thread
 				module = ( module + emptyModule ).substring( 0, moduleLength );
 			}
 
-			singleton.logLines.add( System.currentTimeMillis() + "|"
+			String time = emptyTime + (System.currentTimeMillis()-startTime);
+			time = time.substring(time.length() - emptyTime.length());
+
+			singleton.logLines.add( time + "|"
 					 + levelName[level] + "|"
 					 + module + "|"
 					 + message );
@@ -137,7 +142,7 @@ public class Log extends Thread
 	public static void logException(int level, String module, Throwable t)
 	{
 		if ( level <= maxLevel ) {
-			log(level, module, t.toString());
+			//log(level, module, t.toString());
 			
 			CharArrayWriter caw = new CharArrayWriter();
 			t.printStackTrace(new PrintWriter(caw));
@@ -199,6 +204,21 @@ public class Log extends Thread
 		}
 	}
 
+	public static void setMaxLevel() {
+		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty( "logLevel" )) {
+			maxLevel = GalleryRemote.getInstance().properties.getIntProperty( "logLevel" );
+			singleton.logLines.add( emptyTime + "|"
+					+ levelName[TRACE] + "|"
+					+ emptyModule + "|"
+					+ "Setting Log level to " + levelName[maxLevel] );
+		}
+
+		toSysOut = GalleryRemote.getInstance().properties.getBooleanProperty( "toSysOut" );
+	}
+
+	static {
+		setMaxLevel();
+	}
 
 	/*
 	public static void main( String[] param ) {
