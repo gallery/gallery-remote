@@ -348,7 +348,7 @@ public class MainFrame extends javax.swing.JFrame
 					} else {
 						setStatus( "Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
 						+ NumberFormat.getInstance().format(
-						( (int) getCurrentAlbum().getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 ) )
+						( (int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 ) )
 						+ " K" );
 					}
 				} else {
@@ -665,6 +665,22 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}
 
+	public void selectNextPicture() {
+		int i = jPicturesList.getSelectedIndex();
+
+		if (i < jPicturesList.getModel().getSize() - 1) {
+			jPicturesList.setSelectedIndex(i + 1);
+		}
+	}
+
+	public void selectPrevPicture() {
+		int i = jPicturesList.getSelectedIndex();
+
+		if (i > 0) {
+			jPicturesList.setSelectedIndex(i - 1);
+		}
+	}
+
 
 	/**
 	 *  Show/hide thumbnails
@@ -767,11 +783,11 @@ public class MainFrame extends javax.swing.JFrame
 		jLabel1.setText( "Gallery URL" );
 		jLabel7.setText( "Select Album" );
 		jLoginButton.setText( "Log in" );
-		jLoginButton.setNextFocusableComponent( jNewAlbumButton );
+		//jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );
 		jLoginButton.setIcon(iLogin);
 		jNewAlbumButton.setText("New Album..." );
-		jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
+		//jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
 		jNewAlbumButton.setActionCommand( "NewAlbum" );
 		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );

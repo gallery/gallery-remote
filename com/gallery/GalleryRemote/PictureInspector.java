@@ -22,6 +22,8 @@ package com.gallery.GalleryRemote;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.InputEvent;
 import java.text.NumberFormat;
 
 import javax.swing.event.DocumentEvent;
@@ -31,7 +33,6 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import java.awt.*;
-import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -132,6 +133,8 @@ public class PictureInspector extends JPanel
 		jPath.setText("");
 		jPath.setLineWrap(true);
 
+		setupKeyboardHandling(jCaption);
+
 		jUpButton.setMaximumSize(new Dimension( 120, 23 ) );
 		jUpButton.setMinimumSize( new Dimension( 120, 23 ) );
 		jUpButton.setPreferredSize( new Dimension( 120, 23 ) );
@@ -225,6 +228,18 @@ public class PictureInspector extends JPanel
 		jScrollPane2.getViewport().add(jCaption, null);
 
 		this.setMinimumSize( new Dimension( 150, 0 ) );
+	}
+
+	private void setupKeyboardHandling(JComponent c) {
+		c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), nextFocusAction.getValue(Action.NAME));
+		c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, InputEvent.SHIFT_MASK), prevFocusAction.getValue(Action.NAME));
+		c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), nextPictureAction.getValue(Action.NAME));
+		c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), prevPictureAction.getValue(Action.NAME));
+
+		c.getActionMap().put(nextFocusAction.getValue(Action.NAME), nextFocusAction);
+		c.getActionMap().put(prevFocusAction.getValue(Action.NAME), prevFocusAction);
+		c.getActionMap().put(nextPictureAction.getValue(Action.NAME), nextPictureAction);
+		c.getActionMap().put(prevPictureAction.getValue(Action.NAME), prevPictureAction);
 	}
 
 	private void jbInitEvents() {
@@ -445,6 +460,7 @@ public class PictureInspector extends JPanel
 					add( field,  new GridBagConstraints(1, FIRST_ROW_EXTRA + i, 1, 1, 1.0, 1.0
 							,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0) );
 					field.getDocument().addDocumentListener(this);
+					setupKeyboardHandling(field);
 
 					i++;
 				}
@@ -495,5 +511,35 @@ public class PictureInspector extends JPanel
 
 		super.setEnabled(enabled);
 	}
+
+	// Focus traversal actions
+    public Action nextFocusAction = new AbstractAction("Move Focus Forwards") {
+        public void actionPerformed(ActionEvent evt) {
+            ((Component)evt.getSource()).transferFocus();
+        }
+    };
+
+    public Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
+        public void actionPerformed(ActionEvent evt) {
+			try {
+				((Component)evt.getSource()).transferFocusBackward();
+			} catch (NoSuchMethodError e) {
+				Log.log(Log.ERROR, MODULE, "Can't transfer focus backwards on 1.3");
+			}
+        }
+    };
+
+	public Action nextPictureAction = new AbstractAction("Select Next Picture") {
+		public void actionPerformed(ActionEvent evt) {
+			mf.selectNextPicture();
+		}
+	};
+
+	public Action prevPictureAction = new AbstractAction("Select Prev Picture") {
+		public void actionPerformed(ActionEvent evt) {
+			mf.selectPrevPicture();
+		}
+	};
+
 }
 

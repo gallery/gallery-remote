@@ -1,3 +1,9 @@
+2003-07-26  Pierre-Luc Paour <gallery@paour.com> (1.1-b14)
+
+	* Added keyboard handling so when the user is editing captions
+	  and extra fields, the tab and up/down arrows do the expected and
+	  useful thing (thanks joel558).
+
 2003-07-19  Pierre-Luc Paour <gallery@paour.com> (1.1-b13)
 
 	* Added a jpegQuality field to the ImageMagick settings.
