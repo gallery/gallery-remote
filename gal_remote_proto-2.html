@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<title>Gallery Remote Protocol version 2</title>
+</head>
+<body>
+<h1>Gallery Remote Protocol version 2</h1>
+
+<p><cite>Tim Miller</cite> &lt;<a href="mailto:tim_miller at users.sourceforge.net">tim_miller 
+  at users dot sourceforge dot net</a>&gt;<br>
+  <cite>Pierre-Luc Paour</cite> &lt;<a href="mailto:paour at users.sourceforge.net">paour 
+  at users dot sourceforge dot net</a>&gt;</p>
+<p>This document describes the new <a href="http://gallery.menalto.com/">gallery</a> 
+  remote application protocol, which is layered over HTTP, as of version 1.3.2 
+  of gallery.</p>
+<p>Also see documentation of the <a href="gal_remote_proto-1.html">previous version</a> 
+  of the protocol.</p>
+
+<ul>
+  <li><a href="#summary">Summary</a></li>
+  <li><a href="#requests">Requests</a></li>
+  <li><a href="#commands">Commands</a> 
+    <ol>
+      <li><a href="#login"><samp>login</samp> command</a></li>
+      <li><a href="#fetch-albums"><samp>fetch-albums</samp> command</a></li>
+      <li><a href="#add-item"><samp>add-item</samp> command</a></li>
+      <li><a href="#album-info"><samp>album-info</samp> command</a></li>
+    </ol>
+  </li>
+</ul>
+
+<hr>
+
+<h2><a name="summary" />Summary</h2>
+
+<p>Gallery remote queries and sends information from a gallery installation through 
+  a protcol based on HTTP and form-data. The protocol leverages the same user 
+  authentication (and session cookies) as the web/HTML interface to the site. 
+  It is implemented in one PHP source file, <samp><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote2.php?rev=1.6&content-type=text/vnd.viewcvs-markup">gallery_remote2.php</a></samp>.</p>
+
+<p>Every query from client to server corresponds to one action.  Multiple actions require multiple HTTP requests.</p>
+
+<p>The protocol is stateful; the client must acquire the gallery session cookie by performing a login request before any other requests will succeed.</p>
+
+<p>Permissions for actions performed by gallery_remote2.php are controlled in 
+  the same way they are controlled for regular web/HTML users. <samp>init.php</samp> 
+  is called at the top of each request.</p>
+
+<hr>
+
+<h2><a name="requests" />Requests</h2>
+
+<p>Each request is expressed through an HTTP POST -- parameters are expressed as HTTP form data (control-name/current value) pairs (we'll call them "key" and "value").</p>
+
+<p>Each request specifies a command (the "<samp>cmd</samp>" key).  Depending on which command is specified, other parameters are required in the form-data set.</p>
+
+<p>Each request also specifies a protocol version (the <samp>protocol_version</samp> 
+  key). The protocol is negociated in the <a href="#login">login</a> command, 
+  where the server sends back the version of the protocol it implements. Protocol 
+  numbers obey the following convention: <samp><em>maj</em>.<em>min</em></samp>, 
+  where <em>maj</em> is the major version number and <em>min</em> is the minor 
+  version number. Different major versions of the protocol use different <samp>gallery_remote<em>maj</em>.php</samp> 
+  files. Each such file may provide support for various minor versions.</p>
+
+<p>Each command is described below.  After a brief description of the command, template form data appears and the result format (if any) is described.</p>
+
+<hr>
+
+<h2>Notes</h2>
+The results sections below assume a HTTP <samp>200 OK</samp> status code was returned, although a <samp>4xx</samp> or <samp>5xx</samp> result is possible.  Additionally, if the protocol version is not correct, regardless of the command, an English textual error message is returned, with no other results.<p></p>
+
+<hr>
+
+<h2><a name="commands" />Commands</h2>
+
+<ol>
+  <li> 
+    <h3><a name="login" /><samp>login</samp> command</h3>
+    <p>This command ensures a session cookie has been given to the client and, 
+      if the account information is correct, adds the proper user object to the 
+      session. It also returns to the client the version of the protocol the server 
+      is prepared to support. Ideally, the login command would be implemented 
+      only in gallery_remote.php (version 1) and return the server protocol version, 
+      allowing the client to then select a different gallery_remote<em>maj</em>.php 
+      implementation while conserving only one entry point. This may not be possible 
+      for backward compatibility reasons with the 0.3 version of Gallery Remote.</p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>A request with the <samp>login</samp> command may be made at any time 
+          -- there are no prerequisites.</p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p><samp>cmd=login<br>
+          protocol_version=2.0</samp><em></em><br>
+          <samp>uname=</samp><em>gallery user name</em><samp><br>
+          password=</samp><em>cleartext password</em><br>
+        </p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p>If the login succeeds, the value <br>
+          <br>
+          <samp>server_version=</samp><em>server protocol version</em> [since 
+          2.0] <br>
+          <samp>SUCCESS</samp><br>
+          <br>
+          is returned. If the login fails, the value <br>
+          <br>
+          <samp>Login Incorrect</samp> <br>
+          <br>
+          is returned. If either the <samp>uname</samp> or <samp>password</samp> 
+          keys are missing, the value <br>
+          <br>
+          <samp>Missing Parameters</samp> <br>
+          <br>
+          is returned.</p>
+      </li>
+    </ul>
+  </li>
+  <li> 
+    <h3><a name="fetch-albums" /><samp>fetch-albums</samp> command</h3>
+    <p>The <samp>fetch-albums</samp> command asks the server to return a list 
+      of all albums (visible with the client's logged in user permissions).</p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>A request with the <samp>login</samp> command must be made before the 
+          <samp>fetch-albums</samp> command is used.</p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p><samp>cmd=fetch-albums<br>
+          protocol_version=2.0</samp></p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p>If successful, the a request using the <samp>fetch-albums</samp> command 
+          returns tab- and newline-delimited data. Each line consists of an album 
+          name, a tab character, the album title and a newline, except the last 
+          line which will contain the value<br>
+          <br>
+          <samp>SUCCESS</samp> <br>
+          <br>
+          If the "<samp>SUCCESS</samp>" value is not present, the list of albums 
+          should not be considered complete and the request to have failed.</p>
+      </li>
+    </ul>
+  </li>
+  <li> 
+    <h3><a name="add-item" /><samp>add-item</samp> command</h3>
+    <p>This command asks the server to add a photo to a specified album.</p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>A request with the <samp>login</samp> command must be made before the 
+          <samp>add-item</samp> command is used.</p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p><samp>cmd=add-item<br>
+          protocol_version=2.0<br>
+          set_albumName=</samp><em>album name</em><samp><br>
+          userfile=</samp><em>form-data-encoded image data</em><br>
+          <samp>caption=</samp><em>caption</em> [since 2.0]<br>
+          <samp>force_filename=</samp><em>name of the file on the server</em> 
+          [since 2.0]</p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p>If the file upload succeeds the value <br>
+          <br>
+          <samp>SUCCESS</samp><br>
+          <br>
+          is returned. If the file upload fails, a line beginning with the value<br>
+          <br>
+          <samp>ERROR:</samp><br>
+          <br>
+          and followed by an English-language description of the reason is returned.</p>
+      </li>
+    </ul>
+  </li>
+  <li> 
+    <h3><a name="album-info" id="album-info" /><samp>album-info</samp> command</h3>
+    <p>This command asks the server for information on an album.</p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>A request with the <samp>login</samp> command must be made before the 
+          <samp>album-info</samp> command is used.</p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p><samp>cmd=album-info<br>
+          protocol_version=2.0<br>
+          set_albumName=</samp><em>album name</em></p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p>If the file upload succeeds the value <br>
+          <br>
+          <samp>auto-resize=</samp><em>0 for off, or integer pixel value images 
+          are resized to when server recieves them</em><br>
+          <samp>SUCCESS</samp><br>
+          <br>
+          is returned. If the file upload fails, a line beginning with the value<br>
+          <br>
+          <samp>ERROR:</samp><br>
+          <br>
+          and followed by an English-language description of the reason is returned.</p>
+      </li>
+      <li><strong>Since</strong> 2.0</li>
+    </ul>
+  </li>
+</ol>
+
+<hr>
+
+</body>
+</html>
