@@ -6,6 +6,7 @@
 	<property name="src" location="."/>
 	<property name="build" location="build"/>
 	<property name="dist"  location="dist"/>
+	<property name="install"  location="gallery_remote_Build_Output/Web_Installers/InstData"/>
 
 	<target name="init">
 		<!-- Create the time stamp -->
@@ -91,6 +92,25 @@
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+	</target>
+
+	<target name="installer" depends="jar"
+		description="Build the installer" >
+		<exec executable="build">
+			<arg file="gallery_remote.iap_xml" />
+		</exec>
+	</target>
+
+	<target name="upload" depends="installer"
+		description="Upload to SF.net" >
+		<move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" tofile="${install}/staging/InstallGalleryRemote.Win32.NoVM.exe" />
+		<move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/InstallGalleryRemote.Win32.VM.exe" />
+		<move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/InstallGalleryRemote.MacOSX.NoVM.zip" />
+		<move file="${install}/Linux/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Linux.NoVM.bin" />
+		<move file="${install}/Linux/VM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Linux.VM.bin" />
+		<move file="${install}/Solaris/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Solaris.NoVM.bin" />
+		<move file="${install}/GenericUnix/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Unix.NoVM.bin" />
+		<move file="${install}/Java/InstallGalleryRemote.jar" tofile="${install}/staging/InstallGalleryRemote.jar" />
 	</target>
 </project>
 
