@@ -116,19 +116,19 @@ public class PictureInspector extends JPanel
 		path.setText("");
 		path.setLineWrap(true);
 
-		up.setMaximumSize(new Dimension( 100, 23 ) );
-		up.setMinimumSize( new Dimension( 100, 23 ) );
-		up.setPreferredSize( new Dimension( 100, 23 ) );
+		up.setMaximumSize(new Dimension( 120, 23 ) );
+		up.setMinimumSize( new Dimension( 120, 23 ) );
+		up.setPreferredSize( new Dimension( 120, 23 ) );
 		up.setText( "Move up" );
 		up.setActionCommand( "Up" );
-		down.setMaximumSize(new Dimension( 100, 23 ) );
-		down.setMinimumSize( new Dimension( 100, 23 ) );
-		down.setPreferredSize( new Dimension( 100, 23 ) );
+		down.setMaximumSize(new Dimension( 120, 23 ) );
+		down.setMinimumSize( new Dimension( 120, 23 ) );
+		down.setPreferredSize( new Dimension( 120, 23 ) );
 		down.setText( "Move down" );
 		down.setActionCommand( "Down" );
-		delete.setMaximumSize(new Dimension( 100, 23 ) );
-		delete.setMinimumSize(new Dimension( 100, 23 ) );
-		delete.setPreferredSize(new Dimension( 100, 23 ) );
+		delete.setMaximumSize(new Dimension( 120, 23 ) );
+		delete.setMinimumSize(new Dimension( 120, 23 ) );
+		delete.setPreferredSize(new Dimension( 120, 23 ) );
 		delete.setActionCommand("Delete");
 		delete.setText("Delete");
 
