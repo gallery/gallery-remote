@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.*;
 
 /**
@@ -94,6 +95,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	protected static int[] capabilities7;
 	protected static int[] capabilities9;
 	protected static int[] capabilities13;
+	protected static int[] capabilities14;
 
 
 	/* -------------------------------------------------------------------------
@@ -133,6 +135,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES,
 								  CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_NON_WRITEABLE_ALBUMS};
+		capabilities14 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES,
+								  CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_NON_WRITEABLE_ALBUMS, CAPA_FETCH_HONORS_HIDDEN};
 
 		// the algorithm for search needs the ints to be sorted.
 		Arrays.sort(capabilities);
@@ -142,6 +148,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		Arrays.sort(capabilities7);
 		Arrays.sort(capabilities9);
 		Arrays.sort(capabilities13);
+		Arrays.sort(capabilities14);
 	}
 
 
@@ -413,7 +420,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		private void handleCapabilities() {
-			if (serverMinorVersion >= 13) {
+			if (serverMinorVersion >= 14) {
+				capabilities = capabilities14;
+			} else if (serverMinorVersion >= 13) {
 				capabilities = capabilities13;
 			} else if (serverMinorVersion >= 9) {
 				capabilities = capabilities9;
@@ -660,7 +669,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				// parse and store the data
 				int albumCount = Integer.parseInt(p.getProperty("album_count"));
-//	System.err.println( "### albumCount = " + albumCount );
+
 				HashMap ref2parKey = new HashMap();
 				HashMap ref2album = new HashMap();
 
@@ -1081,6 +1090,19 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					// parse and store the data
 					int numImages = p.getIntProperty("image_count");
 					String baseUrl = p.getProperty("baseurl");
+
+					try {
+						if (baseUrl == null) {
+							Log.log(Log.LEVEL_TRACE, MODULE, "Gallery root, baseurl is null");
+						} else {
+							URL tmpUrl = new URL(baseUrl);
+						}
+					} catch (MalformedURLException e) {
+						Log.log(Log.LEVEL_TRACE, MODULE, "baseurl is relative, tacking on Gallery URL (only works for standalone)");
+						URL tmpUrl = new URL(g.getStUrlString());
+						baseUrl = new URL(tmpUrl.getProtocol(), tmpUrl.getHost(), tmpUrl.getPort(), baseUrl).toString();
+					}
+
 					int width;
 					int height;
 					ArrayList extraFields = a.getExtraFields();
@@ -1098,10 +1120,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						} else {
 							Picture picture = new Picture(g);
 							picture.setOnline(true);
-							picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
-							width = p.getIntProperty("image.raw_width." + i, 0);
-							height = p.getIntProperty("image.raw_height." + i, 0);
-							picture.setSizeFull(new Dimension(width, height));
+
+							String rawName = p.getProperty("image.name." + i);
+							if (rawName != null) {
+								picture.setUrlFull(new URL(baseUrl + rawName));
+								width = p.getIntProperty("image.raw_width." + i, 0);
+								height = p.getIntProperty("image.raw_height." + i, 0);
+								picture.setSizeFull(new Dimension(width, height));
+								picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
+							}
 
 							String resizedName = p.getProperty("image.resizedName." + i);
 							if (resizedName != null) {
@@ -1116,7 +1143,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							height = p.getIntProperty("image.thumb_height." + i);
 							picture.setSizeThumbnail(new Dimension(width, height));
 
-							picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
 							picture.setCaption(p.getProperty("image.caption." + i));
 
 							if (extraFields != null) {
@@ -1130,10 +1156,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								}
 							}
 
+							picture.setHidden(p.getBooleanProperty("image.hidden." + i));
+
 							picture.setAlbumOnServer(a);
 							picture.setIndexOnServer(i - 1);
 
-							newPictures.add(picture);
+							if (!picture.isHidden() && !(rawName == null && resizedName == null)) {
+								// don't add the picture if the current user can't get access to it
+								newPictures.add(picture);
+							}
 						}
 					}
 				} else {

@@ -38,7 +38,7 @@ import java.util.Vector;
  * @author paour
  * @created October 18, 2002
  */
-public class NewAlbumDialog extends javax.swing.JDialog
+public class NewAlbumDialog extends JDialog
 		implements ActionListener {
 	public final static String MODULE = "NewAlbum";
 

@@ -47,6 +47,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	HashMap extraFields;
 
+	boolean hidden;
+
 	int angle = 0;
 	boolean flipped = false;
 	boolean suppressServerAutoRotate = false;
@@ -369,6 +371,20 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		return urlFull;
 	}
 
+	public URL safeGetUrlFull() {
+		if (!online) {
+			throw new RuntimeException("Can't get URL for a local file!");
+		}
+
+		if (urlFull != null) {
+			return urlFull;
+		} else if (urlResized != null) {
+			return urlResized;
+		} else {
+			throw new RuntimeException("Neither full nor resized URL!");
+		}
+	}
+
 	public void setUrlFull(URL urlFull) {
 		this.urlFull = urlFull;
 	}
@@ -379,6 +395,20 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		}
 
 		return sizeFull;
+	}
+
+	public Dimension safeGetSizeFull() {
+		if (!online) {
+			throw new RuntimeException("Can't get dimension for a local file!");
+		}
+
+		if (sizeFull != null) {
+			return sizeFull;
+		} else if (sizeResized != null) {
+			return sizeResized;
+		} else {
+			throw new RuntimeException("Neither full nor resized size!");
+		}
 	}
 
 	public void setSizeFull(Dimension sizeFull) {
@@ -434,7 +464,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	}
 
 	public String getName() {
-		String path = urlFull.getPath();
+		String path = safeGetUrlFull().getPath();
 
 		int i = path.lastIndexOf('/');
 
@@ -483,6 +513,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setIndexOnServer(int indexOnServer) {
 		this.indexOnServer = indexOnServer;
+	}
+
+	public boolean isHidden() {
+		return hidden;
+	}
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
 	}
 }
 

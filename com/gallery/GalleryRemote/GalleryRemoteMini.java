@@ -31,7 +31,7 @@ public class GalleryRemoteMini extends GalleryRemote {
 
 		f.mkdirs();
 
-		File pf = new File(f, "GalleryRemoteApplet");
+		File pf = new File(f, "GalleryRemoteApplet.properties");
 
 		if (!pf.exists()) {
 			try {

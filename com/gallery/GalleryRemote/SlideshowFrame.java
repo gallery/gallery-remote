@@ -368,7 +368,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			if (extraFields != null) {
 				jExtra.setText(extraFields);
 			}
-			jURL.setText(picture.getUrlFull().toString());
+			jURL.setText(picture.safeGetUrlFull().toString());
 		}
 
 		super.imageLoaded(image, picture);

@@ -27,6 +27,9 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 	private static BasicAuthBox inp = null;
 	public static final String MODULE = "AuthorizePopup";
 
+	public static String hackUsername = null;
+	public static String hackPassword = null;
+
 
 	/**
 	 * Engage this class to be the authorization popup
@@ -46,6 +49,14 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 	 */
 	public NVPair getUsernamePassword(HTTPClient.AuthorizationInfo challenge,
 									  boolean forProxy) {
+
+		// The HTTPClient library doesn't correctly accept setting auth params
+		// ahead of time (because it can't accept a realm of *
+		// so we have to do it this hackish way...
+		if (challenge.getScheme().equalsIgnoreCase("Basic") && hackUsername != null) {
+			return new NVPair(hackUsername, hackPassword);
+		}
+
 		String line1;
 		String line2;
 		String line3;
@@ -55,11 +66,10 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			line2 = challenge.getHost();
 			line3 = GRI18n.getString(MODULE, "authMthd");
 		} else {
-			line1 = GRI18n.getString(MODULE, "enterUsrPwdRealm") +
-					challenge.getRealm() + "'";
-			line2 = GRI18n.getString(MODULE, "onHost") + challenge.getHost() + ":" +
-					challenge.getPort();
-			line3 = GRI18n.getString(MODULE, "authScheme") + challenge.getScheme();
+			line1 = GRI18n.getString(MODULE, "enterUsrPwdRealm", new Object[] { challenge.getRealm() });
+			line2 = GRI18n.getString(MODULE, "onHost", new Object[] { challenge.getHost() + ":" +
+					challenge.getPort()});
+			line3 = GRI18n.getString(MODULE, "authScheme", new Object[] { challenge.getScheme() });
 		}
 
 		synchronized (getClass()) {
@@ -82,7 +92,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 	 * @created February 2, 2003
 	 */
 	private static class BasicAuthBox extends JDialog implements ActionListener {
-		private final static String title = GRI18n.getString(MODULE, "authReq");
+		private final static String title = GRI18n.getString(MODULE, "authreq");
 		private JLabel line1, line2, line3;
 		private JTextField user, pass;
 		private int done;
@@ -178,7 +188,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			setResizable(false);
 			// put popup at upper right of the parent frame (assuming we have one)
 
-			DialogUtil.center(getOwner());
+			DialogUtil.center(this, getOwner());
 
 			boolean user_focus = true;
 			if (scheme.equalsIgnoreCase("NTLM")) {

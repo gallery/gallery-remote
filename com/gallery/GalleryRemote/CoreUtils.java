@@ -145,51 +145,55 @@ public class CoreUtils {
 			super.getListCellRendererComponent(list, value, index, selected, hasFocus);
 
             Album currentAlbum = core.getCurrentAlbum();
-			if (   null != currentAlbum 
+			if ( null != currentAlbum
                 && null != value 
                 && -1 != index) {
 
-				Picture p = currentAlbum.getPicture(index);
+				try {
+					Picture p = currentAlbum.getPicture(index);
 
-				if (p.isOnline()) {
-					if (p.getParentAlbum() != p.getAlbumOnServer()
-							|| p.getIndex() != p.getIndexOnServer()) {
-						setForeground(Color.red);
+					if (p.isOnline()) {
+						if (p.getParentAlbum() != p.getAlbumOnServer()
+								|| p.getIndex() != p.getIndexOnServer()) {
+							setForeground(Color.red);
+						} else {
+							setForeground(Color.green);
+						}
 					} else {
-						setForeground(Color.green);
+						//setForeground(Color.black);
 					}
-				} else {
-					//setForeground(Color.black);
-				}
 
-				if (GalleryRemote._().properties.getShowThumbnails()) {
-					ImageIcon icon = core.getThumbnail(p);
-					if (icon != null) {
-						setIcon(icon);
-						setIconTextGap(4 + GalleryRemote._().properties.getThumbnailSize().width - icon.getIconWidth());
+					if (GalleryRemote._().properties.getShowThumbnails()) {
+						ImageIcon icon = core.getThumbnail(p);
+						if (icon != null) {
+							setIcon(icon);
+							setIconTextGap(4 + GalleryRemote._().properties.getThumbnailSize().width - icon.getIconWidth());
+						}
 					}
-				}
 
-				StringBuffer text = new StringBuffer();
-				text.append("<html><p>");
+					StringBuffer text = new StringBuffer();
+					text.append("<html><p>");
 
-				if (p.isOnline()) {
-					text.append(p.getName());
-				} else {
-					File f = p.getSource();
-					text.append(f.getName());
-					if (GalleryRemote._().properties.getShowPath()) {
-						text.append(" [").append(f.getParent()).append("]</p>");
+					if (p.isOnline()) {
+						text.append(p.getName());
+					} else {
+						File f = p.getSource();
+						text.append(f.getName());
+						if (GalleryRemote._().properties.getShowPath()) {
+							text.append(" [").append(f.getParent()).append("]</p>");
+						}
 					}
-				}
 
-				if (p.getCaption() != null && getIcon() != null) {
-					text.append("<p><font color=\"gray\">").append(p.getEscapedCaption()).append("</font></p>");
-				}
+					if (p.getCaption() != null && getIcon() != null) {
+						text.append("<p><font color=\"gray\">").append(p.getEscapedCaption()).append("</font></p>");
+					}
 
-				text.append("</html>");
-				//Log.log(Log.TRACE, MODULE, text.toString());
-				setText(text.toString());
+					text.append("</html>");
+					//Log.log(Log.TRACE, MODULE, text.toString());
+					setText(text.toString());
+				} catch (Exception e) {
+					setText("Problem...");
+				}
 			} else {
 				setText("dummy");
 			}

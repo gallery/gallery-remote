@@ -240,7 +240,7 @@
  <target name="installer_macosx" depends="executable_macosx, docs"
   description="Build a MacOSX package">
 
-  <tar destfile="GalleryRemote.${version}.MacOSX.NoVM.tgz" compression="gzip">
+  <tar destfile="GalleryRemote.MacOSX.NoVM.tgz" compression="gzip">
    <tarfileset dir="." prefix="Gallery Remote">
     <include name="Gallery Remote.app/**"/>
     <exclude name="Gallery Remote.app/Contents/MacOS/*"/>
@@ -261,7 +261,8 @@
 
   <loadproperties srcfile="defaults.properties"/>
 
-  <move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
+  <move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" 
+tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
   <move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.VM.exe"/>
   <!--move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/GalleryRemote.${version}.MacOSX.NoVM.zip"/-->
   <move file="${install}/Linux/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Linux.NoVM.bin"/>

@@ -957,6 +957,11 @@ public class MainFrame extends JFrame
 		jMenuItemSaveAs.setText(GRI18n.getString(MODULE, "menuSaveAs"));
 		jMenuItemSaveAs.setActionCommand("File.SaveAs");
 
+		// todo: saving disabled, since JSX doesn't work with new class structure
+		jMenuItemOpen.setEnabled(false);
+		jMenuItemSave.setEnabled(false);
+		jMenuItemSaveAs.setEnabled(false);
+
 		/*jMenuItemClose.setText(GRI18n.getString(MODULE, "menuClose"));
 		jMenuItemClose.setActionCommand("File.Close");
 		if (GalleryRemote.IS_MAC_OS_X) {

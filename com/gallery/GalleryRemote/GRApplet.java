@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.applet.Applet;
 import java.io.FilePermission;
 import java.net.URL;
+import java.net.MalformedURLException;
 
 import HTTPClient.CookieModule;
 import HTTPClient.Cookie;
@@ -106,8 +107,20 @@ public class GRApplet extends JApplet {
 		if (cookieDomain == null || cookieDomain.length() < 1) {
 			try {
 				cookieDomain = new URL(url).getHost();
-			} catch (Exception e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			} catch (MalformedURLException e) {
+				//Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				URL documentBase = getDocumentBase();
+				cookieDomain = documentBase.getHost();
+
+				Log.log(Log.LEVEL_INFO, MODULE, "URL probably doesn't have a host part because the Gallery " +
+						"is in (unsupported) relative mode. Using the Applet documentBase: " + cookieDomain);
+
+				try {
+					url = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
+							url).toString();
+				} catch (MalformedURLException e1) {
+					Log.logException(Log.LEVEL_ERROR, MODULE, e1);
+				}
 			}
 		}
 

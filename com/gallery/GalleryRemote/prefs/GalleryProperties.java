@@ -52,10 +52,18 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		super(p);
 	}
 
-
 	public GalleryProperties() {
 	}
 
+	public void copyProperties(Properties source) {
+		Enumeration names = source.propertyNames();
+		while (names.hasMoreElements()) {
+			String name = (String) names.nextElement();
+			String value = source.getProperty(name);
+
+			setProperty(name, value);
+		}
+	}
 
 	public File getCurrentDirectory() {
 		String currentDirectory = getProperty("filedialogPath");

@@ -6,8 +6,13 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.border.TitledBorder;
 import java.applet.Applet;
 import java.io.FilePermission;
@@ -30,7 +35,8 @@ import HTTPClient.Cookie;
  * User: paour
  * Date: Oct 30, 2003
  */
-public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionListener {
+public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionListener,
+		DocumentListener, ListSelectionListener, PreferenceNames {
 	public static final String MODULE = "AppletMini";
 
 	JButton jUpload;
@@ -38,6 +44,11 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	StatusBar jStatusBar;
 	JScrollPane jScrollPane;
 	DroppableList jPicturesList;
+	JPanel jContentPanel;
+	JCheckBox jResize;
+	JPanel jInspector;
+	JLabel captionLabel;
+	JTextArea jCaption;
 
 	DefaultComboBoxModel galleries = null;
 	Album album = null;
@@ -72,16 +83,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		galleries.addElement(gallery);
 
-		//gallery.fetchAlbums(getMainStatusUpdate(), false);
-
-		//album = gallery.getAlbumByName(info.albumName);
-
 		ImageUtils.deferredTasks();
 
 		album = new Album(gallery);
-		album.setSuppressEvents(true);
+		//album.setSuppressEvents(true);
 		album.setName(info.albumName);
-		//gallery.addAlbum(album);
+		gallery.createRootAlbum().add(album);
 
 		jPicturesList.setModel(album);
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
@@ -89,12 +96,15 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jPicturesList.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, null);
 		jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
 
+		jResize.setSelected(GalleryRemote._().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD));
+
 		//jStatusBar.setStatus(GRI18n.getString(MODULE, "DefMessage"));
 		jStatusBar.setStatus(GRI18n.getString("MainFrame", "selPicToAdd"));
 	}
 
 	public void shutdown() {
 		if (hasStarted) {
+			GalleryRemote._().properties.write();
 			GalleryRemote.shutdownInstance();
 		}
 	}
@@ -125,6 +135,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jUpload.setEnabled(!inProgress);
 		jAdd.setEnabled(!inProgress);
 		jPicturesList.setEnabled(!inProgress);
+		jCaption.setEnabled(!inProgress);
+		jResize.setEnabled(!inProgress);
 
 		this.inProgress = inProgress;
 
@@ -162,9 +174,13 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jStatusBar = new StatusBar(75);
 		jScrollPane = new JScrollPane();
 		jPicturesList = new DroppableList();
+		jContentPanel = new JPanel(new GridBagLayout());
+		jResize = new JCheckBox();
+		jInspector = new JPanel(new GridBagLayout());
+		captionLabel = new JLabel();
+		jCaption = new JTextArea();
 
 		jScrollPane.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "pictures")));
-		jScrollPane.getViewport().add(jPicturesList, null);
 
 		jUpload.setText(GRI18n.getString(MODULE, "Upload"));
 		jAdd.setText(GRI18n.getString(MODULE, "Add"));
@@ -174,16 +190,42 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jButtonPanel.add(jAdd);
 		jButtonPanel.add(jUpload);
 
+		jResize.setToolTipText("<html>Resize pictures before uploading them for a faster upload.<br>The " +
+		"high-resolution original will not be available online.</html>");
+		jResize.setText("Resize pictures before upload");
+		captionLabel.setText("Caption:            ");
+		jScrollPane.getViewport().add(jPicturesList, null);
+
+		jCaption.setLineWrap(true);
+		jCaption.setEditable(false);
+		jCaption.setFont(UIManager.getFont("Label.font"));
+		jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+
+		jContentPanel.add(jScrollPane,           new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		jContentPanel.add(jResize,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
+		jContentPanel.add(jInspector,   new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+
+		jInspector.add(captionLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jInspector.add(jCaption,    new GridBagConstraints(0, 1, 1, 1, 0.0, 1.0
+				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
 		this.getContentPane().setLayout(new GridBagLayout());
-		this.getContentPane().add(jButtonPanel,       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		this.getContentPane().add(jStatusBar,    new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		this.getContentPane().add(jScrollPane,    new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+		this.getContentPane().add(jButtonPanel,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
+		this.getContentPane().add(jStatusBar,      new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		this.getContentPane().add(jContentPanel,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
 
 		jAdd.addActionListener(this);
 		jUpload.addActionListener(this);
+		jCaption.getDocument().addDocumentListener(this);
+		jPicturesList.addListSelectionListener(this);
+		jResize.addActionListener(this);
 
 		jPicturesList.addKeyListener(
 				new KeyAdapter() {
@@ -220,7 +262,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == jAdd) {
+		Object source = e.getSource();
+		if (source == jAdd) {
 			jStatusBar.setStatus(GRI18n.getString("MainFrame", "selPicToAdd"));
 			File[] files = AddFileDialog.addFiles(this);
 
@@ -228,8 +271,46 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				addPictures(files, -1, false);
 				hasHadPictures = true;
 			}
-		} else if (e.getSource() == jUpload) {
+		} else if (source == jUpload) {
 			gallery.doUploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));
+		} else if (source == jResize) {
+			GalleryRemote._().properties.setBooleanProperty(RESIZE_BEFORE_UPLOAD, jResize.isSelected());
+		}
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	public void changedUpdate(DocumentEvent e) {
+		textUpdate(e);
+	}
+
+	public void textUpdate(DocumentEvent e) {
+		Picture p = (Picture) jPicturesList.getSelectedValue();
+
+		if (p != null) {
+			if (e.getDocument() == jCaption.getDocument()) {
+				p.setCaption(jCaption.getText());
+			}
+		}
+	}
+
+	public void valueChanged(ListSelectionEvent e) {
+		Picture p = (Picture) jPicturesList.getSelectedValue();
+
+		if (p == null) {
+			jCaption.setText("");
+			jCaption.setEditable(false);
+			jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		} else {
+			jCaption.setText(p.getCaption());
+			jCaption.setEditable(true);
+			jCaption.setBackground(UIManager.getColor("TextField.background"));
 		}
 	}
 }

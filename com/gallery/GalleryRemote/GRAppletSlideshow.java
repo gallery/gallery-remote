@@ -54,7 +54,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		ImageUtils.deferredTasks();
 
 		album = new Album(gallery);
-		album.setSuppressEvents(true);
+		//album.setSuppressEvents(true);
 		album.setName(info.albumName);
 		album.addListDataListener(this);
 
@@ -104,10 +104,10 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		}
 
 		slideshowFrame.showSlideshow();
-		slideshowFrame.start(getCurrentAlbum().getPicturesList());
+		slideshowFrame.start(album.getPicturesList());
 
 		// null slideshowFrame so that next time the user clicks the button
-		// they get a black one, in case they changed positioning
+		// they get a blank one, in case they changed positioning
 		slideshowFrame = null;
 	}
 
@@ -121,21 +121,24 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	}
 
 	public void contentsChanged(ListDataEvent e) {
-		// most likely, pictures were just added to the album. Preload the first one.
-		new Thread() {
-			public void run() {
-				slideshowFrame = new SlideshowFrame();
-				if (album.getSize() > 0) {
-					ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
-				} else {
-					JOptionPane.showMessageDialog(GRAppletSlideshow.this, GRI18n.getString(MODULE, "emptyAlbum"));
+		if (album.isHasFetchedImages()) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Pictures were just added to the album. Preload the first one.");
+
+			new Thread() {
+				public void run() {
+					slideshowFrame = new SlideshowFrame();
+
+					if (album.getSize() > 0) {
+						ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+					} else {
+						JOptionPane.showMessageDialog(GRAppletSlideshow.this, GRI18n.getString(MODULE, "emptyAlbum"));
+					}
 				}
-			}
-		}.start();
+			}.start();
+		}
 	}
 
 	public void intervalAdded(ListDataEvent e) {}
 
 	public void intervalRemoved(ListDataEvent e) {}
-
 }

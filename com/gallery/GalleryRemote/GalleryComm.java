@@ -33,6 +33,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.StringTokenizer;
 
 /**
  * This interface is a temporary mechanism to let us use version
@@ -162,24 +163,57 @@ public abstract class GalleryComm implements PreferenceNames {
 		try {
 			GalleryProperties p = GalleryRemote._().properties;
 			// set proxy info
-			if (p.getBooleanProperty(USE_PROXY)) {
-				String hostname = p.getProperty(PROXY_HOST);
-				int port = 80;
+			String proxyList = System.getProperty("javaplugin.proxy.config.list");
+
+			String proxyHost = null;
+			int proxyPort = 80;
+			String proxyUsername = null;
+			String proxyPassword = null;
+
+			if (proxyList != null && proxyList.length() != 0) {
 				try {
-					port = p.getIntProperty(PROXY_PORT);
+					proxyList = proxyList.toUpperCase();
+					Log.log(Log.LEVEL_TRACE, MODULE, "Plugin Proxy Config List Property:"+proxyList);
+					// 6.0.0 1/14/03 1.3.1_06 appears to omit HTTP portion of reported proxy list... Mod to accomodate this...
+					// Expecting proxyList of "HTTP=XXX.XXX.XXX.XXX:Port" OR "XXX.XXX.XXX.XXX:Port" & assuming HTTP...
+
+					if (proxyList.indexOf("HTTP=") > -1) {
+						proxyHost = proxyList.substring(proxyList.indexOf("HTTP=")+5, proxyList.indexOf(":"));
+					} else {
+						proxyHost = proxyList.substring(0, proxyList.indexOf(":"));
+					}
+					int endOfPort = proxyList.indexOf(",");
+					if (endOfPort < 1) endOfPort = proxyList.length();
+					proxyPort = Integer.parseInt(proxyList.substring(proxyList.indexOf(":")+1,endOfPort));
+					Log.log(Log.LEVEL_TRACE, MODULE, "proxy " + proxyHost+" port " + proxyPort);
+				}
+				catch (Exception e) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Exception during failover auto proxy detection" );
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				}
+			} else if (p.getBooleanProperty(USE_PROXY)) {
+				proxyHost = p.getProperty(PROXY_HOST);
+				try {
+					proxyPort = p.getIntProperty(PROXY_PORT);
 				} catch (NumberFormatException e) {
 				}
-				String username = p.getProperty(PROXY_USERNAME);
 
-				Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy to " + hostname + ":" + port);
+				proxyUsername = p.getProperty(PROXY_USERNAME);
 
-				HTTPConnection.setProxyServer(hostname, port);
+				if (proxyUsername != null && proxyUsername.length() > 0) {
+					proxyPassword = p.getBase64Property(PROXY_PASSWORD);
+				}
+			}
 
-				if (username != null && username.length() > 0) {
-					String password = p.getBase64Property(PROXY_PASSWORD);
-					Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy auth to " + username + ":" + password);
-					AuthorizationInfo.addBasicAuthorization(hostname, port, "",
-							username, password);
+			if (proxyHost != null) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy to " + proxyHost + ":" + proxyPort);
+
+				HTTPConnection.setProxyServer(proxyHost, proxyPort);
+
+				if (proxyUsername != null && proxyUsername.length() > 0) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy auth to " + proxyUsername + ":" + proxyPassword);
+					AuthorizationInfo.addBasicAuthorization(proxyHost, proxyPort, "",
+							proxyUsername, proxyPassword);
 				}
 			} else {
 				HTTPConnection.setProxyServer(null, 0);
@@ -187,6 +221,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 			// create a connection
 			HTTPConnection mConnection = new HTTPConnection(url);
+			addUserInfo(mConnection, url);
 
 			if (g.getType() == Gallery.TYPE_STANDALONE) {
 				// assemble the URL
@@ -227,6 +262,27 @@ public abstract class GalleryComm implements PreferenceNames {
 		}
 
 		return null;
+	}
+
+	public static void addUserInfo(HTTPConnection conn, URL url) {
+		String userInfo = url.getUserInfo();
+		if (userInfo != null) {
+			StringTokenizer st = new StringTokenizer(userInfo, ":");
+			if (st.countTokens() == 2) {
+				String username = st.nextToken();
+				String password = st.nextToken();
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Added basic auth params: " + username + " - " + password);
+
+				AuthorizePopup.hackUsername = username;
+				AuthorizePopup.hackPassword = password;
+
+				return;
+			}
+		}
+		
+		AuthorizePopup.hackUsername = null;
+		AuthorizePopup.hackPassword = null;
 	}
 
 	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath) {
