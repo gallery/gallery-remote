@@ -1,6 +1,6 @@
 cvs update -d;
 
-. make.sh zip;
+. ant zip;
 
 version=`grep version= defaults.properties | awk -F= '{print $2}'`;
 echo $version;
