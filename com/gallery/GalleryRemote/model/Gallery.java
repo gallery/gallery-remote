@@ -1,23 +1,23 @@
 /*
- *  Gallery Remote - a File Upload Utility for Gallery
- *
- *  Gallery - a web based photo album viewer and editor
- *  Copyright (C) 2000-2001 Bharat Mediratta
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*  Gallery Remote - a File Upload Utility for Gallery
+*
+*  Gallery - a web based photo album viewer and editor
+*  Copyright (C) 2000-2001 Bharat Mediratta
+*
+*  This program is free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or (at
+*  your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful, but
+*  WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*  General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program; if not, write to the Free Software
+*  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package com.gallery.GalleryRemote.model;
 
 import java.net.MalformedURLException;
@@ -25,9 +25,7 @@ import java.net.URL;
 import java.util.*;
 import java.io.Serializable;
 
-import javax.swing.ComboBoxModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
+import javax.swing.*;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
@@ -40,7 +38,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
  *@created    17 août 2002
  */
 
-public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
+public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, Serializable, PreferenceNames {
 	public static final String MODULE="Gallery";
 
 	String stUrlString = null;
@@ -53,9 +51,6 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 	int type = TYPE_STANDALONE;
 
 	transient GalleryComm comm = null;
-
-	// ListModel
-	transient Vector listeners = null;
 
 	transient StatusUpdate su;
 	transient private int prefsIndex;
@@ -73,26 +68,26 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 	}
 
 	/*
-	 * **** Gallery online management ****
-	 */
+	* **** Gallery online management ****
+	*/
 
 	public void uploadFiles( StatusUpdate su ) {
 		getComm( su ).uploadFiles( su, true );
 	}
-	
+
 	public void fetchAlbums( StatusUpdate su ) {
 		//albumList = null;
 
 		getComm( su ).fetchAlbums( su, true );
 	}
-	
+
 	public void newAlbum( Album a, StatusUpdate su) {
 		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
 		getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
 				a.getTitle(), a.getCaption(), false );
-		
+
 		// refresh album list asynchronously
 		fetchAlbums( su );
 	}
@@ -109,14 +104,14 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 	}
 
 	/*
-	 * **** Gallery contents handling ****
-	 */
+	* **** Gallery contents handling ****
+	*/
 
 	public void setAlbumList( ArrayList albumList ) {
 		if ( albumList == null ) {
 			throw new IllegalArgumentException( "Must supply non-null album list." );
 		}
-		
+
 		ArrayList oldList = this.albumList;
 		this.albumList = albumList;
 		if ( albumList.size() > 0 ) {
@@ -125,12 +120,12 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 		if (oldList != null) {
 			for (Iterator i = oldList.iterator(); i.hasNext(); ) {
 				Album a = (Album) i.next();
-				
+
 				Log.log(Log.TRACE, MODULE, a.toString());
 				if (! a.getPicturesVector().isEmpty()) {
 					Log.log(Log.TRACE, MODULE, "Album " + a + " had pictures");
 					int j = albumList.indexOf(a);
-					
+
 					if (j != -1) {
 						Album newAlbum = (Album) albumList.get(j);
 						newAlbum.setPicturesVector(a.getPicturesVector());
@@ -138,10 +133,10 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 				}
 			}
 		}
-		
+
 		notifyListeners();
 	}
-	
+
 	/**
 	 * Adds an album to the gallery and selects the first one added.
 	 */
@@ -149,23 +144,23 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 		if ( a == null ) {
 			throw new IllegalArgumentException( "Must supply non-null album." );
 		}
-		
+
 		// when the first album becomes available, make sure to select
 		// it in the list
 		boolean firstAlbum = false;
-		
+
 		// lazy allocation
 		if ( this.albumList == null ) {
 			this.albumList = new ArrayList();
 			firstAlbum = true;
 		}
-		
+
 		albumList.add( a );
-		
+
 		if ( firstAlbum ) {
 			selectedAlbum = (Album) this.albumList.get(0);
 		}
-		
+
 		notifyListeners();
 	}
 
@@ -210,10 +205,10 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 
 
 	/*
-	 * **** Gallery URL management ****
-	 */
+	* **** Gallery URL management ****
+	*/
 
-	public static String reformatUrlString(String urlString, boolean trailingSlash) throws MalformedURLException {
+	public static String reformatUrlString(String urlString, boolean trailingSlash) {
 		if ( urlString == null ) {
 			throw new IllegalArgumentException( "urlString must not be null" );
 		}
@@ -366,12 +361,12 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 
 
 	/*
-	 * **** Gallery properties management ****
-	 */
+	* **** Gallery properties management ****
+	*/
 
 	public void setUsername( String username ) {
 		if ( username != null && username.length() > 0
-			&& ! username.equals( this.username ) ) {
+				&& ! username.equals( this.username ) ) {
 
 			this.username = username;
 
@@ -384,7 +379,7 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 	public void setPassword( String password ) {
 		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
 		if ( password != null && password.length() > 0
-			&& ! password.equals( this.password ) ) {
+				&& ! password.equals( this.password ) ) {
 
 			this.password = password;
 
@@ -504,18 +499,70 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 		if (tmp == null) {
 			tmp = "http://";
 		}
-		
+
 		return tmp;
 	}
 
 	public Album getSelectedAlbum() {
 		return selectedAlbum;
 	}
-	
+
+
+	public void setSelectedItem(Object anObject) {
+		if ((selectedAlbum != null && !selectedAlbum.equals( anObject )) ||
+				selectedAlbum == null && anObject != null) {
+			selectedAlbum = (Album) anObject;
+			fireContentsChanged(this, -1, -1);
+		}
+	}
+
+	public Object getSelectedItem() {
+		return selectedAlbum;
+	}
+
 
 	/*
-	 *	ListModel Implementation
+	* Miscelaneous
+	*/
+
+	/**
+	 *	Lazy instantiation for the GalleryComm instance.
 	 */
+	public GalleryComm getComm(StatusUpdate su) {
+		if ( comm == null && stUrlString != null ) {
+			comm = GalleryComm.getCommInstance(su, getGalleryUrl(""), this);
+
+			if (comm == null) {
+				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
+				su.error("Gallery Remote can find no protocol implementation at the URL "
+						+ stUrlString.toString() + "\nCheck with a web browser that "
+						+ stUrlString.toString() + "gallery_remote.php is a valid URL");
+			}
+		}
+
+		return comm;
+	}
+
+	public boolean hasComm() {
+		return comm != null;
+	}
+
+	void notifyListeners() {
+		//ListDataEvent lde;
+		if (albumList != null) {
+			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
+			fireContentsChanged( this, 0, albumList.size() );
+		} else {
+			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
+			fireContentsChanged( this, 0, 0 );
+		}
+
+		//notifyListeners(lde);
+	}
+
+	/*
+	*	ListModel Implementation
+	*/
 	public int getSize() {
 		if (albumList != null) {
 			return albumList.size();
@@ -524,77 +571,18 @@ public class Gallery implements ComboBoxModel, Serializable, PreferenceNames {
 		}
 	}
 
-
 	public Object getElementAt( int index ) {
 		return albumList.get( index );
 	}
 
-	public void setSelectedItem(Object anItem) {
-		selectedAlbum = (Album) anItem;
-	}
-	
-	public Object getSelectedItem() {
-		return selectedAlbum;
-	}
-	
-	public void addListDataListener( ListDataListener ldl ) {
-		if (listeners == null) listeners = new Vector(1);
-
-		listeners.addElement( ldl );
-	}
-
-
-	public void removeListDataListener( ListDataListener ldl ) {
-		if (listeners != null) {
-			listeners.removeElement( ldl );
-		}
-	}
-
-	/*
-	 * Miscelaneous
-	 */
-
-	/**
-	 *	Lazy instantiation for the GalleryComm instance.
-	 */
-	public GalleryComm getComm(StatusUpdate su) {
-		if ( comm == null && stUrlString != null ) {
-			comm = GalleryComm.getCommInstance(su, getGalleryUrl(""), this);
-			
-			if (comm == null) {
-				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
-				su.error("Gallery Remote can find no protocol implementation at the URL "
-					+ stUrlString.toString() + "\nCheck with a web browser that "
-					+ stUrlString.toString() + "gallery_remote.php is a valid URL");
-			}
-		}
-		
-		return comm;
-	}
-	
-	public boolean hasComm() {
-		return comm != null;
-	}
-
-	void notifyListeners() {
-		ListDataEvent lde;
-		if (albumList != null) {
-			lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
-		} else {
-			lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
-		}
-		
-		notifyListeners(lde);
-	}
-	
-	void notifyListeners(ListDataEvent lde) {
-		if (listeners != null) {
-			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
-			Enumeration e = listeners.elements();
-			while ( e.hasMoreElements() ) {
-				ListDataListener ldl = (ListDataListener) e.nextElement();
-				ldl.contentsChanged( lde );
-			}
-		}
-	}
+//	void notifyListeners(ListDataEvent lde) {
+//		if (listeners != null) {
+//			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
+//			Enumeration e = listeners.elements();
+//			while ( e.hasMoreElements() ) {
+//				ListDataListener ldl = (ListDataListener) e.nextElement();
+//				ldl.contentsChanged( lde );
+//			}
+//		}
+//	}
 }
