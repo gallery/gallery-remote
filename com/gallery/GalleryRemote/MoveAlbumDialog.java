@@ -31,6 +31,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+import java.util.Iterator;
+import java.util.Enumeration;
 
 /**
  * Description of the Class
@@ -44,7 +46,7 @@ public class MoveAlbumDialog extends JDialog
 
 	Gallery gallery = null;
 	Album album = null;
-	Album rootAlbum = null;
+	//Album rootAlbum = null;
 
 	JLabel jLabel2 = new JLabel();
 	JLabel jLabel3 = new JLabel();
@@ -56,6 +58,8 @@ public class MoveAlbumDialog extends JDialog
 	JPanel jPanel2 = new JPanel();
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
+
+	Album newParent = null;
 
 
 	/**
@@ -85,13 +89,16 @@ public class MoveAlbumDialog extends JDialog
 		this.setModal(true);
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 
-		Vector albums = new Vector(gallery.getAlbumList());
-		rootAlbum = new Album(gallery);
-		rootAlbum.setSuppressEvents(true);
-		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
-		rootAlbum.setName("root.root");
-		albums.add(0, rootAlbum);
-		albums.remove(album);
+		Vector albums = new Vector(gallery.getFlatAlbumList());
+		//rootAlbum = new Album(gallery);
+		//rootAlbum.setSuppressEvents(true);
+		//rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
+		//rootAlbum.setName("root.root");
+		Object rootAlbum = gallery.getRoot();
+		if (album.getParentAlbum() == rootAlbum) {
+			albums.remove(rootAlbum);
+		}
+		removeChildren(albums, album);
 
 		jAlbum = new JComboBox(albums);
 		jAlbum.setFont(UIManager.getFont("Label.font"));
@@ -123,6 +130,14 @@ public class MoveAlbumDialog extends JDialog
 		getRootPane().setDefaultButton(jOk);
 	}
 
+	public void removeChildren(Vector albums, Album album) {
+		for (Enumeration it = album.children(); it.hasMoreElements();) {
+			Album subAlbum = (Album) it.nextElement();
+			removeChildren(albums, subAlbum);
+		}
+
+		albums.remove(album);
+	}
 
 	/**
 	 * Description of the Method
@@ -136,15 +151,17 @@ public class MoveAlbumDialog extends JDialog
 		if (command.equals("Cancel")) {
 			setVisible(false);
 		} else if (command.equals("OK")) {
-			Album newParent = (Album) jAlbum.getSelectedItem();
-			if (newParent == rootAlbum) {
-				newParent = null;
-			}
-
-			album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), newParent);
+			newParent = (Album) jAlbum.getSelectedItem();
+			//if (newParent == rootAlbum) {
+			//	newParent = null;
+			//}
 
 			setVisible(false);
 		}
+	}
+
+	public Album getNewParent() {
+		return newParent;
 	}
 }
 

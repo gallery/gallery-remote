@@ -26,17 +26,16 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
-import javax.swing.event.TreeModelListener;
+import javax.swing.event.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 import java.awt.*;
 
 /**
@@ -46,7 +45,7 @@ import java.awt.*;
  * @created 17 août 2002
  */
 
-public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, Serializable, PreferenceNames, TreeModel {
+public class Gallery extends DefaultTreeModel implements Serializable, PreferenceNames {
 	public static final String MODULE = "Gallery";
 
 	String stUrlString = null;
@@ -56,11 +55,11 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	String phpnGalleryUrlString = null;
 	String username;
 	String password;
-	ArrayList albumList = null;
-	Album selectedAlbum = null;
+	//ArrayList albumList = null;
+	//Album selectedAlbum = null;
 	int type = TYPE_STANDALONE;
-	Album root = new Album(this);
-	ArrayList rootAlbums = new ArrayList();
+	//Album root = null;
+	//ArrayList rootAlbums = new ArrayList();
 
 	transient GalleryComm comm = null;
 
@@ -78,7 +77,27 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public static final int TOSTRING_MAXLEN = 40;
 
 	public Gallery(StatusUpdate su) {
+		super(null);
 		this.su = su;
+
+		// make sure to update flat album list when tree is changed
+		addTreeModelListener(new TreeModelListener() {
+			public void treeNodesChanged(TreeModelEvent e) {
+				flatAlbumList = null;
+			}
+
+			public void treeNodesInserted(TreeModelEvent e) {
+				treeNodesChanged(e);
+			}
+
+			public void treeNodesRemoved(TreeModelEvent e) {
+				treeNodesChanged(e);
+			}
+
+			public void treeStructureChanged(TreeModelEvent e) {
+				treeNodesChanged(e);
+			}
+		});
 
 		// when loading from prefs, galleries not yet created. No matter: in that case, the
 		// prefsIndex is forced.
@@ -91,21 +110,19 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	* **** Gallery online management ****
 	*/
 
-	public void uploadFiles(StatusUpdate su) {
+	public void doUploadFiles(StatusUpdate su) {
 		getComm(su).uploadFiles(su, true);
 	}
 
-	public void fetchAlbums(StatusUpdate su) {
-		fetchAlbums(su, true);
+	public void doFetchAlbums(StatusUpdate su) {
+		doFetchAlbums(su, true);
 	}
 
-	public void fetchAlbums(StatusUpdate su, boolean async) {
-		//albumList = null;
-
+	public void doFetchAlbums(StatusUpdate su, boolean async) {
 		getComm(su).fetchAlbums(su, async);
 	}
 
-	public String newAlbum(Album a, StatusUpdate su) {
+	public String doNewAlbum(Album a, StatusUpdate su) {
 		Log.log(Log.LEVEL_INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
@@ -121,7 +138,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			a.setName(newAlbumName);
 		}
 
-		addAlbum(a);
+		//addAlbum(a);
 
 		return newAlbumName;
 	}
@@ -129,23 +146,25 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public void logOut() {
 		boolean logout = true;
 
-		albumList = null;
-		selectedAlbum = null;
+		//albumList = null;
+		//selectedAlbum = null;
 		if (comm != null) {
 			comm.logOut();
 		}
 		comm = null;
 
 		if (logout) {
-			albumList = null;
-			rootAlbums.clear();
-			selectedAlbum = null;
+			//albumList = null;
+			//rootAlbums.clear();
+			//selectedAlbum = null;
+			setRoot(null);
+
 			if (comm != null) {
 				comm.logOut();
 			}
 			comm = null;
 
-			notifyListeners();
+			//reload();
 		}
 	}
 
@@ -153,7 +172,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	* **** Gallery contents handling ****
 	*/
 
-	public void setAlbumList(ArrayList albumList) {
+	/*public void setAlbumList(ArrayList albumList) {
 		if (albumList == null) {
 			throw new IllegalArgumentException("Must supply non-null album list.");
 		}
@@ -183,10 +202,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
         refreshRootAlbums();
 
-		notifyListeners();
-	}
+		reload();
+	}*/
 
-    public void refreshRootAlbums() {
+	/*public void refreshRootAlbums() {
         rootAlbums.clear();
 
         for (Iterator it = albumList.iterator(); it.hasNext();) {
@@ -196,12 +215,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
                 rootAlbums.add(album);
             }
         }
-    }
+    }*/
 
 	/**
 	 * Adds an album to the gallery and selects the first one added.
 	 */
-	public synchronized void addAlbum(Album a) {
+	/*public synchronized void addAlbum(Album a) {
 		if (a == null) {
 			throw new IllegalArgumentException("Must supply non-null album.");
 		}
@@ -224,21 +243,47 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		//notifyListeners();
 		if (a.getParentAlbum() == null) {
-			fireTreeNodesInserted(this, getObjectArrayForAlbum(root), null, new Object[] { a });
+			fireTreeNodesInserted(this, getObjectArrayForAlbum(root),
+					new int[] { rootAlbums.indexOf(a) },
+					new Object[] { a });
 		} else {
-			fireTreeNodesInserted(this, getObjectArrayForAlbum(a.getParentAlbum()), null, new Object[] { a });
+			fireTreeNodesInserted(this, getObjectArrayForAlbum(a.getParentAlbum()),
+					new int[] { a.getParentAlbum().subAlbums.indexOf(a) },
+					new Object[] { a });
 		}
-	}
+	}*/
 
-	public ArrayList getAlbumList() {
+	/*public void addRootAlbum(Album a) {
+		rootAlbums.add(a);
+
+		//fireTreeNodesInserted(this, new Object[] { root },
+		//		new int[] { rootAlbums.indexOf(a) },
+		//		new Object[] { a });
+		fireTreeStructureChanged(this, new TreePath(root));
+	}*/
+
+	/*public void removeRootAlbum(Album a) {
+		int index = rootAlbums.indexOf(a);
+		if (index != -1) {
+			rootAlbums.remove(a);
+
+			//fireTreeNodesRemoved(this, new Object[] { root },
+			//		new int[] { index },
+			//		new Object[] { a });
+			//fireTreeStructureChanged(this, getPathForAlbum(a));
+			fireTreeStructureChanged(this, new TreePath(root));
+		}
+	}*/
+
+	/*public ArrayList getAlbumList() {
 		return albumList;
 	}
 
 	public void clearAlbumList() {
 		albumList.clear();
 
-		notifyListeners();
-	}
+		reload();
+	}*/
 
 	public File getGalleryDefaultFile() {
 		StringBuffer defaultFilePath = new StringBuffer();
@@ -266,6 +311,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public ArrayList getAllPictures(boolean onlyUploadable) {
 		ArrayList pictures = new ArrayList();
+		ArrayList albumList = getFlatAlbumList();
 
 		if (albumList != null) {
 			Iterator i = albumList.iterator();
@@ -285,10 +331,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	/**
 	 * Delete all of the pictures from the current gallery without
-	 * effecting the list of albums that are loaded.  This is used
+	 * affecting the list of albums that are loaded.  This is used
 	 * by the "New" function in the UI.
 	 */
 	public void deleteAllPictures() {
+		ArrayList albumList = getFlatAlbumList();
+
 		if (albumList != null) {
 			Iterator i = albumList.iterator();
 			while (i.hasNext()) {
@@ -300,6 +348,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public int countAllPictures() {
 		int c = 0;
+		ArrayList albumList = getFlatAlbumList();
 
 		if (albumList != null) {
 			Iterator i = albumList.iterator();
@@ -314,6 +363,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public boolean hasPictures() {
+		ArrayList albumList = getFlatAlbumList();
+
 		if (albumList != null) {
 			Iterator i = albumList.iterator();
 			while (i.hasNext()) {
@@ -773,12 +824,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	 * 
 	 * @return 
 	 */
-	public Album getSelectedAlbum() {
+	/*public Album getSelectedAlbum() {
 		return selectedAlbum;
-	}
+	}*/
 
 
-	public void setSelectedItem(Object anObject) {
+	/*public void setSelectedItem(Object anObject) {
 		if ((selectedAlbum != null && !selectedAlbum.equals(anObject)) ||
 				selectedAlbum == null && anObject != null) {
 			selectedAlbum = (Album) anObject;
@@ -786,30 +837,40 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		}
 	}
 
-	public Object getSelectedItem() {
-		return selectedAlbum;
+	public void fireContentsChanged(Object source, int index0, int index1) {
+		if (listenerList == null) listenerList = new EventListenerList();
+		Object[] listeners = listenerList.getListenerList();
+		ListDataEvent e = null;
+
+		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+			if (listeners[i] == ListDataListener.class) {
+				if (e == null) {
+					e = new ListDataEvent(source, ListDataEvent.CONTENTS_CHANGED, index0, index1);
+				}
+				((ListDataListener) listeners[i + 1]).contentsChanged(e);
+			}
+		}
 	}
 
-	public void albumChanged(Album a) {
-		// this doesn't seem to be effective to get the JTree itself to update
-		// but it's useful to get the MainFrame to update the album inspector...
-		fireTreeNodesChanged(this, getObjectArrayForAlbum(a), null, null);
+	public Object getSelectedItem() {
+		return selectedAlbum;
+	}*/
 
-		// this should update the JTree itself, but clears the tree selection
-		// so we have to save and restore the selection, which sucks
-		/*Frame mf = GalleryRemote._().getMainFrame();
-		if (mf instanceof MainFrame) {
-			TreePath sel = ((MainFrame) mf).jAlbumTree.getSelectionPath();
-
-			fireTreeStructureChanged(this, new TreePath(root));
-
-			((MainFrame) mf).jAlbumTree.setSelectionPath(sel);
-		}*/
+	/*public void albumChanged(Album a) {
+		if (a == null) {
+			fireTreeNodesChanged(this, getObjectArrayForAlbum(root), null, null);
+		} else {
+			fireTreeNodesChanged(this, getObjectArrayForAlbum(a), null, null);
+		}
 	}
 
 	public void albumStructureChanged(Album a) {
-		fireTreeStructureChanged(this, getPathForAlbum(a));
-	}
+		if (a == null) {
+			fireTreeStructureChanged(this, getPathForAlbum(root));
+		} else {
+			fireTreeStructureChanged(this, getPathForAlbum(a));
+		}
+	}*/
 
 
 	/*
@@ -841,7 +902,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		return comm != null;
 	}
 
-	void notifyListeners() {
+	/*void notifyListeners() {
 		//ListDataEvent lde;
 		if (albumList != null) {
 			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
@@ -853,12 +914,12 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		fireTreeStructureChanged(this, new TreePath(root));
 
 		//notifyListeners(lde);
-	}
+	}*/
 
 	/*
 	*	ListModel Implementation
 	*/
-	public int getSize() {
+	/*public int getSize() {
 		if (albumList != null) {
 			return albumList.size();
 		} else {
@@ -868,9 +929,21 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public Object getElementAt(int index) {
 		return albumList.get(index);
+	}*/
+
+	/*public void addListDataListener(ListDataListener l) {
+		if (listenerList == null) listenerList = new EventListenerList();
+		listenerList.add(ListDataListener.class, l);
 	}
 
+
+	public void removeListDataListener(ListDataListener l) {
+		if (listenerList == null) listenerList = new EventListenerList();
+		listenerList.remove(ListDataListener.class, l);
+	}*/
+
 	public Album getAlbumByName(String name) {
+		ArrayList albumList = getFlatAlbumList();
 		if (albumList == null || name == null) {
 			return null;
 		}
@@ -891,123 +964,26 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		this.blockWrites = blockWrites;
 	}
 
-	/********** TreeModel interface **********/
-
-	/**
-	 * Returns the root of the tree.  Returns <code>null</code>
-	 * only if the tree has no nodes.
-	 * 
-	 * @return the root of the tree
-	 */
-	public Object getRoot() {
-		return root;
-	}
-
-	/**
-	 * Returns the number of children of <code>parent</code>.
-	 * Returns 0 if the node
-	 * is a leaf or if it has no children.  <code>parent</code> must be a node
-	 * previously obtained from this data source.
-	 * 
-	 * @param parent a node in the tree, obtained from this data source
-	 * @return the number of children of the node <code>parent</code>
-	 */
-	public int getChildCount(Object parent) {
-		if (parent == root) {
-			return rootAlbums.size();
-		} else {
-			return ((Album) parent).getSubAlbums().size();
-		}
-	}
-
-	/**
-	 * Returns <code>true</code> if <code>node</code> is a leaf.
-	 * It is possible for this method to return <code>false</code>
-	 * even if <code>node</code> has no children.
-	 * A directory in a filesystem, for example,
-	 * may contain no files; the node representing
-	 * the directory is not a leaf, but it also has no children.
-	 * 
-	 * @param node a node in the tree, obtained from this data source
-	 * @return true if <code>node</code> is a leaf
-	 */
-	public boolean isLeaf(Object node) {
-		if (node == root) {
-			return rootAlbums.size() == 0;
-		} else {
-			return ((Album) node).getSubAlbums().size() == 0;
-		}
-	}
-
-	/**
-	 * Returns the child of <code>parent</code> at index <code>index</code>
-	 * in the parent's
-	 * child array.  <code>parent</code> must be a node previously obtained
-	 * from this data source. This should not return <code>null</code>
-	 * if <code>index</code>
-	 * is a valid index for <code>parent</code> (that is <code>index >= 0 &&
-	 * index < getChildCount(parent</code>)).
-	 * 
-	 * @param parent a node in the tree, obtained from this data source
-	 * @return the child of <code>parent</code> at index <code>index</code>
-	 */
-	public Object getChild(Object parent, int index) {
-		if (parent == root) {
-			return rootAlbums.get(index);
-		} else {
-			return ((Album) parent).getSubAlbums().get(index);
-		}
-	}
-
-	/**
-	 * Returns the index of child in parent.  If <code>parent</code>
-	 * is <code>null</code> or <code>child</code> is <code>null</code>,
-	 * returns -1.
-	 * 
-	 * @param parent a note in the tree, obtained from this data source
-	 * @param child  the node we are interested in
-	 * @return the index of the child in the parent, or -1 if either
-	 *         <code>child</code> or <code>parent</code> are <code>null</code>
-	 */
-	public int getIndexOfChild(Object parent, Object child) {
-		if (parent == root) {
-			return rootAlbums.indexOf(child);
-		} else {
-			return ((Album) parent).getSubAlbums().indexOf(child);
-		}
-	}
-
-	/**
-	 * Messaged when the user has altered the value for the item identified
-	 * by <code>path</code> to <code>newValue</code>.
-	 * If <code>newValue</code> signifies a truly new value
-	 * the model should post a <code>treeNodesChanged</code> event.
-	 * 
-	 * @param path     path to the node that the user has altered
-	 * @param newValue the new value from the TreeCellEditor
-	 */
-	public void valueForPathChanged(TreePath path, Object newValue) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "valueForPathChanged");
-		Log.logStack(Log.LEVEL_TRACE, MODULE);
-		//To change body of implemented methods use Options | File Templates.
-	}
-
-	public Object[] getObjectArrayForAlbum(Album album) {
-		LinkedList path = new LinkedList();
-
-		path.addFirst(album);
-
-		Album parent = null;
-		while ((parent = album.getParentAlbum()) != null) {
-			path.addFirst(parent);
-			album = parent;
+	ArrayList flatAlbumList = null;
+	public ArrayList getFlatAlbumList() {
+		if (flatAlbumList == null) {
+			if (getRoot() != null) {
+				flatAlbumList = Collections.list(((Album) getRoot()).breadthFirstEnumeration());
+			} else {
+				flatAlbumList = null;
+			}
 		}
 
-		path.addFirst(root);
-
-		return path.toArray();
+		return flatAlbumList;
 	}
-	public TreePath getPathForAlbum(Album album) {
-		return new TreePath(getObjectArrayForAlbum(album));
+
+	public Album createRootAlbum() {
+		if (getRoot() != null) {
+			throw new IllegalStateException("Root album already exists");
+		}
+
+		setRoot(new Album(this));
+
+		return (Album) getRoot();
 	}
 }

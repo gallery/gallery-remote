@@ -40,12 +40,10 @@ import java.util.Iterator;
  * @author paour
  * @created 11 août 2002
  */
-public class Picture extends GalleryAbstractListModel implements Serializable, PreferenceNames, Cloneable {
+public class Picture extends GalleryItem implements Serializable, PreferenceNames, Cloneable {
 	public static final String MODULE = "Picture";
 
 	File source = null;
-	String caption = null;
-	Album album = null;
 
 	HashMap extraFields;
 
@@ -65,13 +63,15 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	int indexOnServer = -1;
 
 	transient double fileSize = 0;
-	transient String escapedCaption = null;
 	transient int indexCache = -1;
 
 	/**
 	 * Constructor for the Picture object
 	 */
-	public Picture() {
+	public Picture(Gallery gallery) {
+		super(gallery);
+
+		setAllowsChildren(false);
 	}
 
 
@@ -80,38 +80,39 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 * 
 	 * @param source File the Picture is based on
 	 */
-	public Picture(File source) {
+	public Picture(Gallery gallery, File source) {
+		this(gallery);
+
 		setSource(source);
 	}
 
 	public Object clone() {
-		Picture clone = new Picture();
-		clone.source = source;
-		clone.caption = caption;
-		clone.album = album;
+		Picture newPicture = (Picture) super.clone();
 
-		clone.extraFields = extraFields;
+		newPicture.source = source;
 
-		clone.angle = angle;
-		clone.flipped = flipped;
-		clone.suppressServerAutoRotate = suppressServerAutoRotate;
+		newPicture.extraFields = extraFields;
 
-		clone.online = online;
-		clone.urlFull = urlFull;
-		clone.sizeFull = sizeFull;
-		clone.urlResized = urlResized;
-		clone.sizeResized = sizeResized;
-		clone.urlThumbnail = urlThumbnail;
-		clone.sizeThumbnail = sizeThumbnail;
+		newPicture.angle = angle;
+		newPicture.flipped = flipped;
+		newPicture.suppressServerAutoRotate = suppressServerAutoRotate;
 
-		clone.fileSize = fileSize;
-		clone.escapedCaption = escapedCaption;
-		clone.indexCache = indexCache;
+		newPicture.online = online;
+		newPicture.urlFull = urlFull;
+		newPicture.sizeFull = sizeFull;
+		newPicture.urlResized = urlResized;
+		newPicture.sizeResized = sizeResized;
+		newPicture.urlThumbnail = urlThumbnail;
+		newPicture.sizeThumbnail = sizeThumbnail;
 
-		clone.albumOnServer = albumOnServer;
-		clone.indexOnServer = indexOnServer;
+		newPicture.fileSize = fileSize;
+		newPicture.escapedCaption = escapedCaption;
+		newPicture.indexCache = indexCache;
 
-		return clone;
+		newPicture.albumOnServer = albumOnServer;
+		newPicture.indexOnServer = indexOnServer;
+
+		return newPicture;
 	}
 
 
@@ -146,10 +147,6 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 * 
 	 * @param caption The new caption value
 	 */
-	public void setCaption(String caption) {
-		this.caption = caption;
-		this.escapedCaption = null;
-	}
 
 
 	/**
@@ -157,9 +154,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 * 
 	 * @param album The new album value
 	 */
-	public void setAlbum(Album album) {
+	/*public void setAlbum(Album album) {
 		this.album = album;
-	}
+	}*/
 
 
 	/**
@@ -183,6 +180,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 */
 	public File getUploadSource() {
 		File picture = getSource();
+		Album album = getParentAlbum();
 
 		if (album.getResize()) {
 			Dimension d = album.getResizeDimension();
@@ -226,30 +224,6 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	/**
-	 * Gets the caption attribute of the Picture object
-	 * 
-	 * @return The caption value
-	 */
-	public String getCaption() {
-		return caption;
-	}
-
-	/**
-	 * Cache the escapedCaption because the escaping is lengthy and this is called by a frequent UI method
-	 * 
-	 * @return the HTML escaped version of the caption
-	 */
-	public String getEscapedCaption() {
-		if (escapedCaption == null) {
-			if (caption != null) {
-				escapedCaption = HTMLEscaper.escape(caption);
-			}
-		}
-
-		return escapedCaption;
-	}
-
-	/**
 	 * Gets the size of the file
 	 * 
 	 * @return The size value
@@ -276,9 +250,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	 * 
 	 * @return The album
 	 */
-	public Album getAlbum() {
+	/*public Album getAlbum() {
 		return album;
-	}
+	}*/
 
 	public String toString() {
 		if (online) {
@@ -341,7 +315,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 		StringBuffer sb = new StringBuffer();
 		String sep = System.getProperty("line.separator");
 
-		for (Iterator it = album.getExtraFields().iterator(); it.hasNext();) {
+		for (Iterator it = getParentAlbum().getExtraFields().iterator(); it.hasNext();) {
 			String name = (String) it.next();
 			String value = (String) extraFields.get(name);
 
@@ -495,6 +469,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 	}
 
 	public int getIndex() {
+		Album album = getParentAlbum();
 		if (indexCache == -1
 				|| indexCache >= album.pictures.size()
 				|| album.pictures.get(indexCache) != this) {

@@ -396,8 +396,8 @@ public class PictureInspector extends JPanel
 				jIcon.setText(p.getSource().getName());
 				jPath.setText(p.getSource().getParent());
 			}
-			jAlbum.setText(p.getAlbum().getTitle());
-			if (p.getAlbum().getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_UPLOAD_CAPTION)) {
+			jAlbum.setText(p.getParentAlbum().getTitle());
+			if (p.getParentAlbum().getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_UPLOAD_CAPTION)) {
 				jCaption.setText(p.getCaption());
 				jCaption.setEditable(true);
 				jCaption.setBackground(UIManager.getColor("TextField.background"));
@@ -420,7 +420,7 @@ public class PictureInspector extends JPanel
 			jIcon.setText(GRI18n.getString(MODULE, "countElemSel", params));
 			jIcon.setIcon(ImageUtils.defaultThumbnail);
 			jPath.setText("");
-			jAlbum.setText(p.getAlbum().getTitle());
+			jAlbum.setText(p.getParentAlbum().getTitle());
 			jCaption.setText("");
 			jCaption.setEditable(false);
 			jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
@@ -439,7 +439,7 @@ public class PictureInspector extends JPanel
 	}
 
 	void addExtraFields(Picture p) {
-		ArrayList newExtraFields = p.getAlbum().getExtraFields();
+		ArrayList newExtraFields = p.getParentAlbum().getExtraFields();
 
 		if (newExtraFields == null) {
 			removeExtraFields();

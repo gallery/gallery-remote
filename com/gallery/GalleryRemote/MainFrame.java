@@ -122,11 +122,11 @@ public class MainFrame extends JFrame
 	JButton jNewAlbumButton = new JButton();
 
 	JMenu jMenuFile = new JMenu();
-	JMenuItem jMenuItemNew = new JMenuItem();
+	//JMenuItem jMenuItemNew = new JMenuItem();
 	JMenuItem jMenuItemOpen = new JMenuItem();
 	JMenuItem jMenuItemSave = new JMenuItem();
 	JMenuItem jMenuItemSaveAs = new JMenuItem();
-	JMenuItem jMenuItemClose = new JMenuItem();
+	//JMenuItem jMenuItemClose = new JMenuItem();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 
 	// Create a Vector to store the MRU menu items.  They
@@ -176,7 +176,7 @@ public class MainFrame extends JFrame
 					if (g == null) {
 						break;
 					}
-					g.addListDataListener(this);
+					//g.addListDataListener(this);
 					galleries.addElement(g);
 				} catch (Exception e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Error trying to load Gallery profile " + i);
@@ -320,7 +320,7 @@ public class MainFrame extends JFrame
 
 		jGalleryCombo.setModel(galleries);
 		galleries.addListDataListener(this);
-		updateGalleryParams();
+		selectedGalleryChanged();
 
 		// We've been initalized, we are now clean.
 		setDirtyFlag(false);
@@ -454,12 +454,12 @@ public class MainFrame extends JFrame
 				jNewGalleryButton.setEnabled(!inProgress);
 
 				// Disable New, Open, and Close
-				jMenuItemNew.setEnabled(!inProgress);
+				//jMenuItemNew.setEnabled(!inProgress);
 				jMenuItemOpen.setEnabled(!inProgress);
 				jMenuItemSave.setEnabled(!inProgress);
 				jMenuItemSaveAs.setEnabled(!inProgress);
-				jMenuItemClose.setEnabled(!inProgress
-						&& null != lastOpenedFile);
+				//jMenuItemClose.setEnabled(!inProgress
+				//		&& null != lastOpenedFile);
 
 				// in the event the library we use to save is missing, dim the menus
 				try {
@@ -479,7 +479,7 @@ public class MainFrame extends JFrame
 					jLoginButton.setText(GRI18n.getString(MODULE, "Log_in"));
 				}
 
-				jAlbumTree.setEnabled(!inProgress && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
+				jAlbumTree.setEnabled(!inProgress && jAlbumTree.getModel().getRoot() != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
 
 				// if the selected album is uploading, disable everything
 				boolean enabled = !inProgress && currentAlbum != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
@@ -545,33 +545,30 @@ public class MainFrame extends JFrame
 	}
 
 
-	private void updateGalleryParams() {
-		Log.log(Log.LEVEL_TRACE, MODULE, "updateGalleryParams: current gallery: " + getCurrentGallery());
-
-		updateAlbumCombo();
-	}
-
-
-	private void updateAlbumCombo() {
+	private void selectedGalleryChanged() {
 		Gallery currentGallery = getCurrentGallery();
-		Log.log(Log.LEVEL_TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateGalleryParams: current gallery: " + currentGallery);
 
-		if (currentGallery != null && jAlbumTree.getModel() != currentGallery) {
+		if (currentGallery != null /*&& jAlbumTree.getModel() != currentGallery*/) {
 			jAlbumTree.setModel(currentGallery);
-			currentGallery.addListDataListener(this);
+			//currentGallery.addListDataListener(this);
 		}
 
-		if (currentGallery == null || currentGallery.getSize() < 1) {
+		if (currentGallery == null || currentGallery.getRoot() == null) {
 			jAlbumTree.setEnabled(false);
 			jPicturesList.setEnabled(false);
-
-			updatePicturesList();
 		} else {
 			jAlbumTree.setEnabled(!inProgress);
-
-			updatePicturesList();
 		}
+
+		updatePicturesList();
 	}
+
+
+	/*private void updateAlbumCombo() {
+		Gallery currentGallery = getCurrentGallery();
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
+	}*/
 
 
 	private void updatePicturesList() {
@@ -703,7 +700,7 @@ public class MainFrame extends JFrame
 
 		saveState(f);
 
-		getCurrentGallery().uploadFiles(new UploadProgress(this));
+		getCurrentGallery().doUploadFiles(new UploadProgress(this));
 	}
 
 
@@ -724,11 +721,12 @@ public class MainFrame extends JFrame
 	public void fetchAlbums() {
 		Log.log(Log.LEVEL_INFO, MODULE, "fetchAlbums starting");
 
-		getCurrentGallery().fetchAlbums(jStatusBar);
+		getCurrentGallery().doFetchAlbums(jStatusBar);
 
 		//updateAlbumCombo();
 
-		if (jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) > 0) {
+		Object root = jAlbumTree.getModel().getRoot();
+		if (root != null && jAlbumTree.getModel().getChildCount(root) > 0) {
 			jAlbumTree.setSelectionPath(null);
 		}
 	}
@@ -741,13 +739,21 @@ public class MainFrame extends JFrame
 
 	public void newAlbum() {
 		NewAlbumDialog dialog = new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
-		final String newAlbumName = dialog.getNewAlbumName();
+		//String newAlbumName = dialog.getNewAlbumName();
 
-		if (newAlbumName == null || newAlbumName.length() == 0) {
+		Album newAlbum = dialog.getNewAlbum();
+		//Album parentAlbum = dialog.getParentAlbum();
+
+		if (newAlbum == null) {
 			return;
 		}
 
-		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbumName + "' created.");
+		String newAlbumName = getCurrentGallery().doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
+		if (newAlbumName.equals(newAlbum.getName())) {
+			newAlbum.setName(newAlbumName);
+		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbum + "' created.");
 		// there is probably a better way... this is needed to give the UI time to catch up
 		// and load the combo up with the reloaded album list
 		//new Thread() {
@@ -760,13 +766,14 @@ public class MainFrame extends JFrame
 
 				//SwingUtilities.invokeLater(new Runnable() {
 				//	public void run() {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbumName);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Selecting " + newAlbum);
 
-				TreePath path = getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName));
+				TreePath path = new TreePath(newAlbum.getPath());//new TreePath(getCurrentGallery().getPathToRoot(newAlbum));
 				//jAlbumTree.expandPath(path.getParentPath());
 				// todo: this call doesn't seem to have any effect
-				jAlbumTree.makeVisible(path);
+				//jAlbumTree.makeVisible(path);
 
+				jAlbumTree.scrollPathToVisible(path);
 				jAlbumTree.setSelectionPath(path);
 
 				//jAlbumTree.repaint();
@@ -932,10 +939,10 @@ public class MainFrame extends JFrame
 
 		jMenuFile.setText(GRI18n.getString(MODULE, "menuFile"));
 
-		jMenuItemNew.setText(GRI18n.getString(MODULE, "menuNew"));
+		/*jMenuItemNew.setText(GRI18n.getString(MODULE, "menuNew"));
 		jMenuItemNew.setActionCommand("File.New");
 		jMenuItemNew.setIcon(GalleryRemote.iNew);
-		jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, GalleryRemote.ACCELERATOR_MASK));
+		jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, GalleryRemote.ACCELERATOR_MASK));*/
 
 		jMenuItemOpen.setText(GRI18n.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand("File.Open");
@@ -950,13 +957,13 @@ public class MainFrame extends JFrame
 		jMenuItemSaveAs.setText(GRI18n.getString(MODULE, "menuSaveAs"));
 		jMenuItemSaveAs.setActionCommand("File.SaveAs");
 
-		jMenuItemClose.setText(GRI18n.getString(MODULE, "menuClose"));
+		/*jMenuItemClose.setText(GRI18n.getString(MODULE, "menuClose"));
 		jMenuItemClose.setActionCommand("File.Close");
 		if (GalleryRemote.IS_MAC_OS_X) {
 			jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, GalleryRemote.ACCELERATOR_MASK));
 		} else {
 			jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, GalleryRemote.ACCELERATOR_MASK));
-		}
+		}*/
 
 		jMenuItemQuit.setText(GRI18n.getString(MODULE, "menuQuit"));
 		jMenuItemQuit.setActionCommand("File.Quit");
@@ -1046,11 +1053,11 @@ public class MainFrame extends JFrame
 			jMenuBar1.add(jMenuHelp);
 		}
 
-		jMenuFile.add(jMenuItemNew);
+		//jMenuFile.add(jMenuItemNew);
 		jMenuFile.add(jMenuItemOpen);
 		jMenuFile.add(jMenuItemSave);
 		jMenuFile.add(jMenuItemSaveAs);
-		jMenuFile.add(jMenuItemClose);
+		//jMenuFile.add(jMenuItemClose);
 
 		jMenuFile.addSeparator();
 
@@ -1100,11 +1107,11 @@ public class MainFrame extends JFrame
 		jAlbumTree.addTreeSelectionListener(this);
 		jMenuItemPrefs.addActionListener(this);
 		jMenuItemClearCache.addActionListener(this);
-		jMenuItemNew.addActionListener(this);
+		//jMenuItemNew.addActionListener(this);
 		jMenuItemOpen.addActionListener(this);
 		jMenuItemSave.addActionListener(this);
 		jMenuItemSaveAs.addActionListener(this);
-		jMenuItemClose.addActionListener(this);
+		//jMenuItemClose.addActionListener(this);
 		jMenuItemQuit.addActionListener(this);
 		jMenuItemAbout.addActionListener(this);
 		jMenuItemCut.addActionListener(this);
@@ -1207,14 +1214,14 @@ public class MainFrame extends JFrame
 
 		if (command.equals("File.Quit")) {
 			thisWindowClosing(null);
-		} else if (command.equals("File.New")) {
+		/*} else if (command.equals("File.New")) {
 			int response = saveOnPermission("OK_toSaveBeforeClose");
 
 			if (JOptionPane.CANCEL_OPTION == response) {
 				return;
 			}
 
-			resetState();
+			resetState();*/
 		} else if (command.equals("File.Open")) {
 			openState(MRUFileName);
 		} else if (command.equals("File.Save")) {
@@ -1226,14 +1233,14 @@ public class MainFrame extends JFrame
 			}
 		} else if (command.equals("File.SaveAs")) {
 			saveAsState();
-		} else if (command.equals("File.Close")) {
+		/*} else if (command.equals("File.Close")) {
 			int response = saveOnPermission("OK_toSaveBeforeClose");
 
 			if (JOptionPane.CANCEL_OPTION == response) {
 				return;
 			}
 
-			resetState();
+			resetState();*/
 		} else if (command.equals("Edit.Cut")) {
 			doCut();
 		} else if (command.equals("Edit.Copy")) {
@@ -1341,7 +1348,7 @@ public class MainFrame extends JFrame
 	 * file).  We assume that the UI portion has already asked the user
 	 * if this is OK.
 	 */
-	private void resetState() {
+	/*private void resetState() {
 		getCurrentGallery().deleteAllPictures();
 
 		lastOpenedFile = null;
@@ -1351,7 +1358,7 @@ public class MainFrame extends JFrame
 
 		updateAlbumCombo();
 		resetUIState();
-	}
+	}*/
 
 
 	private void saveAsState() {
@@ -1563,13 +1570,13 @@ public class MainFrame extends JFrame
 
 						newGalleries.addElement(gallery);
 						//galleryArray[i].checkTransients();
-						gallery.addListDataListener(MainFrame.this);
+						//gallery.addListDataListener(MainFrame.this);
 
 						ArrayList pictures = gallery.getAllPictures();
 						preloadThumbnails(pictures.iterator());
 
 						if (pictures.size() > 0) {
-							gallery.fetchAlbums(jStatusBar, false);
+							gallery.doFetchAlbums(jStatusBar, false);
 
 							if (selectGallery == null) {
 								selectGallery = gallery;
@@ -1674,7 +1681,7 @@ public class MainFrame extends JFrame
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
 		//jAlbumTree.treeDidChange();
-		updateAlbumCombo();
+		updatePicturesList();
 
 		jAlbumInspector.setAlbum(getCurrentAlbum());
 		jInspectorCardLayout.show(jInspectorPanel, CARD_ALBUM);
@@ -1700,10 +1707,10 @@ public class MainFrame extends JFrame
 			// the list data changes (and nothing remains to be selected), no
 			// selection change events are fired.
 			updatePicturesList();
-		} else if (source instanceof Gallery) {
-			updateAlbumCombo();
+		//} else if (source instanceof Gallery) {
+		//	updateAlbumCombo();
 		} else if (source instanceof DefaultComboBoxModel) {
-			updateGalleryParams();
+			selectedGalleryChanged();
 		} else {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Unknown source " + source);
 		}
@@ -1876,15 +1883,15 @@ public class MainFrame extends JFrame
 	}
 
 	public void treeNodesInserted(TreeModelEvent e) {
-		treeNodesChanged(e);
+		//treeNodesChanged(e);
 	}
 
 	public void treeNodesRemoved(TreeModelEvent e) {
-		treeNodesChanged(e);
+		//treeNodesChanged(e);
 	}
 
 	public void treeStructureChanged(TreeModelEvent e) {
-		treeNodesChanged(e);
+		//treeNodesChanged(e);
 	}
 
 	class AlbumTreeRenderer extends DefaultTreeCellRenderer {
@@ -1940,12 +1947,12 @@ public class MainFrame extends JFrame
 		}
 
 		public Dimension getPreferredSize() {
-		Dimension        retDimension = super.getPreferredSize();
+			Dimension        retDimension = super.getPreferredSize();
 
-		if(retDimension != null)
-			retDimension = new Dimension((int) (retDimension.width * 1.5 + 15),
-						 retDimension.height);
-		return retDimension;
+			if(retDimension != null)
+				retDimension = new Dimension((int) (retDimension.width * 1.5 + 15),
+						retDimension.height);
+			return retDimension;
 		}
 	}
 
@@ -1960,7 +1967,7 @@ public class MainFrame extends JFrame
 				gallery = (Gallery) value;
 			}
 
-			if (gallery != null && gallery.getAlbumList() != null) {
+			if (gallery != null && gallery.getRoot() != null) {
 				Font font = getFont().deriveFont(Font.BOLD);
 				setFont(font);
 				//list.setFont(font);

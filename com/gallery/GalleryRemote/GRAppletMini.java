@@ -81,7 +81,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		album = new Album(gallery);
 		album.setSuppressEvents(true);
 		album.setName(info.albumName);
-		gallery.addAlbum(album);
+		//gallery.addAlbum(album);
 
 		jPicturesList.setModel(album);
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
@@ -229,7 +229,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				hasHadPictures = true;
 			}
 		} else if (e.getSource() == jUpload) {
-			gallery.uploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));
+			gallery.doUploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));
 		}
 	}
 }

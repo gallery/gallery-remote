@@ -125,7 +125,7 @@ public abstract class GalleryComm implements PreferenceNames {
         throw new RuntimeException("This method is not available on this protocol");
     }
 
-	public void moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
+	public boolean moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
@@ -203,10 +203,12 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
 				// Test GalleryComm1
 				// BUT: only if first try was not status code 401 = authorization failure
-				String urlPath1 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME);
+				String scriptName = "gallery_remote.php";
+				String urlPath1 = urlPath + ((urlPath.endsWith("/")) ? scriptName : "/" + scriptName);
 				if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 1");
-					return new GalleryComm1(g);
+
+					// todo: Alert, we don't support protocol 1 any more.
 				}
 			} else {
 				// if Gallery is embedded, only support protocol 2

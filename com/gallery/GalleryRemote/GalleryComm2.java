@@ -198,9 +198,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		doTask(fetchAlbumImagesTask, async);
 	}
 
-	public void moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
+	public boolean moveAlbum(StatusUpdate su, Album a, Album newParent, boolean async) {
 		MoveAlbumTask moveAlbumTask = new MoveAlbumTask(su, a, newParent);
 		doTask(moveAlbumTask, async);
+
+		return moveAlbumTask.getSuccess();
 	}
 
 	public void login(StatusUpdate su) {
@@ -577,7 +579,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_PROGRESS, ++uploadedCount);
 
 				if (allGood) {
-					p.getAlbum().removePicture(p);
+					p.getParentAlbum().removePicture(p);
 				}
 			}
 
@@ -614,7 +616,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				NVPair[] opts = {
 					new NVPair("cmd", "add-item"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
-					new NVPair("set_albumName", p.getAlbum().getName()),
+					new NVPair("set_albumName", p.getParentAlbum().getName()),
 					new NVPair("caption", caption),
 					new NVPair("force_filename", p.getSource().getName()),
 					null
@@ -706,6 +708,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					list22();
 				}
 
+				// tell the tree to reload
+				g.reload();
+
 				Log.log(Log.LEVEL_INFO, MODULE, "execution time for AlbumList: " + (System.currentTimeMillis() - startTime));
 			} catch (GR2Exception gr2e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
@@ -742,6 +747,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 //	System.err.println( "### albumCount = " + albumCount );
 				HashMap ref2parKey = new HashMap();
 				HashMap ref2album = new HashMap();
+
+				Album rootAlbum = g.createRootAlbum();
+
 				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
 					a.setSuppressEvents(true);
@@ -778,7 +786,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					if (parentRef != 0) {
 						ref2parKey.put("" + i, parentRefS);
 					} else {
-						a.setParentAlbum(null);
+						rootAlbum.add(a);
 					}
 				}
 
@@ -789,14 +797,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						Album a = (Album) ref2album.get("" + i);
 						if (a != null) {
 							Album pa = (Album) ref2album.get(parentKey);
-							a.setParentAlbum(pa);
+							pa.add(a);
 						}
 					}
 				}
 
 				status(su, StatusUpdate.LEVEL_BACKGROUND, GRI18n.getString(MODULE, "ftchdAlbms"));
 
-				g.setAlbumList(mAlbumList);
+				//g.setAlbumList(mAlbumList);
 			} else {
 				Object[] params = {p.getProperty("status_text")};
 				error(su, GRI18n.getString(MODULE, "error", params));
@@ -821,6 +829,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 //	System.err.println( "### albumCount = " + albumCount );
 				HashMap name2parentName = new HashMap();
 				HashMap name2album = new HashMap();
+
+				Album rootAlbum = g.createRootAlbum();
+
 				for (int i = 1; i < albumCount + 1; i++) {
 					Album a = new Album(g);
 					a.setSuppressEvents(true);
@@ -850,15 +861,24 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					albums.add(a);
 
-					// map album names to parent albums
+					// map album names to albums
 					name2album.put(name, a);
 
 					// map album refs to parent refs
 					String parentName = p.getProperty(parentKey);
+
+					if (parentName.equals(name)) {
+						Log.log(Log.LEVEL_ERROR, MODULE, "Gallery error: the album " + name +
+								" is its own parent. You should delete it, the album database " +
+								"is corrupted because of it.");
+
+						parentName = null;
+					}
+
 					if (parentName != null && parentName.length() > 0 && !parentName.equals("0")) {
 						name2parentName.put(name, parentName);
 					} else {
-						a.setParentAlbum(null);
+						rootAlbum.add(a);
 					}
 				}
 
@@ -873,7 +893,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					Album parent = (Album) name2album.get(parentName);
 
 					if (child != null && parent != null) {
-						child.setParentAlbum(parent);
+						parent.add(child);
 					}
 				}
 
@@ -943,7 +963,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				status(su, StatusUpdate.LEVEL_BACKGROUND, GRI18n.getString(MODULE, "ftchdAlbms"));
 
-				g.setAlbumList(orderedAlbums);
+				//g.setAlbumList(orderedAlbums);
 			} else {
 				Object[] params = {p.getProperty("status_text")};
 				error(su, GRI18n.getString(MODULE, "error", params));
@@ -1152,7 +1172,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						if (subAlbumName != null) {
 							fetch(a, subAlbumName, newPictures);
 						} else {
-							Picture picture = new Picture();
+							Picture picture = new Picture(g);
 							picture.setOnline(true);
 							picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
 							width = p.getIntProperty("image.raw_width." + i, 0);
@@ -1218,6 +1238,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	class MoveAlbumTask extends GalleryTask {
 		Album a;
 		Album newParent;
+		boolean success = false;
 
 		MoveAlbumTask(StatusUpdate su, Album a, Album newParent) {
 			super(su);
@@ -1256,6 +1277,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC,
 							GRI18n.getString(MODULE, "moveAlbumDone"));
+
+					success = true;
 				} else {
 					error(su, "Error: " + p.getProperty("status_text"));
 				}
@@ -1273,6 +1296,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Object[] params2 = {me.toString()};
 				error(su, GRI18n.getString(MODULE, "error", params2));
 			}
+		}
+
+		public boolean getSuccess() {
+			return success;
 		}
 	}
 

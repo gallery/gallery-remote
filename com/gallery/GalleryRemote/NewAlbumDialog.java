@@ -42,10 +42,10 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		implements ActionListener {
 	public final static String MODULE = "NewAlbum";
 
-
 	Gallery gallery = null;
 	Album defaultAlbum = null;
-	Album rootAlbum = null;
+	Album newAlbum = null;
+	Album parentAlbum = null;
 
 	JLabel jLabel2 = new JLabel();
 	JLabel jLabel3 = new JLabel();
@@ -61,7 +61,6 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
 	GridLayout gridLayout1 = new GridLayout();
-	private String newAlbumName;
 
 
 	/**
@@ -91,18 +90,18 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		this.setModal(true);
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 
-		Vector albums = new Vector(gallery.getAlbumList());
-		rootAlbum = new Album(gallery);
-		rootAlbum.setSuppressEvents(true);
-		rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
-		rootAlbum.setName("root.root");
-		albums.add(0, rootAlbum);
+		Vector albums = new Vector(gallery.getFlatAlbumList());
+		//rootAlbum = new Album(gallery);
+		//rootAlbum.setSuppressEvents(true);
+		//rootAlbum.setTitle(GRI18n.getString(MODULE, "rootAlbmTitle"));
+		//rootAlbum.setName("root.root");
+		//albums.add(0, rootAlbum);
 
 		jAlbum = new JComboBox(albums);
 		jAlbum.setFont(UIManager.getFont("Label.font"));
 
 		if (defaultAlbum == null) {
-			jAlbum.setSelectedItem(rootAlbum);
+			jAlbum.setSelectedItem(gallery.getRoot());
 		} else {
 			jAlbum.setSelectedItem(defaultAlbum);
 		}
@@ -170,34 +169,39 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		if (command.equals("Cancel")) {
 			setVisible(false);
 		} else if (command.equals("OK")) {
-			Album a = new Album(gallery);
-			a.setSuppressEvents(true);
-			a.setName(jName.getText());
-			a.setTitle(jTitle.getText());
-			a.setCaption(jDescription.getText());
+			newAlbum = new Album(gallery);
+			//newAlbum.setSuppressEvents(true);
+			newAlbum.setName(jName.getText());
+			newAlbum.setTitle(jTitle.getText());
+			newAlbum.setCaption(jDescription.getText());
 
-			a.setSuppressEvents(false);
+			//newAlbum.setSuppressEvents(false);
 
-			Album selectedAlbum = (Album) jAlbum.getSelectedItem();
-			if (selectedAlbum == rootAlbum) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Selected root album");
-				a.setParentAlbum(null);
-			} else {
-				a.setParentAlbum(selectedAlbum);
-			}
+			parentAlbum = (Album) jAlbum.getSelectedItem();
+			parentAlbum.getGallery().insertNodeInto(newAlbum, parentAlbum, parentAlbum.getChildCount());
+			//if (selectedAlbum == rootAlbum) {
+			//	Log.log(Log.LEVEL_TRACE, MODULE, "Selected root album");
+			//	a.setParentAlbum(null);
+			//} else {
+			//selectedAlbum.add(newAlbum);
+			//}
 
-			newAlbumName = gallery.newAlbum(a, GalleryRemote._().getCore().getMainStatusUpdate());
+			//newAlbumName = gallery.doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
 
-			if (newAlbumName == null) {
-				newAlbumName = jName.getText();
-			}
+			//if (newAlbumName == null) {
+			//	newAlbumName = jName.getText();
+			//}
 
 			setVisible(false);
 		}
 	}
 
-	public String getNewAlbumName() {
-		return newAlbumName;
+	public Album getNewAlbum() {
+		return newAlbum;
+	}
+
+	public Album getParentAlbum() {
+		return parentAlbum;
 	}
 }
 

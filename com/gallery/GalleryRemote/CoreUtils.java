@@ -152,7 +152,7 @@ public class CoreUtils {
 				Picture p = currentAlbum.getPicture(index);
 
 				if (p.isOnline()) {
-					if (p.getAlbum() != p.getAlbumOnServer()
+					if (p.getParentAlbum() != p.getAlbumOnServer()
 							|| p.getIndex() != p.getIndexOnServer()) {
 						setForeground(Color.red);
 					} else {

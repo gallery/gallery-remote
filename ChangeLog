@@ -1,3 +1,14 @@
+2004-02-26  Pierre-Luc Paour <gallery@paour.com> (1.4-b1)
+
+	* Attempt to make the tree render correctly by moving to
+	  DefaultTreeModel and DefaultMutableTreeNodes. This is still
+	  unsuccessful and I need help.
+	* Diabled Protocol 1, since it's incompatible with sophisticated
+	  tree handling.
+	* Much improved model classes, through a major refactoring.
+
+	Some functionality broken, DO NOT USE THIS VERSION, stay on BRANCH_GR_1_3
+
 2004-02-25  Pierre-Luc Paour <gallery@paour.com> (1.3.2-b6)
 
 	* Solved a very long-standing problem where I didn't know how
