@@ -85,10 +85,7 @@ public class MainFrame extends javax.swing.JFrame
 	JPanel jPanel4 = new JPanel();
 	JProgressBar progress = new JProgressBar();
 	JLabel status = new JLabel();
-	Border border1;
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
-	Border border2;
-	JList picturesList = new DroppableList();
 	JMenu jMenuFile = new JMenu();
 	JMenuItem jMenuItemQuit = new JMenuItem();
 	JMenu jMenuHelp = new JMenu();
@@ -97,6 +94,8 @@ public class MainFrame extends javax.swing.JFrame
 	JCheckBoxMenuItem jCheckBoxMenuThumbnails = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPreview = new JCheckBoxMenuItem();
 	JCheckBoxMenuItem jCheckBoxMenuPath = new JCheckBoxMenuItem();
+	JScrollPane jScrollPane1 = new JScrollPane();
+	JList picturesList = new DroppableList();
 
 
 	/**
@@ -134,26 +133,30 @@ public class MainFrame extends javax.swing.JFrame
 		picturesList.setModel( mAlbum );
 		picturesList.setCellRenderer( new FileCellRenderer() );
 		( (DroppableList) picturesList ).setMainFrame( this );
-		
-		pictureInspector.setMainFrame(this);
+
+		pictureInspector.setMainFrame( this );
 
 		previewFrame.initComponents();
 
 		updateUI();
 
-		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
-			previewFrame.setVisible( true );
-		}
-
 		jCheckBoxMenuThumbnails.setSelected( GalleryRemote.getInstance().properties.getShowThumbnails() );
 		jCheckBoxMenuPreview.setSelected( GalleryRemote.getInstance().properties.getShowPreview() );
 		jCheckBoxMenuPath.setSelected( GalleryRemote.getInstance().properties.getShowPath() );
 		setShowThumbnails( GalleryRemote.getInstance().properties.getShowThumbnails() );
-		inspectorDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty("inspectorDividerLocation") );
-		
-		url.addItem(GalleryRemote.getInstance().properties.getProperty("url.1"));
-		username.setText(GalleryRemote.getInstance().properties.getProperty("username.1"));
-		password.setText(GalleryRemote.getInstance().properties.getBase64Property("password.1"));
+		inspectorDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty( "inspectorDividerLocation" ) );
+
+		url.addItem( GalleryRemote.getInstance().properties.getProperty( "url.1" ) );
+		username.setText( GalleryRemote.getInstance().properties.getProperty( "username.1" ) );
+		password.setText( GalleryRemote.getInstance().properties.getBase64Property( "password.1" ) );
+
+		setVisible( true );
+
+		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
+			previewFrame.setVisible( true );
+		}
+
+		toFront();
 	}
 
 
@@ -163,13 +166,13 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
-		GalleryRemote.getInstance().properties.setProperty("url.1", (String) url.getSelectedItem());
-		GalleryRemote.getInstance().properties.setProperty("username.1", username.getText());
-		GalleryRemote.getInstance().properties.setBase64Property("password.1", password.getText());
+		GalleryRemote.getInstance().properties.setProperty( "url.1", (String) url.getSelectedItem() );
+		GalleryRemote.getInstance().properties.setProperty( "username.1", username.getText() );
+		GalleryRemote.getInstance().properties.setBase64Property( "password.1", password.getText() );
 
-		GalleryRemote.getInstance().properties.setMainBounds(getBounds());
-		GalleryRemote.getInstance().properties.setPreviewBounds(previewFrame.getBounds());
-		GalleryRemote.getInstance().properties.setIntProperty("inspectorDividerLocation", inspectorDivider.getDividerLocation());
+		GalleryRemote.getInstance().properties.setMainBounds( getBounds() );
+		GalleryRemote.getInstance().properties.setPreviewBounds( previewFrame.getBounds() );
+		GalleryRemote.getInstance().properties.setIntProperty( "inspectorDividerLocation", inspectorDivider.getDividerLocation() );
 
 		GalleryRemote.getInstance().properties.write();
 
@@ -186,6 +189,24 @@ public class MainFrame extends javax.swing.JFrame
 				( album.getSelectedIndex() >= 0 ) );
 		browse.setEnabled( !mInProgress );
 		fetch.setEnabled( !mInProgress );
+
+		pictureInspector.setPicture( (Picture) picturesList.getSelectedValue() );
+
+		int sel = picturesList.getSelectedIndex();
+		int selN = picturesList.getSelectedIndices().length;
+		delete.setEnabled( sel != -1 );
+
+		if ( sel == -1 ) {
+			setStatus( mAlbum.sizePictures() + " pictures, "
+				+ ( (int) mAlbum.getPictureFileSize() / 1024 ) + " K" );
+		} else {
+			setStatus( "Selected " + selN + ((sel==1)?" picture, ":" pictures, ")
+				+ ( (int) mAlbum.getObjectFileSize(picturesList.getSelectedValues()) / 1024 ) + " K" );
+		}
+		
+		//jButtonUp.setEnabled( selN == 1 );
+		//jButtonDown.setEnabled( selN == 1 );
+
 	}
 
 
@@ -199,12 +220,12 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	private void updateStatus( String message ) {
+	private void setStatus( String message ) {
 		status.setText( message );
 	}
 
 
-	private void updateProgress( int value ) {
+	private void setProgress( int value ) {
 		progress.setValue( value );
 	}
 
@@ -213,13 +234,14 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Open a file selection dialog and load the corresponding files
 	 */
 	public void browseAddPictures() {
-		updateStatus( "Select pictures to add to the list" );
+		setStatus( "Select pictures to add to the list" );
 		File[] files = AddFileDialog.addFiles( this );
 
 		if ( files != null ) {
 			addPictures( files );
 		}
-		updateStatus( "" );
+
+		updateUI();
 	}
 
 
@@ -276,12 +298,12 @@ public class MainFrame extends javax.swing.JFrame
 			new ActionListener()
 			{
 				public void actionPerformed( ActionEvent evt ) {
-					updateProgress( mGalleryComm.getUploadedCount() );
-					updateStatus( mGalleryComm.getStatus() );
+					setProgress( mGalleryComm.getUploadedCount() );
+					setStatus( mGalleryComm.getStatus() );
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
-						updateProgress( progress.getMinimum() );
+						setProgress( progress.getMinimum() );
 						progress.setStringPainted( false );
 						mAlbum.clearPictures();
 						mInProgress = false;
@@ -299,6 +321,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Fetch Albums from server and update UI
 	 */
 	public void fetchAlbums() {
+		setStatus("Fetching albums...");
 		mGalleryComm.setURLString( (String) url.getSelectedItem() );
 		mGalleryComm.setUsername( username.getText() );
 		mGalleryComm.setPassword( password.getText() );
@@ -311,7 +334,7 @@ public class MainFrame extends javax.swing.JFrame
 			new ActionListener()
 			{
 				public void actionPerformed( ActionEvent evt ) {
-					updateStatus( mGalleryComm.getStatus() );
+					//setStatus( mGalleryComm.getStatus() );
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
@@ -424,11 +447,11 @@ public class MainFrame extends javax.swing.JFrame
 	/**
 	 *  Get a thumbnail from the thumbnail cache
 	 *
-	 *@param  p		picture whose thumbnail is to be fetched
-	 *@return           The thumbnail value
+	 *@param  p  picture whose thumbnail is to be fetched
+	 *@return    The thumbnail value
 	 */
 	public ImageIcon getThumbnail( Picture p ) {
-		return getThumbnail(p.getSource().getPath());
+		return getThumbnail( p.getSource().getPath() );
 	}
 
 
@@ -476,7 +499,7 @@ public class MainFrame extends javax.swing.JFrame
 		inspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
 		browse.setAlignmentX( (float) 1.0 );
-		browse.setText( "Browse for pictures to upload..." );
+		browse.setText( "Add pictures..." );
 		browse.setActionCommand( "Browse" );
 		url.setNextFocusableComponent( username );
 		url.setEditable( true );
@@ -505,6 +528,7 @@ public class MainFrame extends javax.swing.JFrame
 		jCheckBoxMenuPath.setText( "Show Path" );
 		username.setNextFocusableComponent( password );
 		password.setNextFocusableComponent( fetch );
+		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
 		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
@@ -525,13 +549,14 @@ public class MainFrame extends javax.swing.JFrame
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		this.getContentPane().add( inspectorDivider, new GridBagConstraints( 0, 1, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 2, 2, 2 ), 0, 0 ) );
-		inspectorDivider.add( pictureInspector, JSplitPane.RIGHT );
-		inspectorDivider.add( picturesList, JSplitPane.LEFT );
+		inspectorDivider.add( pictureInspector, JSplitPane.BOTTOM );
+		inspectorDivider.add( jScrollPane1, JSplitPane.TOP );
+		jScrollPane1.getViewport().add( picturesList, null );
 		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		jPanel3.add( browse, null );
-		jPanel3.add( upload, null );
 		jPanel3.add( delete, null );
+		jPanel3.add( upload, null );
 		this.getContentPane().add( jPanel4, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 		jPanel4.add( progress, new GridBagConstraints( 1, 0, 1, 1, 0.25, 0.0
@@ -556,12 +581,14 @@ public class MainFrame extends javax.swing.JFrame
 		upload.addActionListener( this );
 		delete.addActionListener( this );
 		browse.addActionListener( this );
-
 		jMenuItemQuit.addActionListener( this );
 		jMenuItemAbout.addActionListener( this );
+
 		jCheckBoxMenuThumbnails.addItemListener( this );
 		jCheckBoxMenuPreview.addItemListener( this );
 		jCheckBoxMenuPath.addItemListener( this );
+		album.addItemListener( this );
+		url.addItemListener( this );
 
 		picturesList.addListSelectionListener( this );
 
@@ -622,7 +649,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Description of Parameter
 	 */
 	public void itemStateChanged( ItemEvent e ) {
-		Object item = e.getItem();
+		Object item = e.getItemSelectable();
 
 		if ( item == jCheckBoxMenuThumbnails ) {
 			setShowThumbnails( e.getStateChange() == ItemEvent.SELECTED );
@@ -631,8 +658,13 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( item == jCheckBoxMenuPath ) {
 			GalleryRemote.getInstance().properties.setShowPath( ( e.getStateChange() == ItemEvent.SELECTED ) ? true : false );
 			picturesList.repaint();
+		} else if ( item == album ) {
+			mAlbum.setName( (String) ( (JComboBox) item ).getSelectedItem() );
+		} else if ( item == url ) {
+			// TODO: url changed, update username and password from cache
 		} else {
 			System.out.println( "Unhandled item state change " + item );
+			Thread.dumpStack();
 		}
 	}
 
@@ -658,14 +690,8 @@ public class MainFrame extends javax.swing.JFrame
 				previewFrame.setVisible( true );
 			}
 		}
-		
-		pictureInspector.setPicture((Picture) picturesList.getSelectedValue());
 
-		delete.setEnabled( sel != -1 );
-
-		int selN = picturesList.getSelectedIndices().length;
-		//jButtonUp.setEnabled( selN == 1 );
-		//jButtonDown.setEnabled( selN == 1 );
+		updateUI();
 	}
 
 
