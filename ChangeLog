@@ -11,6 +11,8 @@
 	* Fixed losing caption when selecting more than one picture.
 	* Fixed drag-n-dropping folders.
 	* Unhacked list selection.
+	* Modified HTTPConnection so it can be instanciated on Java 1.3
+	  even though https is not supported.
 
 2003-06-12  Pierre-Luc Paour <gallery@paour.com> (1.1-b3)
 

@@ -320,11 +320,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     private boolean              allowUI;
 
     /** JSSE's default socket factory */
-    private static SSLSocketFactory defaultSSLFactory =
-	(SSLSocketFactory) SSLSocketFactory.getDefault();
+    private static Object defaultSSLFactory = null;
 
     /** JSSE's socket factory */
-    private SSLSocketFactory     sslFactory;
+    private Object     sslFactory = null;
 
 
     static
@@ -519,6 +518,12 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	}
 	catch (Exception e)
 	    { }
+
+	try {
+		defaultSSLFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+	} catch (Throwable t) {
+		// probably class not found exception, for example on Java 1.3
+	}
     }
 
 
@@ -1445,7 +1450,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      */
     public static SSLSocketFactory getDefaultSSLSocketFactory()
     {
-	return defaultSSLFactory;
+	return (SSLSocketFactory) defaultSSLFactory;
     }
 
     /**
@@ -1466,7 +1471,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
      */
     public SSLSocketFactory getSSLSocketFactory()
     {
-	return sslFactory;
+	return (SSLSocketFactory) sslFactory;
     }
 
     /**
@@ -1911,7 +1916,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
 	// check if module implements HTTPClientModule
 	try
-	    { HTTPClientModule tmp = (HTTPClientModule) module.newInstance(); }
+	    { module.newInstance(); }
 	catch (RuntimeException re)
 	    { throw re; }
 	catch (Exception e)
@@ -2945,7 +2950,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 			}
 
                         sock.setSoTimeout(con_timeout);
-			sock = sslFactory.createSocket(sock, Host, Port, true);
+			sock = ((SSLSocketFactory) sslFactory).createSocket(sock, Host, Port, true);
 			checkCert(((SSLSocket) sock).getSession().
 					getPeerCertificateChain()[0], Host);
 		    }
@@ -3306,7 +3311,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	if (Util.wildcardMatch(name, host))
 	    return;
 
-	throw new SSLException("Name in certificate `" + name + "' does not " +
+	throw new IOException("Name in certificate `" + name + "' does not " +
 			       "match host name `" + host + "'");
     }
 
