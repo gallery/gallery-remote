@@ -60,7 +60,9 @@ public class AlbumInspector extends JPanel
 	JButton jFetch = new JButton();
 	JButton jSlideshow = new JButton();
 	JButton jNew = new JButton();
-	JButton jApply = new JButton();
+	// todo: change back when protocol support in implemented
+	//JButton jApply = new JButton();
+	JLabel jApply = new JLabel();
 	JButton jMove = new JButton();
 	JCheckBox jResizeBeforeUpload = new JCheckBox();
 	JRadioButton jResizeToDefault = new JRadioButton();
@@ -208,7 +210,8 @@ public class AlbumInspector extends JPanel
 		jFetch.addActionListener(this);
 		jSlideshow.addActionListener(this);
 		jNew.addActionListener(this);
-		jApply.addActionListener(this);
+		// todo
+		// jApply.addActionListener(this);
 		jMove.addActionListener(this);
 
 		jBeginning.addItemListener(this);
@@ -354,10 +357,19 @@ public class AlbumInspector extends JPanel
 
 			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
 			jMove.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_MOVE_ALBUM));
-
-			// todo
-			jApply.setEnabled(false);
 		}
+
+		// todo: protocol support
+		jApply.setEnabled(false);
+		jName.setEditable(false);
+		jName.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		jTitle.setEditable(false);
+		jTitle.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		jSummary.setEditable(false);
+		jSummary.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+
+		jPictures.setEditable(false);
+		jPictures.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 
 		resetUIState();
 
@@ -416,11 +428,7 @@ public class AlbumInspector extends JPanel
 
 	public Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				((Component) evt.getSource()).transferFocusBackward();
-			} catch (NoSuchMethodError e) {
-				Log.log(Log.LEVEL_ERROR, MODULE, "Can't transfer focus backwards on 1.3");
-			}
+			((Component) evt.getSource()).transferFocusBackward();
 		}
 	};
 

@@ -154,12 +154,12 @@ public class CoreUtils {
 				if (p.isOnline()) {
 					if (p.getAlbum() != p.getAlbumOnServer()
 							|| p.getIndex() != p.getIndexOnServer()) {
-						setForeground(Color.RED);
+						setForeground(Color.red);
 					} else {
-						setForeground(Color.GREEN);
+						setForeground(Color.green);
 					}
 				} else {
-					setForeground(Color.BLACK);
+					setForeground(Color.black);
 				}
 
 				if (GalleryRemote._().properties.getShowThumbnails()) {

@@ -18,7 +18,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
 
-	JPanel delayPanel = new JPanel();
+	JPanel progressionPanel = new JPanel();
 	JPanel locationPanel = new JPanel();
 	public JPanel spacerPanel = new JPanel();
 	JLabel delay = new JLabel();
@@ -34,6 +34,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JComboBox jExtra;
 	JComboBox jUrl;
 	JCheckBox jLowRez = new JCheckBox();
+	JCheckBox jRandom = new JCheckBox();
 	JPanel spacerPanel1 = new JPanel();
 
 	public JLabel getIcon() {
@@ -47,6 +48,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jUrl.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_URL)));
 
 		jLowRez.setSelected(props.getBooleanProperty(SLIDESHOW_LOWREZ));
+		jRandom.setSelected(props.getBooleanProperty(SLIDESHOW_RANDOM));
 		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
 
 		jProgress.setEnabled(! props.isOverridden(SLIDESHOW_PROGRESS));
@@ -54,6 +56,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jExtra.setEnabled(! props.isOverridden(SLIDESHOW_EXTRA));
 		jUrl.setEnabled(! props.isOverridden(SLIDESHOW_URL));
 		jLowRez.setEnabled(! props.isOverridden(SLIDESHOW_LOWREZ));
+		jRandom.setEnabled(! props.isOverridden(SLIDESHOW_RANDOM));
 		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
 	}
 
@@ -64,6 +67,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		props.setIntProperty(SLIDESHOW_URL, ((LocationItem) jUrl.getSelectedItem()).id);
 
 		props.setBooleanProperty(SLIDESHOW_LOWREZ, jLowRez.isSelected());
+		props.setBooleanProperty(SLIDESHOW_RANDOM, jRandom.isSelected());
 		props.setIntProperty(SLIDESHOW_DELAY, Integer.parseInt(jDelay.getText()));
 	}
 
@@ -91,17 +95,25 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 
 		setLayout(new GridBagLayout());
 
-		delayPanel.setLayout(new GridBagLayout());
-		delayPanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Delay for automatic slideshow"));
+		progressionPanel.setLayout(new GridBagLayout());
+		progressionPanel.setBorder(
+				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
+						GRI18n.getString(MODULE, "progressionTitle")));
 		locationPanel.setLayout(new GridBagLayout());
-		locationPanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Location of text info"));
+		locationPanel.setBorder(
+				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
+						GRI18n.getString(MODULE, "locationTitle")));
 		performancePanel.setLayout(new GridBagLayout());
-		performancePanel.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Performance"));
+		performancePanel.setBorder(
+				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
+						GRI18n.getString(MODULE, "performanceTitle")));
 
 		delay.setText(GRI18n.getString(MODULE, "delay"));
 		delay.setLabelFor(jDelay);
 		delay.setToolTipText(GRI18n.getString(MODULE, "delayHelp"));
 		delayHelp.setText(GRI18n.getString(MODULE, "delayDesc"));
+		jRandom.setText(GRI18n.getString(MODULE, "random"));
+		jRandom.setToolTipText(GRI18n.getString(MODULE, "randomHelp"));
 
 		progress.setText(GRI18n.getString(MODULE, "progress"));
 		progress.setLabelFor(jProgress);
@@ -119,20 +131,22 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jLowRez.setText(GRI18n.getString(MODULE, "lowRez"));
 		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lowRezHelp"));
 
-		this.add(delayPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+		this.add(progressionPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(locationPanel,     new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(performancePanel,     new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(spacerPanel,    new GridBagConstraints(0, 3, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-		delayPanel.add(delay,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		progressionPanel.add(delay,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
-		delayPanel.add(jDelay,   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+		progressionPanel.add(jDelay,   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		delayPanel.add(delayHelp,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+		progressionPanel.add(delayHelp,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		progressionPanel.add(jRandom,   new GridBagConstraints(0, 2, 2, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		performancePanel.add(jLowRez,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0

@@ -50,18 +50,18 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public void show() {
 		try {
 			// Java 1.4 only
-			GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+			/*GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
 			if (! gd.isFullScreenSupported()) {
-				throw new NoSuchMethodError();
+			throw new NoSuchMethodError();
 			}
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "Switching to full-screen mode");
-			gd.setFullScreenWindow(this);
+			gd.setFullScreenWindow(this);*/
 
-			//DialogUtil.maxSize(this);
+			DialogUtil.maxSize(this);
 			//setBounds(600, 100, 500, 500);
-			//show();
+			show();
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
@@ -222,14 +222,19 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		/*public Dimension getPreferredSize(JComponent c) {
-			Dimension d = super.getPreferredSize(c);
+		Dimension d = super.getPreferredSize(c);
 
-			return new Dimension((int) d.getWidth() + 2, (int) d.getHeight() + 2);
+		return new Dimension((int) d.getWidth() + 2, (int) d.getHeight() + 2);
 		}*/
 	}
 
-	public void start(List pictures) {
-		this.pictures = pictures;
+	public void start(ArrayList pictures) {
+		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_RANDOM)) {
+			this.pictures = (List) pictures.clone();
+			Collections.shuffle(this.pictures);
+		} else {
+			this.pictures = pictures;
+		}
 
 		new Thread(this).start();
 	}
@@ -352,7 +357,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		if (picture != null) {
-			jCaption.setText(picture.getCaption());
+			jCaption.setText("<HTML>" + picture.getCaption() + "</HTML>");
 			updateProgress(picture);
 			String extraFields = picture.getExtraFieldsString();
 			if (extraFields != null) {

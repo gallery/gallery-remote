@@ -80,6 +80,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		jSlidePanel.remove(jSlidePanel.spacerPanel);
 		jSlidePanel.readProperties(GalleryRemote._().properties);
 		jStart.addActionListener(this);
+		jStart.setEnabled(false);
 
 		jPicturesList = new DroppableList();
 	}
@@ -116,10 +117,14 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 
 	public void contentsChanged(ListDataEvent e) {
 		// most likely, pictures were just added to the album. Preload the first one.
-		slideshowFrame = new SlideshowFrame();
-		if (album.getPicturesList().size() > 0) {
-			ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
-		}
+		new Thread() {
+			public void run() {
+				slideshowFrame = new SlideshowFrame();
+				if (album.getPicturesList().size() > 0) {
+					ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+				}
+			}
+		}.start();
 	}
 
 	public void intervalAdded(ListDataEvent e) {}

@@ -60,6 +60,7 @@ public class FilePanel extends PreferencePanel implements ActionListener, Prefer
 		m_loadLastMRU.setText(GRI18n.getString(MODULE, "loadLastMRU"));
 		numberOfMRULabel.setText(GRI18n.getString(MODULE, "numberOfMRU"));
 		m_numberOfMRU.setPrototypeDisplayValue("XXX");
+
 		thePanel.add(m_loadLastMRU,
 				new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0,
 						GridBagConstraints.WEST,

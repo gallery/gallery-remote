@@ -525,11 +525,7 @@ public class PictureInspector extends JPanel
 
 	public Action prevFocusAction = new AbstractAction("Move Focus Backwards") {
 		public void actionPerformed(ActionEvent evt) {
-			try {
-				((Component) evt.getSource()).transferFocusBackward();
-			} catch (NoSuchMethodError e) {
-				Log.log(Log.LEVEL_ERROR, MODULE, "Can't transfer focus backwards on 1.3");
-			}
+			((Component) evt.getSource()).transferFocusBackward();
 		}
 	};
 

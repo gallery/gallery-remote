@@ -49,7 +49,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 	protected void initializeGR() {
 		super.initializeGR();
 
-		Log.startLog(GalleryRemote._().properties.getIntProperty(PreferenceNames.LOG_LEVEL), GalleryRemote._().properties.getBooleanProperty("toSysOut"));
+		Log.startLog(properties.getIntProperty(PreferenceNames.LOG_LEVEL), properties.getBooleanProperty("toSysOut"));
 
 		try {
 			if (isAppletMode() || !Update.upgrade()) {
@@ -66,8 +66,12 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		}
 
 		if (!isAppletMode()) {
-			Update update = new Update();
-			update.check(true);
+			new Thread() {
+				public void run() {
+					Update update = new Update();
+					update.check(true);
+				}
+			}.start();
 		}
 	}
 

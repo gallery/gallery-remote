@@ -56,6 +56,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_URL = "slideshowUrlLocation";
 	public static final String SLIDESHOW_DELAY = "slideshowDelay";
 	public static final String SLIDESHOW_LOWREZ = "slideshowLowRez";
+	public static final String SLIDESHOW_RANDOM = "slideshowRandom";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";

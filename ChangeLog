@@ -1,29 +1,44 @@
-2003-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b26)
+2004-02-04  Pierre-Luc Paour <gallery@paour.com> (1.3-b27)
+
+	* GR now requires Java 1.4 or later, too many things are unsupported
+	  on 1.3 and all OSes have 1.4 VMs.
+	* Disabled some album properties and added a note regarding the
+	  fact that these properties are read-only for now.
+	* Added random option to slideshow.
+	* Changed font sizes on Mac applet so it fits the dimensions.
+	  The applet still crashes Safari though. I've submitted a bug
+	  report to Apple.
+	* Added French (Christophe Lallement) and Catalan (sergidsca)
+	  translations.
+	* I consider this build to be 1.3-RC1, and I hope to have a final
+	  release of 1.3 along with G 1.4.2 final.
+
+2004-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b26)
 
 	* Added pretty nasty hack to reload the album page in Mini applet
 	  mode after upload completes.
 	* Applet Maxi working again (I broke it a couple of builds ago).
 
-2003-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b25)
+2004-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b25)
 
 	* Made Log re-entrant, so that when Applet is restarted within
 	  the same VM, the log can keep going.
 	* Slideshow applet now pre-fetches the first picture for a faster
 	  start.
 
-2003-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b24)
+2004-01-29  Pierre-Luc Paour <gallery@paour.com> (1.3-b24)
 
 	* Recursive slideshows.
 	* Added protocol support for getting sub-albums as well as pictures
 	  when fetching list of pictures in an album.
 	* Fixed bugs in upload applet, which was completely broken in b23.
 
-2003-01-27  Pierre-Luc Paour <gallery@paour.com> (1.3-b23)
+2004-01-27  Pierre-Luc Paour <gallery@paour.com> (1.3-b23)
 
 	* All and any property can be overriden by Applet parameters.
 	* Slideshow applet now has preferences.
 
-2003-01-26  Pierre-Luc Paour <gallery@paour.com> (1.3-b22)
+2004-01-26  Pierre-Luc Paour <gallery@paour.com> (1.3-b22)
 
 	* Fixed slideshow causing exception on platforms capable
 	  of using full-screen but where some manager decides to forbid
@@ -32,7 +47,7 @@
 	  (thanks Terje).
 	* AppletMini no longer downloads the list of albums (faster).
 
-2003-01-23  Pierre-Luc Paour <gallery@paour.com> (1.3-b21)
+2004-01-23  Pierre-Luc Paour <gallery@paour.com> (1.3-b21)
 
 	* More refactoring to improve startup sequence for the applets.
 	* Slideshow applet now doesn't doawload the list of albums, which

@@ -178,39 +178,34 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	private void resetUIState() {
-		//SwingUtilities.invokeLater(new Runnable() {
-		//new Thread() {
-		//	public void run() {
-
 		Log.log(Log.LEVEL_TRACE, MODULE, "level: " + currentLevel + " - " + data[currentLevel].message + " - " + data[currentLevel].value);
-				if (currentLevel >= 0) {
-					jProgress.setMinimum(data[currentLevel].minValue);
-					jProgress.setValue(data[currentLevel].value);
-					jProgress.setMaximum(data[currentLevel].maxValue);
+		if (currentLevel >= 0) {
+			jProgress.setMinimum(data[currentLevel].minValue);
+			jProgress.setValue(data[currentLevel].value);
+			jProgress.setMaximum(data[currentLevel].maxValue);
 
-					try {
-						jProgress.setIndeterminate(data[currentLevel].undetermined);
-					} catch (Throwable t) {
-						// we end up here if the method is not implemented and we don't have indeterminate progress
-						// bars: come up with our own...
-						if (data[currentLevel].undetermined) {
-							data[currentLevel].undeterminedThread = new UndeterminedThread(StatusBar.this, currentLevel);
-							data[currentLevel].undeterminedThread.start();
-						}
-					}
-
-					jStatus.setText(data[currentLevel].message);
-				} else {
-					jStatus.setText("");
-					jProgress.setValue(jProgress.getMinimum());
-
-					try {
-						jProgress.setIndeterminate(false);
-					} catch (Throwable t) {
-					}
+			try {
+				jProgress.setIndeterminate(data[currentLevel].undetermined);
+			} catch (Throwable t) {
+				// we end up here if the method is not implemented and we don't have indeterminate progress
+				// bars: come up with our own...
+				if (data[currentLevel].undetermined && data[currentLevel].undeterminedThread == null) {
+					data[currentLevel].undeterminedThread = new UndeterminedThread(StatusBar.this, currentLevel);
+					data[currentLevel].undeterminedThread.start();
 				}
-			//}
-		//}.start();
+			}
+
+			jStatus.setText(data[currentLevel].message);
+		} else {
+			jStatus.setText("");
+			jProgress.setValue(jProgress.getMinimum());
+
+			try {
+				jProgress.setIndeterminate(false);
+			} catch (Throwable t) {
+				data[currentLevel].undeterminedThread.interrupt();
+			}
+		}
 	}
 
 	class StatusLevelData {

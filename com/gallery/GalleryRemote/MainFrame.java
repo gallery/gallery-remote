@@ -1096,10 +1096,6 @@ public class MainFrame extends JFrame
 		jCheckBoxMenuThumbnails.addItemListener(this);
 		jCheckBoxMenuPreview.addItemListener(this);
 		jCheckBoxMenuPath.addItemListener(this);
-		// in Swing 1.3, using an ItemListener for a JComboBox doesn't work,
-		// using ActionListener instead
-		//album.addItemListener( this );
-		//jAlbumCombo.addActionListener( this );
 
 		jPicturesList.addListSelectionListener(this);
 
@@ -1883,16 +1879,19 @@ public class MainFrame extends JFrame
 				album = (Album) value;
 			}
 
-			if (album != null && album.getSize() > 0) {
-				setFont(getFont().deriveFont(Font.BOLD));
-			} else {
-				setFont(getFont().deriveFont(Font.PLAIN));
+			Font font = getFont();
+			if (font != null) {
+				if (album != null && album.getSize() > 0) {
+					setFont(font.deriveFont(Font.BOLD));
+				} else {
+					setFont(font.deriveFont(Font.PLAIN));
+				}
 			}
 
 			if (album != null && album.isHasFetchedImages()) {
-				setForeground(Color.GREEN);
+				setForeground(Color.green);
 			} else {
-				setForeground(Color.BLACK);
+				setForeground(Color.black);
 			}
 
 			setIcon(null);

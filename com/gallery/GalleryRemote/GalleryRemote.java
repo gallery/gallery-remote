@@ -80,7 +80,14 @@ public abstract class GalleryRemote {
 		try {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			} catch (Exception e) {
+			} catch (Exception e) {	}
+
+			if (Float.parseFloat(System.getProperty("java.specification.version")) < 1.39) {
+				JOptionPane.showMessageDialog(null, "Gallery Remote is not supported on Java " +
+						"Virtual Machines older than 1.4. Please install a recent VM " +
+						"and try running Gallery Remote again.", "VM too old", JOptionPane.ERROR_MESSAGE);
+
+				System.exit(1);
 			}
 
 			createProperties();
