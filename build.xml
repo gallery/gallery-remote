@@ -18,7 +18,7 @@
         description="compile the source" >
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}"
-	  includes="com/**,HTTPClient/**" 
+	  includes="com/**,HTTPClient/**,edu/**" 
 	  listfiles="on" debug="on" source="1.3" />
 	
 	<!-- other files needed -->
