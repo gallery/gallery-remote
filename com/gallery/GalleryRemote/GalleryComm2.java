@@ -501,7 +501,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				};
 
 				// set up extra fields
-				if (p.getExtraFieldsMap().size() > 0) {
+				if (p.getExtraFieldsMap() != null && p.getExtraFieldsMap().size() > 0) {
 					ArrayList optsList = new ArrayList(Arrays.asList(opts));
 
 					Iterator it = p.getExtraFieldsMap().keySet().iterator();
