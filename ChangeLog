@@ -1,3 +1,15 @@
+2004-08-04  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b2)
+
+	* Fixed bug adding images for first-time users.
+	* GR now retries any requests once if the request failed
+	  without a protocol error message. This will fix the
+	  problems when albums have to be upgraded, and potentially
+	  network errors.
+	* Instead of stopping the upload on error, GR now lists
+	  the errors so far and keeps going.
+	* Transformed all \n to \u000A to fix the problems with
+	  MessagePattern stripping linefeeds.
+
 2004-07-29  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b1)
 
 	* Fixed double-upload to old versions of Gallery.

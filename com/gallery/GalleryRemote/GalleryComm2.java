@@ -473,7 +473,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			boolean allGood = true;
 			int uploadedCount = 0;
 			Iterator iter = pictures.iterator();
-			while (iter.hasNext() && allGood && !interrupt) {
+			while (iter.hasNext() /*&& allGood*/ && !interrupt) {
 				Picture p = (Picture) iter.next();
 
 				Object[] params = {p.toString(), new Integer((uploadedCount + 1)), new Integer(pictures.size())};
@@ -573,19 +573,19 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			} catch (GR2Exception gr2e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e);
 				Object[] params = {gr2e.getMessage()};
-				error(su, GRI18n.getString(MODULE, "error", params));
+				error(su, p.toString() + ": " + GRI18n.getString(MODULE, "error", params));
 			} catch (SocketException swe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, swe);
 				Object[] params = {swe.toString()};
-				error(su, GRI18n.getString(MODULE, "confErr", params));
+				error(su, p.toString() + ": " + GRI18n.getString(MODULE, "confErr", params));
 			} catch (IOException ioe) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 				Object[] params = {ioe.toString()};
-				error(su, GRI18n.getString(MODULE, "error", params));
+				error(su, p.toString() + ": " + GRI18n.getString(MODULE, "error", params));
 			} catch (ModuleException me) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, me);
 				Object[] params = {me.getMessage()};
-				error(su, GRI18n.getString(MODULE, "errReq", params));
+				error(su, p.toString() + ": " + GRI18n.getString(MODULE, "errReq", params));
 			}
 
 			return false;
@@ -1326,8 +1326,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				int i = response.indexOf(PROTOCOL_MAGIC);
 
 				if (i == -1) {
-					Object[] params = {galUrl.toString()};
-					throw new GR2Exception(GRI18n.getString(MODULE, "gllryNotFound", params));
+					if (alreadyRetried) {
+						// failed one time too many
+						Object[] params = {galUrl.toString()};
+						throw new GR2Exception(GRI18n.getString(MODULE, "gllryNotFound", params));
+					} else {
+						// try again
+						Log.log(Log.LEVEL_INFO, MODULE, "Request failed the first time: trying again...");
+						return requestResponse(form_data, data, galUrl, checkResult, su, task, true);
+					}
 				} else if (i > 0) {
 					response = response.substring(i);
 					Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);

@@ -5,6 +5,8 @@ import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +24,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	JLabel jLabelDetail = new JLabel();
 	JProgressBar jProgressDetail = new JProgressBar();
 	JPanel jPanel2 = new JPanel();
+	JTextArea jErrors = null;
 
 	JLabel jLabel[] = new JLabel[NUM_LEVELS];
 	JProgressBar jProgress[] = new JProgressBar[NUM_LEVELS];
@@ -66,7 +69,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jLabelGlobal.setText(GRI18n.getString(MODULE, "upImgNM"));
 		jLabelDetail.setText(GRI18n.getString(MODULE, "upImgGif"));
 
-		jCancel.setText(GRI18n.getString(MODULE, "Cancel"));
+		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.addActionListener(this);
 		jCancel.setActionCommand("Cancel");
 		jShutdown.setToolTipText(GRI18n.getString(MODULE, "shutDownTip"));
@@ -152,7 +155,13 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 			if (level == LEVEL_UPLOAD_PROGRESS) {
 				// we're done...
-				setVisible(false);
+				if (jErrors != null) {
+					// there were errors, don't dismiss the dialog just yet
+					jCancel.setText(GRI18n.getString("Common", "OK"));
+					jCancel.setActionCommand("OK");
+				} else {
+					setVisible(false);
+				}
 				//dispose();
 			}
 		}
@@ -164,7 +173,36 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	}
 
 	public void error(String message) {
-		JOptionPane.showMessageDialog(this, message, GRI18n.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
+		//JOptionPane.showMessageDialog(this, message, GRI18n.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
+		if (jErrors == null) {
+			jErrors = new JTextArea(5, 80);
+			jErrors.setEditable(false);
+			jErrors.setFont(UIManager.getFont("Label.font"));
+			JScrollPane scroll = new JScrollPane(jErrors, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			scroll.setBorder(new TitledBorder(GRI18n.getString(MODULE, "Errors")));
+			jPanel1.add(
+					scroll
+					, new GridBagConstraints(0, 6, 3, 1, 1.0, 1.0
+					, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
+			pack();
+		}
+
+		jErrors.append(removeLinefeed(message) + "\n");
+	}
+
+	public static String removeLinefeed(String s) {
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (c != '\n') {
+				sb.append(c);
+			} else {
+				sb.append(' ');
+			}
+		}
+
+		return sb.toString();
 	}
 
 	public void setStatus(String message) {

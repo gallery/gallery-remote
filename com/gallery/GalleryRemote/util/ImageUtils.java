@@ -143,7 +143,7 @@ public class ImageUtils {
 				int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
 				if ((exitValue != 0 && !imIgnoreErrorCode && !ignoreFailure) || ! temp.exists()) {
-					if (exitValue != -1 || ! temp.exists()) {
+					if (exitValue != -1 && ! temp.exists()) {
 						// don't kill IM if it's just an InterruptedException
 						Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 						stopUsingIM();
@@ -275,7 +275,7 @@ public class ImageUtils {
 			int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
 			if ((exitValue != 0 && !imIgnoreErrorCode) || ! r.exists()) {
-				if (exitValue != -1 || ! r.exists()) {
+				if (exitValue != -1 && ! r.exists()) {
 					// don't kill IM if it's just an InterruptedException
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 					stopUsingIM();
@@ -536,7 +536,7 @@ public class ImageUtils {
 		int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
 		if ((exitValue != 0 && !jpegtranIgnoreErrorCode) || ! r.exists()) {
-			if (exitValue != -1 || ! r.exists()) {
+			if (exitValue != -1 && ! r.exists()) {
 				// don't kill jpegtran if it's just an InterruptedException
 				if (crop) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran doesn't seem to be working for cropping. Disabling");
