@@ -40,12 +40,14 @@ public class ImageUtils {
 	static int totalIter = 0;
 	static boolean useIM = false;
 	static String imPath = null;
+	static File tmpDir = null;
 	
 	public static final int THUMB = 0;
 	public static final int PREVIEW = 1;
+	public static final int UPLOAD = 2;
 	
-	static String[] filterName = new String[2]; 
-	static String[] format = new String[2]; 
+	static String[] filterName = new String[3]; 
+	static String[] format = new String[3]; 
 	
 	/**
 	 *  Perform the actual icon loading
@@ -80,7 +82,7 @@ public class ImageUtils {
 				cmdline.append(d.height);
 				cmdline.append(" +profile \"*\" ");
 				
-				File temp = File.createTempFile("thumb", "." + format[usage], new File("thumbs"));
+				File temp = File.createTempFile("thumb", "." + format[usage], tmpDir);
 				toDelete.add(temp);
 				
 				cmdline.append(temp.getPath());
@@ -125,12 +127,79 @@ public class ImageUtils {
 		return r;
 	}
 	
-	static {
-		File f = new File("thumbs");
+	public static File resize( String filename, Dimension d ) {
+		File r = null;
+		long start = System.currentTimeMillis();
 		
-		if (!f.exists()) {
-			f.mkdir();
+		if (useIM) {
+			try {
+				StringBuffer cmdline = new StringBuffer(imPath);
+				cmdline.append(" -size ");
+				
+				cmdline.append(d.width);
+				cmdline.append("x");
+				cmdline.append(d.height);
+				
+				if (filterName[UPLOAD] != null && filterName[UPLOAD].length() > 0) {
+					cmdline.append(" -filter ");
+					cmdline.append(filterName[UPLOAD]);
+				}
+				
+				cmdline.append(" \"");
+				cmdline.append(filename);
+				
+				cmdline.append("\" -resize \"");
+				cmdline.append(d.width);
+				cmdline.append("x");
+				cmdline.append(d.height);
+				cmdline.append(">\" ");
+				
+				//cmdline.append("-gravity SouthEast -draw \"image Over 200,200 0,0 G:\\Projects\\Dev\\gallery_remote10\\2ni.png\" ");
+				
+				r = File.createTempFile("res"
+					, "." + GalleryFileFilter.getExtension(filename), tmpDir);
+				toDelete.add(r);
+				
+				cmdline.append(r.getPath());
+				
+				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
+			
+				Process p = Runtime.getRuntime().exec(cmdline.toString());
+				p.waitFor();
+				Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+				
+				if (p.exitValue() != 0) {
+					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+					useIM = false;
+					r = null;
+				}
+			} catch (IOException e1) {
+				Log.logException(Log.ERROR, MODULE, e1);
+			} catch (InterruptedException e2) {
+				Log.logException(Log.ERROR, MODULE, e2);
+			}
 		}
+
+		if ( ! useIM && r == null ) {
+			throw new UnsupportedOperationException("IM must be installed for this operation");
+		}
+
+		long time = System.currentTimeMillis() - start;
+		totalTime += time;
+		totalIter++;
+		Log.log(Log.TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
+
+		return r;
+	}
+	
+	static {
+		tmpDir = new File(System.getProperty("java.io.tmpdir") + "thumbs");
+		
+		if (!tmpDir.exists()) {
+			tmpDir.mkdirs();
+		}
+		
+		Log.log(Log.INFO, MODULE, "tmpDir: " + tmpDir.getPath());
 		
 		try {
 			PropertiesFile p = new PropertiesFile("imagemagick/im");
@@ -150,9 +219,14 @@ public class ImageUtils {
 			if (useIM) {
 				filterName[THUMB] = p.getProperty("imThumbnailResizeFilter");
 				filterName[PREVIEW] = p.getProperty("imPreviewResizeFilter");
+				filterName[UPLOAD] = p.getProperty("imUploadResizeFilter");
+				if ( filterName[UPLOAD] == null ) {
+					filterName[UPLOAD] = filterName[PREVIEW];
+				}
 
 				format[THUMB] = p.getProperty("imThumbnailResizeFormat", "gif");
 				format[PREVIEW] = p.getProperty("imPreviewResizeFormat", "jpg");
+				format[UPLOAD] = null;
 			}
 		} catch (Exception e) {
 			Log.logException(Log.CRITICAL, MODULE, e);

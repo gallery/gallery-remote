@@ -26,6 +26,7 @@ import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 import java.util.*;
 
+import com.gallery.GalleryRemote.*;
 
 /**
  *  Picture model
@@ -97,7 +98,22 @@ public class Picture {
         return source;
     }
     
-    
+	/**
+	 *  Gets the fource file of the picture, prepared for upload.
+	 *  Called by GalleryComm to upload the picture.
+	 *
+	 *@return    The source value
+	 */
+    public File getUploadSource() {
+		if ( GalleryRemote.getInstance().properties.getBooleanProperty("resizeBeforeUpload") ) {
+			Dimension d = GalleryRemote.getInstance().properties.getDimensionProperty("resizeTo");
+			
+			return ImageUtils.resize( getSource().getPath(), d );
+		} else {
+			return getSource();
+		}
+	}
+	
     /**
      *  Gets the caption attribute of the Picture object
      *

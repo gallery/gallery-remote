@@ -207,7 +207,7 @@ public class GalleryComm {
 				};
 				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
 	
-				NVPair[] afile = { new NVPair("userfile", p.getSource().getAbsolutePath()) };
+				NVPair[] afile = { new NVPair("userfile", p.getUploadSource().getAbsolutePath()) };
 				NVPair[] hdrs = new NVPair[1];
 				byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
 				HTTPConnection mConnection = new HTTPConnection(url);
