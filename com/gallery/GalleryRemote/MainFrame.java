@@ -82,7 +82,6 @@ public class MainFrame extends javax.swing.JFrame
 	JPanel jPanel3 = new JPanel();
 	GridLayout gridLayout1 = new GridLayout();
 	JButton upload = new JButton();
-	JButton delete = new JButton();
 	JButton browse = new JButton();
 	JComboBox url = new JComboBox();
 	JPanel jPanel4 = new JPanel();
@@ -148,11 +147,13 @@ public class MainFrame extends javax.swing.JFrame
 		jCheckBoxMenuPath.setSelected( GalleryRemote.getInstance().properties.getShowPath() );
 		setShowThumbnails( GalleryRemote.getInstance().properties.getShowThumbnails() );
 		inspectorDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty( "inspectorDividerLocation" ) );
-
-		url.addItem( GalleryRemote.getInstance().properties.getProperty( "url.1" ) );
-		username.setText( GalleryRemote.getInstance().properties.getProperty( "username.1" ) );
-		password.setText( GalleryRemote.getInstance().properties.getBase64Property( "password.1" ) );
-
+		
+		if (GalleryRemote.getInstance().properties.getProperty( "url.1" ) != null) {
+			url.addItem( GalleryRemote.getInstance().properties.getProperty( "url.1" ) );
+			username.setText( GalleryRemote.getInstance().properties.getProperty( "username.1" ) );
+			password.setText( GalleryRemote.getInstance().properties.getBase64Property( "password.1" ) );
+		}
+		
 		setVisible( true );
 
 		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
@@ -169,7 +170,9 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
-		GalleryRemote.getInstance().properties.setProperty( "url.1", (String) url.getSelectedItem() );
+		if ((String) url.getSelectedItem() != null) {
+			GalleryRemote.getInstance().properties.setProperty( "url.1", (String) url.getSelectedItem() );
+		}
 		GalleryRemote.getInstance().properties.setProperty( "username.1", username.getText() );
 		GalleryRemote.getInstance().properties.setBase64Property( "password.1", password.getText() );
 
@@ -201,7 +204,6 @@ public class MainFrame extends javax.swing.JFrame
 
 		int sel = picturesList.getSelectedIndex();
 		int selN = picturesList.getSelectedIndices().length;
-		delete.setEnabled( sel != -1 );
 
 		if ( sel == -1 ) {
 			setStatus( mAlbum.sizePictures() + " pictures, "
@@ -213,7 +215,6 @@ public class MainFrame extends javax.swing.JFrame
 		
 		//jButtonUp.setEnabled( selN == 1 );
 		//jButtonDown.setEnabled( selN == 1 );
-
 	}
 
 
@@ -558,8 +559,6 @@ public class MainFrame extends javax.swing.JFrame
 		upload.setAlignmentX( (float) 2.0 );
 		upload.setText( "Upload" );
 		upload.setActionCommand( "Upload" );
-		delete.setText( "Delete" );
-		delete.setActionCommand( "Delete" );
 		inspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
 		browse.setAlignmentX( (float) 1.0 );
@@ -617,7 +616,6 @@ public class MainFrame extends javax.swing.JFrame
 		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		jPanel3.add( browse, null );
-		jPanel3.add( delete, null );
 		jPanel3.add( upload, null );
 		this.getContentPane().add( jPanel4, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
@@ -641,7 +639,6 @@ public class MainFrame extends javax.swing.JFrame
 	private void jbInitEvents() {
 		fetch.addActionListener( this );
 		upload.addActionListener( this );
-		delete.addActionListener( this );
 		browse.addActionListener( this );
 		jMenuItemQuit.addActionListener( this );
 		jMenuItemAbout.addActionListener( this );
@@ -693,8 +690,8 @@ public class MainFrame extends javax.swing.JFrame
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
 			fetchAlbums();
-		} else if ( command.equals( "Delete" ) ) {
-			deleteSelectedPictures();
+		//} else if ( command.equals( "Delete" ) ) {
+		//	deleteSelectedPictures();
 		} else if ( command.equals( "Browse" ) ) {
 			browseAddPictures();
 		} else if ( command.equals( "Upload" ) ) {

@@ -34,7 +34,10 @@ import com.gallery.GalleryRemote.model.*;
  *@created    August 16, 2002
  */
 public class PictureInspector extends JPanel
+	implements ActionListener
 {
+	public static final String MODULE = "PictInspec";
+	
 	GridBagLayout gridBagLayout4 = new GridBagLayout();
 	JLabel icon = new JLabel();
 	JLabel jLabel5 = new JLabel();
@@ -53,6 +56,8 @@ public class PictureInspector extends JPanel
 
 	MainFrame mf = null;
 	Picture p = null;
+	JButton delete = new JButton();
+	JLabel jLabel2 = new JLabel();
 
 
 	/**
@@ -61,6 +66,7 @@ public class PictureInspector extends JPanel
 	public PictureInspector() {
 		try {
 			jbInit();
+			jbInitEvents();
 		} catch ( Exception e ) {
 			e.printStackTrace();
 		}
@@ -79,47 +85,86 @@ public class PictureInspector extends JPanel
 		jLabel6.setText( "Album:" );
 		album.setText( "album" );
 		jLabel4.setText( "Caption:" );
-		up.setMinimumSize( new Dimension( 89, 23 ) );
-		up.setPreferredSize( new Dimension( 89, 23 ) );
+		up.setMaximumSize(new Dimension( 100, 23 ) );
+		up.setMinimumSize( new Dimension( 100, 23 ) );
+		up.setPreferredSize( new Dimension( 100, 23 ) );
 		up.setText( "Move up" );
 		jLabel8.setText( "Move:" );
+		down.setMaximumSize(new Dimension( 100, 23 ) );
+		down.setMinimumSize( new Dimension( 100, 23 ) );
+		down.setPreferredSize( new Dimension( 100, 23 ) );
 		down.setText( "Move down" );
 		jLabel1.setText( "Size:" );
 		size.setText( "size" );
+		caption.setBackground(SystemColor.control);
 		caption.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 		caption.setBorder( null );
 		caption.setEditable( false );
 		caption.setText( "caption" );
-		add( icon, new GridBagConstraints( 0, 0, 2, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel5, new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( path, new GridBagConstraints( 1, 1, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel6, new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( album, new GridBagConstraints( 1, 2, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( Caption, new GridBagConstraints( 0, 5, 1, 1, 0.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel4, new GridBagConstraints( 0, 4, 1, 1, 0.0, 0.0
-				, GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( up, new GridBagConstraints( 1, 6, 1, 1, 0.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel8, new GridBagConstraints( 0, 6, 1, 2, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( down, new GridBagConstraints( 1, 7, 1, 1, 0.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( spacer, new GridBagConstraints( 0, 8, 2, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		this.add( jLabel1, new GridBagConstraints( 0, 3, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		this.add( size, new GridBagConstraints( 1, 3, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		this.add( caption, new GridBagConstraints( 1, 4, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+		delete.setMaximumSize(new Dimension( 100, 23 ) );
+		delete.setMinimumSize(new Dimension( 100, 23 ) );
+		delete.setPreferredSize(new Dimension( 100, 23 ) );
+		delete.setActionCommand("Delete");
+		delete.setText("Delete");
+		jLabel2.setText("Delete:");
+		add( icon,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+		add( jLabel5,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		add( path,  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+		add( jLabel6,  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		add( album,  new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+		add( Caption,  new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+		add( jLabel4,  new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		add( up,   new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0) );
+		add( jLabel8,  new GridBagConstraints(0, 6, 1, 2, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		add( down,  new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0) );
+		add( spacer,  new GridBagConstraints(0, 9, 2, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
+		this.add( jLabel1,  new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+		this.add( size,  new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+		this.add( caption,  new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+		this.add(delete,    new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0));
+		this.add(jLabel2,   new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
 	}
 
+	private void jbInitEvents() {
+		delete.addActionListener( this );
+		up.addActionListener( this );
+		down.addActionListener( this );
+	}
+	
+	// Event handling
+	/**
+	 *  Menu and button handling
+	 *
+	 *@param  e  Action event
+	 */
+	public void actionPerformed( ActionEvent e ) {
+		String command = e.getActionCommand();
+		Log.log(Log.INFO, MODULE, "Command selected " + command );
+		
+		if ( command.equals( "Delete" ) ) {
+			mf.deleteSelectedPictures();
+		} else if ( command.equals( "Up" ) ) {
+			mf.movePictureUp();
+		} else if ( command.equals( "Down" ) ) {
+			mf.movePictureDown();
+		}
+	}
 
 	/**
 	 *  Sets the mainFrame attribute of the PictureInspector object
