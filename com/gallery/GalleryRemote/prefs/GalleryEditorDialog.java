@@ -161,18 +161,14 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jPnLoginUrl.setText(gallery.getPnLoginUrlString());
 	}
 
-	public void readUIState() {
+	public void readUIState() throws MalformedURLException {
 		gallery.setUsername(jUsername.getText());
 		gallery.setPassword(jPassword.getText());
 		gallery.setType(jType.getSelectedIndex());
 
-		try {
-			gallery.setStUrlString(jStandaloneUrl.getText());
-			gallery.setPnLoginUrlString(jPnLoginUrl.getText());
-			gallery.setPnGalleryUrlString(jPnGalleryUrl.getText());
-		} catch (MalformedURLException e) {
-			// todo: error
-		}
+		gallery.setStUrlString(jStandaloneUrl.getText());
+		gallery.setPnLoginUrlString(jPnLoginUrl.getText());
+		gallery.setPnGalleryUrlString(jPnGalleryUrl.getText());
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -180,9 +176,13 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		Log.log(Log.INFO, MODULE, "Command selected " + cmd);
 
 		if (cmd.equals("OK")) {
-			readUIState();
-			isOK = true;
-			setVisible(false);
+			try {
+				readUIState();
+				isOK = true;
+				setVisible(false);
+			} catch (MalformedURLException mue) {
+				JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
+			}
 		} else if (cmd.equals("Cancel")) {
 			setVisible(false);
 		} else if (cmd.equals("comboBoxChanged")) {
