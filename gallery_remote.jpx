@@ -20,6 +20,7 @@
   <property category="sys" name="Copyright" value="Copyright (c) 2002"/>
   <property category="sys" name="CopyrightLabel" value="Copyright:"/>
   <property category="sys" name="DefaultPath" value="."/>
+  <property category="sys" name="Deprecations" value="0"/>
   <property category="sys" name="Description" value=""/>
   <property category="sys" name="DescriptionLabel" value="Description:"/>
   <property category="sys" name="DocPath" value="doc"/>
@@ -42,16 +43,4 @@
   <property category="sys" name="WorkingDirectory" value="."/>
   <property category="sys"
     name="uidesign.size.com.gallery.GalleryRemote.MainFrame" value="593,523"/>
-  <file path="com/gallery/GalleryRemote/AboutBox.java"/>
-  <file path="com/gallery/GalleryRemote/AddFileDialog.java"/>
-  <file path="com/gallery/GalleryRemote/model/Album.java"/>
-  <file path="com/gallery/GalleryRemote/GalleryComm.java"/>
-  <file path="com/gallery/GalleryRemote/GalleryCookiePolicyHandler.java"/>
-  <file path="com/gallery/GalleryRemote/GalleryFileFilter.java"/>
-  <file path="com/gallery/GalleryRemote/GalleryRemote.java"/>
-  <file path="com/gallery/GalleryRemote/MainFrame.java"/>
-  <file path="com/gallery/GalleryRemote/model/Picture.java"/>
-  <file path="com/gallery/GalleryRemote/PreviewFrame.java"/>
-  <file path="com/gallery/GalleryRemote/PropertiesFile.java"/>
-  <file path="com/gallery/GalleryRemote/SwingWorker.java"/>
 </project>
