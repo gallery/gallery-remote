@@ -236,7 +236,7 @@ public class PictureInspector extends JPanel
     }
 	
 	public void textUpdate() {
-		if (pictures != null && pictures.length > 0) {
+		if (pictures != null && pictures.length == 1) {
 			((Picture)pictures[0]).setCaption( caption.getText() );
 		}
 	}		
