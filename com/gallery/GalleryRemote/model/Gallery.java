@@ -226,7 +226,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	/* Standalone URL */
 
-	public void setStUrlString( String urlString ) throws MalformedURLException {
+	public void setStUrlString( String urlString ) {
 		if (urlString == null)
 		{
 			stUrlString = null;
@@ -250,7 +250,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	/* PostNuke Gallery URL */
 
-	public void setPnGalleryUrlString( String urlString ) throws MalformedURLException {
+	public void setPnGalleryUrlString( String urlString ) {
 		if (urlString == null)
 		{
 			pnGalleryUrlString = null;
@@ -274,7 +274,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	/* PostNuke Login URL */
 
-	public void setPnLoginUrlString( String urlString ) throws MalformedURLException {
+	public void setPnLoginUrlString( String urlString ) {
 		if (urlString == null)
 		{
 			pnLoginUrlString = null;
@@ -311,9 +311,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 					throw new RuntimeException("Unknown type: " + type);
 			}
 		} catch (MalformedURLException e) {
-			Log.log(Log.ERROR, MODULE, "Malformed URL. This should never ever happen." +
-					"Things will probably go wrong...");
+			Log.log(Log.ERROR, MODULE, "Malformed URL.");
 			Log.logException(Log.ERROR, MODULE, e);
+			JOptionPane.showMessageDialog((JFrame) su, "Malformed URL (" + e.getMessage() + ")",
+					"Error", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 	}
@@ -331,9 +332,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 					throw new RuntimeException("Unknown type: " + type);
 			}
 		} catch (MalformedURLException e) {
-			Log.log(Log.ERROR, MODULE, "Malformed URL. This should never ever happen." +
-					"Things will probably go wrong...");
+			Log.log(Log.ERROR, MODULE, "Malformed URL.");
 			Log.logException(Log.ERROR, MODULE, e);
+			JOptionPane.showMessageDialog((JFrame) su, "Malformed URL (" + e.getMessage() + ")",
+					"Error", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 	}
@@ -414,7 +416,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 
-	public static Gallery readFromProperties(PropertiesFile p, int prefsIndex, StatusUpdate su) throws MalformedURLException {
+	public static Gallery readFromProperties(PropertiesFile p, int prefsIndex, StatusUpdate su) {
 		String url = p.getProperty( URL + prefsIndex );
 		String username = p.getProperty( USERNAME + prefsIndex );
 
@@ -530,13 +532,16 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	 */
 	public GalleryComm getComm(StatusUpdate su) {
 		if ( comm == null && stUrlString != null ) {
-			comm = GalleryComm.getCommInstance(su, getGalleryUrl(""), this);
+			URL url = getGalleryUrl("");
+			if (url != null) {
+				comm = GalleryComm.getCommInstance(su, url, this);
 
-			if (comm == null) {
-				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
-				su.error("Gallery Remote can find no protocol implementation at the URL "
-						+ stUrlString.toString() + "\nCheck with a web browser that "
-						+ stUrlString.toString() + "gallery_remote.php is a valid URL");
+				if (comm == null) {
+					Log.log(Log.ERROR, MODULE, "No protocol implementation found");
+					su.error("Gallery Remote can find no protocol implementation at the URL "
+							+ stUrlString.toString() + "\nCheck with a web browser that "
+							+ stUrlString.toString() + "gallery_remote.php is a valid URL");
+				}
 			}
 		}
 
