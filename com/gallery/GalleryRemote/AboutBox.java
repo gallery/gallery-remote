@@ -35,8 +35,8 @@ import java.net.*;
  */
 public class AboutBox extends JDialog {
 	public static final String MODULE = "About";
-    public static int TOP = 60;
-    public static int BOTTOM = 30;
+    public static int TOP = 5;
+    public static int BOTTOM = 105;
     
     /**
      *  Constructor for the AboutBox object
@@ -62,7 +62,7 @@ public class AboutBox extends JDialog {
         setModal( true );
         getContentPane().add( new AboutPanel(), BorderLayout.CENTER );
         setTitle( "About Gallery Remote" );
-        
+        		
         pack();
         
         Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
@@ -112,13 +112,13 @@ public class AboutBox extends JDialog {
             setFont( UIManager.getFont( "Label.font" ) );
             fm = getFontMetrics( getFont() );
             
-			URL imu = getClass().getResource( "/remoteAbout.gif" );
+			URL imu = getClass().getResource( "/rar_about_gr1.png" );
 			Log.log(Log.TRACE, MODULE, "Looking for splash screen in " + imu.toString());
             image = new ImageIcon( imu );
             
             setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );
             
-            text = new Vector( 50 );
+            text = new Vector( );
             StringTokenizer st = new StringTokenizer(
             GalleryRemote.getInstance().properties.getProperty( "aboutText" ), "\n" );
             while ( st.hasMoreTokens() ) {
@@ -127,7 +127,7 @@ public class AboutBox extends JDialog {
                 maxWidth = Math.max( maxWidth,
                 fm.stringWidth( line ) + 10 );
             }
-            initialPosition = getHeight() - BOTTOM - BOTTOM - TOP - TOP;
+            initialPosition = getHeight() - BOTTOM /*- BOTTOM*/ - TOP - TOP;
             scrollPosition = initialPosition;
             
             thread = new AnimationThread();

@@ -132,6 +132,8 @@ public class MainFrame extends javax.swing.JFrame
 		if ( galleries.getSize() == 0 ) {
 			galleries.addElement( new Gallery() );
 		}
+		
+		setIconImage(GalleryRemote.iconImage);
 	}
 
 

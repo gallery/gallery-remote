@@ -101,7 +101,9 @@ public class Update extends JFrame implements ActionListener {
 
 			Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
 			setLocation( (int) ( s.getWidth() - getWidth() ) / 2, (int) ( s.getHeight() - getHeight() ) / 2 );
-
+			
+			setIconImage(GalleryRemote.iconImage);
+			
 			setVisible( true );
 		} catch ( Exception e ) {
 			Log.logException( Log.CRITICAL, MODULE, e );

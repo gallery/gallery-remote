@@ -19,6 +19,7 @@
 *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package com.gallery.GalleryRemote;
+import java.awt.Image;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
@@ -35,6 +36,8 @@ public class GalleryRemote {
 	public MainFrame mainFrame = null;
 	public PropertiesFile properties = null;
 	public PropertiesFile defaults = null;
+	
+	public static Image iconImage = new ImageIcon(GalleryRemote.class.getResource( "/rar_icon_16.gif" )).getImage();
 	
 	private GalleryRemote() {
 		defaults = new PropertiesFile("defaults");

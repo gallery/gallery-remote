@@ -42,6 +42,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 	{
 		setTitle("Preview");
 		
+		setIconImage(GalleryRemote.iconImage);
+		
 		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
 		
 		addComponentListener(new ComponentAdapter()
