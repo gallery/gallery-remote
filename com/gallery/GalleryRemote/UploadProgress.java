@@ -2,14 +2,13 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
 
 
 public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
@@ -93,10 +92,12 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		try {
-			if (OsShutdown.canShutdown()) {
+			Class osShutdown = Class.forName("com.gallery.GalleryRemote.util.OsShutdown");
+			Method canShutdown = osShutdown.getMethod("canShutdown", null);
+			if (((Boolean) canShutdown.invoke(null, null)).booleanValue()) {
 				jPanel2.add(jShutdown, null);
 			}
-		} catch (NoClassDefFoundError e) {
+		} catch (Exception e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "OsShutdown not supported, hiding checkbox");
 		}
 
