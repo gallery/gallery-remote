@@ -1,0 +1,7 @@
+2001-11-14  Chris Smith <chris@jacko.com> (0.3-b1)
+
+	* Renamed package and main class from GalleryUp to GalleryRemote.
+
+2001-11-12  Chris Smith <chris@jacko.com> (0.2)
+
+	* v0.2 - The first release of Gallery Remote.
