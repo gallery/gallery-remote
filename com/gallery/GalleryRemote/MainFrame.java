@@ -351,7 +351,6 @@ public class MainFrame extends javax.swing.JFrame
 		} else {
 			if (jPicturesList.getModel() != currentAlbum) {
 				jPicturesList.setModel( currentAlbum );
-				currentAlbum.setListSelectionModel(jPicturesList.getSelectionModel());
 				currentAlbum.addListDataListener( this );
 			}
 

@@ -46,12 +46,9 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
     File source = null;
     String caption = null;
     Album album = null;
-    private int listIndex;
 
 	transient double fileSize = 0;
 	transient String escapedCaption = null;
-
-	transient protected EventListenerList listenerList = new EventListenerList();
 
     /**
      *  Constructor for the Picture object
@@ -218,21 +215,6 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
         return album;
     }
 
-    /** Getter for property listIndex.
-     * @return Value of property listIndex.
-     *
-     */
-    public int getListIndex() {
-		return this.listIndex;
-    }
-    
-    /** Setter for property listIndex.
-     * @param listIndex New value of property listIndex.
-     *
-     */
-    public void setListIndex(int listIndex) {
-    }
-	
 	public String toString() {
 		return source.getName();
 	}
