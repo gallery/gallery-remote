@@ -1,3 +1,15 @@
+2001-11-20  Chris Smith <chris@jacko.com> (0.3-b2)
+	
+	* App now remembers the last used Gallery URL, username and password.
+	
+	* Bug fixes: 
+		- Trailing slash no longer required on Gallery URL.
+		- Fixed race condtion where if login took too long the ui 
+		  thread would think that the upload was done and reset the
+		  file list before the upload thread got a chance to upload.
+		- Fetching Albums more than once will no longer append to the 
+		  existing list.
+
 2001-11-14  Chris Smith <chris@jacko.com> (0.3-b1)
 
 	* Renamed package and main class from GalleryUp to GalleryRemote.
