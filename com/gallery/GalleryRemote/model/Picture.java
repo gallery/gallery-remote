@@ -49,11 +49,12 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	int angle = 0;
 	boolean flipped = false;
+	boolean suppressServerAutoRotate = false;
 
 	transient double fileSize = 0;
 	transient String escapedCaption = null;
 
-    /**
+	/**
      *  Constructor for the Picture object
      */
     public Picture() { }
@@ -166,7 +167,7 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 		if (angle != 0 || flipped) {
 			try {
-				picture = ImageUtils.rotate( picture.getPath(), angle, flipped );
+				picture = ImageUtils.rotate( picture.getPath(), angle, flipped, true);
 			} catch (UnsupportedOperationException e) {
 				Log.log(Log.ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
 				Log.logException(Log.ERROR, MODULE, e);
@@ -251,8 +252,16 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 		return angle;
 	}
 
+	public void setAngle(int angle) {
+		this.angle = angle;
+	}
+
 	public boolean isFlipped() {
 		return flipped;
+	}
+
+	public void setFlipped(boolean flipped) {
+		this.flipped = flipped;
 	}
 
 	public String getExtraField(String name) {
@@ -281,6 +290,10 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	public HashMap getExtraFieldsMap() {
 		return extraFields;
+	}
+
+	public void setSuppressServerAutoRotate(boolean suppressServerAutoRotate) {
+		this.suppressServerAutoRotate = suppressServerAutoRotate;
 	}
 }
 

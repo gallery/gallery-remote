@@ -28,8 +28,9 @@
 			includes="com/**,HTTPClient/**,edu/**"
 			listfiles="on" debug="on" source="1.3">
 			<classpath>
-				<pathelement path="lib/JSX1.0.7.4.jar"/>
-				<pathelement path="lib/AppleJavaExtensions.jar"/>
+				<pathelement location="lib/JSX1.0.7.4.jar"/>
+				<pathelement location="lib/AppleJavaExtensions.jar"/>
+				<pathelement location="lib/metadata-extractor-2.1.jar"/>
 			</classpath>
 		</javac>
 
@@ -49,6 +50,7 @@
 		<java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true">
 			<classpath>
 				<pathelement location="lib/JSX1.0.7.4.jar"/>
+				<pathelement location="lib/metadata-extractor-2.1.jar"/>
 				<pathelement path="${build}"/>
 				<pathelement path="img"/>
 			</classpath>
@@ -81,11 +83,8 @@
 			<fileset dir="." includes="GalleryRemote.jar" />
 			<fileset dir="." includes="ReadMe.html" />
 			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
+			<zipfileset dir="./lib" includes="metadata-extractor-2.1.jar" prefix="lib"/>
 			<zipfileset dir="./img" includes="*" prefix="img"/>
-
-			<!-- temporary -->
-			<zipfileset dir="./jpegtran/win32" includes="jpegtran.exe" prefix="jpegtran/win32"/>
-			<zipfileset dir="./jpegtran/win32" includes="jpegtran.properties" prefix="jpegtran"/>
 		</zip>
 	</target>
 
@@ -135,7 +134,7 @@
 			name="Gallery Remote"
 			mainclass="com.gallery.GalleryRemote.GalleryRemote"
 			icon="rar_icon_128_gr1.icns"
-			jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar ./img.jar"
+			jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar ${lib}/metadata-extractor-2.1.jar ./img.jar"
 			version="1.1"
 			infostring="Gallery Remote 1.1, (c) 2003"
 			aboutmenuname="Gallery Remote"

@@ -35,6 +35,9 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 	JRadioButton resizeToForce = new JRadioButton();
 	JCheckBox htmlEscapeCaptionsNot = new JCheckBox();
 	JCheckBox captionStripExtension = new JCheckBox();
+    Border border1;
+    TitledBorder titledBorder1;
+    JCheckBox exifAutorotate = new JCheckBox();
 
 	public JLabel getIcon() {
 		return icon;
@@ -54,6 +57,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		setCaptionsWithFilenames.setSelected(props.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES));
 		captionStripExtension.setSelected(props.getBooleanProperty(CAPTION_STRIP_EXTENSION));
 		htmlEscapeCaptionsNot.setSelected(! props.getBooleanProperty(HTML_ESCAPE_CAPTIONS));
+		exifAutorotate.setSelected(props.getBooleanProperty(EXIF_AUTOROTATE));
 
 		resetUIState();
 	}
@@ -79,6 +83,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		props.setBooleanProperty(SET_CAPTIONS_WITH_FILENAMES, setCaptionsWithFilenames.isSelected());
 		props.setBooleanProperty(CAPTION_STRIP_EXTENSION, captionStripExtension.isSelected());
 		props.setBooleanProperty(HTML_ESCAPE_CAPTIONS, ! htmlEscapeCaptionsNot.isSelected());
+		props.setBooleanProperty(EXIF_AUTOROTATE, exifAutorotate.isSelected());
 	}
 
 	public void resetUIState() {
@@ -117,7 +122,9 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 	}
 
 	private void jbInit() {
-		this.setLayout(gridBagLayout1);
+		border1 = BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140));
+        titledBorder1 = new TitledBorder(border1,"Resize/Rotate");
+        this.setLayout(gridBagLayout1);
 		jPanel1.setLayout(gridBagLayout4);
 		resizeToWidth.setMinimumSize(new Dimension(25, 21));
 		resizeToWidth.setPreferredSize(new Dimension(25, 21));
@@ -126,7 +133,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		resizeToHeight.setMinimumSize(new Dimension(25, 21));
 		resizeToHeight.setPreferredSize(new Dimension(25, 21));
 		resizeToHeight.setToolTipText("Resize to height");
-		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Resize"));
+		jPanel1.setBorder(titledBorder1);
 		jPanel2.setLayout(gridBagLayout2);
 		setCaptionsWithFilenames.setToolTipText("Sets the caption to the image file when the image is loaded (it can " +
 				"later be changed by editing the caption)");
@@ -148,7 +155,10 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		captionStripExtension.setToolTipText("Remove the extension (.gif, .jpeg, etc.) from the filename when using " +
 				"it as a caption");
 		captionStripExtension.setText("Strip the filename extension");
-		this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+		exifAutorotate.setToolTipText("If your camera doesn\'t have an orientation sensor, you should disable " +
+    			"this feature, as it slows down adding files");
+        exifAutorotate.setText("Read EXIF from JPEG files to auto-rotate images");
+        this.add(jPanel1,     new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(resizeToWidth,         new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -170,6 +180,8 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
 		jPanel1.add(resizeToForce,  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
+        jPanel1.add(exifAutorotate,      new GridBagConstraints(0, 3, 5, 1, 1.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel2.add(htmlEscapeCaptionsNot,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel2.add(captionStripExtension,  new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0

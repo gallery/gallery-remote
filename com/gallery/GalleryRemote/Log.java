@@ -127,8 +127,7 @@ public class Log extends Thread implements PreferenceNames
 		log( TRACE, (String) null, message );
 	}
 	
-	public static void logStack(int level, String module)
-	{
+	public static void logStack(int level, String module) {
 		if ( level <= maxLevel ) {
 			CharArrayWriter caw = new CharArrayWriter();
 			try {
@@ -141,8 +140,7 @@ public class Log extends Thread implements PreferenceNames
 		}
 	}
 	
-	public static void logException(int level, String module, Throwable t)
-	{
+	public static void logException(int level, String module, Throwable t) {
 		if ( level <= maxLevel ) {
 			//log(level, module, t.toString());
 			
@@ -153,8 +151,7 @@ public class Log extends Thread implements PreferenceNames
 		}
 	}
 	
-	public static String getShortClassName(Class c)
-	{
+	public static String getShortClassName(Class c) {
 		String name = c.getName();
 		int i = name.lastIndexOf(".");
 		
@@ -165,8 +162,7 @@ public class Log extends Thread implements PreferenceNames
 		}
 	}
 	
-	public static void shutdown()
-	{
+	public static void shutdown() {
 		singleton.running = false;
 		try {
 			singleton.join();

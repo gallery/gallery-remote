@@ -46,6 +46,7 @@ import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.OsShutdown;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
@@ -130,7 +131,6 @@ public class MainFrame extends javax.swing.JFrame
 	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
     public static GRI18n grRes = GRI18n.getInstance();
-
 
 	/**
 	 *  Constructor for the MainFrame object
@@ -241,14 +241,18 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
-		shutdown(false);
+		shutdown(false, false);
 	}
 
 	public void shutdown() {
-		shutdown(false);
+		shutdown(false, false);
 	}
 
-	private void shutdown(boolean halt) {
+	public void shutdown(boolean shutdownOs) {
+		shutdown(false, shutdownOs);
+	}
+
+	private void shutdown(boolean halt, boolean shutdownOs) {
 		if (running) {
 			running = false;
 
@@ -272,6 +276,10 @@ public class MainFrame extends javax.swing.JFrame
 				ImageUtils.purgeTemp();
 			} catch (Throwable t) {
 				Log.log(Log.ERROR, MODULE, "Error while closing: " + t);
+			}
+
+			if (shutdownOs) {
+				OsShutdown.shutdown();
 			}
 
 			Log.log(Log.INFO, MODULE, "Shutting down log");

@@ -518,6 +518,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			
 			if (allGood) {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload complete");
+
+				if (su instanceof UploadProgress) {
+					if (((UploadProgress) su).isShutdown()) {
+						GalleryRemote.getInstance().mainFrame.shutdown(true);
+					}
+				}
 			} else {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, "Upload failed");
 			}

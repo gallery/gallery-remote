@@ -37,7 +37,7 @@ public class GalleryFileFilter extends FileFilter {
 	public static final List manipulateExtensions = Arrays.asList( ext1 );
 
 	public static String[] ext2
-		= { "jpg", "png" };
+		= { "jpg", "jpeg" };
 	public static final List manipulateJpegExtensions = Arrays.asList( ext2 );
 
 	// Accept all directories and all gif, jpg files.

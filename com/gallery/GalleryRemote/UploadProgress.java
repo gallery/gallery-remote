@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +21,6 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	JProgressBar jProgressGlobal = new JProgressBar();
 	JLabel jLabelDetail = new JLabel();
 	JProgressBar jProgressDetail = new JProgressBar();
-	JButton jCancel = new JButton();
 	JPanel jPanel2 = new JPanel();
 
 	JLabel jLabel[] = new JLabel[NUM_LEVELS];
@@ -28,6 +28,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 	MainFrame mf;
 	ActionListener cancelListener = null;
+	JButton jCancel = new JButton();
+	JCheckBox jShutdown = new JCheckBox();
 
 	public UploadProgress(MainFrame mf) {
 		super(mf);
@@ -57,30 +59,33 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jLabelGlobal.setText("Uploading image n of m");
 		jLabelDetail.setText("Uploading img.gif");
 
-		jCancel.setAlignmentX((float) 0.0);
-		jCancel.setRolloverEnabled(false);
 		jCancel.setText("Cancel");
+		jCancel.addActionListener(this);
+		jShutdown.setToolTipText("Shut down the computer when the transfer completes");
+		jShutdown.setText("Shutdown when done");
 
 		jPanel1.add(jComputer1,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
+				,GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
 		jPanel1.add(jUploading,   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
 		jPanel1.add(jComputer2,     new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 10), 0, 0));
+				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 10), 0, 0));
 		jPanel1.add(jLabelGlobal,     new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
 		jPanel1.add(jProgressGlobal,     new GridBagConstraints(0, 2, 3, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
 		jPanel1.add(jLabelDetail,    new GridBagConstraints(0, 3, 3, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 0, 0), 0, 0));
 		jPanel1.add(jProgressDetail,   new GridBagConstraints(0, 4, 3, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
-		jPanel1.add(jCancel,        new GridBagConstraints(1, 5, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 10, 10), 0, 0));
-		jPanel1.add(jPanel2,   new GridBagConstraints(0, 5, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel1.add(jPanel2,      new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		jCancel.addActionListener(this);
+		if (OsShutdown.canShutdown()) {
+			jPanel2.add(jShutdown, null);
+		}
+		
+		jPanel2.add(jCancel, null);
 	}
 
 	/* level-bound methods */
@@ -196,5 +201,9 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 	public void setCancelListener(ActionListener cancelListener) {
 		this.cancelListener = cancelListener;
+	}
+
+	public boolean isShutdown() {
+		return jShutdown.isSelected();
 	}
 }

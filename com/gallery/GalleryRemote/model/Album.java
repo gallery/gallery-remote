@@ -26,10 +26,8 @@ import java.util.*;
 
 import javax.swing.*;
 
-import com.gallery.GalleryRemote.GalleryCommCapabilities;
-import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.StatusUpdate;
-import com.gallery.GalleryRemote.StatusUpdateAdapter;
+import com.gallery.GalleryRemote.*;
+import com.gallery.GalleryRemote.util.ImageUtils;
 
 /**
  *  Album model
@@ -154,7 +152,7 @@ public class Album extends Picture implements ListModel, Serializable
 	 */
 	public void addPicture( Picture p ) {
 		p.setAlbum( this );
-		pictures.addElement( p );
+		addPictureInternal( p );
 
 		notifyListeners();
 	}
@@ -167,7 +165,7 @@ public class Album extends Picture implements ListModel, Serializable
 	public void addPicture( File file ) {
 		Picture p = new Picture( file );
 		p.setAlbum( this );
-		pictures.addElement( p );
+		addPictureInternal( p );
 
 		notifyListeners();
 	}
@@ -192,13 +190,36 @@ public class Album extends Picture implements ListModel, Serializable
 			Picture p = new Picture( files[i] );
 			p.setAlbum( this );
 			if (index == -1) {
-				pictures.add( p );
+				addPictureInternal( p );
 			} else {
-				pictures.add( index++, p );
+				addPictureInternal( index++, p );
 			}
 		}
 
 		notifyListeners();
+	}
+
+	private void addPictureInternal(Picture p) {
+		addPictureInternal(-1, p);
+	}
+
+	private void addPictureInternal(int index, Picture p) {
+		// handle EXIF
+		if (GalleryRemote.getInstance().properties.getBooleanProperty(EXIF_AUTOROTATE)) {
+			ImageUtils.AngleFlip af = ImageUtils.getExifTargetOrientation(p.getSource().getPath());
+
+			if (af != null) {
+				p.setFlipped(af.flip);
+				p.setAngle(af.angle);
+				p.setSuppressServerAutoRotate(true);
+			}
+		}
+
+		if (index == -1) {
+			pictures.add(p);
+		} else {
+			pictures.add(index, p);
+		}
 	}
 
 	/**

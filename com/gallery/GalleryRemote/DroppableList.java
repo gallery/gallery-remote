@@ -61,7 +61,7 @@ public class DroppableList extends JList
 {
 	private final static String MODULE = "Droplist";
 
-	MainFrame mDaddy = null;
+	MainFrame mf = null;
 	DragSource dragSource;
 	DropTarget dropTarget;
 	PictureSelection ps;
@@ -82,11 +82,11 @@ public class DroppableList extends JList
 	/**
 	 *  Constructor for the DroppableList object
 	 *
-	 *@param  daddy  Description of Parameter
+	 *@param  mf  Description of Parameter
 	 *@since
 	 */
-	public void setMainFrame( MainFrame daddy ) {
-		mDaddy = daddy;
+	public void setMainFrame( MainFrame mf ) {
+		this.mf = mf;
 	}
 	
 	int safeGetFixedCellHeight() {
@@ -173,7 +173,7 @@ public class DroppableList extends JList
 			try {
 				java.util.List fileList = (java.util.List) ps.getTransferData( DataFlavor.javaFileListFlavor );
 				if ( !ps.isEmpty() ) {
-					mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ) );
+					mf.addPictures( (File[]) fileList.toArray( new File[0] ) );
 				}
 				//kill dragEvent
 				//need to figure out why MainFrame becomes dropTarget for internal drops??!!
@@ -264,9 +264,9 @@ public class DroppableList extends JList
 				Point dropLocation = dropTargetDropEvent.getLocation();
 				int listIndex = snapIndex( (int) dropLocation.getY() );
 
-				Log.log( Log.TRACE, MODULE, "Adding new image(s) to list at index:" + listIndex );
+				Log.log( Log.TRACE, MODULE, "Adding new image(s) to list at index " + listIndex );
 
-				mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
+				mf.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
 
 				dropTargetDropEvent.getDropTargetContext().dropComplete( true );
 			} else {
@@ -367,7 +367,7 @@ public class DroppableList extends JList
 		//pull out existing pictures
 		if ( !ps.isEmpty() ) {
 			dragSource.startDrag( event, DragSource.DefaultMoveDrop, ps, this );
-			mDaddy.deleteSelectedPictures();
+			mf.deleteSelectedPictures();
 
 		} else {
 			Log.log( Log.TRACE, MODULE, "nothing was selected" );

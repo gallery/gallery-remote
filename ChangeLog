@@ -1,3 +1,10 @@
+2003-09-25  Pierre-Luc Paour <gallery@paour.com> (1.2-b4)
+
+	* Implemented auto-rotate based on EXIF tag, if present. Now I need
+	  protocol support to disable auto-rotate in the server when
+	  uploading.
+	* Implemented shutdown on upload completion. Thanks to Nick77.
+
 2003-09-22  Pierre-Luc Paour <gallery@paour.com> (1.2-b3)
 
 	* Fixed PHPNuke default URLs (thanks docmattman).

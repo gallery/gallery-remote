@@ -24,11 +24,17 @@ import com.gallery.GalleryRemote.GalleryFileFilter;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.GalleryRemote;
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Directory;
+import com.drew.metadata.exif.ExifDirectory;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -209,10 +215,10 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static File rotate( String filename, int angle, boolean flip ) {
+	public static File rotate( String filename, int angle, boolean flip, boolean resetExifOrientation) {
 		File r = null;
 
-		if ( ! GalleryFileFilter.canManipulate(filename) ) {
+		if ( ! GalleryFileFilter.canManipulateJpeg(filename) ) {
 			return new File(filename);
 		}
 
@@ -226,6 +232,10 @@ public class ImageUtils {
 				if (angle != 0) {
 					r = jpegtranExec(filename, " -rotate " + angle * 90);
 				}
+
+				/*if (resetExifOrientation) {
+					resetExifOrientation(filename);
+				}*/
 			} catch (IOException e1) {
 				Log.logException(Log.ERROR, MODULE, e1);
 			} catch (InterruptedException e2) {
@@ -309,6 +319,102 @@ public class ImageUtils {
 		}
 
 		return thumb;
+	}
+
+	public static AngleFlip getExifTargetOrientation(String filename) {
+		if (GalleryFileFilter.canManipulateJpeg(filename)) {
+			File jpegFile = new File(filename);
+			try {
+				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+
+				Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
+				String orientation = exifDirectory.getString(ExifDirectory.TAG_ORIENTATION);
+
+				if (orientation == null) {
+					Log.log(Log.TRACE, MODULE, "Picture " + filename + " has no EXIF ORIENTATION tag");
+					return null;
+				} else {
+					Log.log(Log.TRACE, MODULE, "Picture " + filename + " EXIF ORIENTATION: " + orientation);
+
+					int or = 0;
+					AngleFlip af = null;
+					try {
+						or = Integer.parseInt(orientation);
+					} catch (NumberFormatException e) {
+						Log.log(Log.ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
+						return null;
+					}
+
+					switch (or) {
+						case 1:
+							af = new AngleFlip(0, false);
+							break;
+
+						case 2:
+							af = new AngleFlip(0, true);
+							break;
+
+						case 3:
+							af = new AngleFlip(2, false);
+							break;
+
+						case 4:
+							af = new AngleFlip(2, true);
+							break;
+
+						case 5:
+							af = new AngleFlip(1, true);
+							break;
+
+						case 6:
+							af = new AngleFlip(1, false);
+							break;
+
+						case 7:
+							af = new AngleFlip(3, true);
+							break;
+
+						case 8:
+							af = new AngleFlip(3, false);
+							break;
+
+						default:
+							Log.log(Log.ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
+							return null;
+					}
+
+					Log.log(Log.TRACE, MODULE, "Angle: " + af.angle + " Flipped: " + af.flip);
+					return af;
+				}
+			} catch (FileNotFoundException e) {
+				Log.logException(Log.ERROR, MODULE, e);
+				return null;
+			} catch (JpegProcessingException e) {
+				Log.logException(Log.ERROR, MODULE, e);
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	public static void resetExifOrientation(String filename) {
+		if (GalleryFileFilter.canManipulateJpeg(filename)) {
+			File jpegFile = new File(filename);
+			try {
+				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+
+				Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
+				exifDirectory.setString(ExifDirectory.TAG_ORIENTATION, "1");
+
+				// todo: this doesn't do anything at present: the library can only READ
+				// EXIF, not write to it...
+			} catch (FileNotFoundException e) {
+				Log.logException(Log.ERROR, MODULE, e);
+			} catch (JpegProcessingException e) {
+				Log.logException(Log.ERROR, MODULE, e);
+			}
+		}
 	}
 
 	static {
@@ -434,6 +540,16 @@ public class ImageUtils {
 		else
 		{
 			return heightRatio;
+		}
+	}
+
+	public static class AngleFlip {
+		public int angle = 0;
+		public boolean flip = false;
+
+		public AngleFlip(int angle, boolean flip) {
+			this.angle = angle;
+			this.flip = flip;
 		}
 	}
 }

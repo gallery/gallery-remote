@@ -24,6 +24,7 @@ public interface PreferenceNames {
 	public static final String SET_CAPTIONS_WITH_FILENAMES = "setCaptionsWithFilenames";
 	public static final String CAPTION_STRIP_EXTENSION = "captionStripExtension";
 	public static final String HTML_ESCAPE_CAPTIONS = "htmlEscapeCaptions";
+	public static final String EXIF_AUTOROTATE = "exifAutorotate";
 
 	// URL panel
 	public static final String USERNAME = "username.";
