@@ -321,7 +321,7 @@ public class GalleryComm {
 			
 			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 				// retry, the library will have fixed the URL
-				rsp = mConnection.Post(loginPage, form_data);
+				rsp = mConnection.Post(savePage, data, hdrs);
 			}
 			
 			if (rsp.getStatusCode() >= 400)	{
