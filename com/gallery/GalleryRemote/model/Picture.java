@@ -264,6 +264,18 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		}
 	}
 
+	public int hashCode() {
+		String path = null;
+
+		if (online) {
+			path = safeGetUrlFull().toString();
+		} else {
+			path = source.getName();
+		}
+
+		return path.hashCode();
+	}
+
 	// Hacks to allow Album to inherit from Picture and AbstractListModel
 	public int getSize() {
 		return 0;

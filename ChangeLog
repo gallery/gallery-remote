@@ -1,3 +1,9 @@
+2005-01-23  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b10)
+
+	* Fixed mis-caching of files downloaded from the server
+	  (most problematic during a slideshow).
+	* Added Mandarin translation (thanks to Nica Liu).
+
 2005-01-09  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b9)
 
 	* Fixed drop target indication when dropping to the last
