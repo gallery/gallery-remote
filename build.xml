@@ -72,14 +72,6 @@
 		</jar>
 	</target>
 
-	<target name="img_jar"
-		description="create a jar of the images">
-
-		<jar destfile="img.jar">
-			<fileset dir="${img}" />
-		</jar>
-	</target>
-
 	<target name="zip" depends="jar"
 		description="create a zip patch of the Gallery Remote install">
 
@@ -139,7 +131,21 @@
 		</exec>
 	</target>
 
-	<target name="installer_macosx" depends="jar, img_jar, docs"
+	<target name="mac_img_jar"
+		description="create a jar of the images">
+
+		<copy file="imagemagick/im.properties.preinstalled" tofile="${img}/im.properties" />
+		<copy file="jpegtran/jpegtran.preinstalled" tofile="${img}/jpegtran.properties" />
+
+		<jar destfile="img.jar">
+			<fileset dir="${img}" />
+		</jar>
+
+		<delete file="${img}/im.properties" />
+		<delete file="${img}/jpegtran.properties" />
+	</target>
+
+	<target name="installer_macosx" depends="jar, mac_img_jar, docs"
 		description="Build a MacOSX executable">
 
 		<delete dir="Gallery Remote.app" />

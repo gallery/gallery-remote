@@ -71,14 +71,21 @@ public class Album extends Picture implements ListModel, Serializable
 	transient boolean canDeleteFrom = true;
 	transient boolean canDeleteThisAlbum = true;
 	transient boolean canCreateSubAlbum = true;
-	
+	transient String summary = null;
+
 	transient boolean hasFetchedInfo = false;
-	
+
 	transient private Long pictureFileSize;
 	transient private Integer albumDepth;
 
+	transient ArrayList subAlbums = new ArrayList();
+
 	public static List extraFieldsNoShow = Arrays.asList(new String[] {grRes.getString(MODULE, "upDate"), grRes.getString(MODULE, "captDate")});
 
+
+	public Album(Gallery gallery) {
+		this.gallery = gallery;
+	}
 
 	/**
 	 *  Retrieves the album properties from the server.
@@ -390,6 +397,8 @@ public class Album extends Picture implements ListModel, Serializable
 	 */
 	public void setTitle( String title ) {
 		this.title = title;
+
+		gallery.albumChanged(this);
 	}
 
 	/**
@@ -454,7 +463,7 @@ public class Album extends Picture implements ListModel, Serializable
 		// currently.  eventually, when we start changing things
 		// on the server, permission support will get more ... interesting.
 		if ( ! canAdd ) {
-			ret.append( grRes.getString(MODULE, "ro") );
+			ret.append(" ").append( grRes.getString(MODULE, "ro") );
 		}
 		
 		return ret.toString();
@@ -514,6 +523,16 @@ public class Album extends Picture implements ListModel, Serializable
 	 */
 	public void setParentAlbum( Album a ) {
 		parent = a;
+
+		if (a != null) {
+			if (!a.subAlbums.contains(this)) {
+				a.subAlbums.add(this);
+			}
+		} else {
+			if (!gallery.rootAlbums.contains(this)) {
+				gallery.rootAlbums.add(this);
+			}
+		}
 	}
 
 	public ArrayList getExtraFields() {
@@ -582,7 +601,14 @@ public class Album extends Picture implements ListModel, Serializable
 		return canCreateSubAlbum;
 	}
 
-	
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
 	/* -------------------------------------------------------------------------
 	 *NON-PUBLIC INSTANCE METHODS
 	 */
@@ -631,6 +657,11 @@ public class Album extends Picture implements ListModel, Serializable
 	
 	void notifyListeners() {
 		fireContentsChanged( this, 0, pictures.size() );
+		gallery.albumChanged(this);
+	}
+
+	public ArrayList getSubAlbums() {
+		return subAlbums;
 	}
 }
 

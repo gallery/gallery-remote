@@ -18,6 +18,8 @@ http://www.anyware.co.uk/java for updates and other stuff
 
 package com.gallery.GalleryRemote.util;
 
+import java.util.HashMap;
+
 /**
  * This class will escape characters that have an HTML entity
  * representation. It will not escape standard ASCII characters unless
@@ -44,6 +46,8 @@ public class HTMLEscaper {
 		System.out.println( "in: " + text );
 
 		System.out.println( "out: " + escape( text ) );
+
+		System.out.println( "rev: " + unescape(escape(text) + " & toto"));
 	}
 
 	/**
@@ -69,6 +73,47 @@ public class HTMLEscaper {
 				res.append( quickEntities[ idx ] );
 			}
 		}
+		return res.toString();
+	}
+
+	public static final String unescape(String HTMLsrc) {
+		if (HTMLsrc == null) {
+			return null;
+		}
+
+		StringBuffer res = new StringBuffer();
+
+		while (HTMLsrc.length() > 0) {
+			int i = HTMLsrc.indexOf('&');
+
+			if (i == -1) {
+				res.append(HTMLsrc);
+				break;
+			}
+
+			int j = HTMLsrc.indexOf(';', i);
+
+			if (j == -1) {
+				// this should never happen, but it does...
+				res.append(HTMLsrc.substring(0, i)).append("&");
+				HTMLsrc = HTMLsrc.substring(i + 1);
+				continue;
+			}
+
+			String entity = HTMLsrc.substring(i + 1, j);
+			String decodedEntity = (String) quickRevEntities.get(entity);
+
+			if (decodedEntity == null) {
+				res.append(HTMLsrc.substring(0, i)).append("&");
+				HTMLsrc = HTMLsrc.substring(i + 1);
+				continue;
+			}
+
+			res.append(HTMLsrc.substring(0, i)).append(decodedEntity);
+
+			HTMLsrc = HTMLsrc.substring(j + 1);
+		}
+
 		return res.toString();
 	}
 
@@ -211,6 +256,7 @@ public class HTMLEscaper {
 
 	private static String entityMap;
 	private static String[] quickEntities;
+	private static HashMap quickRevEntities = new HashMap(ENTITIES.length);
 
 	static {
 		// Initialize some local mappings to speed it all up
@@ -221,6 +267,7 @@ public class HTMLEscaper {
 		for ( int i = 0; i < l; i++ ) {
 			temp.append( ENTITIES[ i ][ 0 ] );
 			quickEntities[ i ] = "&" + ENTITIES[ i ][ 1 ] + ";";
+			quickRevEntities.put(ENTITIES[i][1], ENTITIES[i][0]);
 		}
 		entityMap = temp.toString();
 	}

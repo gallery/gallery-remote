@@ -93,7 +93,7 @@ public class PropertiesFile extends GalleryProperties
 	 *@param  name  The new filename value
 	 */
 	public synchronized void setFilename( String name ) {
-		if (name.length() - name.lastIndexOf('.') > 5) {
+		if (name.length() < 5 || name.length() - name.lastIndexOf('.') > 5) {
 			mFilename = name + ".properties";
 		} else {
 			mFilename = name;

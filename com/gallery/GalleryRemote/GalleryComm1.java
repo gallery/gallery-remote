@@ -39,6 +39,7 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
 
 public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities {
 	private static final String MODULE = "GalComm1";
@@ -327,14 +328,14 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 							StringTokenizer colT = new StringTokenizer(lineT.nextToken(), "\t");
 							
 							if (colT.countTokens() == 2) {
-								Album a = new Album();
+								Album a = new Album(g);
 								
-								a.setName( URLDecoder.decode(colT.nextToken()) );
-								a.setTitle( URLDecoder.decode(colT.nextToken()) );
-								
-								a.setGallery( g );
-								
+								a.setName( colT.nextToken() );
+								a.setTitle( HTMLEscaper.unescape(colT.nextToken()) );
+																
 								mAlbumList.add(a);
+
+								a.setParentAlbum(null);
 							}
 						}
 						

@@ -110,8 +110,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		this.setTitle( grRes.getString(MODULE, "title") );
 		
 		Vector albums = new Vector(gallery.getAlbumList());
-		rootAlbum = new Album();
-		rootAlbum.setGallery(gallery);
+		rootAlbum = new Album(gallery);
 		rootAlbum.setTitle(grRes.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
@@ -191,7 +190,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		if ( command.equals( "Cancel" ) ) {
 			setVisible(false);
 		} else if ( command.equals( "OK" ) ) {
-			Album a = new Album();
+			Album a = new Album(gallery);
 			a.setName(name.getText());
 			a.setTitle(title.getText());
 			a.setCaption(description.getText());

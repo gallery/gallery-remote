@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.SocketException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -686,7 +687,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				HashMap ref2parKey = new HashMap();
 				HashMap ref2album = new HashMap();
 				for ( int i = 1; i < albumCount + 1; i++ ) {
-					Album a = new Album();
+					Album a = new Album(g);
 
 					String nameKey = "album.name." + i;
 					String titleKey = "album.title." + i;
@@ -703,12 +704,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
 					a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
 					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
-					a.setExtraFieldsString( p.getProperty( infoExtraFieldsKey ) );
+					a.setExtraFieldsString( HTMLEscaper.unescape(p.getProperty( infoExtraFieldsKey )) );
 
 					a.setName( p.getProperty( nameKey ) );
-					a.setTitle( p.getProperty( titleKey ) );
+					a.setTitle( HTMLEscaper.unescape( p.getProperty( titleKey ) ) );
 
-					a.setGallery( g );
 					mAlbumList.add( a );
 
 					// map album ref nums to albums
@@ -719,6 +719,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					int parentRef = Integer.parseInt( parentRefS );
 					if ( parentRef != 0 ) {
 						ref2parKey.put( "" + i, parentRefS );
+					} else {
+						a.setParentAlbum(null);
 					}
 				}
 
@@ -727,8 +729,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String parentKey = (String)ref2parKey.get( "" + i );
 					if ( parentKey != null ) {
 						Album a = (Album)ref2album.get( "" + i );
-						if ( a == null ) {
-						}
 						Album pa = (Album)ref2album.get( parentKey );
 						a.setParentAlbum( pa );
 					}
@@ -762,7 +762,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				HashMap name2parentName = new HashMap();
 				HashMap name2album = new HashMap();
 				for ( int i = 1; i < albumCount + 1; i++ ) {
-					Album a = new Album();
+					Album a = new Album(g);
 
 					String nameKey = "album.name." + i;
 					String titleKey = "album.title." + i;
@@ -781,12 +781,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
 
 					String name = p.getProperty( nameKey );
-					String title = p.getProperty( titleKey );
 					a.setName( name );
-					a.setTitle( title );
-					a.setExtraFieldsString( p.getProperty(infoExtraFieldKey));
+					a.setTitle( HTMLEscaper.unescape( p.getProperty(titleKey) ) );
+					a.setExtraFieldsString( HTMLEscaper.unescape(p.getProperty(infoExtraFieldKey)));
 
-					a.setGallery( g );
 					mAlbumList.add( a );
 
 					// map album names to parent albums
@@ -796,6 +794,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String parentName = p.getProperty( parentKey );
 					if ( parentName != null && parentName.length() > 0 && !parentName.equals("0")) {
 						name2parentName.put( name, parentName );
+					} else {
+						a.setParentAlbum(null);
 					}
 				}
 

@@ -1,23 +1,23 @@
 /*
- *  Gallery Remote - a File Upload Utility for Gallery
- *
- *  Gallery - a web based photo album viewer and editor
- *  Copyright (C) 2000-2001 Bharat Mediratta
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or (at
- *  your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*  Gallery Remote - a File Upload Utility for Gallery
+*
+*  Gallery - a web based photo album viewer and editor
+*  Copyright (C) 2000-2001 Bharat Mediratta
+*
+*  This program is free software; you can redistribute it and/or modify
+*  it under the terms of the GNU General Public License as published by
+*  the Free Software Foundation; either version 2 of the License, or (at
+*  your option) any later version.
+*
+*  This program is distributed in the hope that it will be useful, but
+*  WITHOUT ANY WARRANTY; without even the implied warranty of
+*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*  General Public License for more details.
+*
+*  You should have received a copy of the GNU General Public License
+*  along with this program; if not, write to the Free Software
+*  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package com.gallery.GalleryRemote;
 
 import java.awt.*;
@@ -32,13 +32,13 @@ import java.util.Arrays;
 import java.lang.reflect.Method;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
@@ -51,6 +51,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
 import JSX.ObjOut;
 import JSX.ObjIn;
+import javax.swing.border.Border;
 
 /**
  *  Description of the Class
@@ -60,8 +61,8 @@ import JSX.ObjIn;
  *@created    August 16, 2002
  */
 public class MainFrame extends javax.swing.JFrame
-		 implements ActionListener, ItemListener, ListSelectionListener,
-		 ListDataListener {
+		implements ActionListener, ItemListener, ListSelectionListener,
+		ListDataListener, TreeSelectionListener {
 	public static final String MODULE = "MainFrame";
 	public static final String FILE_TYPE = ".grg";
 
@@ -83,20 +84,15 @@ public class MainFrame extends javax.swing.JFrame
 	JPanel jPanel1 = new JPanel();
 	JMenuBar jMenuBar1 = new JMenuBar();
 	JLabel jLabel1 = new JLabel();
-	JLabel jLabel7 = new JLabel();
 	JPanel jPanel3 = new JPanel();
 	GridLayout gridLayout1 = new GridLayout();
 	GridBagLayout gridBagLayout3 = new GridBagLayout();
-	JScrollPane jScrollPane1 = new JScrollPane();
 
-	DroppableList jPicturesList = new DroppableList();
-	JComboBox jAlbumCombo = new JComboBox();
 	JComboBox jGalleryCombo = new JComboBox();
 	JButton jNewGalleryButton = new JButton();
 	JButton jLoginButton = new JButton();
-	JButton jNewAlbumButton = new JButton();
 	JSplitPane jInspectorDivider = new JSplitPane();
-	PictureInspector jPictureInspector = new PictureInspector();
+	JSplitPane jAlbumPictureDivider = new JSplitPane();
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
 	JButton jSortButton = new JButton();
@@ -118,6 +114,15 @@ public class MainFrame extends javax.swing.JFrame
 	JMenuItem jMenuItemPrefs = new JMenuItem();
 	JMenu jMenuHelp = new JMenu();
 	JMenuItem jMenuItemAbout = new JMenuItem();
+
+	JTree jAlbumTree = new JTree();
+	DroppableList jPicturesList = new DroppableList();
+	JPanel jInspectorPanel = new JPanel();
+	CardLayout jInspectorCardLayout = new CardLayout();
+	PictureInspector jPictureInspector = new PictureInspector();
+	AlbumInspector jAlbumInspector = new AlbumInspector();
+	JScrollPane jAlbumScroll = new JScrollPane();
+	JScrollPane jPictureScroll = new JScrollPane();
 
 	public static ImageIcon iLogin;
 	public static ImageIcon iNewGallery;
@@ -141,9 +146,8 @@ public class MainFrame extends javax.swing.JFrame
 	public static Image iconImage = new ImageIcon(GalleryRemote.class.getResource( "/rar_icon_16.gif" )).getImage();
 
 	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
-	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-    public static GRI18n grRes = GRI18n.getInstance();
+	public static GRI18n grRes = GRI18n.getInstance();
 
 	/**
 	 *  Constructor for the MainFrame object
@@ -170,12 +174,6 @@ public class MainFrame extends javax.swing.JFrame
 			}
 		}
 
-		// if no galleries available, create a blank one
-		/*if ( galleries.getSize() == 0 ) {
-			Gallery g = new Gallery(this);
-			galleries.addElement( g );
-		}*/
-
 		setIconImage(MainFrame.iconImage);
 
 		if ( System.getProperty("os.name").toLowerCase().startsWith("mac") ) {
@@ -195,7 +193,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *@exception  Exception  Description of Exception
 	 */
 	public void initComponents()
-		throws Exception {
+			throws Exception {
 
 		try {
 			jbInit();
@@ -213,22 +211,33 @@ public class MainFrame extends javax.swing.JFrame
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
 		jPicturesList.setInputMap(JComponent.WHEN_FOCUSED, null);
 		jPicturesList.setInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW, null);
+
+		jAlbumTree.setRootVisible(false);
+		jAlbumTree.setScrollsOnExpand(true);
+		jAlbumTree.setShowsRootHandles(true);
+		jAlbumTree.setEnabled(true);
+		jAlbumTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		jAlbumTree.setCellRenderer( new AlbumTreeRenderer() );
+		((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote.getInstance().properties.getIntProperty( "albumPictureDividerLocation" ), -1));
+
 		jPictureInspector.setMainFrame( this );
+		jAlbumInspector.setMainFrame( this );
 
 		setGalleries(galleries);
 
 		jInspectorDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty( "inspectorDividerLocation" ) );
+		jAlbumPictureDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty( "albumPictureDividerLocation" ) );
 
 		setVisible( true );
 
 		previewFrame = new PreviewFrame();
 		previewFrame.initComponents();
 		previewFrame.addWindowListener(
-			new java.awt.event.WindowAdapter()	{
-				public void windowClosing( java.awt.event.WindowEvent e ) {
-					jCheckBoxMenuPreview.setState( false );
-				}
-			} );
+				new java.awt.event.WindowAdapter()	{
+					public void windowClosing( java.awt.event.WindowEvent e ) {
+						jCheckBoxMenuPreview.setState( false );
+					}
+				} );
 
 		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
 			previewFrame.setVisible( true );
@@ -237,8 +246,6 @@ public class MainFrame extends javax.swing.JFrame
 		toFront();
 
 		readPreferences(GalleryRemote.getInstance().properties);
-
-		//new UploadProgress();
 	}
 
 	private void setGalleries(DefaultComboBoxModel galleries) {
@@ -300,6 +307,7 @@ public class MainFrame extends javax.swing.JFrame
 				p.setMainBounds( getBounds() );
 				p.setPreviewBounds( previewFrame.getBounds() );
 				p.setIntProperty( "inspectorDividerLocation", jInspectorDivider.getDividerLocation() );
+				p.setIntProperty( "albumPictureDividerLocation", jAlbumPictureDivider.getDividerLocation() );
 
 				p.write();
 
@@ -325,7 +333,7 @@ public class MainFrame extends javax.swing.JFrame
 				// no need for this in halt mode
 				Runtime.getRuntime().exit(0);
 			}/* else {
-				Runtime.getRuntime().exit(0);
+			Runtime.getRuntime().exit(0);
 			}*/
 		}
 	}
@@ -342,9 +350,9 @@ public class MainFrame extends javax.swing.JFrame
 			public void run() {
 				// if the list is empty or comm, disable upload
 				jUploadButton.setEnabled( getCurrentAlbum() != null
-				&& getCurrentAlbum().sizePictures() > 0
-				&& !inProgress
-				&& jAlbumCombo.getSelectedIndex() >= 0 );
+						&& getCurrentAlbum().sizePictures() > 0
+						&& !inProgress
+						&& jAlbumTree.getSelectionCount() > 0 );
 				jSortButton.setEnabled(jUploadButton.isEnabled());
 
 				Gallery currentGallery = getCurrentGallery();
@@ -355,30 +363,31 @@ public class MainFrame extends javax.swing.JFrame
 				jNewGalleryButton.setEnabled( !inProgress );
 
 				if (currentGallery != null
-					&& currentGallery.getUsername() != null
-					&& currentGallery.hasComm()
-					&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
+						&& currentGallery.getUsername() != null
+						&& currentGallery.hasComm()
+						&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
 					jLoginButton.setText(grRes.getString(MODULE, "Log_out"));
 				} else {
 					jLoginButton.setText(grRes.getString(MODULE, "Log_in"));
 				}
 
+				jAlbumTree.setEnabled( ! inProgress && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
+
 				// if the selected album is uploading, disable everything
-				boolean enabled = ! inProgress && getCurrentAlbum() != null && jAlbumCombo.getModel().getSize() >= 1;
+				boolean enabled = ! inProgress && getCurrentAlbum() != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
 				jBrowseButton.setEnabled( enabled && getCurrentAlbum().getCanAdd());
 				jPictureInspector.setEnabled( enabled );
 				jPicturesList.setEnabled( enabled && getCurrentAlbum().getCanAdd());
-				jAlbumCombo.setEnabled( enabled );
-				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
-					&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+				//jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
+				//	&& currentGallery.getComm(jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
 				/*if (mAlbum != null && mAlbum.getSize() < 1) {
-					// if album was just emptied, it takes a while for the pictureList
-					// to notice...
-					// this is fixed by using invokeLater
-					sel = -1;
+				// if album was just emptied, it takes a while for the pictureList
+				// to notice...
+				// this is fixed by using invokeLater
+				sel = -1;
 				}*/
 
 				if ( GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null ) {
@@ -405,13 +414,13 @@ public class MainFrame extends javax.swing.JFrame
 
 
 					if ( sel == -1 ) {
-                        Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
-                                            new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
+						Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
+											new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
 						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarNoSel", params ));
 					} else {
-                        Object [] params = {new Integer(selN),
-                                            grRes.getString(MODULE, (selN==1)?"oneSel":"manySel"),
-                                            new Integer((int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 )};
+						Object [] params = {new Integer(selN),
+											grRes.getString(MODULE, (selN==1)?"oneSel":"manySel"),
+											new Integer((int) Album.getObjectFileSize( jPicturesList.getSelectedValues() ) / 1024 )};
 
 						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarSel", params));
 					}
@@ -420,7 +429,7 @@ public class MainFrame extends javax.swing.JFrame
 
 					jStatusBar.setStatus(grRes.getString(MODULE, "noSelection"));
 				}
-		}});
+			}});
 	}
 
 
@@ -435,18 +444,18 @@ public class MainFrame extends javax.swing.JFrame
 		Gallery currentGallery = getCurrentGallery();
 		Log.log(Log.LEVEL_TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
 
-		if (currentGallery != null && jAlbumCombo.getModel() != currentGallery) {
-			jAlbumCombo.setModel( currentGallery );
+		if (currentGallery != null && jAlbumTree.getModel() != currentGallery) {
+			jAlbumTree.setModel( currentGallery );
 			currentGallery.addListDataListener(this);
 		}
 
 		if (currentGallery == null || currentGallery.getSize() < 1) {
-			jAlbumCombo.setEnabled( false );
+			jAlbumTree.setEnabled( false );
 			jPicturesList.setEnabled( false );
 
 			updatePicturesList();
 		} else {
-			jAlbumCombo.setEnabled( ! inProgress );
+			jAlbumTree.setEnabled( ! inProgress );
 
 			updatePicturesList();
 		}
@@ -459,7 +468,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if (currentAlbum == null) {
 			// fake empty album to clear the list
-			jPicturesList.setModel( new Album() );
+			jPicturesList.setModel( new Album(null) );
 		} else {
 			if (jPicturesList.getModel() != currentAlbum) {
 				jPicturesList.setModel( currentAlbum );
@@ -541,8 +550,8 @@ public class MainFrame extends javax.swing.JFrame
 		Log.log(Log.LEVEL_INFO, MODULE, "uploadPictures starting");
 
 		File f = new File(System.getProperty("user.home")
-			+ File.separator + ".GalleryRemote"
-			+ File.separator + "backup.grg");
+				+ File.separator + ".GalleryRemote"
+				+ File.separator + "backup.grg");
 
 		saveState(f);
 
@@ -568,8 +577,8 @@ public class MainFrame extends javax.swing.JFrame
 
 		//updateAlbumCombo();
 
-		if (jAlbumCombo.getModel().getSize() > 0) {
-			jAlbumCombo.setSelectedIndex(0);
+		if (jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) > 0) {
+			jAlbumTree.setSelectionPath(null);
 		}
 	}
 
@@ -587,7 +596,7 @@ public class MainFrame extends javax.swing.JFrame
 				} catch (InterruptedException e) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
-				jAlbumCombo.setSelectedItem(getCurrentGallery().getAlbumByName(newAlbumName));
+				jAlbumTree.setSelectionPath(getCurrentGallery().getPathForAlbum(getCurrentGallery().getAlbumByName(newAlbumName)));
 			}
 		}.start();
 	}
@@ -816,27 +825,23 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	private void jbInit()
-		throws Exception {//{{{
+			throws Exception {//{{{
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		this.getContentPane().setLayout( new GridBagLayout() );
 		jPanel1.setLayout( new GridBagLayout() );
 		jLabel1.setText( grRes.getString(MODULE, "Gallery_URL") );
-		jLabel7.setText( grRes.getString(MODULE, "Select_Album") );
 		jLoginButton.setText( grRes.getString(MODULE, "Log_in") );
 		jLoginButton.setToolTipText(grRes.getString(MODULE, "loginButtonTip") );
 		//jLoginButton.setNextFocusableComponent( jNewAlbumButton );
 		jLoginButton.setActionCommand( "Fetch" );
 		jLoginButton.setIcon(iLogin);
-		jNewAlbumButton.setText(grRes.getString(MODULE, "newAlbmBtnTxt"));
-		jNewAlbumButton.setToolTipText(grRes.getString(MODULE, "newAlbmBtnTip"));
 		//jNewAlbumButton.setNextFocusableComponent( jAlbumCombo );
-		jNewAlbumButton.setActionCommand( "NewAlbum" );
-		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );
 		//jUploadButton.setAlignmentX( (float) 2.0 );
 		jUploadButton.setText( grRes.getString(MODULE, "upldBtnTxt") );
 		jUploadButton.setActionCommand( "Upload" );
 		jUploadButton.setToolTipText( grRes.getString(MODULE, "upldBtnTip") );
+		jInspectorDivider.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "inspDvdr") ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), grRes.getString(MODULE, "panel1")) );
 		//jBrowseButton.setAlignmentX( (float) 1.0 );
@@ -894,21 +899,28 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuItemAbout.setText( grRes.getString(MODULE, "menuAbout") );
 		jMenuItemAbout.setIcon(iAbout);
 
-		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		jNewGalleryButton.setText(grRes.getString(MODULE, "newGalleryBtn"));
 		jNewGalleryButton.setActionCommand("NewGallery");
 		jNewGalleryButton.setIcon(iNewGallery);
-		jAlbumCombo.setActionCommand("Album");
-		jAlbumCombo.setToolTipText(grRes.getString(MODULE, "albumCombo"));
+		jInspectorPanel.setLayout(jInspectorCardLayout);
+		jPictureScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "pictures")));
+		jAlbumPictureDivider.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),grRes.getString(MODULE, "albums")));
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
 		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 5 ), 0, 0 ) );
 		this.getContentPane().add( jInspectorDivider, new GridBagConstraints( 0, 1, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 2, 2, 2 ), 0, 0 ) );
-		jInspectorDivider.add( jPictureInspector, JSplitPane.BOTTOM );
-		jInspectorDivider.add( jScrollPane1, JSplitPane.TOP );
-		jScrollPane1.getViewport().add( jPicturesList, null );
+		jInspectorDivider.add(jInspectorPanel, JSplitPane.RIGHT);
+		jInspectorDivider.add(jAlbumPictureDivider, JSplitPane.LEFT);
+		jInspectorPanel.add(jPictureInspector,  "picture");
+		jInspectorPanel.add(jAlbumInspector,  "album");
+		jAlbumPictureDivider.add(jAlbumScroll, JSplitPane.LEFT);
+		jAlbumPictureDivider.add(jPictureScroll, JSplitPane.RIGHT);
+		jPictureScroll.getViewport().add(jPicturesList, null);
+		jAlbumScroll.getViewport().add(jAlbumTree, null);
 		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		jPanel3.add( jBrowseButton, null );
@@ -917,17 +929,11 @@ public class MainFrame extends javax.swing.JFrame
 		this.getContentPane().add( jStatusBar, new GridBagConstraints( 0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 		jPanel1.add( jGalleryCombo,  new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0) );
 		jPanel1.add(jNewGalleryButton,     new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
-        jPanel1.add(jLabel7,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 0, 0));
-        jPanel1.add(jAlbumCombo,   new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
-        jPanel1.add(jLoginButton,  new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
-        jPanel1.add(jNewAlbumButton,    new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
+		jPanel1.add(jLoginButton,  new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
 
 		jMenuBar1.add( jMenuFile );
 		jMenuBar1.add( jMenuEdit );
@@ -969,12 +975,13 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void jbInitEvents() {
 		jLoginButton.addActionListener( this );
-		jNewAlbumButton.addActionListener( this );
+		//jNewAlbumButton.addActionListener( this );
 		jUploadButton.addActionListener( this );
 		jSortButton.addActionListener( this );
 		jBrowseButton.addActionListener( this );
 		jNewGalleryButton.addActionListener( this );
 		//jGalleryCombo.addActionListener( this );
+		jAlbumTree.addTreeSelectionListener( this );
 		jMenuItemPrefs.addActionListener( this );
 		jMenuItemSave.addActionListener( this );
 		jMenuItemOpen.addActionListener( this );
@@ -995,17 +1002,17 @@ public class MainFrame extends javax.swing.JFrame
 		jPicturesList.addListSelectionListener( this );
 
 		addWindowListener(
-			new java.awt.event.WindowAdapter() {
-				public void windowClosing( java.awt.event.WindowEvent e ) {
-					thisWindowClosing( e );
-				}
-			} );
+				new java.awt.event.WindowAdapter() {
+					public void windowClosing( java.awt.event.WindowEvent e ) {
+						thisWindowClosing( e );
+					}
+				} );
 		jPicturesList.addKeyListener(
-			new KeyAdapter() {
-				public void keyPressed( KeyEvent e ) {
-					jListKeyPressed( e );
-				}
-			} );
+				new KeyAdapter() {
+					public void keyPressed( KeyEvent e ) {
+						jListKeyPressed( e );
+					}
+				} );
 	}
 
 
@@ -1041,7 +1048,7 @@ public class MainFrame extends javax.swing.JFrame
 				// we're currently logged in: log out
 				getCurrentGallery().logOut();
 			} else {
-		    	// login may have failed and caused getComm to be null.
+				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
 
 				// may have tried to connect and failed
@@ -1156,7 +1163,7 @@ public class MainFrame extends javax.swing.JFrame
 		try {
 			JFileChooser fc = new JFileChooser();
 			fc.setAcceptAllFileFilterUsed(false);
-		    fc.setFileFilter(galleryFileFilter);
+			fc.setFileFilter(galleryFileFilter);
 
 			int returnVal = fc.showOpenDialog(this);
 
@@ -1219,7 +1226,7 @@ public class MainFrame extends javax.swing.JFrame
 			GalleryRemote.getInstance().properties.setShowPath( ( e.getStateChange() == ItemEvent.SELECTED ) ? true : false );
 			jPicturesList.repaint();
 		} /*else if ( item == album ) {
-			updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());
+		updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());
 		}*/ else {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Unhandled item state change " + item );
 		}
@@ -1242,8 +1249,22 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		resetUIState();
+
+		jInspectorCardLayout.show(jInspectorPanel, "picture");
 	}
 
+
+	/**
+	 * Called whenever the value of the selection changes.
+	 *
+	 * @param e the event that characterizes the change.
+	 */
+	public void valueChanged(TreeSelectionEvent e) {
+		updateAlbumCombo();
+
+		jAlbumInspector.setAlbum(getCurrentAlbum());
+		jInspectorCardLayout.show(jInspectorPanel, "album");
+	}
 
 	/**
 	 *  Implementation of the ListDataListener
@@ -1304,8 +1325,7 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 	public Album getCurrentAlbum() {
-		Album album = (Album) jAlbumCombo.getSelectedItem();
-		return album;
+		return (Album) jAlbumTree.getLastSelectedPathComponent();
 	}
 
 	private void macOSXRegistration() {
@@ -1341,7 +1361,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *@author     paour
 	 *@created    11 août 2002
 	 */
-	public class FileCellRenderer extends DefaultListCellRenderer
+	class FileCellRenderer extends DefaultListCellRenderer
 	{
 		/**
 		 *  Gets the listCellRendererComponent attribute of the FileCellRenderer
@@ -1388,6 +1408,28 @@ public class MainFrame extends javax.swing.JFrame
 			} else {
 				setText("dummy");
 			}
+
+			return this;
+		}
+	}
+
+	class AlbumTreeRenderer extends DefaultTreeCellRenderer {
+		public Component getTreeCellRendererComponent(
+				JTree tree,
+				Object value,
+				boolean sel,
+				boolean expanded,
+				boolean leaf,
+				int row,
+				boolean hasFocus) {
+
+			super.getTreeCellRendererComponent(
+					tree, value, sel,
+					expanded, leaf, row,
+					hasFocus);
+
+			setIcon(null);
+			setText(getText().trim());
 
 			return this;
 		}

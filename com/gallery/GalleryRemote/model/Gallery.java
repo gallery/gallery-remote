@@ -26,6 +26,12 @@ import java.util.*;
 import java.io.Serializable;
 
 import javax.swing.*;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.util.GRI18n;
@@ -40,7 +46,7 @@ import com.gallery.GalleryRemote.prefs.GalleryProperties;
  *@created    17 août 2002
  */
 
-public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, Serializable, PreferenceNames {
+public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, Serializable, PreferenceNames, TreeModel {
 	public static final String MODULE="Gallery";
 
 	String stUrlString = null;
@@ -60,6 +66,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	transient private int prefsIndex;
 	transient private Boolean ambiguousUrl;
 	transient private boolean blockWrites = false;
+	transient Object root = new Object();
+	transient ArrayList rootAlbums = new ArrayList();
 
 	public static String types[] = new String[] {STANDALONE, POSTNUKE, PHPNUKE};
 	public static final int TYPE_STANDALONE = 0;
@@ -196,6 +204,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public void clearAlbumList() {
 		albumList.clear();
+
 		notifyListeners();
 	}
 
@@ -710,9 +719,19 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		return selectedAlbum;
 	}
 
+	public void albumChanged(Album a) {
+		// todo: we should probably do something here to make sure the tree is resized...
+
+		// this doesn't seem to be effective
+		// fireTreeStructureChanged(this, getPathForAlbum(a));
+
+		// this either...
+		//GalleryRemote.getInstance().mainFrame.jAlbumTree.treeDidChange();
+	}
+
 
 	/*
-	* Miscelaneous
+	* Miscellaneous
 	*/
 
 	/**
@@ -745,9 +764,11 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (albumList != null) {
 			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
 			fireContentsChanged( this, 0, albumList.size() );
+			fireTreeStructureChanged(this, new TreePath(root));
 		} else {
 			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
 			fireContentsChanged( this, 0, 0 );
+			fireTreeStructureChanged(this, null, null, null);
 		}
 
 		//notifyListeners(lde);
@@ -787,5 +808,122 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	private void setBlockWrites(boolean blockWrites) {
 		this.blockWrites = blockWrites;
+	}
+
+	/********** TreeModel interface **********/
+
+	/**
+	 * Returns the root of the tree.  Returns <code>null</code>
+	 * only if the tree has no nodes.
+	 *
+	 * @return the root of the tree
+	 */
+	public Object getRoot() {
+		return root;
+	}
+
+	/**
+	 * Returns the number of children of <code>parent</code>.
+	 * Returns 0 if the node
+	 * is a leaf or if it has no children.  <code>parent</code> must be a node
+	 * previously obtained from this data source.
+	 *
+	 * @param parent a node in the tree, obtained from this data source
+	 * @return the number of children of the node <code>parent</code>
+	 */
+	public int getChildCount(Object parent) {
+		if (parent == root) {
+			return rootAlbums.size();
+		} else {
+			return ((Album) parent).getSubAlbums().size();
+		}
+	}
+
+	/**
+	 * Returns <code>true</code> if <code>node</code> is a leaf.
+	 * It is possible for this method to return <code>false</code>
+	 * even if <code>node</code> has no children.
+	 * A directory in a filesystem, for example,
+	 * may contain no files; the node representing
+	 * the directory is not a leaf, but it also has no children.
+	 *
+	 * @param node a node in the tree, obtained from this data source
+	 * @return true if <code>node</code> is a leaf
+	 */
+	public boolean isLeaf(Object node) {
+		if (node == root) {
+			return rootAlbums.size() == 0;
+		} else {
+			return ((Album) node).getSubAlbums().size() == 0;
+		}
+	}
+
+	/**
+	 * Returns the child of <code>parent</code> at index <code>index</code>
+	 * in the parent's
+	 * child array.  <code>parent</code> must be a node previously obtained
+	 * from this data source. This should not return <code>null</code>
+	 * if <code>index</code>
+	 * is a valid index for <code>parent</code> (that is <code>index >= 0 &&
+	 * index < getChildCount(parent</code>)).
+	 *
+	 * @param parent a node in the tree, obtained from this data source
+	 * @return the child of <code>parent</code> at index <code>index</code>
+	 */
+	public Object getChild(Object parent, int index) {
+		if (parent == root) {
+			return rootAlbums.get(index);
+		} else {
+			return ((Album) parent).getSubAlbums().get(index);
+		}
+	}
+
+	/**
+	 * Returns the index of child in parent.  If <code>parent</code>
+	 * is <code>null</code> or <code>child</code> is <code>null</code>,
+	 * returns -1.
+	 *
+	 * @param parent a note in the tree, obtained from this data source
+	 * @param child  the node we are interested in
+	 * @return the index of the child in the parent, or -1 if either
+	 *         <code>child</code> or <code>parent</code> are <code>null</code>
+	 */
+	public int getIndexOfChild(Object parent, Object child) {
+		if (parent == root) {
+			return rootAlbums.indexOf(child);
+		} else {
+			return ((Album) parent).getSubAlbums().indexOf(child);
+		}
+	}
+
+	/**
+	 * Messaged when the user has altered the value for the item identified
+	 * by <code>path</code> to <code>newValue</code>.
+	 * If <code>newValue</code> signifies a truly new value
+	 * the model should post a <code>treeNodesChanged</code> event.
+	 *
+	 * @param path     path to the node that the user has altered
+	 * @param newValue the new value from the TreeCellEditor
+	 */
+	public void valueForPathChanged(TreePath path, Object newValue) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "valueForPathChanged");
+		Log.logStack(Log.LEVEL_TRACE, MODULE);
+		//To change body of implemented methods use Options | File Templates.
+	}
+
+	public TreePath getPathForAlbum(Album album) {
+		Stack path = new Stack();
+
+		path.push(album);
+
+		Album parent = null;
+		while ((parent = album.getParentAlbum()) != null) {
+			path.push(parent);
+			album = parent;
+		}
+
+		path.push(root);
+
+		return new TreePath(path.toArray());
 	}
 }

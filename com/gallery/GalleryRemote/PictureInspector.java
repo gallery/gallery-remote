@@ -56,7 +56,6 @@ public class PictureInspector extends JPanel
 	HashMap extraTextAreas = new HashMap();
 	String currentExtraFields = null;
 
-	GridBagLayout gridBagLayout4 = new GridBagLayout();
 	JLabel jLabel5 = new JLabel();
 	JLabel jLabel6 = new JLabel();
 	JLabel jLabel4 = new JLabel();
@@ -102,7 +101,7 @@ public class PictureInspector extends JPanel
 
 
 	private void jbInit() {
-		setLayout( gridBagLayout4 );
+		setLayout( new GridBagLayout() );
 		jLabel5.setText(grRes.getString(MODULE, "Path") );
 		jLabel6.setText(grRes.getString(MODULE, "Album") );
 		jLabel4.setText(grRes.getString(MODULE, "Caption") );
@@ -111,16 +110,13 @@ public class PictureInspector extends JPanel
 		jLabel2.setText(grRes.getString(MODULE, "Delete") );
 
 		jAlbum.setRows(0);
-		jAlbum.setText("");
 		jAlbum.setEditable(false);
 		jAlbum.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jAlbum.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jSize.setRows(0);
-		jSize.setText("");
 		jSize.setEditable(false);
 		jSize.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jSize.setBackground(UIManager.getColor("TextField.inactiveBackground"));
-		jCaption.setText("");
 		jCaption.setLineWrap(true);
 		jCaption.setEditable(false);
 		jCaption.setFont(new java.awt.Font("SansSerif", 0, 11));
@@ -128,7 +124,6 @@ public class PictureInspector extends JPanel
 		jPath.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jPath.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jPath.setEditable(false);
-		jPath.setText("");
 		jPath.setLineWrap(true);
 
 		setupKeyboardHandling(jCaption);
@@ -182,17 +177,17 @@ public class PictureInspector extends JPanel
 		jFlipButton.setIcon(MainFrame.iFlip);
 
 		add( jLabel5,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+				,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
 		add( jLabel6,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
 		add( jLabel4,         new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 0), 2, 0) );
+            ,GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(5, 0, 0, 5), 2, 0) );
 		add( jLabel8,    new GridBagConstraints(0, 4, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0) );
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
 		add( jLabel1,   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0) );
 		add(jLabel2,       new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 2, 0));
 		add( jSpacer,    new GridBagConstraints(0, 20, 2, 1, 1.0, 0.1
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
 
