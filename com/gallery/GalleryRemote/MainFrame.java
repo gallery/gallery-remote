@@ -100,6 +100,37 @@ public class MainFrame extends javax.swing.JFrame
 	//boolean showThumbnails = true;
 	//boolean showPath = true;
 	boolean highQualityThumbnails = false;
+  GridBagLayout gridBagLayout1 = new GridBagLayout();
+  JPanel jPanel1 = new JPanel();
+  GridBagLayout gridBagLayout2 = new GridBagLayout();
+  JMenuBar jMenuBar1 = new JMenuBar();
+  JLabel jLabel1 = new JLabel();
+  JTextField username = new JTextField();
+  JTextField url = new JTextField();
+  JLabel jLabel2 = new JLabel();
+  JLabel jLabel3 = new JLabel();
+  JPasswordField jPasswordField1 = new JPasswordField();
+  JLabel album = new JLabel();
+  JComboBox jComboBox1 = new JComboBox();
+  JButton fetch = new JButton();
+  JTree jTree1 = new JTree();
+  JSplitPane jSplitPane1 = new JSplitPane();
+  JPanel jPanel2 = new JPanel();
+  JSplitPane jSplitPane2 = new JSplitPane();
+  JTree jTree2 = new JTree();
+  JList jList1 = new JList();
+  JPanel jPanel3 = new JPanel();
+  GridLayout gridLayout1 = new GridLayout();
+  JButton upload = new JButton();
+  JButton delete = new JButton();
+  JButton browse = new JButton();
+  JComboBox jComboBox2 = new JComboBox();
+  JPanel jPanel4 = new JPanel();
+  JProgressBar progress = new JProgressBar();
+  JLabel status = new JLabel();
+  Border border1;
+  GridBagLayout gridBagLayout3 = new GridBagLayout();
+  Border border2;
 
 	public MainFrame()
 	{
@@ -108,11 +139,19 @@ public class MainFrame extends javax.swing.JFrame
 		mAlbumList = new ArrayList();
 
 		highQualityThumbnails = GalleryRemote.getInstance().properties.getBooleanProperty("highQualityThumbnails");
+    try
+    {
+      jbInit();
+    }
+    catch(Exception e)
+    {
+      e.printStackTrace();
+    }
 	}
-	
+
 	public void initComponents() throws Exception
 	{
-		jMenuBar.setVisible( true );
+		/*jMenuBar.setVisible( true );
 		jMenuBar.add( jMenuFile );
 		jMenuBar.add( jMenuHelp );
 		jMenuBar.add( jMenuOptions );
@@ -308,7 +347,7 @@ public class MainFrame extends javax.swing.JFrame
 		jPanelMain.add( jPanelSettings );
 		jPanelMain.add( jPanelScrollPane );
 		jPanelMain.add( jPanelButtons );
-		
+
 		setBounds(GalleryRemote.getInstance().properties.getMainBounds());
 
 		setJMenuBar( jMenuBar );
@@ -432,7 +471,7 @@ public class MainFrame extends javax.swing.JFrame
 		if ( GalleryRemote.getInstance().properties.getShowPreview() )
 		{
 			jPreview.setVisible( true );
-		}
+		}*/
 	}
 
 	/*public void addNotify()
@@ -473,7 +512,7 @@ public class MainFrame extends javax.swing.JFrame
 		//mPropertiesFile.setProperty( "previewy", "" + jPreview.getLocation().y );
 
 		GalleryRemote.getInstance().properties.write();
-		
+
 		setVisible( false );
 		dispose();
 		System.exit( 0 );
@@ -490,7 +529,7 @@ public class MainFrame extends javax.swing.JFrame
 			( jComboBoxAlbums.getSelectedIndex() >= 0 ) );
 		jButtonAddFiles.setEnabled( !mInProgress );
 		jButtonFetchAlbums.setEnabled( !mInProgress );
-		
+
 		jProgressBar.setStringPainted( mInProgress );
 	}
 
@@ -789,7 +828,7 @@ public class MainFrame extends javax.swing.JFrame
 	public void deleteSelectedFiles()
 	{
 		int[] indices = jListItems.getSelectedIndices();
-		
+
 		mAlbum.removePictures(indices);
 
 		dontReselect = true;
@@ -919,24 +958,24 @@ public class MainFrame extends javax.swing.JFrame
 		boolean selected, boolean hasFocus )
 		{
 			super.getListCellRendererComponent( list, value, index, selected, hasFocus );
-			
+
 			Picture p = mAlbum.getPicture( index );
 			File f = p.getSource();
-			
+
 			if ( GalleryRemote.getInstance().properties.getShowThumbnails() )
 			{
 				ImageIcon icon = getThumbnail( f.getPath() );
 				setIcon( icon );
 				setIconTextGap( 4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth() );
 			}
-			
+
 			String text = f.getName();
 			if ( GalleryRemote.getInstance().properties.getShowPath() )
 			{
 				text += " [" + f.getParent() + "]";
 			}
 			setText(text);
-			
+
 			return this;
 		}
 	}
@@ -1103,5 +1142,82 @@ public class MainFrame extends javax.swing.JFrame
 			}
 		}
 	}
+  private void jbInit() throws Exception
+  {
+    this.getContentPane().setLayout(gridBagLayout1);
+    jPanel1.setLayout(gridBagLayout2);
+    jLabel1.setText("Gallery URL");
+    username.setText("username");
+    url.setText("url");
+    jLabel2.setText("Username");
+    jLabel3.setText("Password");
+    jPasswordField1.setText("jPasswordField1");
+    album.setText("Select Album");
+    fetch.setText("Fetch Albums");
+    this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+    jPanel3.setLayout(gridLayout1);
+    upload.setAlignmentX((float) 2.0);
+    upload.setText("Upload");
+    delete.setText("Delete");
+    jSplitPane1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Files to Upload (Drag and Drop files into this panel)"));
+    jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"Destination Gallery"));
+    browse.setAlignmentX((float) 1.0);
+    browse.setText("Browse for files to upload...");
+    jComboBox2.setEditable(true);
+    progress.setMaximumSize(new Dimension(32767, 18));
+    progress.setMinimumSize(new Dimension(10, 18));
+    progress.setPreferredSize(new Dimension(150, 18));
+    progress.setToolTipText("50");
+    progress.setString("50");
+    progress.setValue(50);
+    progress.setStringPainted(true);
+    gridLayout1.setHgap(5);
+    status.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED,Color.white,SystemColor.control,SystemColor.control,Color.gray));
+    status.setMaximumSize(new Dimension(32767, 18));
+    status.setMinimumSize(new Dimension(100, 18));
+    status.setPreferredSize(new Dimension(38, 18));
+    status.setText("Status bar");
+    jPanel4.setLayout(gridBagLayout3);
+    this.getContentPane().add(jPanel1,          new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+    jPanel1.add(jLabel1,                   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+    jPanel1.add(username,                 new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel1.add(url,               new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel1.add(jLabel2,            new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+    jPanel1.add(jLabel3,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+    jPanel1.add(jPasswordField1,        new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel1.add(album,       new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+    jPanel1.add(jComboBox1,      new GridBagConstraints(1, 3, 2, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel1.add(fetch,     new GridBagConstraints(2, 1, 1, 2, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
+    this.getContentPane().add(jSplitPane1,        new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 2, 2, 2), 0, 0));
+    jSplitPane1.add(jPanel2, JSplitPane.RIGHT);
+    jSplitPane1.add(jSplitPane2, JSplitPane.LEFT);
+    jSplitPane2.add(jTree2, JSplitPane.LEFT);
+    jSplitPane2.add(jList1, JSplitPane.RIGHT);
+    this.getContentPane().add(jPanel3,          new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
+    jPanel3.add(browse, null);
+    jPanel3.add(upload, null);
+    jPanel3.add(delete, null);
+    this.getContentPane().add(jPanel4,    new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel4.add(progress,      new GridBagConstraints(1, 0, 1, 1, 0.25, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel4.add(status,    new GridBagConstraints(0, 0, 1, 1, 0.75, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jPanel1.add(jComboBox2,  new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+    jSplitPane1.setDividerLocation(300);
+  }
 }
 
