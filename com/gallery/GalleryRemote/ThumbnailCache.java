@@ -25,9 +25,6 @@ import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 
-import Acme.JPM.*;
-import Acme.JPM.Filters.*;
-
 import com.gallery.GalleryRemote.model.*;
 
 /**
@@ -170,18 +167,10 @@ public class ThumbnailCache implements Runnable
 		r = new ImageIcon( filename );
 		
 		Image scaled = null;
-		if (true)
-		{
-			Dimension d = PreviewFrame.getSizeKeepRatio(
-				new Dimension( r.getIconWidth(), r.getIconHeight() ),
-				GalleryRemote.getInstance().properties.getThumbnailSize() );
-			scaled = r.getImage().getScaledInstance( d.width, d.height, mf.highQualityThumbnails ? Image.SCALE_SMOOTH : Image.SCALE_FAST );
-		} else {
-			float ratio = PreviewFrame.getRatio(
-				new Dimension( r.getIconWidth(), r.getIconHeight() ),
-				GalleryRemote.getInstance().properties.getThumbnailSize() );
-			scaled = JPMUtils.filterImage(mf, new ScaleCopy(r.getImage().getSource(), ratio));
-		}
+		Dimension d = PreviewFrame.getSizeKeepRatio(
+			new Dimension( r.getIconWidth(), r.getIconHeight() ),
+			GalleryRemote.getInstance().properties.getThumbnailSize() );
+		scaled = r.getImage().getScaledInstance( d.width, d.height, mf.highQualityThumbnails ? Image.SCALE_SMOOTH : Image.SCALE_FAST );
 
 		r.getImage().flush();
 		r.setImage( scaled );
