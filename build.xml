@@ -31,6 +31,29 @@
 	<java classname="com.gallery.GalleryRemote.GalleryRemote"
 	  classpath="${build}" fork="true" />
   </target>
+  
+  <target name="testWin">
+    <condition property="onWin">
+	  <os family="windows" />
+	</condition>
+  </target>
+  
+  <target name="imReg" depends="init,testWin" if="onWin"
+        description="import registry stuff for ImageMagick">
+    <pathconvert dirsep="\\" property="impath">
+	  <path>
+	    <pathelement path="imagemagick/win32" />
+      </path>
+	</pathconvert>
+	
+	<filter token="PATH" value="${impath}" />
+	<copy file="magick.reg" toFile="myMagick.reg" filtering="true" overwrite="true"/>
+    
+	<exec executable="regedit">
+	  <arg value="/s" />
+	  <arg value="myMagick.reg" />
+	</exec>
+  </target>
 
   <target name="clean"
         description="clean up" >
