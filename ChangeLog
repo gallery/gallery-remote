@@ -1,8 +1,10 @@
-2002-10-20  Pierre-Luc Paour <gallery@paour.com> (1.0-b11)
+2002-10-28  Pierre-Luc Paour <gallery@paour.com> (1.0-b11)
 	
 	* Added client UI support for creating new albums.
 	  The corresponding protocol support is not yet ready
 	  so the button will remain disabled.
+	* Added resizeToDefault property for resizing before upload with
+	  protocol 1 and using default album size with protocol 2.
 
 2002-10-19  Pierre-Luc Paour <gallery@paour.com> (1.0-b10)
 	
