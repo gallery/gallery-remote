@@ -7,17 +7,17 @@ import com.gallery.GalleryRemote.util.GRI18n;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.util.Iterator;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.
  * User: paour
  * Date: May 8, 2003
  */
-public class GeneralPanel extends /*JPanel*/ PreferencePanel implements PreferenceNames {
+public class GeneralPanel extends /*JPanel*/ PreferencePanel implements PreferenceNames, ItemListener {
 	public static final String MODULE = "GeneralPa";
 
 	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
@@ -55,6 +55,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 	JComboBox jLocale = new JComboBox();
 	JLabel jLabel5 = new JLabel();
 	JPanel jPanel9 = new JPanel();
+	JLabel jTranslator = new JLabel();
 
 	public JLabel getIcon() {
 		return icon;
@@ -77,13 +78,13 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		Iterator it = locales.iterator();
 		while (it.hasNext()) {
 			Locale l = (Locale) it.next();
-			StringBuffer localeDisplay = new StringBuffer(l.getDisplayLanguage(GRI18n.getCurrentLocale()));
+			StringBuffer localeDisplay = new StringBuffer(l.getDisplayLanguage(l));
 
 			if (l.getCountry() != null && l.getCountry().length() > 0) {
-				localeDisplay.append(" (").append(l.getDisplayCountry(GRI18n.getCurrentLocale()));
+				localeDisplay.append(" (").append(l.getDisplayCountry(l));
 
 				if (l.getVariant() != null && l.getVariant().length() > 0) {
-					localeDisplay.append(", ").append(l.getDisplayVariant(GRI18n.getCurrentLocale()));
+					localeDisplay.append(", ").append(l.getDisplayVariant(l));
 				}
 
 				localeDisplay.append(")");
@@ -103,6 +104,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 
 		jLocale.setModel(new DefaultComboBoxModel(localeStrings));
 		jLocale.setSelectedIndex(selectedLocale);
+		setTranslator();
 	}
 
 	public void writeProperties(PropertiesFile props) {
@@ -121,15 +123,9 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		props.setBooleanProperty(UPDATE_CHECK, updateCheck.isSelected());
 		props.setBooleanProperty(UPDATE_CHECK_BETA, updateCheckBeta.isSelected());
 
-		int selectedLocale = jLocale.getSelectedIndex();
-		if (defaultLocale) {
-			if (selectedLocale != 0) {
-				props.setProperty(UI_LOCALE, ((Locale) locales.get(selectedLocale - 1)).toString());
-			} else {
-				// still default, don't save it
-			}
-		} else {
-			props.setProperty(UI_LOCALE, ((Locale) locales.get(selectedLocale)).toString());
+		Locale selectedLocale = getSelectedLocale();
+		if (selectedLocale != null) {
+			props.setProperty(UI_LOCALE, selectedLocale.toString());
 		}
 	}
 
@@ -170,6 +166,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		jLabel4.setText(GRI18n.getString(MODULE, "langWarn"));
 		jLabel5.setText(GRI18n.getString(MODULE, "lang"));
 		jPanel7.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "langTitle")));
+
 		this.add(jPanel1, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		jPanel1.add(jLabel1, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
@@ -204,16 +201,55 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel7, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jPanel7.add(jLabel4, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+		jPanel7.add(jLabel4, new GridBagConstraints(0, 1, 3, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel7.add(jLocale, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel7.add(jTranslator, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
 		jPanel7.add(jLabel5, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+		jPanel7.add(jPanel9, new GridBagConstraints(3, 0, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel8, new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel7.add(jPanel9, new GridBagConstraints(2, 0, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+
+		jLocale.addItemListener(this);
+	}
+
+	public void setTranslator() {
+		Locale locale = getSelectedLocale();
+		Properties p = GRI18n.getLocaleProperties(locale);
+
+		if (p != null) {
+			String translator =  p.getProperty("Common.translator");
+
+			if (translator != null) {
+				jTranslator.setText(GRI18n.getString(MODULE, "langTranslatedBy", new Object[] {translator} ));
+			}
+		} else {
+			jTranslator.setText("");
+		}
+	}
+
+	private Locale getSelectedLocale() {
+		int selectedLocale = jLocale.getSelectedIndex();
+		if (defaultLocale) {
+			if (selectedLocale != 0) {
+				return (Locale) locales.get(selectedLocale - 1);
+			} else {
+				// still default, don't save it
+				return null;
+			}
+		} else {
+			return (Locale) locales.get(selectedLocale);
+		}
+	}
+
+	public void itemStateChanged(ItemEvent e) {
+		if (e.getStateChange() == ItemEvent.SELECTED) {
+			setTranslator();
+		}
 	}
 }
 

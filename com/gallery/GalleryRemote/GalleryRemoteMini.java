@@ -16,7 +16,9 @@ import java.io.IOException;
 public class GalleryRemoteMini extends GalleryRemote {
 	protected void initializeGR() {
 		super.initializeGR();
-		
+
+		CoreUtils.initCore();
+
 		Log.startLog(_().properties.getIntProperty(PreferenceNames.LOG_LEVEL), _().properties.getBooleanProperty("toSysOut"));
 	}
 

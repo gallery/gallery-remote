@@ -20,27 +20,23 @@
 */
 package com.gallery.GalleryRemote;
 
-import JSX.ObjIn;
-import JSX.ObjOut;
+//import JSX.ObjIn;
+//import JSX.ObjOut;
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
-import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicTreeUI;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -50,10 +46,6 @@ import java.util.Arrays;
 import java.util.Vector;
 import java.util.Iterator;
 import java.applet.Applet;
-import java.net.URL;
-
-import HTTPClient.CookieModule;
-import HTTPClient.Cookie;
 
 /**
  * Description of the Class
@@ -264,6 +256,7 @@ public class MainFrame extends JFrame
 		jAlbumTree.setCellRenderer(albumTreeRenderer);
 		//((JLabel) jAlbumTree.getCellRenderer()).setPreferredSize(new Dimension(GalleryRemote._().properties.getIntProperty("albumPictureDividerLocation"), -1));
 		ToolTipManager.sharedInstance().registerComponent(jAlbumTree);
+		//jAlbumTree.setFont(new Font("Arial Unicode MS", Font.PLAIN, 12));
 
 		jPictureInspector.setMainFrame(this);
 		jAlbumInspector.setMainFrame(this);
@@ -549,9 +542,11 @@ public class MainFrame extends JFrame
 		Gallery currentGallery = getCurrentGallery();
 		Log.log(Log.LEVEL_TRACE, MODULE, "updateGalleryParams: current gallery: " + currentGallery);
 
-		if (currentGallery != null /*&& jAlbumTree.getModel() != currentGallery*/) {
+		if (currentGallery != null && jAlbumTree.getModel() != currentGallery) {
 			jAlbumTree.setModel(currentGallery);
 			//currentGallery.addListDataListener(this);
+		} else {
+			jAlbumTree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode()));
 		}
 
 		if (currentGallery == null || currentGallery.getRoot() == null) {
@@ -1424,18 +1419,18 @@ public class MainFrame extends JFrame
 				galleryArray[i] = (Gallery) galleries.getElementAt(i);
 			}
 
-			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
-			// todo: saving state is disabled because it's broken
-			//out.writeObject(galleryArray);
-			out.close();
+//			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
+//			// todo: saving state is disabled because it's broken
+//			out.writeObject(galleryArray);
+//			out.close();
 
 			// We've been saved, we are now clean.
 			setDirtyFlag(false);
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "State saved");
-		} catch (IOException e) {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to save state");
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+//		} catch (IOException e) {
+//			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to save state");
+//			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (NoClassDefFoundError e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't save state...");
 		}
@@ -1569,8 +1564,10 @@ public class MainFrame extends JFrame
 					getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					setInProgress(true);
 
-					ObjIn in = new ObjIn(new BufferedReader(new FileReader(lastOpenedFile)));
-					Gallery[] galleryArray = (Gallery[]) in.readObject();
+					//ObjIn in = new ObjIn(new BufferedReader(new FileReader(lastOpenedFile)));
+					//Gallery[] galleryArray = (Gallery[]) in.readObject();
+					// todo: reading from file is disabled
+					Gallery[] galleryArray = null;
 					DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
 					Gallery selectGallery = null;
 
@@ -1606,12 +1603,12 @@ public class MainFrame extends JFrame
 					}
 
 					setInProgress(false);
-				} catch (IOException e) {
-					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
-					Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				} catch (ClassNotFoundException e) {
-					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
-					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+//				} catch (IOException e) {
+//					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
+//					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+//				} catch (ClassNotFoundException e) {
+//					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
+//					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				} catch (NoClassDefFoundError e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't read state...");
 				} finally {
@@ -1954,7 +1951,11 @@ public class MainFrame extends JFrame
 			}
 
 			//setIcon(null);
-			String name = getText().trim();
+			String name = getText();
+			if (name != null) {
+				name = name.trim();
+			}
+			
 			setText(name);
 			setToolTipText(name);
 

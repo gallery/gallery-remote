@@ -1,3 +1,26 @@
+2004-05-18  Pierre-Luc Paour <gallery@paour.com> (1.4-b13)
+
+	* Added support for non-8bit characters in album and image data.
+	  If GR is running in a non-international system and the default
+	  font used by Java is not able to display the text correctly,
+	  the FONT_OVERRIDE_* properties can force GR to use any system
+	  font.
+	  This only works if the album and image data are encoded by
+	  Gallery in HTML entities (&#xxxx;). When adding albums and
+	  images, it only works if automatic HTML escaping is on.
+	* Added support for running GR in l10n-development mode by setting
+	  uiLocaleDev=true in the prefs. This will load the language files
+	  from img/ so they're easy to modify.
+	* Fixed a problem in the applet where using the applet and then
+	  moving to another tab and coming back would result in the list
+	  of pictures being "Problem...".
+	* Added credits for translators in Locale prefs.
+	* Fixed some bugs when no Gallery profile yet exists.
+
+2004-05-11  Pierre-Luc Paour <gallery@paour.com> (1.4-b12)
+
+	* Fixed failure to resize GIFs in Java.
+
 2004-05-11  Pierre-Luc Paour <gallery@paour.com> (1.4-b11)
 
 	* Fixed NPE when leaving slideshow applet.

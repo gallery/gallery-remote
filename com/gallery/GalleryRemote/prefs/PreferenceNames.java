@@ -16,6 +16,7 @@ public interface PreferenceNames {
 	public static final String UPDATE_URL = "updateUrl";
 	public static final String UPDATE_URL_BETA = "updateUrlBeta";
 	public static final String UI_LOCALE = "uiLocale";
+	public static final String UI_LOCALE_DEV = "uiLocaleDev";
 	public static final String MRU_COUNT = "mruCount";
 	public static final String MRU_BASE = "mruItem.";
 	public static final String LOAD_LAST_FILE = "loadLastMRU";
@@ -75,6 +76,9 @@ public interface PreferenceNames {
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
 	public static final String SUPPRESS_WARNING_JPEGTRAN_CROP = "suppressWarningJpegtranCrop";
 	public static final String SUPPRESS_WARNING_CORRUPTED = "suppressWarningCorrupted";
+	public static final String FONT_OVERRIDE_NAME = "fontOverrideName";
+	public static final String FONT_OVERRIDE_STYLE = "fontOverrideStyle";
+	public static final String FONT_OVERRIDE_SIZE = "fontOverrideSize";
 
 	// Applet
 	public static final String APPLET_SHOW_RESIZE = "appletShowResize";

@@ -100,12 +100,12 @@ public class GRApplet extends JApplet {
 		info.albumName = getParameter("gr_album");
 
 		Log.log(Log.LEVEL_INFO, MODULE, "Applet parameters:");
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_url:" + url);
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_url_full:" + urlFull);
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_name:" + cookieName);
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain:" + cookieDomain);
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path:" + cookiePath);
-		Log.log(Log.LEVEL_INFO, MODULE, "gr_album:" + info.albumName);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_url: " + url);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_url_full: " + urlFull);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_name: " + cookieName);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain: " + cookieDomain);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path: " + cookiePath);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_album: " + info.albumName);
 
 		if (cookieDomain == null || cookieDomain.length() < 1) {
 			try {

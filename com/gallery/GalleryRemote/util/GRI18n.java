@@ -11,11 +11,15 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.io.InputStream;
+import java.io.IOException;
 
 
 public class GRI18n implements PreferenceNames {
 	private static final String RESNAME =
 			"com.gallery.GalleryRemote.resources.GRResources";
+	private static final String RESNAME_DEV =
+			"GRResources";
 	private static final String RESPATH =
 			"com/gallery/GalleryRemote/resources/GRResources";
 	private static final String MODULE = "GRI18n";
@@ -26,8 +30,12 @@ public class GRI18n implements PreferenceNames {
 
 	private static List lAvailLoc = null;
 
+	private static boolean devMode = false;
+	private static Properties devResProperties = null;
+
 	static {
 		String myLocale = GalleryRemote._().properties.getProperty(UI_LOCALE);
+		devMode = GalleryRemote._().properties.getBooleanProperty(UI_LOCALE_DEV);
 
 		grLocale = parseLocaleString(myLocale);
 
@@ -62,6 +70,14 @@ public class GRI18n implements PreferenceNames {
 		String extKey = className + "." + key;
 		try {
 			msg = grResBundle.getString(extKey);
+
+			if (devResProperties != null && devResProperties.getProperty(extKey) == null) {
+				if (msg.startsWith("<html>")) {
+					msg = "<html>***" + msg.substring(6);
+				} else {
+					msg = "***" + msg;
+				}
+			}
 		} catch (NullPointerException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Key null error");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -77,7 +93,7 @@ public class GRI18n implements PreferenceNames {
 
 
 	public static String getString(String className, String key, Object[] params) {
-		String template, msg;
+		String msg;
 		String extKey = className + "." + key;
 		try {
 			MessageFormat format = (MessageFormat) formats.get(extKey);
@@ -86,6 +102,14 @@ public class GRI18n implements PreferenceNames {
 				formats.put(extKey, format);
 			}
 			msg = format.format(params);
+
+			if (devResProperties != null && devResProperties.getProperty(extKey) == null) {
+				if (msg.startsWith("<html>")) {
+					msg = "<html>***" + msg.substring(6);
+				} else {
+					msg = "***" + msg;
+				}
+			}
 		} catch (NullPointerException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Key null error");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -120,11 +144,37 @@ public class GRI18n implements PreferenceNames {
 
 	private static void setResBundle() {
 		try {
-			grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
+			grResBundle = ResourceBundle.getBundle(devMode?RESNAME_DEV:RESNAME, grLocale);
+
+			if (devMode) {
+				devResProperties = getLocaleProperties(grLocale);
+			}
 		} catch (MissingResourceException e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Resource bundle error");
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
+	}
+
+	public static Properties getLocaleProperties(Locale locale) {
+		Properties p = new Properties();
+		String filename;
+		if (locale == null) {
+			filename = (devMode?RESNAME_DEV:RESPATH) + ".properties";
+		} else {
+			filename = (devMode?RESNAME_DEV:RESPATH) + "_" + locale.toString() + ".properties";
+		}
+		InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream(filename);
+		if (is != null) {
+			try {
+				p.load(is);
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+		} else {
+			Log.log(Log.LEVEL_ERROR, MODULE, "No file for " + filename);
+		}
+
+		return p;
 	}
 
 
@@ -160,11 +210,14 @@ public class GRI18n implements PreferenceNames {
 		String prefix = "##DUMMY";
 		for (int i = 0; i < list.length; i++) {
 			loc = list[i].toString();
+
+			// perf optimization: don't go through all the regions if the main language was not found
 			if (!loc.startsWith(prefix)) {
 				prefix = loc;
-				locPath = RESPATH + "_" + loc + ".properties";
+				locPath = (devMode?RESNAME_DEV:RESPATH) + "_" + loc + ".properties";
 				if (ClassLoader.getSystemClassLoader().getResource(locPath) != null) {
 					aList.add(list[i]);
+					prefix = "##DUMMY";
 				}
 			}
 		}

@@ -14,7 +14,13 @@ import java.io.File;
  * Date: Jan 15, 2004
  */
 public class CoreUtils {
-	static GalleryRemoteCore core = GalleryRemote._().getCore();
+	public static final String MODULE = "CoreUtils";
+
+	static GalleryRemoteCore core = null;
+
+	public static void initCore() {
+		core = GalleryRemote._().getCore();
+	}
 
 	public static void deleteSelectedPictures() {
 		JList jPicturesList = core.getPicturesList();
@@ -193,6 +199,7 @@ public class CoreUtils {
 					setText(text.toString());
 				} catch (Exception e) {
 					setText("Problem...");
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 			} else {
 				setText("dummy");

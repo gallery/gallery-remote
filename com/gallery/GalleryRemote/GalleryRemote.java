@@ -22,8 +22,10 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.applet.Applet;
@@ -99,9 +101,27 @@ public abstract class GalleryRemote {
 			properties.logProperties(Log.LEVEL_TRACE, "UsrProps");
 
 			loadIcons();
+
+			setFontOverrides();
 		} catch (Exception e) {
 			Log.logException(Log.LEVEL_CRITICAL, "Startup", e);
 			Log.shutdown();
+			System.err.println("Exception during startup: " + e);
+		}
+	}
+
+	private void setFontOverrides() {
+		String name = properties.getProperty(PreferenceNames.FONT_OVERRIDE_NAME);
+		if (name != null) {
+			int style = properties.getIntProperty(PreferenceNames.FONT_OVERRIDE_STYLE);
+			int size = properties.getIntProperty(PreferenceNames.FONT_OVERRIDE_SIZE);
+			FontUIResource fur = new FontUIResource(name, style, size);
+			UIManager.put("Label.font", fur);
+			UIManager.put("List.font", fur);
+			UIManager.put("Tree.font", fur);
+			UIManager.put("TextArea.font", fur);
+			UIManager.put("TextField.font", fur);
+			UIManager.put("TextPane.font", fur);
 		}
 	}
 

@@ -120,6 +120,7 @@
    <fileset dir="." includes="ReadMe.html"/>
    <zipfileset dir="./lib" includes="metadata-extractor-2.1.jar" prefix="lib"/>
    <zipfileset dir="./img" includes="*" prefix="img"/>
+   <zipfileset dir="./com/gallery/GalleryRemote/resources" includes="GRResources.properties" prefix="img"/>
    <!-- until GR 1.4 is released -->
    <zipfileset dir="./imagemagick/win32" includes="im.properties" prefix="imagemagick"/>
    <zipfileset dir="./jpegtran/win32" includes="jpegtran.properties" prefix="jpegtran"/>

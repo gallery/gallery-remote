@@ -45,7 +45,7 @@ public class Log implements PreferenceNames, Runnable {
 	public final static int moduleLength = 10;
 	public final static String emptyModule = "          ";
 	public final static String emptyTime = "       ";
-	public final static long startTime = System.currentTimeMillis();
+	public static long startTime = System.currentTimeMillis();
 
 	public static int maxLevel = LEVEL_TRACE;
 	public static boolean toSysOut;
@@ -77,12 +77,6 @@ public class Log implements PreferenceNames, Runnable {
 					+ module + "|"
 					+ message);
 		}
-		/*if (singleton.logLines.isEmpty())
-		{
-			Thread t = new Thread(singleton);
-			t.setPriority(threadPriority);
-			t.start();
-		}*/
 	}
 
 	public static void log(int level, Class c, String message) {
@@ -156,6 +150,7 @@ public class Log implements PreferenceNames, Runnable {
 			System.err.println("Logger thread killed");
 		} catch (Throwable t) {}
 
+		started = false;
 		singleton = new Log();
 	}
 
@@ -200,11 +195,11 @@ public class Log implements PreferenceNames, Runnable {
 				e.printStackTrace();
 			}
 		}
+
 		System.out.println("Logger thread shutting down");
 	}
 
 	public static void startLog(int maxLevel, boolean toSysOut) {
-		//try {
 		if (Log.maxLevel != maxLevel) {
 			Log.maxLevel = maxLevel;
 			singleton.logLines.add(emptyTime + "|"
@@ -218,56 +213,6 @@ public class Log implements PreferenceNames, Runnable {
 		singleton.loggerThread = new Thread(singleton);
 		singleton.loggerThread.setPriority(threadPriority);
 		singleton.loggerThread.start();
-		//} catch (Exception e) {e.printStackTrace();}
 	}
-
-	/*static {
-		startLog(GalleryRemote._().properties.getIntProperty(LOG_LEVEL));
-	}*/
-
-	/*
-	public static void main( String[] param ) {
-		try {
-			Thread.sleep(3000);
-		} catch ( InterruptedException ee) {
-			System.err.println( "Thread killed for some reason" );
-		}
-		log( "Just a message" );
-		log( "a random module", "Just a message" );
-		log( new Base64(), "A base64 object" );
-		log( singleton.getClass(), "A class" );
-		log( CRITICAL, "A critical message" );
-		log( ERROR, "An error message" );
-		log( INFO, "An informational message" );
-		log( TRACE, "A trace message" );
-		
-		new CountingThread().setCounterName("a").start();
-		new CountingThread().setCounterName("b").start();
-		new CountingThread().setCounterName("c").start();
-		
-		//shutdown();
-		
-		log("can't log now...");
-	}
-	
-	static class CountingThread extends Thread {
-		String name;
-		
-		public Thread setCounterName(String name) {
-			this.name = name;
-			return this;
-		}
-		
-		public void run() {
-			for (int i = 1; i < 100; i++) {
-				Log.log(name, "" + i);
-				try {
-					sleep((int) (Math.random() * 1000));
-				} catch ( InterruptedException e) {
-					System.err.println( "Thread killed for some reason" );
-				}
-			}
-		}
-	}*/
 }
 

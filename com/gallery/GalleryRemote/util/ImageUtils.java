@@ -370,6 +370,12 @@ public class ImageUtils {
 				toDelete.add(r);
 
 				ImageWriter writer = ImageIO.getImageWriter(reader);
+
+				if (writer == null) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "No writer to write out " + filename + " ImageIO probably doesn't support it. Resize aborted.");
+					return new File(filename);
+				}
+
 				ImageOutputStream ios = null;
 				try {
 					r.delete();
@@ -399,6 +405,7 @@ public class ImageUtils {
 			}
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return new File(filename);
 		}
 
 		return r;

@@ -56,8 +56,8 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		try {
 			if (isAppletMode() || !Update.upgrade()) {
 				mainFrame = new MainFrame();
+				CoreUtils.initCore();
 				mainFrame.initMainFrame();
-				//mainFrame.initComponents();
 			} else {
 				Log.shutdown();
 				System.exit(0);

@@ -763,6 +763,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		g.setPhpnLoginUrlString(p.getProperty(PHPN_LOGIN_URL + prefsIndex));
 		g.setPhpnGalleryUrlString(p.getProperty(PHPN_GALLERY_URL + prefsIndex));
 
+		g.setGlLoginUrlString(p.getProperty(GL_LOGIN_URL + prefsIndex));
+		g.setGlGalleryUrlString(p.getProperty(GL_GALLERY_URL + prefsIndex));
+
 		String typeS = p.getProperty(TYPE + prefsIndex);
 		if (typeS != null) {
 			int type = Arrays.asList(types).indexOf(typeS);

@@ -18,6 +18,8 @@ http://www.anyware.co.uk/java for updates and other stuff
 
 package com.gallery.GalleryRemote.util;
 
+import com.gallery.GalleryRemote.Log;
+
 import java.util.HashMap;
 
 /**
@@ -29,6 +31,7 @@ import java.util.HashMap;
  * temporary objects.
  */
 public class HTMLEscaper {
+	public static final String MODULE = "HTMLEsc";
 
 	/**
 	 * A little bit of unit testing
@@ -66,11 +69,16 @@ public class HTMLEscaper {
 		char c;
 		for (int i = 0; i < l; i++) {
 			c = nonHTMLsrc.charAt(i);
-			idx = entityMap.indexOf(c);
-			if (idx == -1) {
-				res.append(c);
+
+			if (c > 255) {
+				res.append("&#").append((int) c).append(";");
 			} else {
-				res.append(quickEntities[idx]);
+				idx = entityMap.indexOf(c);
+				if (idx == -1) {
+					res.append(c);
+				} else {
+					res.append(quickEntities[idx]);
+				}
 			}
 		}
 		return res.toString();
@@ -104,8 +112,17 @@ public class HTMLEscaper {
 			String decodedEntity = (String) quickRevEntities.get(entity);
 
 			if (decodedEntity == null) {
-				res.append(HTMLsrc.substring(0, i)).append("&");
-				HTMLsrc = HTMLsrc.substring(i + 1);
+				if (entity.startsWith("#")) {
+					res.append(HTMLsrc.substring(0, i));
+					char c = (char) Integer.parseInt(entity.substring(1));
+					//Log.log(Log.LEVEL_TRACE, MODULE, "c: " + c + " " + entity.substring(1));
+					res.append(c);
+					HTMLsrc = HTMLsrc.substring(j + 1);
+				} else {
+					res.append(HTMLsrc.substring(0, i)).append("&");
+					HTMLsrc = HTMLsrc.substring(i + 1);
+				}
+
 				continue;
 			}
 

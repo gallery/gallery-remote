@@ -99,6 +99,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 
 		if (GalleryRemote._().getCore().getGalleries().getSize() > 0) {
 			jGalleries.setSelectedIndex(0);
+		} else {
+			resetUIState();
 		}
 
 		jModify.addActionListener(this);
