@@ -43,7 +43,7 @@ public class Picture implements Serializable {
     Album album = null;
     private int listIndex;
 
-	transient double fileSize = -1;
+	transient double fileSize = 0;
 	transient String escapedCaption = null;
 
     /**
@@ -74,7 +74,7 @@ public class Picture implements Serializable {
 			setCaption(source.getName());
 		}
 		
-        fileSize = -1;
+        fileSize = 0;
     }
     
     
@@ -184,7 +184,7 @@ public class Picture implements Serializable {
      *@return    The size value
      */
     public double getFileSize() {
-        if ( fileSize == -1 && source != null && source.exists() ) {
+        if ( fileSize == 0 && source != null && source.exists() ) {
             fileSize = source.length();
         }
         
