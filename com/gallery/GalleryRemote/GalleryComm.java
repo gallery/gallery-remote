@@ -25,17 +25,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import HTTPClient.Cookie;
-import HTTPClient.CookieModule;
-import HTTPClient.CookiePolicyHandler;
-import HTTPClient.HTTPConnection;
-import HTTPClient.HTTPResponse;
-import HTTPClient.ModuleException;
-import HTTPClient.RoRequest;
-import HTTPClient.RoResponse;
+import HTTPClient.*;
 
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 /**
  *	This interface is a temporary mechanism to let us use version
@@ -46,7 +41,7 @@ import com.gallery.GalleryRemote.model.Gallery;
  *	
  *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
-public abstract class GalleryComm {
+public abstract class GalleryComm implements PreferenceNames {
 	private static final String MODULE = "GalComm";
 	int[] capabilities = null;
 	private static int lastRespCode = 0;
@@ -142,7 +137,27 @@ public abstract class GalleryComm {
 	
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
-			// create a connection	
+			GalleryProperties p = GalleryRemote.getInstance().properties;
+			// set proxy info
+			if (p.getBooleanProperty(USE_PROXY)) {
+				String hostname = p.getProperty(PROXY_HOST);
+				int port = 80;
+				try { port = p.getIntProperty(PROXY_PORT); } catch (NumberFormatException e) {}
+				String username = p.getProperty(PROXY_USERNAME);
+
+				Log.log(Log.TRACE, MODULE, "Setting proxy to " + hostname + ":" + port);
+
+				HTTPConnection.setProxyServer(hostname, port);
+				
+				if (username != null && username.length() > 0) {
+					AuthorizationInfo.addBasicAuthorization(hostname, port, "",
+							username, p.getBase64Property(PROXY_PASSWORD));
+				}
+			} else {
+				HTTPConnection.setProxyServer(null, 0);
+			}
+
+			// create a connection
 			HTTPConnection mConnection = new HTTPConnection( url );
 
 			if (g.getType() == Gallery.TYPE_STANDALONE) {
