@@ -513,6 +513,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			try	{
 				boolean escapeCaptions = GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 
+				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, "Preparing to upload...");
+
 				// can't set null as an NVPair value
 				String caption = p.getCaption();
 				caption = (caption == null) ? "" : caption;
@@ -560,7 +562,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// load and validate the response
 				Properties props = requestResponse( hdrs, data, g.getGalleryUrl(SCRIPT_NAME), true );
 				if ( props.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
-					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, "Upload successful.");
+					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, "Upload successful");
 					return true;
 				} else {
 					error(su, "Upload error: " + props.getProperty( "status_text" ));
