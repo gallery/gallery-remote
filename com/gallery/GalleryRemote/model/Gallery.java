@@ -385,7 +385,11 @@ public class Gallery implements ComboBoxModel, Serializable
 
 			logOut();
 
-			GalleryRemote.getInstance().properties.setBase64Property("password." + prefsIndex, password);
+			if (GalleryRemote.getInstance().properties.getBooleanProperty("savePasswords")) {
+				GalleryRemote.getInstance().properties.setBase64Property("password." + prefsIndex, password);
+			} else {
+				GalleryRemote.getInstance().properties.remove("password." + prefsIndex);
+			}
 		}
 	}
 
@@ -446,7 +450,7 @@ public class Gallery implements ComboBoxModel, Serializable
 
 		p.setProperty("url." + prefsIndex, getStUrlString());
 		p.setProperty("username." + prefsIndex, getUsername());
-		if (getPassword() != null ) {
+		if (getPassword() != null && p.getBooleanProperty("savePasswords")) {
 			p.setBase64Property("password." + prefsIndex, getPassword());
 		} else {
 			p.remove("password." + prefsIndex);
