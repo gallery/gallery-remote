@@ -1,3 +1,8 @@
+2004-08-19  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b10)
+
+	* GR now honors the maximum size for images and uploads
+	  that rather than the intermediate size, if set.
+
 2004-08-17  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b9)
 
 	* Fixed redirect testing after upload in applet.

@@ -42,4 +42,5 @@ public interface GalleryCommCapabilities {
 	public static final int CAPA_FETCH_ALBUMS_TOO = 11;
 	public static final int CAPA_FETCH_NON_WRITEABLE_ALBUMS = 12;
 	public static final int CAPA_FETCH_HONORS_HIDDEN = 13;
+	public static final int CAPA_IMAGE_MAX_SIZE = 14;
 }

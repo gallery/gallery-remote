@@ -96,6 +96,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	private static int[] capabilities9;
 	private static int[] capabilities13;
 	private static int[] capabilities14;
+	private static int[] capabilities15;
 
 
 	/* -------------------------------------------------------------------------
@@ -139,6 +140,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES,
 								  CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_NON_WRITEABLE_ALBUMS, CAPA_FETCH_HONORS_HIDDEN};
+		capabilities15 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FORCE_FILENAME, CAPA_MOVE_ALBUM, CAPA_FETCH_ALBUM_IMAGES,
+								  CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_NON_WRITEABLE_ALBUMS, CAPA_FETCH_HONORS_HIDDEN,
+								  CAPA_IMAGE_MAX_SIZE};
 
 		// the algorithm for search needs the ints to be sorted.
 		Arrays.sort(capabilities);
@@ -149,6 +155,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		Arrays.sort(capabilities9);
 		Arrays.sort(capabilities13);
 		Arrays.sort(capabilities14);
+		Arrays.sort(capabilities15);
 	}
 
 
@@ -908,11 +915,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				form_data =  fudgeFormParameters(form_data);
 
 				// load and validate the response
-				Properties p = requestResponse(form_data, su, this);
+				GalleryProperties p = requestResponse(form_data, su, this);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
-					int autoResize = Integer.parseInt(p.getProperty("auto_resize"));
-					a.setServerAutoResize(autoResize);
+					int autoResize = p.getIntProperty("auto_resize");
+					int maxSize = p.getIntProperty("max_size", 0);
+
+					// use larger of intermediate and max size
+					a.setServerAutoResize(autoResize>maxSize?autoResize:maxSize);
 
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "ftchdAlbmProp"));
 
@@ -1378,7 +1388,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
     }
 
 	void handleCapabilities() {
-		if (serverMinorVersion >= 14) {
+		if (serverMinorVersion >= 15) {
+			capabilities = capabilities15;
+		} else if (serverMinorVersion >= 14) {
 			capabilities = capabilities14;
 		} else if (serverMinorVersion >= 13) {
 			capabilities = capabilities13;
