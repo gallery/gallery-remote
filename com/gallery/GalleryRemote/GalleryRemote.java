@@ -173,6 +173,7 @@ public abstract class GalleryRemote {
 		System.setProperty("apple.laf.useScreenMenuBar", "true");
 		System.setProperty("apple.awt.showGrowBox", "false");
 		System.setProperty("apple.awt.brushMetalLook", "true");
+		//System.setProperty("http.agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)");
 
 		// fix buggy Swing Windows XP lookup code
 		System.setProperty("swing.noxp", "true");

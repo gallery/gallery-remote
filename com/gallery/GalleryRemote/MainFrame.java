@@ -1417,7 +1417,8 @@ public class MainFrame extends JFrame
 			}
 
 			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
-			out.writeObject(galleryArray);
+			// todo: saving state is disabled because it's broken
+			//out.writeObject(galleryArray);
 			out.close();
 
 			// We've been saved, we are now clean.

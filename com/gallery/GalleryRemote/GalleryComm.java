@@ -200,6 +200,14 @@ public abstract class GalleryComm implements PreferenceNames {
 					return new GalleryComm2(g);
 				}
 
+				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2.5 for " + url);
+				// Test GalleryComm2
+				String urlPath2_5 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2_5.SCRIPT_NAME : "/" + GalleryComm2_5.SCRIPT_NAME);
+				if (tryComm(su, mConnection, urlPath2_5)) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2.5");
+					return new GalleryComm2_5(g);
+				}
+
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
 				// Test GalleryComm1
 				// BUT: only if first try was not status code 401 = authorization failure

@@ -699,6 +699,17 @@ public class ImageUtils {
 	}
 
 
+	public static String getMetadataCaptionString(String filename) {
+		try {
+			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+			Method m = c.getMethod("getMetadataCaptionString", new Class[]{String.class});
+			return (String) m.invoke(null, new Object[]{filename});
+		} catch (Throwable e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		}
+	}
+
 	public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
 		try {
 			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");

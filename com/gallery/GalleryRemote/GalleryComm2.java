@@ -67,6 +67,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	/** Module name for logging. */
 	private static final String MODULE = "GalComm2";
 
+	/** Remote scriptname that provides version 2 of the protocol on the server. */
+	public static final String SCRIPT_NAME = "gallery_remote2.php";
+
+	protected String scriptName = SCRIPT_NAME;
+
 
 	/* -------------------------------------------------------------------------
 	*	INSTANCE VARIABLES
@@ -83,12 +88,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	protected int serverMinorVersion = 0;
 
 	/** The capabilities for 2.1 */
-	private static int[] capabilities1;
-	private static int[] capabilities2;
-	private static int[] capabilities5;
-	private static int[] capabilities7;
-	private static int[] capabilities9;
-	private static int[] capabilities13;
+	protected static int[] capabilities1;
+	protected static int[] capabilities2;
+	protected static int[] capabilities5;
+	protected static int[] capabilities7;
+	protected static int[] capabilities9;
+	protected static int[] capabilities13;
 
 
 	/* -------------------------------------------------------------------------
@@ -292,106 +297,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		abstract void runTask();
 
-		/**
-		 * POSTSs a request to the Gallery server with the given form data.
-		 */
-		GalleryProperties requestResponse(NVPair form_data[]) throws GR2Exception, ModuleException, IOException {
-			return requestResponse(form_data, null, g.getGalleryUrl(SCRIPT_NAME), true);
-		}
-
-		GalleryProperties requestResponse(NVPair form_data[], URL galUrl) throws GR2Exception, ModuleException, IOException {
-			return requestResponse(form_data, null, galUrl, true);
-		}
-
-		/**
-		 * POSTSs a request to the Gallery server with the given form data.  If data is
-		 * not null, a multipart MIME post is performed.
-		 */
-		GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
-			// assemble the URL
-			String urlPath = galUrl.getFile();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath);
-
-			if (data != null) {
-				su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, GRI18n.getString(MODULE, "upStart"), false);
-			}
-
-			// create a connection
-			HTTPConnection mConnection = new HTTPConnection(galUrl);
-
-			// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
-			HTTPResponse rsp = null;
-
-			// post multipart if there is data
-			if (data == null) {
-				if (form_data == null) {
-					rsp = mConnection.Get(urlPath);
-				} else {
-					rsp = mConnection.Post(urlPath, form_data);
-				}
-			} else {
-				rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
-			}
-
-			// handle 30x redirects
-			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-				// retry, the library will have fixed the URL
-				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "redirect"));
-				if (data == null) {
-					if (form_data == null) {
-						rsp = mConnection.Get(urlPath);
-					} else {
-						rsp = mConnection.Post(urlPath, form_data);
-					}
-				} else {
-					rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
-				}
-			}
-
-			// handle response
-			if (rsp.getStatusCode() >= 300) {
-				Object[] params = {new Integer(rsp.getStatusCode()), rsp.getReasonLine()};
-				throw new GR2Exception(GRI18n.getString(MODULE, "httpPostErr", params));
-			} else {
-				// load response
-				String response = new String(rsp.getData()).trim();
-				Log.log(Log.LEVEL_TRACE, MODULE, response);
-
-				if (checkResult) {
-					// validate response
-					int i = response.indexOf(PROTOCOL_MAGIC);
-
-					if (i == -1) {
-						Object[] params = {galUrl.toString()};
-						throw new GR2Exception(GRI18n.getString(MODULE, "gllryNotFound", params));
-					} else if (i > 0) {
-						response = response.substring(i);
-						Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);
-					}
-
-					GalleryProperties p = new GalleryProperties();
-					p.load(new StringBufferInputStream(response));
-
-					//mConnection.stop();
-
-					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgOk"));
-
-					return p;
-				} else {
-					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgErr"));
-
-					return null;
-				}
-			}
-		}
-
 		private boolean login() {
 			Object[] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "logIn", params));
 
 			if (g.getType() != Gallery.TYPE_STANDALONE) {
 				try {
-					requestResponse(null, null, g.getLoginUrl(SCRIPT_NAME), false);
+					requestResponse(null, null, g.getLoginUrl(scriptName), false, su);
 				} catch (IOException ioe) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 					Object[] params2 = {ioe.toString()};
@@ -451,12 +363,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 			}
 
+			form_data = fudgeParameters(form_data);
+
 			// make the request
 			try {
 				triedLogin = true;
 
 				// load and validate the response
-				Properties p = requestResponse(form_data, g.getGalleryUrl(SCRIPT_NAME));
+				Properties p = requestResponse(form_data, g.getGalleryUrl(scriptName), su);
 				if (GR_STAT_SUCCESS.equals(p.getProperty("status"))
 						|| GR_STAT_LOGIN_MISSING.equals(p.getProperty("status"))) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "loggedIn"));
@@ -653,10 +567,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// setup the multipart form data
 				NVPair[] afile = {new NVPair("userfile", p.getUploadSource().getAbsolutePath())};
 				NVPair[] hdrs = new NVPair[1];
-				byte[] data = Codecs.mpFormDataEncode(opts, afile, hdrs);
+				byte[] data = Codecs.mpFormDataEncode(fudgeParameters(opts), afile, hdrs);
 
 				// load and validate the response
-				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(SCRIPT_NAME), true);
+				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su);
 				if (props.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upSucc"));
 					return true;
@@ -737,8 +651,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
+			form_data = fudgeParameters(form_data);
+
 			// load and validate the response
-			Properties p = requestResponse(form_data);
+			Properties p = requestResponse(form_data, su);
 			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList mAlbumList = new ArrayList();
 
@@ -819,8 +735,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			};
 			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
+			form_data = fudgeParameters(form_data);
+
 			// load and validate the response
-			Properties p = requestResponse(form_data);
+			Properties p = requestResponse(form_data, su);
 			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList albums = new ArrayList();
 
@@ -994,8 +912,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "album-info parameters: " + Arrays.asList(form_data));
 
+				form_data =  fudgeParameters(form_data);
+
 				// load and validate the response
-				Properties p = requestResponse(form_data);
+				Properties p = requestResponse(form_data, su);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
 					int autoResize = Integer.parseInt(p.getProperty("auto_resize"));
@@ -1067,8 +987,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 
+				form_data = fudgeParameters(form_data);
+
 				// load and validate the response
-				Properties p = requestResponse(form_data);
+				Properties p = requestResponse(form_data, su);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "crateAlbmOk"));
 					newAlbumName = p.getProperty("album_name");
@@ -1151,8 +1073,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
 						Arrays.asList(form_data));
 
+				form_data = fudgeParameters(form_data);
+
 				// load and validate the response
-				GalleryProperties p = requestResponse(form_data);
+				GalleryProperties p = requestResponse(form_data, su);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
 					int numImages = p.getIntProperty("image_count");
@@ -1272,8 +1196,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Log.log(Log.LEVEL_TRACE, MODULE, "move-album parameters: " +
 						Arrays.asList(form_data));
 
+				form_data = fudgeParameters(form_data);
+
 				// load and validate the response
-				GalleryProperties p = requestResponse(form_data);
+				GalleryProperties p = requestResponse(form_data, su);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC,
 							GRI18n.getString(MODULE, "moveAlbumDone"));
@@ -1304,7 +1230,104 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	}
 
 	boolean isTrue(String s) {
-		return s.equals("true");
+		return s != null && s.equals("true");
+	}
+
+	/**
+	 * POSTSs a request to the Gallery server with the given form data.
+	 */
+	GalleryProperties requestResponse(NVPair form_data[], StatusUpdate su) throws GR2Exception, ModuleException, IOException {
+		return requestResponse(form_data, null, g.getGalleryUrl(scriptName), true, su);
+	}
+
+	GalleryProperties requestResponse(NVPair form_data[], URL galUrl, StatusUpdate su) throws GR2Exception, ModuleException, IOException {
+		return requestResponse(form_data, null, galUrl, true, su);
+	}
+
+	/**
+	 * POSTSs a request to the Gallery server with the given form data.  If data is
+	 * not null, a multipart MIME post is performed.
+	 */
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su) throws GR2Exception, ModuleException, IOException {
+		// assemble the URL
+		String urlPath = galUrl.getFile();
+		Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath);
+
+		if (data != null) {
+			su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, GRI18n.getString(MODULE, "upStart"), false);
+		}
+
+		// create a connection
+		HTTPConnection mConnection = new HTTPConnection(galUrl);
+
+		// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
+		HTTPResponse rsp = null;
+
+		// post multipart if there is data
+		if (data == null) {
+			if (form_data == null) {
+				rsp = mConnection.Get(urlPath);
+			} else {
+				rsp = mConnection.Post(urlPath, form_data);
+			}
+		} else {
+			rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
+		}
+
+		// handle 30x redirects
+		if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+			// retry, the library will have fixed the URL
+			status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "redirect"));
+			if (data == null) {
+				if (form_data == null) {
+					rsp = mConnection.Get(urlPath);
+				} else {
+					rsp = mConnection.Post(urlPath, form_data);
+				}
+			} else {
+				rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
+			}
+		}
+
+		// handle response
+		if (rsp.getStatusCode() >= 300) {
+			Object[] params = {new Integer(rsp.getStatusCode()), rsp.getReasonLine()};
+			throw new GR2Exception(GRI18n.getString(MODULE, "httpPostErr", params));
+		} else {
+			// load response
+			String response = new String(rsp.getData()).trim();
+			Log.log(Log.LEVEL_TRACE, MODULE, response);
+
+			if (checkResult) {
+				// validate response
+				int i = response.indexOf(PROTOCOL_MAGIC);
+
+				if (i == -1) {
+					Object[] params = {galUrl.toString()};
+					throw new GR2Exception(GRI18n.getString(MODULE, "gllryNotFound", params));
+				} else if (i > 0) {
+					response = response.substring(i);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);
+				}
+
+				GalleryProperties p = new GalleryProperties();
+				p.load(new StringBufferInputStream(response));
+
+				//mConnection.stop();
+
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgOk"));
+
+				return p;
+			} else {
+				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgErr"));
+
+				return null;
+			}
+		}
+	}
+
+	public NVPair[] fudgeParameters(NVPair[] form_data) {
+		return form_data;
 	}
 
 	class MyTransferListener implements TransferListener {

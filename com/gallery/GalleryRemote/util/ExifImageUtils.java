@@ -4,7 +4,10 @@ import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataReader;
 import com.drew.metadata.exif.ExifDirectory;
+import com.drew.metadata.iptc.IptcDirectory;
+import com.drew.metadata.iptc.IptcReader;
 import com.gallery.GalleryRemote.GalleryFileFilter;
 import com.gallery.GalleryRemote.Log;
 
@@ -18,6 +21,50 @@ import java.io.FileNotFoundException;
  */
 public class ExifImageUtils {
 	public static final String MODULE = "ExifUtils";
+	
+	public static String getMetadataCaptionString(String filename) {
+
+		if (GalleryFileFilter.canManipulateJpeg(filename)) {
+			File jpegFile = new File(filename);
+			try {
+				Metadata metadata = JpegMetadataReader.readMetadata(jpegFile);
+				
+				/* Prefer the EXIF IMAGE_DESCRIPTION tag */
+
+				Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
+				String exifDescription = exifDirectory.getString(ExifDirectory.TAG_IMAGE_DESCRIPTION);
+				
+				if (exifDescription == null) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no EXIF DESCRIPTION tag");
+				} else {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " EXIF DESCRIPTION: " + exifDescription);
+					return exifDescription;
+				}
+					
+				/* If there is no EXIF tag, look for the IPTC TAG_CAPTION one */
+				
+				Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
+				String iptcDescription = iptcDirectory.getString(IptcDirectory.TAG_CAPTION);
+				
+				if (iptcDescription == null) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no IPTC DESCRIPTION tag");
+				} else {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " IPTC DESCRIPTION: " + iptcDescription);
+					return iptcDescription;
+				}
+					
+				return null;
+			} catch (FileNotFoundException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				return null;
+			} catch (JpegProcessingException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
 
 	public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
 		if (GalleryFileFilter.canManipulateJpeg(filename)) {
