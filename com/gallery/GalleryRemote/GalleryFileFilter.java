@@ -24,8 +24,12 @@ package com.gallery.GalleryRemote;
 import java.io.File;
 import javax.swing.*;
 import javax.swing.filechooser.*;
+import java.util.*;
 
 public class GalleryFileFilter extends FileFilter {
+	public static String[] ext
+		= { "gif", "jpeg", "jpg", "avi", "mpg", "mpeg", "moov", "png" };
+	public static final List validExtensions = Arrays.asList( ext );
 	
 	// Accept all directories and all gif, jpg files.
 	public boolean accept(File f) {
@@ -34,22 +38,13 @@ public class GalleryFileFilter extends FileFilter {
 		}
 
 		String extension = getExtension(f);
-	if (extension != null) {
-			if (extension.equals("gif") ||
-					extension.equals("jpeg") ||
-					extension.equals("jpg")) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		return false;
+		
+		return ( extension != null && validExtensions.contains(extension) );
 	}
 	
 	// The description of this filter
 	public String getDescription() {
-		return "Gallery Items (*.jpg, *.jpeg, *.gif)";
+		return "Gallery Items";
 	}
 	
 	public String getExtension(File f) {
@@ -58,8 +53,9 @@ public class GalleryFileFilter extends FileFilter {
 		int i = s.lastIndexOf('.');
 
 		if (i > 0 &&  i < s.length() - 1) {
-				ext = s.substring(i+1).toLowerCase();
+			ext = s.substring(i+1).toLowerCase();
 		}
+		
 		return ext;
 	}
 }
