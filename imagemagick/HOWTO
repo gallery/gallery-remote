@@ -1,0 +1,12 @@
+To enable ImageMagick support for your platform, copy the "im.properties" in the 
+corresponding folder to this folder. You should only need to do this if you got 
+Gallery Remote from the CVS repository.
+
+If you already have ImageMagick installed on your system, just rename the 
+"im.properties.preinstalled" to "im.properties" and set the "imConvertPath" 
+property to the exact path to the Convert executable in your ImageMagick 
+installation.
+
+If you compiled ImageMagick for a platform we don't already have support for, 
+please get in touch with me at paour@sourceforge.net so we can include your 
+binaries in our standard distributions.
