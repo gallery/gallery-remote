@@ -26,7 +26,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 		}
 
 		// find out what the current and last builds are
-		int siteBetaBuild = changeProps.getIntProperty("siteBetaBuild");
+		int siteBetaBuild = changeProps.getIntProperty("siteBetaBuild", 0);
 		String currentBuildS = defaultProps.getProperty("version");
 
 		Pattern buildPattern = Pattern.compile(".*-b(\\d*)");
