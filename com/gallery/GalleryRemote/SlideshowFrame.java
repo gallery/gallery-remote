@@ -27,7 +27,11 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	List pictures = null;
 	List wantDownloaded = Collections.synchronizedList(new ArrayList());
 	Picture userPicture = null;
+
+	int wantIndex = -1;
+
 	int sleepTime = 3000;
+	int skipTime = 500;
 	boolean running = false;
 	boolean shutdown = false;
 	long pictureShownTime = 0;
@@ -41,6 +45,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public static final int STATE_DOWNLOADING = 1;
 	public static final int STATE_PROCESSING = 2;
 	public static final int STATE_NEXTREADY = 3;
+	public static final int STATE_SKIPPING = 4;
 
 	public static final int FEEDBACK_NONE = 0;
 	public static final int FEEDBACK_HELP = 1;
@@ -51,6 +56,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	public int feedback = FEEDBACK_NONE;
 
 	long controllerUntil = 0;
+	long dontShowUntil = 0;
 	Thread controllerThread = null;
 
 	public SlideshowFrame() {
@@ -256,31 +262,39 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	public boolean next(boolean user) {
-		int index = -1;
-		//Log.log(Log.LEVEL_TRACE, MODULE, "running: " + running + " shutdown: " + shutdown + " loadpicture " + loadPicture);
+		if (loadPicture != null && wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
+			// we no longer want the current picture
+			wantDownloaded.remove(loadPicture);
+		}
 
-		if (loadPicture != null) {
-			index = pictures.indexOf(loadPicture);
+		Picture picture;
+		synchronized(this) {
+			wantIndex++;
 
-			if (wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
-				// we no longer want the current picture
-				wantDownloaded.remove(loadPicture);
+			if (wantIndex >= pictures.size()) {
+				wantIndex = pictures.size() - 1;
+				return false;
 			}
+
+			// display next picture
+			picture = (Picture) pictures.get(wantIndex);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Next picture: " + picture);
 		}
 
-		index++;
-
-		if (index >= pictures.size()) {
-			return false;
-		}
-
-		Log.log(Log.LEVEL_TRACE, MODULE, "Next picture");
-		//Log.logStack(Log.LEVEL_TRACE, MODULE);
-
-		// display next picture
-		Picture picture = (Picture) pictures.get(index);
 		if (user) {
 			userPicture = picture;
+			updateProgress(picture, STATE_SKIPPING);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Skipping sleep");
+			try {
+				Thread.sleep(skipTime);
+			} catch (InterruptedException e) {}
+			Log.log(Log.LEVEL_TRACE, MODULE, "Skipping wake");
+
+			// if user moved to a different picture in the meantime, cancel
+			if (userPicture != picture) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "User skipped again, not even loading " + picture);
+				return true;
+			}
 		} else if (userPicture != null && userPicture != picture) {
 			// automatic move trying to move away from user-chosen picture
 
@@ -296,7 +310,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		displayPicture(picture, false);
 
 		// and cache the one after it
-		if (++index < pictures.size() && (imageIcons.get(picture = (Picture) pictures.get(index))) == null) {
+		if (wantIndex + 1< pictures.size() && (imageIcons.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
 			wantDownloaded.add(picture);
 			previewLoader.loadPreview(picture, true);
 		}
@@ -305,31 +319,39 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	public boolean previous(boolean user) {
-		int index = -1;
-
-		if (loadPicture == null) {
-			return false;
-		} else if (wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
+		if (loadPicture != null && wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
 			// we no longer want the current picture
 			wantDownloaded.remove(loadPicture);
 		}
 
-		index = pictures.indexOf(loadPicture);
+		Picture picture;
+		synchronized (this) {
+			wantIndex--;
 
-		index--;
+			if (wantIndex < 0) {
+				wantIndex = 0;
+				return false;
+			}
 
-		if (index < 0) {
-			return false;
+			// display previous picture
+			picture = (Picture) pictures.get(wantIndex);
 		}
 
-		Log.log(Log.LEVEL_TRACE, MODULE, "Previous picture");
-
-		// display previous picture
-		Picture picture = (Picture) pictures.get(index);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Previous picture: " + picture);
 		if (user) {
 			userPicture = picture;
+			updateProgress(picture, STATE_SKIPPING);
+			try {
+				Thread.sleep(skipTime);
+			} catch (InterruptedException e) {}
+
+			// if user moved to a different picture in the meantime, cancel
+			if (userPicture != picture) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "User skipped again, not even loading " + picture);
+				return true;
+			}
 		} else if (userPicture != null && userPicture != picture) {
-			// automatic move tying to move away from user-chosen picture
+			// automatic move trying to move away from user-chosen picture
 			return true;
 		}
 
@@ -338,7 +360,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		displayPicture(picture, false);
 
 		// and cache the one after it
-		if (--index > 0 && (imageIcons.get(picture = (Picture) pictures.get(index))) == null) {
+		if (wantIndex - 1 > 0 && (imageIcons.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
 			wantDownloaded.add(picture);
 			previewLoader.loadPreview(picture, true);
 		}
@@ -417,6 +439,10 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 			case STATE_NEXTREADY:
 				progress = GRI18n.getString(MODULE, "nextReady", params);
+				break;
+
+			case STATE_SKIPPING:
+				progress = GRI18n.getString(MODULE, "skipping", params);
 				break;
 		}
 
