@@ -1,0 +1,168 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Gallery Remote roadmap</title>
+<style>
+<!--
+h1           {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+h2           {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	padding-top: 20px;
+}
+h3           {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+h4           {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+p {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+li {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 14px;
+}
+-->
+</style>
+<style type="text/css">
+<!--
+pre {
+	font-family: "Courier New", Courier, mono;
+}
+-->
+</style>
+<style type="text/css">
+<!--
+code {
+	font-family: "Courier New", Courier, mono;
+	font-size: 12px;
+}
+-->
+</style>
+</head>
+
+<body>
+
+<h1 align="center">Gallery Remote ReadMe</h1>
+<p>Preview Version: 1.0b6<br>
+  Last modified: September 20, 2002</p>
+<h2 align="left">Contents</h2>
+  
+<ol>
+  <li><a href="#whatisGR">What is Gallery Remote?</a></li>
+  <li><a href="#whatisG">What is Gallery?</a></li>
+  <li><a href="#using">Using Gallery Remote</a></li>
+  <li><a href="#run">Can I run Gallery Remote on platforms for which there is no 
+    installer?</a></li>
+  <li><a href="#problems">Known problems</a></li>
+  <li><a href="#help">HELP!! Where do I go for Help?</a></li>
+</ol>
+
+  
+<h2><a name="whatisGR" id="whatisGR"></a>What is Gallery Remote?</h2>
+<p>Gallery Remote is a Desktop file upload utility for Gallery. </p>
+
+<h2><a name="whatisG"></a>What is Gallery?</h2>
+<p>Gallery is a web-based photo album viewer/creator. For the latest information, 
+  check out the web site:</p>
+<p><a href="http://gallery.sourceforge.net/">http://gallery.sourceforge.net/</a></p>
+<h2><a name="using"></a>Using Gallery Remote</h2>
+<p>You're on your own here, but it's pretty straightforward.</p>
+<h3>Preferences</h3>
+<p>There is currently no way to set some (most) of the preferences. However, the 
+  preference files can be edited. You should not modify the <code>defaults.properties</code> 
+  file, but you should read it to understand what each preference does. Then, 
+  you can edit the <code>.GalleryRemote.properties</code> (the first time GR is 
+  run) and add or replace the preferences you want to change.</p>
+<p>The preferences files used to be stored in the same directory as the GalleryRemote 
+  executable, and has been moved (and renamed) to the current user's home directory. 
+  On recent versions of Windows, this is the <code>Documents and Settings/<em>&lt;username&gt;</em></code> 
+  directory in the boot partition. When you upgrade from versions older than 1.0b6, 
+  you will lose your current preferences unless you copy the previously used <code>remote.properties</code> 
+  to <code><em>&lt;home directory&gt;</em>/.GalleryRemote.properties</code>.</p>
+<h3>ImageMagick setup</h3>
+<p>GR will use ImageMagick (IM) to speed up (very greatly) the computation of 
+  resized images for thumbnails, preview and image upload.</p>
+<p>On Windows, the installer will automatically install and set up a subset of 
+  the IM functionality, so there is nothing special to do.</p>
+<p>On other platforms, you should install IM separately (<a href="http://www.imagemagick.org/">http://www.imagemagick.org/</a>) 
+  and tell GR by renaming the <code>im.properties.preinstalled</code> to <code>im.properties</code> 
+  and set the <code>imConvertPath</code> property to the exact path to the Convert 
+  executable in your ImageMagick installation.</p>
+<p>We will add more platform support as time goes on, but we may need help. If 
+  you compiled ImageMagick for a platform we don't already have support for, please 
+  get in touch with me at <a href="mailto:paour@users.sourceforge.net">paour@users.sourceforge.net</a> 
+  so we can include your binaries in our standard distributions.</p>
+<h3>Logging</h3>
+<p>If you encounter a problem, the logging system may be some help, and we will 
+  definitely request it if you ask for support.</p>
+<p>By default, GR writes most log information to the file <code>log.txt</code> 
+  in the directory where you installed GR. If you want to see more detailed information 
+  there, you can add the following lines to your <code>.GalleryRemote.properties</code> 
+  file:</p>
+<pre>logLevel=3
+toSysOut=true</pre>
+<p>If you also change your InstallAnywhere launcher file <code>Gallery Remote.lax</code> to 
+  set:</p>
+<pre>lax.stdout.redirect=console</pre>
+<p>you will see the log as it unfolds in the console...</p>
+<h2><a name="run"></a>Can I run Gallery Remote on platforms for which there is 
+  no installer?</h2>
+<p>Yes, maybe. Gallery Remote was written in Java. If you have Java 1.3 or later
+  installed on your machine, you may be able to run the app with the command:</p>
+<pre>java -cp GalleryRemote.jar com.gallery.GalleryRemote.GalleryRemote</pre>
+<p>assuming you are in the same directory as the GalleryRemote.jar file.</p>
+<h2><a name="problems"></a>Known problems</h2>
+<p>There are many, I am sure.</p>
+<p>Right now, the lack of out of the box support for ImageMagick on non-Windows 
+  platforms is one of the worst. We're looking for assistance on this to build 
+  IM packages for other platforms.</p>
+<p>Lack of a preferences dialogs is also of some concern. But this is what a preview 
+  version is for, right?</p>
+<h2><a name="help"></a>HELP!! Where do I go for Help?</h2>
+<p>We're here to help you. We want you to get Gallery up and running.
+  But please remember that Gallery is installed on many websites and
+  the Gallery authors get bombarded with lots of emails every day.
+  Be kind to us and try to use the resources we make available before
+  you fire off an email to us.</p>
+<p>The first thing you should do is to visit the Gallery Support Forums:</p>
+<p> <a href="http://gallery.menalto.com/modules.php?op=modload&name=phpBB_14&file=index">http://gallery.menalto.com/modules.php?op=modload&amp;name=phpBB_14&amp;file=index</a></p>
+<p>and specifically the Gallery Remote forum:</p>
+<p><a href="http://gallery.menalto.com/modules.php?op=modload&name=phpBB_14&file=index&action=viewforum&forum=17">http://gallery.menalto.com/modules.php?op=modload&amp;name=phpBB_14&amp;file=index&amp;action=viewforum&amp;forum=17</a></p>
+<p>&nbsp;</p>
+<p>If you can't find your answer there, send your help requests to the
+  mailing lists.</p>
+<p>The Gallery users mailing list is here:</p>
+<p> <a href="http://lists.sourceforge.net/lists/listinfo/gallery-users">http://lists.sourceforge.net/lists/listinfo/gallery-users</a></p>
+<p>there's an archive of all the emails for the past few months here:</p>
+<p> <a href="http://marc.theaimsgroup.com/?l=gallery-users&r=1&w=2">http://marc.theaimsgroup.com/?l=gallery-users&amp;r=1&amp;w=2</a></p>
+<p>We respond to each and every request for help. There are very few problems 
+  that we have not been able to work through. We <strong>will</strong> get you 
+  up and running. But, remember that every email we respond to robs us of time 
+  that we could be spending improving the quality of Gallery and adding new features.</p>
+<p>Speaking of quality and features, if you find a bug you can file
+  it in our Bug Tracker:</p>
+<p> <a href="http://sourceforge.net/tracker/?group_id=7130&atid=107130">http://sourceforge.net/tracker/?group_id=7130&amp;atid=107130</a></p>
+<p>and if you think of a new feature, you can file it in our Feature
+  Tracker:</p>
+<p> <a href="http://sourceforge.net/tracker/?atid=357130&group_id=7130&func=browse">http://sourceforge.net/tracker/?atid=357130&amp;group_id=7130&amp;func=browse</a></p>
+<p>It's a good idea to check through these databases to see if the
+  bug/feature that you're referring to is already in there.</p>
+</body>
+
+</html>

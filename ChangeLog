@@ -1,3 +1,10 @@
+2002-09-20  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
+	
+	* The preferences file is now called .GalleryRemote.properties and resides in 
+          the home directory. This should fix problems with preferences not being save
+          but it means users will have to either copy the preferences file over themselves
+          or recreate their preferences.
+
 2002-09-17  Pierre-Luc Paour <gallery@paour.com> (1.0-b5)
 	
 	* Corrected problems on JDK 1.3 with url combo box
