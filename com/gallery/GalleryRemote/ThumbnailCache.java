@@ -58,17 +58,23 @@ public class ThumbnailCache implements Runnable
 	 *  Main processing method for the ThumbnailLoader object
 	 */
 	public void run() {
+		int loaded = 0;
+		mf.startProgress(0, toLoad.size(), "Loading thumbnails");
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
 
 			if ( thumbnails.get( filename ) == null ) {
 				loadThumbnail( filename );
-
+				
+				loaded++;
+				mf.updateProgressValue(loaded, loaded + toLoad.size());
 				mf.thumbnailLoadedNotify();
 			}
 		}
 		stillRunning = false;
+		
+		mf.stopProgress("Thumbnails loaded");
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}
