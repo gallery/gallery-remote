@@ -1,3 +1,10 @@
+2004-07-09  Pierre-Luc Paour <gallery@paour.com> (1.4-b17)
+
+	* When the session expires, GR now attempts to login again.
+	* Fixed duplicate extra field
+	* Added a warning when EXIF data is about to be dumped by Java resize
+	* Enabled silent install in the ZeroG installer.
+
 2004-06-24  Pierre-Luc Paour <gallery@paour.com> (1.4-b16)
 
 	* New Album dialog now prevents user from attempting to create

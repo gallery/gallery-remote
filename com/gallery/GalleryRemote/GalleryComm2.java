@@ -310,7 +310,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			if (g.getType() != Gallery.TYPE_STANDALONE && g.getType() != Gallery.TYPE_APPLET) {
 				try {
-					requestResponse(null, null, g.getLoginUrl(scriptName), false, su);
+					requestResponse(null, null, g.getLoginUrl(scriptName), false, su, this);
 				} catch (IOException ioe) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 					Object[] params2 = {ioe.toString()};
@@ -377,7 +377,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				triedLogin = true;
 
 				// load and validate the response
-				Properties p = requestResponse(form_data, g.getGalleryUrl(scriptName), su);
+				Properties p = requestResponse(form_data, null, g.getGalleryUrl(scriptName), true, su, this, true);
 				if (GR_STAT_SUCCESS.equals(p.getProperty("status"))
 						|| GR_STAT_LOGIN_MISSING.equals(p.getProperty("status"))) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "loggedIn"));
@@ -579,7 +579,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				byte[] data = Codecs.mpFormDataEncode(fudgeFormParameters(opts), fudgeParameters(afile), hdrs);
 
 				// load and validate the response
-				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su);
+				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su, this);
 				if (props.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upSucc"));
 					return true;
@@ -663,7 +663,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			form_data = fudgeFormParameters(form_data);
 
 			// load and validate the response
-			Properties p = requestResponse(form_data, su);
+			Properties p = requestResponse(form_data, su, this);
 			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList mAlbumList = new ArrayList();
 
@@ -747,7 +747,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			form_data = fudgeFormParameters(form_data);
 
 			// load and validate the response
-			Properties p = requestResponse(form_data, su);
+			Properties p = requestResponse(form_data, su, this);
 			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList albums = new ArrayList();
 
@@ -886,6 +886,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					depth++;
 				}
 
+				if ("no".equals(p.getProperty("can_create_root"))) {
+					rootAlbum.setCanCreateSubAlbum(false);
+				}
+
 				Log.log(Log.LEVEL_TRACE, MODULE, "Ordered " + orderedAlbums.size() + " albums");
 
 				status(su, StatusUpdate.LEVEL_BACKGROUND, GRI18n.getString(MODULE, "ftchdAlbms"));
@@ -924,7 +928,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				form_data =  fudgeFormParameters(form_data);
 
 				// load and validate the response
-				Properties p = requestResponse(form_data, su);
+				Properties p = requestResponse(form_data, su, this);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
 					int autoResize = Integer.parseInt(p.getProperty("auto_resize"));
@@ -999,7 +1003,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
-				Properties p = requestResponse(form_data, su);
+				Properties p = requestResponse(form_data, su, this);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "crateAlbmOk"));
 					newAlbumName = p.getProperty("album_name");
@@ -1085,7 +1089,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
-				GalleryProperties p = requestResponse(form_data, su);
+				GalleryProperties p = requestResponse(form_data, su, this);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					// parse and store the data
 					int numImages = p.getIntProperty("image_count");
@@ -1095,6 +1099,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						if (baseUrl == null) {
 							Log.log(Log.LEVEL_TRACE, MODULE, "Gallery root, baseurl is null");
 						} else {
+							// verify that baseUrl is a valid URL (don't remove)
 							URL tmpUrl = new URL(baseUrl);
 						}
 					} catch (MalformedURLException e) {
@@ -1230,7 +1235,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				form_data = fudgeFormParameters(form_data);
 
 				// load and validate the response
-				GalleryProperties p = requestResponse(form_data, su);
+				GalleryProperties p = requestResponse(form_data, su, this);
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC,
 							GRI18n.getString(MODULE, "moveAlbumDone"));
@@ -1267,19 +1272,23 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	/**
 	 * POSTSs a request to the Gallery server with the given form data.
 	 */
-	GalleryProperties requestResponse(NVPair form_data[], StatusUpdate su) throws GR2Exception, ModuleException, IOException {
-		return requestResponse(form_data, null, g.getGalleryUrl(scriptName), true, su);
+	GalleryProperties requestResponse(NVPair form_data[], StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+		return requestResponse(form_data, null, g.getGalleryUrl(scriptName), true, su, task);
 	}
 
-	GalleryProperties requestResponse(NVPair form_data[], URL galUrl, StatusUpdate su) throws GR2Exception, ModuleException, IOException {
-		return requestResponse(form_data, null, galUrl, true, su);
+	GalleryProperties requestResponse(NVPair form_data[], URL galUrl, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+		return requestResponse(form_data, null, galUrl, true, su, task);
+	}
+
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+		return requestResponse(form_data, data, galUrl, checkResult, su, task, false);
 	}
 
 	/**
 	 * POSTSs a request to the Gallery server with the given form data.  If data is
 	 * not null, a multipart MIME post is performed.
 	 */
-	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su) throws GR2Exception, ModuleException, IOException {
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws GR2Exception, ModuleException, IOException {
 		// assemble the URL
 		String urlPath = galUrl.getFile();
 		Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath);
@@ -1343,6 +1352,18 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				GalleryProperties p = new GalleryProperties();
 				p.load(new StringBufferInputStream(response));
+
+				// catch session expiration problems
+				if (!alreadyRetried && !g.cookieLogin && g.getUsername() != null
+						&& ! "1".equals(p.getProperty("debug_user_already_logged_in"))) {
+					Log.log(Log.LEVEL_INFO, MODULE, "The session seems to have expired: trying to login and retry...");
+
+					if (task.login()) {
+						return requestResponse(form_data, data, galUrl, checkResult, su, task, true);
+					} else {
+						Log.log(Log.LEVEL_INFO, MODULE, "Login attempt unsuccessful");
+					}
+				}
 
 				//mConnection.stop();
 

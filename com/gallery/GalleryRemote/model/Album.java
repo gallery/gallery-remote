@@ -92,7 +92,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	transient private Integer albumDepth;
 	transient private boolean suppressEvents = false;
 
-	public static List extraFieldsNoShow = Arrays.asList(new String[]{GRI18n.getString(MODULE, "upDate"), GRI18n.getString(MODULE, "captDate")});
+	public static List extraFieldsNoShow = Arrays.asList(new String[]{"Capture date", "Upload date", "Description"});
 
 
 	public Album(Gallery gallery) {
@@ -627,7 +627,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			while (st.hasMoreTokens()) {
 				String name = st.nextToken();
 
-				if (!extraFieldsNoShow.contains(name)) {
+				if (!extraFieldsNoShow.contains(name) && !extraFields.contains(name)) {
 					extraFields.add(name);
 				}
 			}

@@ -1,10 +1,8 @@
 package com.gallery.GalleryRemote;
 
-import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.model.Album;
-import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.SlideshowPanel;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
@@ -12,21 +10,9 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListDataEvent;
-import javax.swing.border.TitledBorder;
-import java.applet.Applet;
-import java.io.FilePermission;
-import java.io.File;
-import java.util.Iterator;
-import java.util.Arrays;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
-
-import HTTPClient.CookieModule;
-import HTTPClient.Cookie;
 
 /**
  * Created by IntelliJ IDEA.

@@ -76,6 +76,8 @@ public interface PreferenceNames {
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
 	public static final String SUPPRESS_WARNING_JPEGTRAN_CROP = "suppressWarningJpegtranCrop";
 	public static final String SUPPRESS_WARNING_CORRUPTED = "suppressWarningCorrupted";
+	public static final String SUPPRESS_WARNING_JAVA = "suppressWarningJava";
+	public static final String USE_JAVA_RESIZE = "useJavaResize";
 	public static final String FONT_OVERRIDE_NAME = "fontOverrideName";
 	public static final String FONT_OVERRIDE_STYLE = "fontOverrideStyle";
 	public static final String FONT_OVERRIDE_SIZE = "fontOverrideSize";

@@ -212,9 +212,9 @@ public class PictureInspector extends JPanel
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		add(jDeleteButton, new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0));
-		this.add(jScrollPane1, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+		add(jScrollPane1, new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jScrollPane2, new GridBagConstraints(1, 7, 1, 1, 1.0, 1.0
+		add(jScrollPane2, new GridBagConstraints(1, 7, 1, 1, 1.0, 1.0
 				, GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0));
 		jScrollPane1.getViewport().add(jPath, null);
 		jScrollPane2.getViewport().add(jCaption, null);

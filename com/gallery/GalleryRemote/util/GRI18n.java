@@ -214,8 +214,13 @@ public class GRI18n implements PreferenceNames {
 			// perf optimization: don't go through all the regions if the main language was not found
 			if (!loc.startsWith(prefix)) {
 				prefix = loc;
+				if (devMode) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Trying locale: " + loc);
+				}
+
 				locPath = (devMode?RESNAME_DEV:RESPATH) + "_" + loc + ".properties";
 				if (ClassLoader.getSystemClassLoader().getResource(locPath) != null) {
+					Log.log(Log.LEVEL_INFO, MODULE, "Found locale: " + loc);
 					aList.add(list[i]);
 					prefix = "##DUMMY";
 				}

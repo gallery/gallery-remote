@@ -28,10 +28,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -59,11 +56,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String username;
 	String password;
 	String alias;
-	//ArrayList albumList = null;
-	//Album selectedAlbum = null;
 	int type = TYPE_STANDALONE;
-	//Album root = null;
-	//ArrayList rootAlbums = new ArrayList();
 
 	transient GalleryComm comm = null;
 
@@ -151,146 +144,17 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void logOut() {
-		boolean logout = true;
-
-		//albumList = null;
-		//selectedAlbum = null;
 		if (comm != null) {
 			comm.logOut();
 		}
 		comm = null;
 
-		if (logout) {
-			//albumList = null;
-			//rootAlbums.clear();
-			//selectedAlbum = null;
-			setRoot(null);
-
-			if (comm != null) {
-				comm.logOut();
-			}
-			comm = null;
-
-			//reload();
-		}
+		setRoot(null);
 	}
 
 	/*
 	* **** Gallery contents handling ****
 	*/
-
-	/*public void setAlbumList(ArrayList albumList) {
-		if (albumList == null) {
-			throw new IllegalArgumentException("Must supply non-null album list.");
-		}
-
-		ArrayList oldList = this.albumList;
-		this.albumList = albumList;
-		if (albumList.size() > 0) {
-			selectedAlbum = (Album) this.albumList.get(0);
-		}
-
-		if (oldList != null) {
-			for (Iterator i = oldList.iterator(); i.hasNext();) {
-				Album a = (Album) i.next();
-
-				//Log.log(Log.LEVEL_TRACE, MODULE, a.toString());
-				if (!a.getPicturesList().isEmpty()) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Album " + a + " had pictures");
-					int j = albumList.indexOf(a);
-
-					if (j != -1) {
-						Album newAlbum = (Album) albumList.get(j);
-						newAlbum.setPicturesList(a.getPicturesList());
-					}
-				}
-			}
-		}
-
-        refreshRootAlbums();
-
-		reload();
-	}*/
-
-	/*public void refreshRootAlbums() {
-        rootAlbums.clear();
-
-        for (Iterator it = albumList.iterator(); it.hasNext();) {
-            Album album = (Album) it.next();
-
-            if (album.getParentAlbum() == null) {
-                rootAlbums.add(album);
-            }
-        }
-    }*/
-
-	/**
-	 * Adds an album to the gallery and selects the first one added.
-	 */
-	/*public synchronized void addAlbum(Album a) {
-		if (a == null) {
-			throw new IllegalArgumentException("Must supply non-null album.");
-		}
-
-		// when the first album becomes available, make sure to select
-		// it in the list
-		boolean firstAlbum = false;
-
-		// lazy allocation
-		if (this.albumList == null) {
-			this.albumList = new ArrayList();
-			firstAlbum = true;
-		}
-
-		albumList.add(a);
-
-		if (firstAlbum) {
-			selectedAlbum = (Album) this.albumList.get(0);
-		}
-
-		//notifyListeners();
-		if (a.getParentAlbum() == null) {
-			fireTreeNodesInserted(this, getObjectArrayForAlbum(root),
-					new int[] { rootAlbums.indexOf(a) },
-					new Object[] { a });
-		} else {
-			fireTreeNodesInserted(this, getObjectArrayForAlbum(a.getParentAlbum()),
-					new int[] { a.getParentAlbum().subAlbums.indexOf(a) },
-					new Object[] { a });
-		}
-	}*/
-
-	/*public void addRootAlbum(Album a) {
-		rootAlbums.add(a);
-
-		//fireTreeNodesInserted(this, new Object[] { root },
-		//		new int[] { rootAlbums.indexOf(a) },
-		//		new Object[] { a });
-		fireTreeStructureChanged(this, new TreePath(root));
-	}*/
-
-	/*public void removeRootAlbum(Album a) {
-		int index = rootAlbums.indexOf(a);
-		if (index != -1) {
-			rootAlbums.remove(a);
-
-			//fireTreeNodesRemoved(this, new Object[] { root },
-			//		new int[] { index },
-			//		new Object[] { a });
-			//fireTreeStructureChanged(this, getPathForAlbum(a));
-			fireTreeStructureChanged(this, new TreePath(root));
-		}
-	}*/
-
-	/*public ArrayList getAlbumList() {
-		return albumList;
-	}
-
-	public void clearAlbumList() {
-		albumList.clear();
-
-		reload();
-	}*/
 
 	public File getGalleryDefaultFile() {
 		StringBuffer defaultFilePath = new StringBuffer();
@@ -927,62 +791,6 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		}
 	}
 
-	/**
-	 * this no longer works: the JTree is the only object that
-	 * knows what the selected album is. This only works in
-	 * JList context...
-	 * 
-	 * @return 
-	 */
-	/*public Album getSelectedAlbum() {
-		return selectedAlbum;
-	}*/
-
-
-	/*public void setSelectedItem(Object anObject) {
-		if ((selectedAlbum != null && !selectedAlbum.equals(anObject)) ||
-				selectedAlbum == null && anObject != null) {
-			selectedAlbum = (Album) anObject;
-			fireContentsChanged(this, -1, -1);
-		}
-	}
-
-	public void fireContentsChanged(Object source, int index0, int index1) {
-		if (listenerList == null) listenerList = new EventListenerList();
-		Object[] listeners = listenerList.getListenerList();
-		ListDataEvent e = null;
-
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
-			if (listeners[i] == ListDataListener.class) {
-				if (e == null) {
-					e = new ListDataEvent(source, ListDataEvent.CONTENTS_CHANGED, index0, index1);
-				}
-				((ListDataListener) listeners[i + 1]).contentsChanged(e);
-			}
-		}
-	}
-
-	public Object getSelectedItem() {
-		return selectedAlbum;
-	}*/
-
-	/*public void albumChanged(Album a) {
-		if (a == null) {
-			fireTreeNodesChanged(this, getObjectArrayForAlbum(root), null, null);
-		} else {
-			fireTreeNodesChanged(this, getObjectArrayForAlbum(a), null, null);
-		}
-	}
-
-	public void albumStructureChanged(Album a) {
-		if (a == null) {
-			fireTreeStructureChanged(this, getPathForAlbum(root));
-		} else {
-			fireTreeStructureChanged(this, getPathForAlbum(a));
-		}
-	}*/
-
-
 	/*
 	* Miscellaneous
 	*/
@@ -1011,46 +819,6 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public boolean hasComm() {
 		return comm != null;
 	}
-
-	/*void notifyListeners() {
-		//ListDataEvent lde;
-		if (albumList != null) {
-			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
-			fireContentsChanged(this, 0, albumList.size());
-		} else {
-			//lde = new ListDataEvent( this, ListDataEvent.CONTENTS_CHANGED, 0, 0 );
-			fireContentsChanged(this, 0, 0);
-		}
-		fireTreeStructureChanged(this, new TreePath(root));
-
-		//notifyListeners(lde);
-	}*/
-
-	/*
-	*	ListModel Implementation
-	*/
-	/*public int getSize() {
-		if (albumList != null) {
-			return albumList.size();
-		} else {
-			return 0;
-		}
-	}
-
-	public Object getElementAt(int index) {
-		return albumList.get(index);
-	}*/
-
-	/*public void addListDataListener(ListDataListener l) {
-		if (listenerList == null) listenerList = new EventListenerList();
-		listenerList.add(ListDataListener.class, l);
-	}
-
-
-	public void removeListDataListener(ListDataListener l) {
-		if (listenerList == null) listenerList = new EventListenerList();
-		listenerList.remove(ListDataListener.class, l);
-	}*/
 
 	public Album getAlbumByName(String name) {
 		ArrayList albumList = getFlatAlbumList();

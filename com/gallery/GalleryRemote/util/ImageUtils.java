@@ -286,7 +286,11 @@ public class ImageUtils {
 
 		if (!useIM && r == null) {
 			r = resizeJava(filename, d);
-			//throw new UnsupportedOperationException("IM must be installed for this operation");
+
+			if (r == null) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "All methods of resize failed: sending original file");
+				r = new File(filename);
+			}
 		}
 
 		long time = System.currentTimeMillis() - start;
@@ -299,6 +303,16 @@ public class ImageUtils {
 
 	public static File resizeJava(String filename, Dimension d) {
 		File r = null;
+
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.USE_JAVA_RESIZE)) {
+			return null;
+		}
+
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JAVA)) {
+			if (stopUsingJavaResize()) {
+				return null;
+			}
+		}
 
 		try {
 			// read the image
@@ -445,8 +459,6 @@ public class ImageUtils {
 				resetExifOrientation(filename);
 				}*/
 
-			} catch (IOException e1) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			} finally {
 				if (orig != null && dest != null) {
 					dest.renameTo(orig);
@@ -483,8 +495,6 @@ public class ImageUtils {
 
 				r = jpegtranExec(filename, "-crop", cropTo.width + "x" + cropTo.height + "+" +
 						cropTo.x + "+" + cropTo.y, true);
-			} catch (IOException e1) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			} finally {
 				if (orig != null && dest != null) {
 					dest.renameTo(orig);
@@ -499,7 +509,7 @@ public class ImageUtils {
 		return r;
 	}
 
-	private static File jpegtranExec(String filename, String arg1, String arg2, boolean crop) throws IOException {
+	private static File jpegtranExec(String filename, String arg1, String arg2, boolean crop) {
 		File r;
 		ArrayList cmd = new ArrayList();
 		cmd.add(jpegtranPath);
@@ -1132,6 +1142,25 @@ public class ImageUtils {
 				deferredStopUsingIM = true;
 			}
 		}
+	}
+
+	static boolean stopUsingJavaResize() {
+		UrlMessageDialog md = new UrlMessageDialog(
+				GRI18n.getString(MODULE, "warningTextJava"),
+				null,
+				null,
+				GRI18n.getString(MODULE, "useJava"),
+				GRI18n.getString(MODULE, "dontUseJava")
+		);
+
+		boolean useJavaResize = (md.getButtonChosen() == 1);
+
+		if (md.dontShow()) {
+			GalleryRemote._().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JAVA, true);
+			GalleryRemote._().properties.setBooleanProperty(PreferenceNames.USE_JAVA_RESIZE, useJavaResize);
+		}
+
+		return !useJavaResize;
 	}
 
 	static void stopUsingJpegtran() {

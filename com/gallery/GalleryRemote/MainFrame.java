@@ -178,24 +178,6 @@ public class MainFrame extends JFrame
 		} else {
 			//Gallery g = new Gallery(jStatusBar);
 			Applet applet = GalleryRemote._().getApplet();
-			/*String url = applet.getParameter("gr_url");
-			String cookieName = applet.getParameter("gr_cookie_name");
-			String cookieValue = applet.getParameter("gr_cookie_value");
-			String cookieDomain = applet.getParameter("gr_cookie_domain");
-			String cookiePath = applet.getParameter("gr_cookie_path");
-
-			if (cookieDomain == null || cookieDomain.length() < 1) {
-				try {
-					cookieDomain = new URL(url).getHost();
-				} catch (Exception e) {
-					Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				}
-			}
-
-			g.setType(Gallery.TYPE_STANDALONE);
-			g.setStUrlString(url);
-			g.addListDataListener(this);
-			g.cookieLogin = true;*/
 
 			GRApplet.AppletInfo info = ((GRApplet) applet).getGRAppletInfo();
 
@@ -1156,19 +1138,27 @@ public class MainFrame extends JFrame
      *                        we should display to prompt the user
      *                        before we do the dangerous thing.
      *
-     * @return one of CANCEL_OPTION, OK_OPTION (from the JOptionPane
+     * @param gallery
+	 * @return one of CANCEL_OPTION, OK_OPTION (from the JOptionPane
      *         class). On CANCEL_OPTION you should stop the current
      *         process. OK_OPTION means that either we are not dirty)
      *         or that we just saved for the user.
      */
-    private int saveOnPermission(String promptMessageID) {
+    private int saveOnPermission(String promptMessageID, Gallery gallery) {
         if (!m_isDirty) {
             return (JOptionPane.OK_OPTION);
         }
 
-        int response = JOptionPane.showConfirmDialog(
+		String prompt;
+		if (gallery != null) {
+			prompt = GRI18n.getString(MODULE, promptMessageID, new Object[] {gallery.toString() });
+		} else {
+			prompt = GRI18n.getString(MODULE, promptMessageID);
+		}
+		
+		int response = JOptionPane.showConfirmDialog(
                 this,
-                GRI18n.getString(MODULE, promptMessageID),
+				prompt,
                 lastOpenedFile == null ? GRI18n.getString(MODULE, "noTitleHeader")
                                        : lastOpenedFile.getName(),
                 JOptionPane.YES_NO_CANCEL_OPTION);
@@ -1262,7 +1252,7 @@ public class MainFrame extends JFrame
 
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
-                int response = saveOnPermission("logoutQuestion");
+                int response = saveOnPermission("logoutQuestion", getCurrentGallery());
 
                 if (JOptionPane.CANCEL_OPTION == response) {
                     return;
@@ -1552,7 +1542,7 @@ public class MainFrame extends JFrame
 		}
 
 		// Before we change galleries, ask them if they want to save.
-		int response = saveOnPermission("OK_toSaveBeforeClose");
+		int response = saveOnPermission("OK_toSaveBeforeClose", null);
 
 		if (JOptionPane.CANCEL_OPTION == response) {
 			return;

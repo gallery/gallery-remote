@@ -179,7 +179,9 @@ public class GRApplet extends JApplet {
 		info.gallery.cookieLogin = true;
 
 		CookieModule.discardAllCookies();
-		CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
+		Cookie cookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Adding cookie: " + cookie);
+		CookieModule.addCookie(cookie);
 
 		return info;
 	}

@@ -135,6 +135,7 @@ public abstract class GalleryComm implements PreferenceNames {
 	}
 
 	public void logOut() {
+		Log.log(Log.LEVEL_INFO, MODULE, "Logging out and clearing cookies");
 		isLoggedIn = false;
 		CookieModule.discardAllCookies();
 	}

@@ -14,8 +14,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.border.TitledBorder;
-import java.applet.Applet;
-import java.io.FilePermission;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Arrays;
@@ -26,9 +24,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.net.MalformedURLException;
-
-import HTTPClient.CookieModule;
-import HTTPClient.Cookie;
 
 /**
  * Created by IntelliJ IDEA.
