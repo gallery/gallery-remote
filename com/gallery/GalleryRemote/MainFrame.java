@@ -280,6 +280,15 @@ public class MainFrame extends javax.swing.JFrame
 
         resetUIState();
 
+        // Load a test file
+        if (GalleryRemote.getInstance().properties.getLoadLastMRU()) {
+            String lastMRUFile = GalleryRemote.getInstance().properties.getMRUItem(1);
+
+            if (null != lastMRUFile) {
+                openState(lastMRUFile);
+            }
+        }
+
 		//new UploadProgress();
 	}
 
