@@ -687,6 +687,7 @@ public class MainFrame extends javax.swing.JFrame
 		jScrollPane1.setHorizontalScrollBarPolicy( JScrollPane.HORIZONTAL_SCROLLBAR_NEVER );
 		newGallery.setText("Add Gallery URL");
 		newGallery.setActionCommand("NewGallery");
+		album.setActionCommand("Album");
 		this.getContentPane().add( jPanel1, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
 		jPanel1.add( jLabel1, new GridBagConstraints( 0, 0, 1, 1, 0.0, 0.0
@@ -749,7 +750,10 @@ public class MainFrame extends javax.swing.JFrame
 		jCheckBoxMenuThumbnails.addItemListener( this );
 		jCheckBoxMenuPreview.addItemListener( this );
 		jCheckBoxMenuPath.addItemListener( this );
-		album.addItemListener( this );
+		// in Swing 1.3, using an ItemListenet for a JComboBox doesn't work,
+		// using ActionListener instead
+		//album.addItemListener( this );
+		album.addActionListener( this );
 
 		picturesList.addListSelectionListener( this );
 
@@ -817,6 +821,8 @@ public class MainFrame extends javax.swing.JFrame
 				// new url chosen in the popup
 				updateGalleryParams();
 			}
+		} else if ( command.equals( "Album" ) ) {
+			updatePicturesList( (Album) ( (JComboBox) e.getSource() ).getSelectedItem());
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled command " + command );
 		}
@@ -839,9 +845,9 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( item == jCheckBoxMenuPath ) {
 			GalleryRemote.getInstance().properties.setShowPath( ( e.getStateChange() == ItemEvent.SELECTED ) ? true : false );
 			picturesList.repaint();
-		} else if ( item == album ) {
+		} /*else if ( item == album ) {
 			updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());
-		} else {
+		}*/ else {
 			Log.log(Log.ERROR, MODULE, "Unhandled item state change " + item );
 		}
 	}
