@@ -237,6 +237,12 @@ public class MainFrame extends javax.swing.JFrame
 				username.setEnabled( !mInProgress );
 				password.setEnabled( !mInProgress );
 				
+				if (currentGallery.getComm().isLoggedIn()) {
+					fetch.setText("Log out");
+				} else {
+					fetch.setText("Log in");
+				}
+				
 				// if the selected album is uploading, disable everything
 				boolean enabled = ! mInProgress && mAlbum != null && album.getModel().getSize() >= 1;
 				browse.setEnabled( enabled );
@@ -345,6 +351,7 @@ public class MainFrame extends javax.swing.JFrame
 			picturesList.setModel( mAlbum );
 			mAlbum.setListSelectionModel(picturesList.getSelectionModel());
 			picturesList.getModel().addListDataListener( this );
+			pictureInspector.setPictures( (Object[]) null );
 		}
 	}
 	
@@ -851,7 +858,15 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
-			fetchAlbums();
+			if (currentGallery.getComm().isLoggedIn()) {
+				currentGallery.getComm().logOut();
+				mAlbum.clearPictures();
+				mAlbum = null;
+				
+				resetUIState();
+			} else {
+				fetchAlbums();
+			}
 		} else if ( command.equals( "NewAlbum" ) ) {
 			newAlbum();
 		} else if ( command.equals( "Browse" ) ) {
