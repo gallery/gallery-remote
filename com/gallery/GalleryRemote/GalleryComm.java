@@ -25,7 +25,7 @@ import com.gallery.GalleryRemote.model.*;
 
 import HTTPClient.*;
 
-import java.net.URL;
+import java.net.*;
 
 import java.io.*;
 
@@ -122,7 +122,7 @@ public abstract class GalleryComm {
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
 	}
 	
-	public static GalleryComm getCommInstance(URL url, Gallery g) {
+	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
 			// create a connection	
 			HTTPConnection mConnection = new HTTPConnection( url );
@@ -133,7 +133,7 @@ public abstract class GalleryComm {
 			Log.log(Log.TRACE, MODULE, "Trying protocol 2 for " + url);
 			// Test GalleryComm2
 			String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
-			if (tryComm(mConnection, urlPath2)) {
+			if (tryComm(su, mConnection, urlPath2)) {
 				Log.log(Log.TRACE, MODULE, "Server has protocol 2");
 				return new GalleryComm2(g);
 			}
@@ -141,7 +141,7 @@ public abstract class GalleryComm {
 			Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
 			// Test GalleryComm1
 			String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
-			if (tryComm(mConnection, urlPath1)) {
+			if (tryComm(su, mConnection, urlPath1)) {
 				Log.log(Log.TRACE, MODULE, "Server has protocol 1");
 				return new GalleryComm1(g);
 			}
@@ -152,7 +152,7 @@ public abstract class GalleryComm {
 		return null;
 	}
 	
-	private static boolean tryComm(HTTPConnection mConnection, String urlPath) {
+	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath) {
 		try {
 			HTTPResponse rsp = null;
 			
@@ -165,6 +165,8 @@ public abstract class GalleryComm {
 			}
 			
 			return rsp.getStatusCode() == 200;
+		} catch (UnknownHostException uhe) {
+			su.error("Unknown host: " + mConnection.getHost());
 		} catch (IOException ioe)	{
 			Log.logException(Log.ERROR, MODULE, ioe);
 		} catch (ModuleException me) {

@@ -91,14 +91,14 @@ public class Album extends Picture implements ListModel
 	 *@param  gallery  The new gallery
 	 */
 	public void fetchAlbumProperties( StatusUpdate su ) {
-		if ( ! hasFetchedInfo && getGallery().getComm().hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO))
+		if ( ! hasFetchedInfo && getGallery().getComm( su ).hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO))
 		{
 			if ( su == null ) {
 				su = new StatusUpdateAdapter(){};
 			}
 			
 			try {
-				gallery.getComm().albumInfo( su, this, false );
+				gallery.getComm( su ).albumInfo( su, this, false );
 			} catch (RuntimeException e) {
 				Log.log(Log.INFO, MODULE, "Server probably doesn't support album-info");
 				Log.logException(Log.INFO, MODULE, e);

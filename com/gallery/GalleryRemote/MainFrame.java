@@ -237,7 +237,8 @@ public class MainFrame extends javax.swing.JFrame
 				username.setEnabled( !mInProgress );
 				password.setEnabled( !mInProgress );
 				
-				if (currentGallery.getComm().isLoggedIn()) {
+				GalleryComm cgComm = null;
+				if (currentGallery.getUsername() != null && ((cgComm = currentGallery.getComm(MainFrame.this)) != null) && cgComm.isLoggedIn()) {
 					fetch.setText("Log out");
 				} else {
 					fetch.setText("Log in");
@@ -249,7 +250,7 @@ public class MainFrame extends javax.swing.JFrame
 				pictureInspector.setEnabled( enabled );
 				picturesList.setEnabled( enabled );
 				album.setEnabled( enabled );
-				newAlbum.setEnabled( enabled && currentGallery.getComm().hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+				newAlbum.setEnabled( enabled && currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 				
 				// change image displayed
 				int sel = picturesList.getSelectedIndex();
@@ -860,8 +861,8 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
-			if (currentGallery.getComm().isLoggedIn()) {
-				currentGallery.getComm().logOut();
+			if (currentGallery.getComm(this).isLoggedIn()) {
+				currentGallery.getComm(this).logOut();
 				if (mAlbum != null) {
 					mAlbum.clearPictures();
 				}

@@ -74,20 +74,20 @@ public class Gallery implements ComboBoxModel
 	
 	
 	public void uploadFiles( StatusUpdate su ) {
-		getComm().uploadFiles( su, true );
+		getComm( su ).uploadFiles( su, true );
 	}
 	
 	public void fetchAlbums( StatusUpdate su ) {
 		//albumList = null;
 
-		getComm().fetchAlbums( su, true );
+		getComm( su ).fetchAlbums( su, true );
 	}
 	
 	public void newAlbum( Album a, StatusUpdate su) {
 		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
-		getComm().newAlbum( su, a.getParentAlbum(), a.getName(),
+		getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
 			a.getTitle(), a.getCaption(), false );
 		
 		// refresh album list asynchronously
@@ -352,9 +352,9 @@ public class Gallery implements ComboBoxModel
 	/**
 	 *	Lazy instantiation for the GalleryComm instance.
 	 */
-	public GalleryComm getComm() {
-		if ( comm == null ) {
-			comm = GalleryComm.getCommInstance(url, this);
+	public GalleryComm getComm(StatusUpdate su) {
+		if ( comm == null && url != null ) {
+			comm = GalleryComm.getCommInstance(su, url, this);
 			
 			if (comm == null) {
 				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
