@@ -153,15 +153,15 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
 	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) { }
 	public void dragDropEnd(DragSourceDropEvent dragSourceDropEvent) { }
 	public void dragEnter(DragSourceDragEvent dragSourceDragEvent) {
-		Log.log(Log.TRACE, "DROPLIST","dragEnter - dsde");
+		/*Log.log(Log.TRACE, "DROPLIST","dragEnter - dsde");
 		isDrag = true;
-		lastY = -1;
+		lastY = -1;*/
 	}
 	
 	public void dragExit(DragSourceEvent dragSourceEvent) {
-		Log.log(Log.TRACE, "DROPLIST","dragExit - dse");
+		/*Log.log(Log.TRACE, "DROPLIST","dragExit - dse");
 		isDrag = false;
-		lastY = -1;
+		lastY = -1;*/
 	}
 	
 	public void dragGestureRecognized( DragGestureEvent event) {
@@ -181,7 +181,7 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
 	
 	public void dragOver(DragSourceDragEvent dragSourceDragEvent) {
 		//Log.log(Log.TRACE, "DROPLIST","dragOver - dsde");
-		dragOver((int) dragSourceDragEvent.getLocation().getY());
+		//dragOver((int) dragSourceDragEvent.getLocation().getY());
 	}
 	
 	public void dropActionChanged(DragSourceDragEvent dragSourceDragEvent) { }
