@@ -35,7 +35,7 @@ import com.gallery.GalleryRemote.model.*;
  *@created    August 16, 2002
  */
 public class PictureInspector extends JPanel
-	implements ActionListener
+	implements ActionListener, DocumentListener
 {
 	public static final String MODULE = "PictInspec";
 
@@ -166,8 +166,8 @@ public class PictureInspector extends JPanel
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(2, 0, 0, 0), 0, 0));
 		this.add(jScrollPane1,   new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jScrollPane2,   new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jScrollPane2,   new GridBagConstraints(1, 4, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.NORTH, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		jScrollPane1.getViewport().add(path, null);
 		jScrollPane2.getViewport().add(caption, null);
 		
@@ -178,6 +178,7 @@ public class PictureInspector extends JPanel
 		delete.addActionListener( this );
 		up.addActionListener( this );
 		down.addActionListener( this );
+		caption.getDocument().addDocumentListener( this );
 	}
 
 	// Event handling
@@ -198,6 +199,29 @@ public class PictureInspector extends JPanel
 			mf.movePictureDown();
 		}
 	}
+
+    /**
+     *	Caption JTextArea events.
+     */
+    public void insertUpdate(DocumentEvent e) {
+    	((Picture)pictures[0]).setCaption( caption.getText() );	
+    }
+
+    /**
+     * Caption JTextArea events.
+     */
+    public void removeUpdate(DocumentEvent e) {
+    	((Picture)pictures[0]).setCaption( caption.getText() );	
+    }
+
+    /**
+     * Caption JTextArea events.
+     */
+    public void changedUpdate(DocumentEvent e) {
+    	((Picture)pictures[0]).setCaption( caption.getText() );	
+    }
+
+
 
 	/**
 	 *  Sets the mainFrame attribute of the PictureInspector object
@@ -231,7 +255,12 @@ public class PictureInspector extends JPanel
 			icon.setIcon( ImageUtils.defaultThumbnail );
 			path.setText( "" );
 			album.setText( "" );
+			
+			// TODO: Pierre -- this doesn't seem to get called when the last picture is deleted from the dnd list. -- tim
 			caption.setText( "" );
+			caption.setEditable(false);
+			caption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			
 			size.setText( "" );
 
 			up.setEnabled(false);
@@ -245,6 +274,8 @@ public class PictureInspector extends JPanel
 			path.setText( p.getSource().getParent() );
 			album.setText( p.getAlbum().getTitle() );
 			caption.setText( p.getCaption() );
+			caption.setEditable(true);
+			caption.setBackground(UIManager.getColor("TextField.background"));
 			size.setText( NumberFormat.getInstance().format( 
 				(int) p.getFileSize() ) + " bytes" );
 
@@ -259,6 +290,8 @@ public class PictureInspector extends JPanel
 			path.setText( "" );
 			album.setText( p.getAlbum().getTitle() );
 			caption.setText( "" );
+			caption.setEditable(false);
+			caption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 			size.setText( NumberFormat.getInstance().format(
 				Album.getObjectFileSize(pictures) ) + " bytes" );
 

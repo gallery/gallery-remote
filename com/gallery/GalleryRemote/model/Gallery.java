@@ -21,6 +21,7 @@
 package com.gallery.GalleryRemote.model;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -38,7 +39,7 @@ public class Gallery implements ComboBoxModel
 {
 	public static final String MODULE="Gallery";
 	
-	String url = "http://";
+	URL url = null;
 	String username;
 	String password;
 	ArrayList albumList = null;
@@ -54,7 +55,9 @@ public class Gallery implements ComboBoxModel
 	 */
 	public Gallery() { }
 
-
+	
+	/*TEMPORARY*/ StatusUpdate su;
+	
 	/**
 	 *  Constructor for the Gallery object
 	 *
@@ -62,39 +65,57 @@ public class Gallery implements ComboBoxModel
 	 *@param  username  Description of Parameter
 	 *@param  password  Description of Parameter
 	 */
-	public Gallery( String url, String username, String password ) {
-		setUrl(url);
+	public Gallery( URL url, String username, String password, /*TEMPORARY*/ StatusUpdate su ) {
+		setUrl( url );
 		this.username = username;
 		this.password = password;
+		/*TEMPORARY*/ this.su = su;
 	}
 	
-	public GalleryComm getComm(MainFrame mf) {
-		if (comm == null) {
-			comm = new GalleryComm(mf, this);
-		}
-		
-		return comm;
+	
+	public void uploadFiles( StatusUpdate su ) {
+		getComm().uploadFiles( su );
 	}
-
-
+	
+	public void fetchAlbums( StatusUpdate su ) {
+		albumList = null;
+		/* TEMPORARY */ // getComm().logOut();
+		getComm().fetchAlbums( su );
+	}
+	
 	/**
 	 *  Sets the url attribute of the Gallery object
 	 *
 	 *@param  url  The new url value
 	 */
-	public void setUrl( String url ) {
-		if (!url.endsWith("/")) {
-			url += "/";
+	public void setUrlString( String urlString ) throws MalformedURLException {
+		if ( urlString == null ) {
+			throw new IllegalArgumentException( "urlString must not be null" );
+		}
+	
+		if (!urlString.endsWith("/")) {
+			urlString += "/";
 		}
 		
-		if (!url.startsWith("http://"))
+		if (!urlString.startsWith("http://"))
 		{
-			url = "http://" + url;
+			urlString = "http://" + urlString;
 		}
-
+		
+		this.url = new URL( urlString );
+	}
+	
+	/** 
+	 *
+	 */
+	public void setUrl( URL url ) {
+		if ( url == null ) {
+			throw new IllegalArgumentException( "urlString must not be null" );
+		}
+		
 		this.url = url;
 	}
-
+	
 
 	/**
 	 *  Sets the username attribute of the Gallery object
@@ -120,29 +141,41 @@ public class Gallery implements ComboBoxModel
 	 *  Sets the albumList attribute of the Gallery object
 	 *
 	 *@param  albumList  The new albumList value
+	 *@deprecated
 	 */
 	public void setAlbumList( ArrayList albumList ) {
-		if (albumList == null) {
-			this.albumList = null;
-			return;
+		if ( albumList == null ) {
+			throw new IllegalArgumentException( "Must supply non-null album list." );
+		}
+		this.albumList = albumList;
+		if ( albumList.size() > 0 ) {
+			selectedAlbum = (Album) this.albumList.get(0);
 		}
 		
-		//this.albumList = albumList;
-		ArrayList buf = new ArrayList(albumList.size());
-		
-		Iterator iter = albumList.iterator();
-		while (iter.hasNext()) {
-			Hashtable h = (Hashtable) iter.next();
-			Album a = new Album();
-			a.setName((String) h.get( "name" ));
-			a.setTitle((String) h.get( "title" ));
-			a.setGallery(this);
-			
-			buf.add(a);
+		notifyListeners();
+	}
+	
+	/**
+	 * Adds an album to the gallery and selects the first one added.
+	 */
+	public synchronized void addAlbum( Album a ) {
+		if ( a == null ) {
+			throw new IllegalArgumentException( "Must supply non-null album." );
 		}
 		
-		this.albumList = buf;
-		if ( buf.size() > 0 ) {
+		// when the first album becomes available, make sure to select
+		// it in the list
+		boolean firstAlbum = false;
+		
+		// lazy allocation
+		if ( this.albumList == null ) {
+			this.albumList = new ArrayList();
+			firstAlbum = true;
+		}
+		
+		albumList.add( a );
+		
+		if ( firstAlbum ) {
 			selectedAlbum = (Album) this.albumList.get(0);
 		}
 		
@@ -155,7 +188,17 @@ public class Gallery implements ComboBoxModel
 	 *
 	 *@return    The url value
 	 */
-	public String getUrl() {
+	public String getUrlString() {
+		return url.toString();
+	}
+
+
+	/**
+	 *  Gets the url attribute of the Gallery object
+	 *
+	 *@return    The url value
+	 */
+	public URL getUrl() {
 		return url;
 	}
 
@@ -209,7 +252,7 @@ public class Gallery implements ComboBoxModel
 	 *@return    Description of the Returned Value
 	 */
 	public String toString() {
-		return url;
+		return url.toString();
 	}
 
 	public Album getSelectedAlbum() {
@@ -251,6 +294,26 @@ public class Gallery implements ComboBoxModel
 	}
 
 
+	/**
+	 *	Lazy instantiation for the GalleryComm instance.
+	 */
+	GalleryComm getComm() {
+		
+		/* TEMPORARY
+		 * 
+		 * CHOOSE HERE WHETHER YOU WANT TO USE GR PROTO VERSION 1
+		 * OR VERSION 2 BY INSTANTIATING THE CORRECT GALLERYCOMM
+		 * IMPLEMENTATION (EITHER GalleryComm1 or GalleryComm2).
+		 *
+		 */
+		if ( comm == null ) {
+			//comm = new GalleryComm1( su, this );
+			comm = new GalleryComm2( this );
+		}
+		
+		return comm;
+	}
+	
 	void notifyListeners() {
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
 		

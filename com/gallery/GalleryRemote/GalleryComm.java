@@ -21,320 +21,48 @@
 
 package com.gallery.GalleryRemote;
 
-import HTTPClient.*;
-import java.util.*;
-import java.io.*;
-import java.net.*;
-import javax.swing.*;
 import com.gallery.GalleryRemote.model.*;
 
-public class GalleryComm {
-	private static final String MODULE = "GalleryCom";
-	
-	private static final String PROTOCAL_VERSION = "1";
-	private static final String SCRIPT_NAME = "gallery_remote.php";
+/**
+ *	This interface is a temporary mechanism to let us use version
+ *	1 and 2 of the protocol by changing a little code -- a replacement for
+ *	this is under development that will allow a GalleryRemote client
+ *	to automatically determine what protocol it should use given
+ *	a Gallery and to use the appropriate implementation.
+ *	
+ *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
+ */
+public interface GalleryComm {
 
-	/*private String mURLString = null;
-	private String mUsername = null;
-	private String mPassword = null;
-	private String mAlbum = null;
+	/**
+	 *	Causes the GalleryComm instance to upload the pictures in the
+	 *	associated Gallery to the server.
+	 *	
+	 *	@param su an instance that implements the StatusUpdate interface.
+	 */
+	public void uploadFiles( StatusUpdate su );
 	
-	private ArrayList mFileList;
-	private ArrayList mAlbumList;
+	/**
+	 *	Causes the GalleryComm instance to fetch the albums contained by
+	 *	associated Gallery from the server.
+	 *	
+	 *	@param su an instance that implements the StatusUpdate interface.
+	 */
+	public void fetchAlbums( StatusUpdate su );
 	
-	private String mStatus;
-	private int mUploadedCount;
+	/**
+	 *	Causes the GalleryComm instance to fetch the album properties
+	 *	for the given Album.
+	 *	
+	 *	@param su an instance that implements the StatusUpdate interface.
+	 */
+	public void albumInfo( StatusUpdate su, Album a );
 	
-	private boolean mDone = false;*/
-	
-	MainFrame mf;
-	protected boolean isLoggedIn = false;
-	protected Gallery g = null;
-	int pId = -1;
-	
-	static {
-		//-- our policy handler accepts all cookies ---
-		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
-			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
-				return true;
-			}
-			public boolean sendCookie(Cookie cookie, RoRequest req) {
-				return true;
-			}
-		});
-	}
-	
-	public GalleryComm(MainFrame mf, Gallery g) {
-		this.mf = mf;
-		this.g = g;
-	}
-	
-	public void uploadFiles() {
-		Thread t = new Thread(new UploadTask());
-		t.start();
-	}
-
-	public void fetchAlbums() {
-		Thread t = new Thread(new AlbumListTask());
-		t.start();
-	}
-	
-	//-------------------------------------------------------------------------
-	//-- GalleryTask
-	//-------------------------------------------------------------------------	
-	abstract class GalleryTask implements Runnable {
-		HTTPConnection mConnection;
-		
-		boolean interrupt = false;
-		
-		public void run() {
-			mf.setInProgress(true);
-			if ( ! isLoggedIn ) {
-				if ( !login() ) {
-					mf.setInProgress(false);
-					return;
-				}
-				
-				isLoggedIn = true;
-			} else {
-				Log.log(Log.TRACE, MODULE, "Still logged in to " + g.toString());
-			}
-			
-			runTask();
-			mf.setInProgress(false);
-		}
-		
-		public void interrupt() {
-			interrupt = true;
-		}
-		
-		abstract void runTask();
-
-		private boolean login() {
-			status("Logging in to " + g.toString());
-			
-			try	{
-				URL url = new URL(g.getUrl());
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
-				
-				NVPair form_data[] = {
-					new NVPair("cmd", "login"),
-					new NVPair("protocal_version", PROTOCAL_VERSION),
-					new NVPair("uname", g.getUsername()),
-					new NVPair("password", g.getPassword())
-				};
-				Log.log(Log.TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
-				
-				HTTPConnection mConnection = new HTTPConnection(url);
-				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
-				
-				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
-					
-					rsp = mConnection.Post(urlPath, form_data);
-				}
-				
-				if (rsp.getStatusCode() >= 300)	{
-					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
-					return false;
-				} else {
-					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
-					
-					if (response.indexOf("SUCCESS") >= 0) {
-						status("Logged in");
-						return true;
-					} else {
-						error("Login Error: " + response);
-						return false;
-					}
-				}
-			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
-				status("Error: " + ioe.toString());
-			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
-				status("Error handling request: " + me.getMessage());
-			}
-	
-			return false;
-		}
-	}
-	
-	class UploadTask extends GalleryTask {		
-		void runTask() {
-			ArrayList pictures = g.getAllPictures();
-			
-			pId = mf.startProgress(0, pictures.size(), "Uploading pictures");
-			
-			// upload each file, one at a time
-			boolean allGood = true;
-			int uploadedCount = 0;
-			Iterator iter = pictures.iterator();
-			while (iter.hasNext() && allGood && !interrupt) {
-				Picture p = (Picture) iter.next();
-				
-				mf.updateProgressStatus(pId, "Uploading " + p.toString()
-					+ " (" + (uploadedCount + 1) + "/" + pictures.size() + ")");
-				
-				allGood = uploadPicture(p);
-				
-				mf.updateProgressValue(pId, uploadedCount++);
-				
-				p.getAlbum().removePicture(p);
-			}
-			
-			if (allGood) {
-				mf.stopProgress(pId, "Upload complete");
-			} else {
-				mf.stopProgress(pId, "Upload failed");
-			}
-			
-			pId = -1;
-		}
-
-		boolean uploadPicture(Picture p) {
-			try	{
-				URL url = new URL(g.getUrl());
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
-			
-				NVPair[] opts = {
-					new NVPair("set_albumName", p.getAlbum().getName()),
-					new NVPair("cmd", "add-item"), 
-					new NVPair("protocal_version", PROTOCAL_VERSION)
-				};
-				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
-	
-				NVPair[] afile = { new NVPair("userfile", p.getUploadSource().getAbsolutePath()) };
-				NVPair[] hdrs = new NVPair[1];
-				byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
-				HTTPConnection mConnection = new HTTPConnection(url);
-				HTTPResponse rsp = mConnection.Post(urlPath, data, hdrs);
-				
-				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
-					
-					rsp = mConnection.Post(urlPath, data, hdrs);
-				}
-								
-				if (rsp.getStatusCode() >= 300)	{
-					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
-					return false;
-				} else {
-					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
-	
-					if (response.indexOf("SUCCESS") >= 0) {
-						trace("Upload successful");
-						return true;
-					} else {
-						error("Upload Error: " + response);
-						return false;
-					}
-				}
-			} catch (IOException ioe)	{
-				Log.logException(Log.ERROR, MODULE, ioe);
-				error("Error: " + ioe.toString());
-			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
-				error("Error handling request: " + me.getMessage());
-			}		
-			
-			return false;
-		}
-	}
-	
-	class AlbumListTask extends GalleryTask {
-		void runTask() {
-			status("Fetching albums from " + g.toString());
-			
-			try {
-				URL url = new URL(g.getUrl());
-				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
-				
-				NVPair form_data[] = {
-					new NVPair("cmd", "fetch-albums"),
-					new NVPair("protocal_version", PROTOCAL_VERSION),
-					new NVPair("uname", g.getUsername()),
-					new NVPair("password", g.getPassword())
-				};
-				Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
-				
-				mConnection = new HTTPConnection(url);
-				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
-				
-				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-					// retry, the library will have fixed the URL
-					status("Received redirect, following...");
-					
-					rsp = mConnection.Post(urlPath, form_data);
-				}
-				
-				if (rsp.getStatusCode() >= 300)	{
-					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
-					return;
-				} else {
-					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
-	
-					if (response.indexOf("SUCCESS") >= 0) {
-						ArrayList mAlbumList = new ArrayList();
-						
-						// build the list of hashtables here...
-						StringTokenizer lineT = new StringTokenizer(response, "\n");
-						while (lineT.hasMoreTokens()) {
-							StringTokenizer colT = new StringTokenizer(lineT.nextToken(), "\t");
-							Hashtable h = new Hashtable();
-							if (colT.countTokens() == 2) {
-								h.put("name", URLDecoder.decode(colT.nextToken()));
-								h.put("title", URLDecoder.decode(colT.nextToken()));
-								mAlbumList.add(h);
-							}
-						}
-						
-						status("Fetched albums");
-						
-						g.setAlbumList(mAlbumList);
-					} else {
-						error("Error: " + response);
-					}
-				}
-			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
-				status("Error: " + ioe.toString());
-			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
-				status("Error: " + me.toString());
-			} catch (Exception ee) {
-				Log.logException(Log.ERROR, MODULE, ee);
-				status("Error: " + ee.toString());
-			}
-		}
-	}
-
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	void status(String message) {
-		Log.log(Log.INFO, MODULE, message);
-		if (pId != -1) {
-			mf.setStatus(message);
-		} else {
-			mf.updateProgressStatus(pId, message);
-		}
-	}
-	
-	void error(String message) {
-		JOptionPane.showMessageDialog(mf, message, "Error", JOptionPane.ERROR_MESSAGE); 
-		status(message);
-	}
-	
-	void trace(String message) {
-		Log.log(Log.TRACE, MODULE, message);
-	}
+	/**
+	 *	Causes the GalleryComm instance to fetch the album properties
+	 *	for the given Album.
+	 *	
+	 *	@param su an instance that implements the StatusUpdate interface.
+	 */
+	public void logOut();
 }

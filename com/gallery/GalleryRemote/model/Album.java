@@ -36,20 +36,76 @@ import com.gallery.GalleryRemote.*;
 
 public class Album extends Picture implements ListModel
 {
+	/* -------------------------------------------------------------------------
+	 * CONSTANTS
+	 */
 	public static final String MODULE="Album";
 	
+
+	/* -------------------------------------------------------------------------
+	 * LOCAL STORAGE
+	 */
 	Vector pictures = new Vector();
+
+	
+	/* -------------------------------------------------------------------------
+	 * SERVER INFO
+	 */
+	Gallery gallery = null;
+	Album parent; // parent Album
 	String title = "Not yet connected to Gallery";
 	String name;
-	String url;
-	String username;
-	String password;
+	int autoResize = 0;
+	// permissions -- default to true for the sake of old protocols ...
+	boolean canRead = true;
+	boolean canAdd = true;
+	boolean canWrite = true;
+	boolean canDeleteFrom = true;
+	boolean canDeleteThisAlbum = true;
+	boolean canCreateSubAlbum = true;
+	
+	
+	/* -------------------------------------------------------------------------
+	 * INSTANCE VARIABLES
+	 */ 
 	long pictureFileSize = -1;
-	Gallery gallery = null;
-
+	
 	// ListModel
 	Vector listeners = new Vector( 1 );
 
+
+	/* -------------------------------------------------------------------------
+	 * PUBLIC CLASS METHODS
+	 */
+	 
+	 	
+	/**
+	 *  Retrieves the album properties from the server.
+	 *
+	 *@param  gallery  The new gallery
+	 */
+	public void getAlbumProperties( StatusUpdate su ) {
+		gallery.getComm().albumInfo( su, this );
+	}
+	
+	/**
+	 *  Sets the server auto resize dimension.
+	 *
+	 *@param  autoResize  the server's resize dimension
+	 */
+	public void setServerAutoResize( int autoResize ) {
+		this.autoResize = autoResize;
+	}
+	
+	/**
+	 *  Gets the server auto resize dimension.
+	 *
+	 *@return    the server's resize dimension for this album
+	 */
+	public int getServerAutoResize() {
+		return autoResize;
+	}
+	
 	/**
 	 *  Sets the gallery attribute of the Album object
 	 *
@@ -58,7 +114,6 @@ public class Album extends Picture implements ListModel
 	public void setGallery( Gallery gallery ) {
 		this.gallery = gallery;
 	}
-
 
 	/**
 	 *  Gets the gallery attribute of the Album object
@@ -69,7 +124,6 @@ public class Album extends Picture implements ListModel
 		return gallery;
 	}
 
-
 	/**
 	 *  Gets the pictures inside the album
 	 *
@@ -78,12 +132,7 @@ public class Album extends Picture implements ListModel
 	public Enumeration getPictures() {
 		return pictures.elements();
 	}
-
-	Vector getPicturesVector() {
-		return pictures;
-	}
-
-
+	
 	/**
 	 *  Adds a picture to the album
 	 *
@@ -95,7 +144,6 @@ public class Album extends Picture implements ListModel
 
 		notifyListeners();
 	}
-
 
 	/**
 	 *  Adds a picture to the album
@@ -110,8 +158,7 @@ public class Album extends Picture implements ListModel
 		notifyListeners();
 	}
 
-
-/**
+	/**
 	 *  Adds pictures to the album
 	 *
 	 *@param  files  the files to create the pictures from
@@ -120,8 +167,7 @@ public class Album extends Picture implements ListModel
 		this.addPictures(files, 0);
 	}
         
-        
-        /**
+    /**
 	 *  Adds pictures to the album at a specified index
 	 *
 	 *@param  files  the files to create the pictures from
@@ -137,7 +183,6 @@ public class Album extends Picture implements ListModel
 		notifyListeners();
 	}
 
-
 	/**
 	 *  Number of pictures in the album
 	 *
@@ -147,7 +192,6 @@ public class Album extends Picture implements ListModel
 		return pictures.size();
 	}
 
-
 	/**
 	 *  Remove all the pictures
 	 */
@@ -156,7 +200,6 @@ public class Album extends Picture implements ListModel
 
 		notifyListeners();
 	}
-
 
 	/**
 	 *  Remove a picture
@@ -170,11 +213,9 @@ public class Album extends Picture implements ListModel
 		notifyListeners(lde);
 	}
 
-
 	public void removePicture( Picture p ) {
 		removePicture(pictures.indexOf(p));
 	}
-
 
 	/**
 	 *  Remove pictures
@@ -194,7 +235,6 @@ public class Album extends Picture implements ListModel
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, min, max );
 		notifyListeners(lde);
 	}
-
 
 	/**
 	 *  Get a picture from the album
@@ -219,7 +259,6 @@ public class Album extends Picture implements ListModel
 		notifyListeners();
 	}
 
-
 	/**
 	 *  Get the list of files that contain the pictures
 	 *
@@ -236,7 +275,6 @@ public class Album extends Picture implements ListModel
 		return l;
 	}
 
-
 	/**
 	 *  Sets the name attribute of the Album object
 	 *
@@ -246,16 +284,14 @@ public class Album extends Picture implements ListModel
 		this.name = name;
 	}
 
-
 	/**
 	 *  Gets the name attribute of the Album object
 	 *
 	 *@return    The name value
 	 */
 	public String getName() {
-		return name;
+		return name;	
 	}
-
 
 	/**
 	 *  Sets the title attribute of the Album object
@@ -266,7 +302,6 @@ public class Album extends Picture implements ListModel
 		this.title = title;
 	}
 
-
 	/**
 	 *  Gets the title attribute of the Album object
 	 *
@@ -275,7 +310,6 @@ public class Album extends Picture implements ListModel
 	public String getTitle() {
 		return title;
 	}
-
 
 	/**
 	 *  Gets the aggregated file size of all the pictures in the album
@@ -290,7 +324,6 @@ public class Album extends Picture implements ListModel
 		return pictureFileSize;
 	}
 
-
 	/**
 	 *  Gets the aggregated file size of a list of pictures
 	 *
@@ -300,7 +333,6 @@ public class Album extends Picture implements ListModel
 	public static long getPictureFileSize( Picture[] pictures ) {
 		return getObjectFileSize( pictures );
 	}
-
 
 	/**
 	 *  Gets the aggregated file size of a list of pictures Unsafe, the Objects
@@ -320,17 +352,30 @@ public class Album extends Picture implements ListModel
 	}
 	
 	public String toString() {
+		
+		StringBuffer ret = new StringBuffer();
+		ret.append( indentHelper("") );
+		ret.append( title );
+		
 		if (pictures.size() != 0) {
-			return title + " (" + pictures.size() + ")";
-		} else {
-			return title;
+			ret.append( " (" + pictures.size() + ")" );
 		}
+		
+		// using canAdd here, since that's the only operation we perform 
+		// currently.  eventually, when we start changing things
+		// on the server, permission support will get more ... interesting.
+		if ( ! canAdd ) {
+			ret.append( " (read-only)" );	
+		}
+		
+		return ret.toString();
 	}
-
-
-	/*
-	 *	ListModel Implementation
+	
+	
+	/* -------------------------------------------------------------------------
+	 *ListModel Implementation
 	 */
+	 
 	/**
 	 *  Gets the size attribute of the Album object
 	 *
@@ -339,7 +384,6 @@ public class Album extends Picture implements ListModel
 	public int getSize() {
 		return pictures.size();
 	}
-
 
 	/**
 	 *  Gets the elementAt attribute of the Album object
@@ -351,7 +395,6 @@ public class Album extends Picture implements ListModel
 		return pictures.elementAt( index );
 	}
 
-
 	/**
 	 *  Adds a feature to the ListDataListener attribute of the Album object
 	 *
@@ -360,7 +403,6 @@ public class Album extends Picture implements ListModel
 	public void addListDataListener( ListDataListener ldl ) {
 		listeners.addElement( ldl );
 	}
-
 
 	/**
 	 *  Description of the Method
@@ -371,7 +413,93 @@ public class Album extends Picture implements ListModel
 		listeners.removeElement( ldl );
 	}
 
+	/**
+	 *  Description of the Method
+	 *
+	 *@param  ldl  Description of Parameter
+	 */
+	public Album getParentAlbum() {
+		return parent;	
+	}
+	
+	/**
+	 *  Description of the Method
+	 *
+	 *@param  ldl  Description of Parameter
+	 */
+	public void setParentAlbum( Album a ) {
+		parent = a;
+	}
+	
+	public void setCanRead( boolean b ){
+		canRead = b;
+	}
+	public boolean getCanRead(){
+		return canRead;
+	}
+	
+	public void setCanAdd( boolean b ){
+		canAdd = b;
+	}
+	public boolean getCanAdd(){
+		return canAdd;
+	}
+	
+	
+	public void setCanWrite( boolean b ){
+		canWrite = b;
+	}
+	public boolean getCanWrite(){
+		return canWrite;
+	}
+	
+	
+	public void setCanDeleteFrom( boolean b ){
+		canDeleteFrom = b;
+	}
+	public boolean getCanDeleteFrom(){
+		return canDeleteFrom;
+	}
+	
+	
+	public void setCanDeleteThisAlbum( boolean b ){
+		canDeleteThisAlbum = b;
+	}
+	public boolean getCanDeleteThisAlbum(){
+		return canDeleteThisAlbum;
+	}
+	
+	
+	public void setCanCreateSubAlbum( boolean b ){
+		canCreateSubAlbum = b;
+	}
+	public boolean getCanCreateSubAlbum(){
+		return canCreateSubAlbum;
+	}
+	
 
+
+	
+	/* -------------------------------------------------------------------------
+	 *NON-PUBLIC INSTANCE METHODS
+	 */
+	 
+	/**
+	 *	Package access to get the whole picture vector at once.
+	 */
+	Vector getPicturesVector() {
+		return pictures;
+	}
+	
+	public static final String INDENT_QUANTUM = "     ";
+	String indentHelper( String indent ) {
+		if ( getParentAlbum() != null ) {
+			return getParentAlbum().indentHelper( indent + INDENT_QUANTUM );
+		} else {
+			return indent;
+		}
+	}
+	
 	void notifyListeners() {
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, pictures.size() );
 		

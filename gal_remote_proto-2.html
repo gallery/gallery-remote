@@ -207,25 +207,41 @@ server was able to complete the command in the client's request, the value of th
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status=</samp><em>result-code</em><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>status_text=</samp><em>explanatory-text</em><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/<samp>album.name.</samp><em>ref-num</em><samp>=</samp><em>album-url-name</em><br>
-0...<em>n</em> |<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-ref-num</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.title.</samp><em>ref-num</em><samp>=</samp><em>album-display-name</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.parent.</samp><em>ref-num</em><samp>=</samp><em>parent-ref-num</em><br>
+0...<em>n</em> |<samp>album.perms.add.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.write.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_item.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<samp>album.perms.del_alb.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\<samp>album.perms.create_sub.</samp><em>ref-num</em><samp>=</samp><em>boolean</em><br>
+
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<samp>album_count=</samp><em>number-of-albums</em>
 		</p>
 		
         <p>If the <em>result-code</em> is equal to <a href="#appendix_a">GR_STAT_SUCCESS</a>, the album data was fetched successfully</p>
         <p>If successful, a response to the <samp>fetch-albums</samp> command 
-          returns three keys for each album in the gallery, where</p>
+          returns several keys for each album in the gallery, where</p>
           
           <ul>
           	<li><em>ref-num</em> is a reference number,</li>
           	<li><em>album-url-name</em> is the name of the partial URL for the gallery,</li>
           	<li><em>album-display-name</em> is the gallery's visual name,</li>
-          	<li>and <em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
+          	<li><em>parent-ref-num</em> refers to some other album's <em>ref-num</em>.</li>
+          	<li>and <em>boolean</em> represents a boolean value.  <samp>true</samp> is considered true, any other value false.</li>
           </ul>
-          <p>A <em>parent-ref-num</em> of <samp>0</samp> indicates that the album is a "top-level" album (it has no parent).
+          <p>A <em>parent-ref-num</em> of <samp>0</samp> (zero) indicates that the album is a "top-level" album (it has no parent).
         </p>
-          <p>The number of albums in the response is returned as
-<em>number-of-albums</em>.</p>
+          <p>Several "permissions" are reported for each album.  The reported permissions are the <em>effective</em>
+          permissions of the currently logged in user.</p>
+          <ul>
+          	<li>the <em>add</em> permission allows the user to add a picture to the album.</li>
+          	<li>the <em>write</em> permission allows the user to add and change pictures in the album.</li>
+          	<li>the <em>del_item</em> permission allows the user remove pictures from the album.</li>
+          	<li>the <em>del_alb</em> permission allows the user to delete the album.</li>
+          	<li>the <em>create_sub</em> permission allows the user to create nested albums in the album.</li>
+          </ul>
+          <p>The number of albums in the response is returned as <em>number-of-albums</em>.</p>
       </li>
     </ul>
   </li>

@@ -27,6 +27,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.text.*;
 import java.util.*;
 import javax.swing.*;
@@ -43,7 +44,7 @@ import javax.swing.event.*;
  */
 public class MainFrame extends javax.swing.JFrame
 		 implements ActionListener, ItemListener, ListSelectionListener,
-		 ListDataListener, CaretListener
+		 ListDataListener, CaretListener, StatusUpdate
 {
 	public static final String MODULE = "MainFrame";
 
@@ -53,7 +54,6 @@ public class MainFrame extends javax.swing.JFrame
 
 	boolean dontReselect = false;
 
-	//private GalleryComm mGalleryComm;
 	private DefaultComboBoxModel galleries = null;
 	private Gallery currentGallery = null;
 	private Album mAlbum = null;
@@ -105,7 +105,6 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Constructor for the MainFrame object
 	 */
 	public MainFrame() {
-		//mGalleryComm = new GalleryComm();
 
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 
@@ -119,7 +118,7 @@ public class MainFrame extends javax.swing.JFrame
 	
 				Log.log(Log.INFO, MODULE, "loaded saved URL: " + url + " (" + username + "/******)" );
 	
-				Gallery g = new Gallery(url, username, password);
+				Gallery g = new Gallery( new URL( url ), username, password, /* TEMPORARY */this);
 	
 				galleries.addElement(g);
 			} catch (Exception e) {
@@ -189,7 +188,7 @@ public class MainFrame extends javax.swing.JFrame
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 		for (int i = 0; i < galleries.getSize(); i++) {
 			Gallery g = (Gallery) galleries.getElementAt(i);
-			p.setProperty( "url." + i, g.getUrl() );
+			p.setProperty( "url." + i, g.getUrlString() );
 			
 			if (g.getUsername() != null) {
 				p.setProperty( "username." + i, g.getUsername() );
@@ -425,7 +424,11 @@ public class MainFrame extends javax.swing.JFrame
 		
 		resetUIState();
 	}
-
+	
+	
+	public void error (String message ) {
+		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+	}
 
 	/**
 	 *  Open a file selection dialog and load the corresponding files
@@ -492,7 +495,7 @@ public class MainFrame extends javax.swing.JFrame
 	public void uploadPictures() {
 		Log.log(Log.INFO, MODULE, "uploadPictures starting");
 		
-		currentGallery.getComm(this).uploadFiles();
+		currentGallery.uploadFiles( this );
 	}
 
 
@@ -502,7 +505,7 @@ public class MainFrame extends javax.swing.JFrame
 	public void fetchAlbums() {
 		Log.log(Log.INFO, MODULE, "fetchAlbums starting");
 		
-		currentGallery.getComm(this).fetchAlbums();
+		currentGallery.fetchAlbums( this );
 	}
 
 
@@ -816,7 +819,12 @@ public class MainFrame extends javax.swing.JFrame
 			
 			if (gallery.getSelectedItem() instanceof String) {
 				// text of a url edited
-				currentGallery.setUrl((String) gallery.getSelectedItem());
+				try {
+					currentGallery.setUrlString((String) gallery.getSelectedItem());
+				} catch ( MalformedURLException mue ) {
+					
+					JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
+				}
 			} else {
 				// new url chosen in the popup
 				updateGalleryParams();

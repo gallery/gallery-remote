@@ -1,3 +1,29 @@
+2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (still 1.0-b8)
+	
+	* NOTE: GR CAN BE RUN IN GR PROTO 2 MODE BY CHANGING THE 
+	  getComm() METHOD IN Gallery.java.  NO GUARANTEES ON HOW WELL
+	  PROTO 1 IS WORKING RIGHT NOW. THIS WILL ALL PAN OUT WITH THE
+	  NEXT CHECKIN -- GR WILL DYNAMICALLY BIND TO THE NEWEST SERVER
+	  PROTOCOL. FOR NOW, CAVEAT EMPTOR.
+	* Made GalleryComm and interface, moved GalleryComm implementation to
+	  GalleryComm1.java.
+	* Created GalleryComm2.java, based on GalleryComm1.java to implement
+	  version 2 of the GR protocol.
+	* Moved status interaction between GalleryComm classes and MainFrame
+	  to an interface (StatusUpdate).
+	* Created a Swing-style adapter for StatusUpdate (StatusUpdateAdapter).
+	* Changed several classes to use the URL type instead of passing URLs
+	  around as Strings.
+	* Added ability in PictureInspector to edit picture comments (since this is
+	  supported in version 2 of the protocol).
+	* Added permission support to the Album model object.
+	* Added support for Albums actually being in a tree (this is supported
+	  by proto version 2.
+	* Added comments in several files.
+	* Updated Gallery Remote proto version 2 document to describe
+	  user permission attributes (read, write, change, delete) on 
+	  Album objects.
+
 2002-10-03  Pierre-Luc Paour <gallery@paour.com> (1.0-b8)
 	
 	* Fixed another Java 1.3 bug where the Album combo box was not working
