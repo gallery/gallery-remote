@@ -206,7 +206,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 				a.setParentAlbum(selectedAlbum);
 			}
 			
-			gallery.newAlbum(a, (StatusUpdate) this.getOwner());
+			gallery.newAlbum(a, ((MainFrame) this.getOwner()).jStatusBar);
 			
 			setVisible(false);
 		}
