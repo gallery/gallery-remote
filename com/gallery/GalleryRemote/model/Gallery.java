@@ -182,7 +182,6 @@ public class Gallery implements ComboBoxModel
 			selectedAlbum = (Album) this.albumList.get(0);
 		}
 		if (oldList != null) {
-		Log.log(Log.TRACE, MODULE, "oldList " + oldList.toString());
 			for (Iterator i = oldList.iterator(); i.hasNext(); ) {
 				Album a = (Album) i.next();
 				
