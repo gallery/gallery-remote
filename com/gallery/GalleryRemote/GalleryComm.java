@@ -116,7 +116,7 @@ public class GalleryComm {
 			try	{
 				URL url = new URL(g.getUrl());
 				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "login"),
@@ -199,7 +199,7 @@ public class GalleryComm {
 			try	{
 				URL url = new URL(g.getUrl());
 				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
 			
 				NVPair[] opts = {
 					new NVPair("set_albumName", p.getAlbum().getName()),
@@ -255,7 +255,7 @@ public class GalleryComm {
 			try {
 				URL url = new URL(g.getUrl());
 				String urlPath = url.getFile() + SCRIPT_NAME;
-				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "fetch-albums"),
