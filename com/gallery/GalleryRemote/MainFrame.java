@@ -57,7 +57,8 @@ public class MainFrame extends javax.swing.JFrame
 	private DefaultComboBoxModel galleries = null;
 	//private DefaultComboBoxModel albums = null;
 	private Gallery currentGallery = null;
-	private Album mAlbum;
+	private Album mAlbum = null;
+	private Album mAlbumInProgress = null;
 	private boolean mInProgress = false;
 	private javax.swing.Timer mTimer;
 	private boolean progressOn = false;
@@ -110,7 +111,6 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public MainFrame() {
 		mGalleryComm = new GalleryComm();
-		mAlbum = new Album();
 
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 
@@ -120,7 +120,6 @@ public class MainFrame extends javax.swing.JFrame
 			ImageUtils.THUMB );
 
 		galleries = new DefaultComboBoxModel();
-		//albums = new DefaultComboBoxModel();
 		int i = -1;
 		String url;
 		while ( ( url = p.getProperty( "url." + (++i) ) ) != null ) {
@@ -163,9 +162,7 @@ public class MainFrame extends javax.swing.JFrame
 		setJMenuBar( jMenuBar1 );
 		setTitle( "Gallery Remote" );
 
-		picturesList.setModel( mAlbum );
 		picturesList.setCellRenderer( new FileCellRenderer() );
-		picturesList.getModel().addListDataListener( this );
 		( (DroppableList) picturesList ).setMainFrame( this );
 
 		pictureInspector.setMainFrame( this );
@@ -232,14 +229,30 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	void resetUIState() {
-		//-- if the list is empty, disable the Upload ---
-		upload.setEnabled( ( mAlbum.sizePictures() > 0 ) &&
-				!mInProgress &&
-				( album.getSelectedIndex() >= 0 ) );
-		browse.setEnabled( !mInProgress );
+		// if the list is empty or comm, disable upload
+		upload.setEnabled( mAlbum != null
+			&& mAlbum.sizePictures() > 0 
+			&& !mInProgress
+			&& album.getSelectedIndex() >= 0 );
+		
+		// during comm, don't change Gallery or do any other comm
 		fetch.setEnabled( !mInProgress );
+		gallery.setEnabled( !mInProgress );
+		newGallery.setEnabled( !mInProgress );
+		album.setEnabled( !mInProgress );
+		username.setEnabled( !mInProgress );
+		password.setEnabled( !mInProgress );
+		
+		// if the selected album is uploading, disable everything
+		browse.setEnabled( ! mInProgress && mAlbum != null);
+		pictureInspector.setEnabled( ! mInProgress && mAlbum != null);
+		picturesList.setEnabled( ! mInProgress && mAlbum != null);
+		
+		if ( mAlbum == null) {
+			pictureInspector.setPictures( (Object[]) null );
 
-		if ( mAlbum.sizePictures() > 0 ) {
+			setStatus( "Select a Gallery URL and click Fetch Albums..." );
+		} else if ( mAlbum.sizePictures() > 0 ) {
 			pictureInspector.setPictures( picturesList.getSelectedValues() );
 
 			int sel = picturesList.getSelectedIndex();
@@ -285,25 +298,42 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	private void updateAlbumCombo() {
-		album.setModel(currentGallery);
+		album.setModel( currentGallery );
 		
-		/*if (currentGallery.getAlbumList() != null) {
-			Iterator iter = currentGallery.getAlbumList().iterator();
-			while ( iter.hasNext() ) {
-				Hashtable h = (Hashtable) iter.next();
-				album.addItem( (String) h.get( "title" ) );
-			}
-		}*/
+		if (album.getModel().getSize() < 1) {
+			album.setEnabled( false );
+			picturesList.setEnabled( false );
+			
+			updatePicturesList( null );
+		} else {
+			// album.setSelectedIndex(0);
+			album.setEnabled( ! mInProgress );
+		
+			updatePicturesList( (Album) album.getSelectedItem() );
+		}
 	}
 
-
+	
+	private void updatePicturesList( Album album ) {
+		mAlbum = album;
+		
+		if (mAlbum == null) {
+			// fake empty album to clear the list
+			picturesList.setModel( new Album() );
+		} else {
+			picturesList.setModel( mAlbum );
+			picturesList.getModel().addListDataListener( this );
+		}
+	}
+	
+	
 	public void setStatus( String message ) {
 		if (! progressOn) {
 			// prevent progress message from being overriden
 			status.setText( message );
 		} else {
-			Log.log(Log.ERROR, MODULE, "Trying to override progress with status");
-			Log.logStack(Log.ERROR, MODULE);
+			//Log.log(Log.ERROR, MODULE, "Trying to override progress with status");
+			//Log.logStack(Log.ERROR, MODULE);
 		}
 	}
 
@@ -330,8 +360,8 @@ public class MainFrame extends javax.swing.JFrame
 		if (progressOn && progressId == this.progressId) {
 			progress.setValue( value );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
-			Log.logStack(Log.TRACE, MODULE);
+			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
+			//Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 
@@ -340,8 +370,8 @@ public class MainFrame extends javax.swing.JFrame
 			progress.setValue( value );
 			progress.setMaximum( maxValue );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
-			Log.logStack(Log.TRACE, MODULE);
+			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn or with wrong progressId");
+			//Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 
@@ -349,8 +379,8 @@ public class MainFrame extends javax.swing.JFrame
 		if (progressOn && progressId == this.progressId) {
 			status.setText( message );
 		} else {
-			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong progressId");
-			Log.logStack(Log.TRACE, MODULE);
+			//Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn or with wrong progressId");
+			//Log.logStack(Log.TRACE, MODULE);
 		}
 	}
 
@@ -396,7 +426,7 @@ public class MainFrame extends javax.swing.JFrame
 	*/
 	public void addPictures( File[] files ) {
 		addPictures( files, -1 );
-		resetUIState();
+		//resetUIState();
 	}
 
 
@@ -430,7 +460,7 @@ public class MainFrame extends javax.swing.JFrame
 				} );*/
 		thumbnailCache.preloadThumbnails( files );
 
-		resetUIState();
+		//resetUIState();
 	}
 
 
@@ -447,7 +477,6 @@ public class MainFrame extends javax.swing.JFrame
 		int index = album.getSelectedIndex();
 		//Hashtable h = (Hashtable) currentGallery.getAlbumList().get( index );
 		mGalleryComm.setAlbum( currentGallery.getSelectedAlbum().getName() );
-		picturesList.disable();
 		mGalleryComm.uploadFiles( mAlbum.getFileList() );
 
 		mInProgress = true;
@@ -468,7 +497,6 @@ public class MainFrame extends javax.swing.JFrame
 						stopProgress( pId, "Upload finished" );
 						mAlbum.clearPictures();
 						mInProgress = false;
-						picturesList.enable();
 						resetUIState();
 
 						Log.log(Log.INFO, MODULE, "uploadPictures finished");
@@ -511,7 +539,7 @@ public class MainFrame extends javax.swing.JFrame
 
 						stopProgress(pId, "Fetch finished");
 
-						currentGallery.setAlbumList(mGalleryComm.getAlbumList());
+						currentGallery.setAlbumList( mGalleryComm.getAlbumList() );
 						mInProgress = false;
 						
 						if (mGalleryComm.getAlbumList() != null) {
@@ -583,7 +611,10 @@ public class MainFrame extends javax.swing.JFrame
 		GalleryRemote.getInstance().properties.setShowThumbnails( show );
 
 		if ( show ) {
-			thumbnailCache.preloadThumbnailFiles( mAlbum.getPictures() );
+			if ( mAlbum != null ) {
+				thumbnailCache.preloadThumbnailFiles( mAlbum.getPictures() );
+			}
+			
 			picturesList.setFixedCellHeight( GalleryRemote.getInstance().properties.getThumbnailSize().height + 4 );
 		} else {
 			thumbnailCache.cancelLoad();
@@ -785,13 +816,14 @@ public class MainFrame extends javax.swing.JFrame
 					thisWindowClosing( e );
 				}
 			} );
-		/*previewFrame.addWindowListener(
+		previewFrame.addWindowListener(
 			new java.awt.event.WindowAdapter()
 			{
 				public void windowClosing( java.awt.event.WindowEvent e ) {
-					setShowPreview( false );
+					jCheckBoxMenuPreview.setState( false );
+					//setShowPreview( false );
 				}
-			} );*/
+			} );
 		picturesList.addKeyListener(
 			new KeyAdapter()
 			{
@@ -865,8 +897,7 @@ public class MainFrame extends javax.swing.JFrame
 			GalleryRemote.getInstance().properties.setShowPath( ( e.getStateChange() == ItemEvent.SELECTED ) ? true : false );
 			picturesList.repaint();
 		} else if ( item == album ) {
-			mAlbum = (Album) ( (JComboBox) item ).getSelectedItem();
-			picturesList.setModel( mAlbum );
+			updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled item state change " + item );
 		}
@@ -934,19 +965,21 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Key event
 	 */
 	public void jListKeyPressed( KeyEvent e ) {
-		int vKey = e.getKeyCode();
-
-		switch ( vKey ) {
-			case KeyEvent.VK_DELETE:
-			case KeyEvent.VK_BACK_SPACE:
-				deleteSelectedPictures();
-				break;
-			case KeyEvent.VK_LEFT:
-				movePictureUp();
-				break;
-			case KeyEvent.VK_RIGHT:
-				movePictureDown();
-				break;
+		if ( ! mInProgress) {
+			int vKey = e.getKeyCode();
+	
+			switch ( vKey ) {
+				case KeyEvent.VK_DELETE:
+				case KeyEvent.VK_BACK_SPACE:
+					deleteSelectedPictures();
+					break;
+				case KeyEvent.VK_LEFT:
+					movePictureUp();
+					break;
+				case KeyEvent.VK_RIGHT:
+					movePictureDown();
+					break;
+			}
 		}
 	}
 
