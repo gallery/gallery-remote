@@ -38,7 +38,7 @@ public interface GalleryComm2Consts {
 	/**
 	 * Protocol version string.
 	 */
-	public static final String PROTOCOL_VERSION = "2.1";
+	public static final String PROTOCOL_VERSION = "2.2";
 	
 	/**
 	 * Remote scriptname that provides version 2 of the protocol on the server.
