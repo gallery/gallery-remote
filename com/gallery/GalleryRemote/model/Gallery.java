@@ -30,6 +30,7 @@ import javax.swing.*;
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
 /**
  *  Gallery model
@@ -417,12 +418,15 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		return type;
 	}
 
+	public static Gallery readFromProperties(GalleryProperties p, int prefsIndex, StatusUpdate su) {
+		return readFromProperties(p, prefsIndex, su, true);
+	}
 
-	public static Gallery readFromProperties(PropertiesFile p, int prefsIndex, StatusUpdate su) {
+	public static Gallery readFromProperties(GalleryProperties p, int prefsIndex, StatusUpdate su, boolean mustHaveUsername) {
 		String url = p.getProperty( URL + prefsIndex );
 		String username = p.getProperty( USERNAME + prefsIndex );
 
-		if (username == null) {
+		if (mustHaveUsername && username == null) {
 			return null;
 		}
 
