@@ -1,3 +1,8 @@
+2003-10-06  Amedeo Paglione <apaglione@mac.com> (1.2-b10)
+
+	* Adoption of more generic locale
+	* Optimized the procedure for locale loading
+
 2003-10-02  Pierre-Luc Paour <gallery@paour.com> (1.2-b9)
 
 	* Better display for languages in the prefs dialog.
