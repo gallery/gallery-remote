@@ -315,7 +315,7 @@ public class MainFrame extends javax.swing.JFrame
 					&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
 					jLoginButton.setText(grRes.getString("Log_out"));
 				} else {
-					jLoginButton.setText("Log in");
+					jLoginButton.setText(grRes.getString("Log_in"));
 				}
 
 				// if the selected album is uploading, disable everything
@@ -352,17 +352,18 @@ public class MainFrame extends javax.swing.JFrame
 				if ( getCurrentAlbum() == null) {
 					jPictureInspector.setPictures( null );
 
-					jStatusBar.setStatus("Select a Gallery URL and click Log in..." );
+					jStatusBar.setStatus(grRes.getString("notLogged") );
 				} else if ( getCurrentAlbum().sizePictures() > 0 ) {
 					jPictureInspector.setPictures( jPicturesList.getSelectedValues() );
 
 					int selN = jPicturesList.getSelectedIndices().length;
 
+                    String statusMsg;
+                    Object [] params = {new Integer(getCurrentAlbum().sizePictures()),
+                                        new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
+
 					if ( sel == -1 ) {
-						jStatusBar.setStatus(getCurrentAlbum().sizePictures() + " pictures / "
-						+ NumberFormat.getInstance().format(
-						( (int) getCurrentAlbum().getPictureFileSize() / 1024 ) )
-						+ " K" );
+						jStatusBar.setStatus(grRes.getString("statusBarNoSel", params ));
 					} else {
 						jStatusBar.setStatus("Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
 						+ NumberFormat.getInstance().format(
