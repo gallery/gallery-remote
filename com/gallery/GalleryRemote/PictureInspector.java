@@ -31,12 +31,11 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.border.*;
 
 /**
  *  Bean inspector for Pictures
@@ -194,7 +193,7 @@ public class PictureInspector extends JPanel
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0) );
 		add(jLabel2,       new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0
             ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
-		add( jSpacer,    new GridBagConstraints(0, 20, 2, 1, 1.0, 1.0
+		add( jSpacer,    new GridBagConstraints(0, 20, 2, 1, 1.0, 0.1
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0) );
 
 		add( jIconAreaPanel,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
@@ -282,37 +281,45 @@ public class PictureInspector extends JPanel
 	 *	Caption JTextArea events.
 	 */
 	public void insertUpdate(DocumentEvent e) {
-		textUpdate();
+		textUpdate(e);
 	}
 
 	/**
 	 * Caption JTextArea events.
 	 */
 	public void removeUpdate(DocumentEvent e) {
-		textUpdate();
+		textUpdate(e);
 	}
 
 	/**
 	 * Caption JTextArea events.
 	 */
 	public void changedUpdate(DocumentEvent e) {
-		textUpdate();
+		textUpdate(e);
 	}
 
-	public void textUpdate() {
+	public void textUpdate(DocumentEvent e) {
 		if (pictures != null && pictures.length == 1) {
 			Picture p = ((Picture)pictures[0]);
-			p.setCaption( jCaption.getText() );
+
+			if (e.getDocument() == jCaption.getDocument()) {
+				p.setCaption( jCaption.getText() );
+			}
 
 			Iterator it = extraTextAreas.keySet().iterator();
 			while (it.hasNext()) {
 				String name = (String) it.next();
 				JTextArea field = (JTextArea) extraTextAreas.get(name);
-				String text = field.getText();
-				if (text.length() == 0) {
-					p.removeExtraField(name);
-				} else {
-					p.setExtraField(name, text);
+
+				if (e.getDocument() == field.getDocument()) {
+					String text = field.getText();
+					if (text.length() == 0) {
+						p.removeExtraField(name);
+					} else {
+						p.setExtraField(name, text);
+					}
+
+					break;
 				}
 			}
 		}
@@ -413,7 +420,7 @@ public class PictureInspector extends JPanel
 	}
 
 	void addExtraFields(Picture p) {
-		String newExtraFields = p.getAlbum().getExtraFields();
+		ArrayList newExtraFields = p.getAlbum().getExtraFields();
 
 		if (newExtraFields == null) {
 			removeExtraFields();
@@ -421,10 +428,10 @@ public class PictureInspector extends JPanel
 			if (! newExtraFields.equals(currentExtraFields)) {
 				removeExtraFields();
 
-				StringTokenizer st = new StringTokenizer(newExtraFields, ",");
 				int i = 0;
-				while (st.hasMoreTokens()) {
-					String name = st.nextToken();
+				Iterator it = newExtraFields.iterator();
+				while (it.hasNext()) {
+					String name = (String) it.next();
 					//String value = p.getExtraField(name);
 
 					JLabel label = new JLabel(name);
@@ -443,9 +450,9 @@ public class PictureInspector extends JPanel
 				}
 			}
 
-			StringTokenizer st = new StringTokenizer(newExtraFields, ",");
-			while (st.hasMoreTokens()) {
-				String name = st.nextToken();
+			Iterator it = newExtraFields.iterator();
+			while (it.hasNext()) {
+				String name = (String) it.next();
 				String value = p.getExtraField(name);
 
 				JTextArea field = (JTextArea) extraTextAreas.get(name);
