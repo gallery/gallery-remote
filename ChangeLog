@@ -1,3 +1,9 @@
+2003-12-28  Pierre-Luc Paour <gallery@paour.com> (1.3-b12)
+
+	* MacOS Build now finds jpegtran even if application is renamed.
+	* Deployment scripts now create Mac patch (same as the release version)
+	  and version checker displays link to new Mac version on Mac.
+
 2003-12-27  Pierre-Luc Paour <gallery@paour.com> (1.3-b11)
 
 	* Merged changes from 1.2.1, mostly MacOS changes.

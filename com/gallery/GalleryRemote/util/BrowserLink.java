@@ -44,6 +44,10 @@ public class BrowserLink extends JLabel implements MouseListener {
 		this.url = url;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
 	/* MouseListener Interface */
 	public void mouseClicked(MouseEvent e) {
 		try {

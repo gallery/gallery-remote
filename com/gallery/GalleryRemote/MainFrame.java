@@ -199,14 +199,14 @@ public class MainFrame extends javax.swing.JFrame
 
 		setIconImage(MainFrame.iconImage);
 
-		if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+		/*if (System.getProperty("os.name").toLowerCase().startsWith("mac")) {
 			// Install shutdown handler only on Mac
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
 					shutdown(true);
 				}
 			});
-		}
+		}*/
 	}
 
 
