@@ -1,7 +1,8 @@
 # should jpegtran support be enabled?
 jp.enabled=true
 
-# path to the executable (must be a fully-qualified path)
+# path to the executable (must be a fully-qualified path), including the name of the executable (jpegtran)
+# use forward slashes (/) rather than back slashes (\) even on Windows
 jp.path=jpegtran
 
 # should lossless cropping be enabled?

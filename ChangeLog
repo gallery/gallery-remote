@@ -1,3 +1,12 @@
+2004-10-15  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b6)
+
+	* Fixed crop area being cached between different pictures.
+	* Final (hopefully) rework of the sort UI.
+	* Fixed mixup in Gallery aliases when deleting a Gallery URL.
+	* Fixed New Album sorting of existing albums.
+	* Added comments in IM and jpegtran config files to
+	  help users who have to customize them.
+
 2004-09-22  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b5)
 
 	* Changed wording (thanks JPMullan).

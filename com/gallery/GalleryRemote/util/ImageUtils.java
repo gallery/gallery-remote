@@ -172,11 +172,11 @@ public class ImageUtils {
 
 		return loadJavaInternal(r, d, noStretch);
 		/*try {
-			ImageInputStream iis = ImageIO.createImageInputStream(url.openStream());
-			return loadJavaInternal(iis, d);
+		ImageInputStream iis = ImageIO.createImageInputStream(url.openStream());
+		return loadJavaInternal(iis, d);
 		} catch (IOException e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			return null;
+		Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		return null;
 		}*/
 	}
 
@@ -185,11 +185,11 @@ public class ImageUtils {
 
 		return loadJavaInternal(r, d, noStretch);
 		/*try {
-			ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
-			return loadJavaInternal(iis, d);
+		ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
+		return loadJavaInternal(iis, d);
 		} catch (IOException e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			return null;
+		Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		return null;
 		}*/
 	}
 
@@ -210,7 +210,7 @@ public class ImageUtils {
 		return r;
 		/*Iterator iter = ImageIO.getImageReaders(iis);
 		if (!iter.hasNext()) {
-			return null;
+		return null;
 		}
 
 		ImageReader reader = (ImageReader)iter.next();
@@ -220,7 +220,7 @@ public class ImageUtils {
 		IIOMetadata metadata = reader.getImageMetadata(0);
 		String names[] = metadata.getMetadataFormatNames();
 		for (int i = 0; i < names.length; i++) {
-			displayMetadata(metadata.getAsTree(names[i]));
+		displayMetadata(metadata.getAsTree(names[i]));
 		}
 
 		param.setSourceRenderSize(d);
@@ -669,7 +669,7 @@ public class ImageUtils {
 		if (!p.isOnline()) {
 			return p.getSource();
 		}
-		
+
 		URL pictureUrl = null;
 		File f;
 		String filename;
@@ -988,44 +988,44 @@ public class ImageUtils {
 		}
 	}
 
-    /*public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
-        try {
-            Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
-            Method m = c.getMethod("getExifTargetOrientation", new Class[]{String.class});
-            return (AngleFlip) m.invoke(null, new Object[]{filename});
-        } catch (Throwable e) {
-            Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
-            return null;
-        }
-    }
+	/*public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
+	try {
+	Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+	Method m = c.getMethod("getExifTargetOrientation", new Class[]{String.class});
+	return (AngleFlip) m.invoke(null, new Object[]{filename});
+	} catch (Throwable e) {
+	Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
+	return null;
+	}
+	}
 
-    public static Date getExifDateCreated(String filename) {
-        try {
-            Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
-            Method m = c.getMethod("getExifDateCreated", new Class[]{String.class});
-            return (Date) m.invoke(null, new Object[]{filename});
-        } catch (Throwable e) {
-            Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
-            return null;
-        }
-    }*/
+	public static Date getExifDateCreated(String filename) {
+	try {
+	Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+	Method m = c.getMethod("getExifDateCreated", new Class[]{String.class});
+	return (Date) m.invoke(null, new Object[]{filename});
+	} catch (Throwable e) {
+	Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
+	return null;
+	}
+	}*/
 
-    static Boolean exifAvailable = null;
-    public static boolean isExifAvailable() {
-        if (exifAvailable == null) {
-            try {
-                Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
-                Method m = c.getMethod("getExifData", new Class[]{String.class});
-                exifAvailable = Boolean.TRUE;
-            } catch (Throwable e) {
-                Log.log(Log.LEVEL_ERROR, MODULE, "Exif library is not installed.");
+	static Boolean exifAvailable = null;
+	public static boolean isExifAvailable() {
+		if (exifAvailable == null) {
+			try {
+				Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+				c.getMethod("getExifData", new Class[]{String.class});
+				exifAvailable = Boolean.TRUE;
+			} catch (Throwable e) {
+				Log.log(Log.LEVEL_ERROR, MODULE, "Exif library is not installed.");
 				//Log.logException(Log.LEVEL_ERROR, MODULE, e);
-                exifAvailable = Boolean.FALSE;
-            }
+				exifAvailable = Boolean.FALSE;
+			}
 		}
 
 		return exifAvailable.booleanValue();
-    }
+	}
 
 	/* ********* Utilities ********** */
 	public static List expandDirectories(List filesAndFolders)
@@ -1050,8 +1050,8 @@ public class ImageUtils {
 		ArrayList ret = new ArrayList();
 
 		/* File.listFiles: stupid call returns null if there's an
-				   i/o exception *or* if the file is not a directory, making a mess.
-				   http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
+		i/o exception *or* if the file is not a directory, making a mess.
+		http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
 		File[] fileArray = dir.listFiles();
 		if (fileArray == null) {
 			if (dir.isDirectory()) {

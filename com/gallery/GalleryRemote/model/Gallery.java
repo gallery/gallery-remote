@@ -29,6 +29,8 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.Serializable;
 import java.net.MalformedURLException;
@@ -663,8 +665,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 			p.remove(PASSWORD + prefsIndex);
 		}
 		p.setProperty(TYPE + prefsIndex, types[type]);
-		if (getAlias() != null) {
+		if (getAlias() != null && getAlias().length() > 0) {
 			p.setProperty(ALIAS + prefsIndex, getAlias());
+		} else {
+			p.setProperty(ALIAS + prefsIndex, null);
 		}
 
 		if (pnLoginUrlString != null) {
@@ -851,13 +855,11 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public ArrayList getFlatAlbumList() {
 		if (flatAlbumList == null) {
 			if (getRoot() != null) {
-				flatAlbumList = Collections.list(((Album) getRoot()).breadthFirstEnumeration());
-			} else {
-				flatAlbumList = null;
+				flatAlbumList = Collections.list(new TreeEnumeration((TreeNode) getRoot()));
 			}
 
 			// G2 root is a normal album, don't add a fake root...
-			if (galleryVersion == 2) {
+			if (galleryVersion == 2 && flatAlbumList != null) {
 				flatAlbumList.remove(getRoot());
 			}
 		}
@@ -884,5 +886,40 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setGalleryVersion(int galleryVersion) {
 		this.galleryVersion = galleryVersion;
+	}
+
+	class TreeEnumeration implements Enumeration {
+		protected TreeNode root;
+		protected Enumeration children;
+		protected Enumeration subtree;
+		boolean rootSent = false;
+
+		public TreeEnumeration(TreeNode rootNode) {
+			super();
+			root = rootNode;
+			children = root.children();
+			subtree = DefaultMutableTreeNode.EMPTY_ENUMERATION;
+		}
+
+		public boolean hasMoreElements() {
+			return !rootSent || subtree.hasMoreElements() || children.hasMoreElements();
+		}
+
+		public Object nextElement() {
+			Object retval = null;
+
+			if (!rootSent) {
+				retval = root;
+				rootSent = true;
+			} else if (subtree.hasMoreElements()) {
+				retval = subtree.nextElement();
+			} else if (children.hasMoreElements()) {
+				subtree = new TreeEnumeration(
+						(TreeNode)children.nextElement());
+				retval = subtree.nextElement();
+			}
+
+			return retval;
+		}
 	}
 }

@@ -85,4 +85,10 @@ public interface PreferenceNames {
 	// Applet
 	public static final String APPLET_SHOW_RESIZE = "appletShowResize";
 	public static final String APPLET_DIVIDER_LOCATION = "appletDividerLocation";
+
+	// Sort
+	public static final String SORT_TYPE = "sortType";
+	public static final int SORT_TYPES = 2;
+	public static final int SORT_TYPE_FILENAME = 1;
+	public static final int SORT_TYPE_EXIF_CREATION = 2;
 }

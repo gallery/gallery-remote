@@ -29,6 +29,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.URLPanel;
+import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.OsShutdown;
@@ -57,7 +58,7 @@ import java.applet.Applet;
 public class MainFrame extends JFrame
 		implements ActionListener, ItemListener, ListSelectionListener,
 		ListDataListener, TreeSelectionListener, TreeModelListener, FocusListener,
-		GalleryRemoteCore {
+		GalleryRemoteCore, PreferenceNames {
 	public static final String MODULE = "MainFrame";
 	public static final String FILE_TYPE = ".grg";
 
@@ -111,9 +112,7 @@ public class MainFrame extends JFrame
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
 	JButton jSortButton = new JButton();
-    JPopupMenu jSortPopup = new JPopupMenu();
-    JMenuItem jSortFilename = new JMenuItem();
-    JMenuItem jSortExifCreation = new JMenuItem();
+    JComboBox jSortCombo = new JComboBox();
 	JButton jNewAlbumButton = new JButton();
 
 	JMenu jMenuFile = new JMenu();
@@ -408,11 +407,13 @@ public class MainFrame extends JFrame
 				Gallery currentGallery = getCurrentGallery();
 
 				// if the list is empty or comm, disable upload
-				jUploadButton.setEnabled(currentAlbum != null
-						&& currentAlbum.sizePictures() > 0
-						&& !inProgress
-						&& jAlbumTree.getSelectionCount() > 0);
-				jSortButton.setEnabled(jUploadButton.isEnabled());
+				boolean uploadEnabled = currentAlbum != null
+										&& currentAlbum.sizePictures() > 0
+										&& !inProgress
+										&& jAlbumTree.getSelectionCount() > 0;
+				jUploadButton.setEnabled(uploadEnabled);
+				jSortCombo.setEnabled(uploadEnabled);
+				jSortButton.setEnabled(uploadEnabled);
 
 				// todo: save
 				/*if (null == lastOpenedFile) {
@@ -689,19 +690,32 @@ public class MainFrame extends JFrame
 	/**
 	 * Sort the files alphabetically
 	 */
-	public void sortPicturesFilename() {
-		getCurrentAlbum().sortPicturesAlphabetically();
+	public void sortPictures() {
+		int sortType = GalleryRemote._().properties.getIntProperty(SORT_TYPE);
+		switch (sortType) {
+			case SORT_TYPE_FILENAME:
+				getCurrentAlbum().sortPicturesAlphabetically();
+				break;
+
+			case SORT_TYPE_EXIF_CREATION:
+				getCurrentAlbum().sortPicturesCreated();
+				break;
+
+			default:
+				Log.log(Log.LEVEL_ERROR, MODULE, "Bad sort value: " + sortType);
+				break;
+		}
 
 		// We've been modified, we are now dirty.
 		setDirtyFlag(true);
 	}
-    
-    public void sortPicturesExifCreation() {
-        getCurrentAlbum().sortPicturesCreated();
-        
-        setDirtyFlag(true);
-    }
 
+	public void setSortType(int sortType) {
+		GalleryRemote._().properties.setIntProperty(SORT_TYPE, sortType);
+
+		jSortButton.setText(GRI18n.getString(MODULE, "sortBtnTxt",
+				new Object[] {GRI18n.getString(MODULE, "sort." + sortType)}));
+	}
 
 	/**
 	 * Fetch Albums from server and update UI
@@ -922,11 +936,12 @@ public class MainFrame extends JFrame
 		jBrowseButton.setText(GRI18n.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand("Browse");
 		jBrowseButton.setToolTipText(GRI18n.getString(MODULE, "brwsBtnTip"));
-		jSortButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
+		//jSortAlternativesButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
+		jSortCombo.setActionCommand("SortAlternative");
+		jSortCombo.setToolTipText(GRI18n.getString(MODULE, "sortAlternativesBtnTip"));
 		jSortButton.setActionCommand("Sort");
 		jSortButton.setToolTipText(GRI18n.getString(MODULE, "sortBtnTip"));
-        jSortButton.setIcon(UIManager.getIcon("MenuItem.arrowIcon"));
-        jSortButton.setHorizontalTextPosition(SwingConstants.LEADING);
+		jSortButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
         jGalleryCombo.setActionCommand("Url");
 		jGalleryCombo.setToolTipText(GRI18n.getString(MODULE, "gllryCombo"));
 
@@ -1035,7 +1050,10 @@ public class MainFrame extends JFrame
 		this.getContentPane().add(jBottomPanel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 		jBottomPanel.add(jBrowseButton, null);
-		jBottomPanel.add(jSortButton, null);
+		JPanel sortPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		sortPanel.add(jSortButton);
+		sortPanel.add(jSortCombo);
+		jBottomPanel.add(sortPanel, null);
 		jBottomPanel.add(jUploadButton, null);
 		this.getContentPane().add(jStatusBar, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -1093,13 +1111,12 @@ public class MainFrame extends JFrame
 
 		setJMenuBar(jMenuBar1);
 
-        jSortFilename.setText(GRI18n.getString(MODULE, "sort.filename"));
-        jSortFilename.setActionCommand("SortFilename");
-        jSortExifCreation.setText(GRI18n.getString(MODULE, "sort.exifcreation"));
-        jSortExifCreation.setActionCommand("SortExifCreation");
+		// set up the sort types combo
+		for (int i = 1; i <= SORT_TYPES; i++) {
+			jSortCombo.addItem(new SortType(i, GRI18n.getString(MODULE, "sort." + i)));
+		}
 
-        jSortPopup.add(jSortFilename);
-        jSortPopup.add(jSortExifCreation);
+		jSortCombo.setSelectedIndex(GalleryRemote._().properties.getIntProperty(SORT_TYPE) - 1);
 	}//}}}
 
 	private void setupKeyboardHandling(JComponent c) {
@@ -1112,6 +1129,7 @@ public class MainFrame extends JFrame
 		jNewAlbumButton.addActionListener(this);
 		jUploadButton.addActionListener(this);
 		jSortButton.addActionListener(this);
+		jSortCombo.addActionListener(this);
 		jBrowseButton.addActionListener(this);
 		jNewGalleryButton.addActionListener(this);
 		//jGalleryCombo.addActionListener( this );
@@ -1128,9 +1146,6 @@ public class MainFrame extends JFrame
 		jMenuItemCut.addActionListener(this);
 		jMenuItemCopy.addActionListener(this);
 		jMenuItemPaste.addActionListener(this);
-
-        jSortFilename.addActionListener(this);
-        jSortExifCreation.addActionListener(this);
 
 		jCheckBoxMenuThumbnails.addItemListener(this);
 		jCheckBoxMenuPreview.addItemListener(this);
@@ -1312,12 +1327,11 @@ public class MainFrame extends JFrame
 			browseAddPictures();
 		} else if (command.equals("Upload")) {
 			uploadPictures();
-        } else if (command.equals("Sort")) {
-            jSortPopup.show(jSortButton, 0, jSortButton.getHeight());
-        } else if (command.equals("SortFilename")) {
-            sortPicturesFilename();
-        } else if (command.equals("SortExifCreation")) {
-            sortPicturesExifCreation();
+        } else if (command.equals("SortAlternative")) {
+			int sortType = ((SortType) jSortCombo.getSelectedItem()).type;
+			setSortType(sortType);
+		} else if (command.equals("Sort")) {
+			sortPictures();
 		} else if (command.equals("NewGallery")) {
 			showPreferencesDialog(URLPanel.class.getName());
 		} else {
@@ -2028,6 +2042,20 @@ public class MainFrame extends JFrame
 			}
 
 			return this;
+		}
+	}
+
+	class SortType {
+		int type;
+		String text;
+
+		public SortType(int type, String text) {
+			this.type = type;
+			this.text = text;
+		}
+
+		public String toString() {
+			return text;
 		}
 	}
 }

@@ -357,6 +357,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		Rectangle oldRect = null;
 		Rectangle cacheRect = null;
 		boolean centerMode = false;
+		Picture localCurrentPicture = null;
 
 		int movingEdge = 0;  // use SwingConstants
 		public static final int TOLERANCE = 5;
@@ -368,6 +369,11 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 		public void paint(Graphics g) {
 			oldRect = null;
+
+			if (localCurrentPicture != currentPicture) {
+				cacheRect = null;
+				localCurrentPicture = currentPicture;
+			}
 
 			if (currentPicture == null || currentImage == null || currentPicture.isOnline()) {
 				cacheRect = null;

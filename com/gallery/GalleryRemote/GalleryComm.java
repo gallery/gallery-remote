@@ -343,7 +343,9 @@ public abstract class GalleryComm implements PreferenceNames {
 			}
 		} catch (ModuleException me) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, me);
-		} catch (ParseException e) {
+		} catch (ParseException pe) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, pe);
+		} catch (Exception e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 
