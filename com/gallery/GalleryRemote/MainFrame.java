@@ -740,7 +740,7 @@ public class MainFrame extends javax.swing.JFrame
 		jNewAlbumButton.setIcon(iNewAlbum);
 		jPanel3.setLayout( gridLayout1 );
 		jUploadButton.setAlignmentX( (float) 2.0 );
-		jUploadButton.setText( "Upload Pictures" );
+		jUploadButton.setText( "Upload pictures" );
 		jUploadButton.setActionCommand( "Upload" );
 		jInspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
