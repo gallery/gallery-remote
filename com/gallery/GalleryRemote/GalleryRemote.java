@@ -58,7 +58,6 @@ public class GalleryRemote
 			
 			mainFrame = new MainFrame();
 			mainFrame.initComponents();
-			mainFrame.setVisible( true );
 		}
 		catch ( Exception e )
 		{
