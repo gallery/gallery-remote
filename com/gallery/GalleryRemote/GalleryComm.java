@@ -116,6 +116,8 @@ public class GalleryComm {
 	class ActualTask {
 		ActualTask (String task) {
 			
+			mDone = false;
+
 			//-- login ---
 			if (!mLoggedIn) {
 				if (!login()) {
@@ -124,12 +126,9 @@ public class GalleryComm {
 				}
 			}
 			
-			mDone = false;
-			
 			if (task.equals("upload")) {
 			
 				//-- upload each file, one at a time ---
-				mDone = false;
 				boolean allGood = true;
 				mUploadedCount = 0;
 				Iterator iter = mFileList.iterator();
