@@ -45,6 +45,7 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     MainFrame mDaddy = null;
     DragSource dragSource;
     DropTarget dropTarget;
+    PictureSelection ps;
     boolean isDrag;
     int lastY = -1;
     
@@ -53,9 +54,9 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      */
     
     public DroppableList() {
-	dropTarget = new DropTarget(this, this);
 	dragSource = new DragSource();
 	dragSource.createDefaultDragGestureRecognizer(this, DnDConstants.ACTION_MOVE, this);
+	dropTarget = new DropTarget(this, this);
     }
     
     
@@ -92,6 +93,22 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     public void dragExit( DropTargetEvent dropTargetEvent ) {
 	Log.log(Log.TRACE, "DROPLIST","dragExit - dtde");
 	isDrag = false;
+	if (ps != null){
+	    //add pictures back
+	    Log.log(Log.INFO, "DROPLIST","dragging internal selection out...");
+	    try {
+		java.util.List fileList = (java.util.List) ps.getTransferData( DataFlavor.javaFileListFlavor );
+		if (!ps.isEmpty()){
+		    Picture p = (Picture) ps.get(0);
+		    mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ), p.getListIndex());
+		}
+		//kill dragEvent
+		//need to figure out why MainFrame becomes dropTarget for internal drops??!!
+	    } catch (Exception e){
+		Log.log(Log.INFO, "DROPLIST","coudn't kill drag " + e);
+	    }
+	}
+	ps = null;
 	//lastY = -1;
     }
     
@@ -169,16 +186,20 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     public void dragGestureRecognized( DragGestureEvent event) {
 	Log.log(Log.TRACE, "DROPLIST","dragGestureRecognized");
 	int[] selIndices = this.getSelectedIndices();
-	PictureSelection ps = new PictureSelection();
+	ps = new PictureSelection();
 	for (int i = 0; i < selIndices.length; i++){
-	    if (selIndices[i] != -1){
-		ps.add(this.getModel().getElementAt(selIndices[i]));
+	    int selIndex = selIndices[i];
+	    if (selIndex != -1){
+		Picture p = (Picture) this.getModel().getElementAt(selIndex);
+		p.setListIndex(selIndex);
+		ps.add(p);
 	    }
 	}
 	//pull out existing pictures
 	if (!ps.isEmpty()) {
 	    dragSource.startDrag(event, DragSource.DefaultMoveDrop, ps, this);
 	    mDaddy.deleteSelectedPictures();
+	    
 	} else {
 	    Log.log(Log.TRACE, "DROPLIST", "nothing was selected");
 	}
@@ -307,32 +328,4 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
 	return ret;
     }
     
-    //final static BasicStroke stroke = new BasicStroke(1.0f);
-    
-	/*public void paintComponent( Graphics g ){
-		super.paintComponent(g);
-		Log.log(Log.TRACE, MODULE, "painting component -- isDrag: " + isDrag);
-	 
-		if (this.getModel().getSize() > 0 && isDrag){
-			//Log.log(Log.TRACE, MODULE, "adding line");
-			Graphics2D g2 = (Graphics2D)g;
-			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.setStroke( stroke );
-			//Log.log(Log.TRACE, MODULE, "p:" + p);
-			//get index of drop spot
-			int curEl = this.locationToIndex(p);
-			//Log.log(Log.TRACE, MODULE, "curEl:" + curEl);
-			double lineY = 0.0;
-			if (curEl == -1){
-				curEl = this.getModel().getSize();
-			}
-			lineY = (double) curEl * this.getFixedCellHeight();
-	 
-			//start x, y   end x, y
-			Line2D line = new Line2D.Double(10.0, lineY, this.getVisibleRect().getWidth() - 10.0, lineY);
-			//make the line red
-			g2.setColor(new Color(255,0,0));
-			g2.draw(line);
-		}
-	}*/
 }

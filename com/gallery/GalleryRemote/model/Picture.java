@@ -38,7 +38,8 @@ public class Picture {
     String caption = null;
     double fileSize = -1;
     Album album = null;
-
+    private int listIndex;
+    
     /**
      *  Constructor for the Picture object
      */
@@ -130,5 +131,20 @@ public class Picture {
         return album;
     }
 
+    /** Getter for property listIndex.
+     * @return Value of property listIndex.
+     *
+     */
+    public int getListIndex() {
+	return this.listIndex;
+    }
+    
+    /** Setter for property listIndex.
+     * @param listIndex New value of property listIndex.
+     *
+     */
+    public void setListIndex(int listIndex) {
+    }
+    
 }
 
