@@ -29,70 +29,60 @@ import javax.swing.*;
  *@author     paour
  *@created    11 août 2002
  */
-public class GalleryRemote
-{
-	private static GalleryRemote singleton = null;
-	
-	public MainFrame mainFrame = null;
-	public PropertiesFile properties = null;
-	public PropertiesFile defaults = null;
-	
-	private GalleryRemote() {
-		defaults = new PropertiesFile("defaults");
-		properties = new PropertiesFile(defaults, "remote");
-	}
-	
-	private void run()
-	{
-		try
-		{
-			// For native Look and Feel, uncomment the following code.
-			/// *
-			try
-			{
-				UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
-			}
-			catch ( Exception e )
-			{
-			}
-			//* /
-			
-			logEnvironment();
-			
-			mainFrame = new MainFrame();
-			mainFrame.initComponents();
-		}
-		catch ( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public static void logEnvironment()
-	{
-		Properties props = System.getProperties();
-		Enumeration e = props.propertyNames();
-		while (e.hasMoreElements())
-		{
-			String name = (String) e.nextElement();
-			Log.log(Log.INFO, "SysProps", name + "= |" + System.getProperty(name) + "|");
-		}
-	}
-	
-	public static GalleryRemote getInstance()
-	{
-		if (singleton == null)
-		{
-			singleton = new GalleryRemote();
-		}
-		
-		return singleton;
-	}
-
-	// Main entry point
-	public static void main( String[] args )
-	{
-		getInstance().run();
-	}
+public class GalleryRemote {
+    private static GalleryRemote singleton = null;
+    
+    public MainFrame mainFrame = null;
+    public PropertiesFile properties = null;
+    public PropertiesFile defaults = null;
+    
+    private GalleryRemote() {
+        defaults = new PropertiesFile("defaults");
+        properties = new PropertiesFile(defaults, "remote");
+        System.out.println(defaults);
+    }
+    
+    private void run() {
+        try {
+            // For native Look and Feel, uncomment the following code.
+            /// *
+            try {
+                UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+            }
+            catch ( Exception e ) {
+            }
+            //* /
+            
+            logEnvironment();
+            
+            mainFrame = new MainFrame();
+            mainFrame.initComponents();
+        }
+        catch ( Exception e ) {
+            e.printStackTrace();
+        }
+    }
+    
+    public static void logEnvironment() {
+        Properties props = System.getProperties();
+        Enumeration e = props.propertyNames();
+        while (e.hasMoreElements()) {
+            String name = (String) e.nextElement();
+            Log.log(Log.INFO, "SysProps", name + "= |" + System.getProperty(name) + "|");
+        }
+    }
+    
+    public static GalleryRemote getInstance() {
+        if (singleton == null) {
+            singleton = new GalleryRemote();
+        }
+        
+        return singleton;
+    }
+    
+    // Main entry point
+    public static void main( String[] args ) {
+        getInstance().run();
+    }
 }
 
