@@ -115,7 +115,13 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	*/
 
 	public void doUploadFiles(StatusUpdate su) {
-		getComm(su).uploadFiles(su, true);
+		GalleryComm comm = getComm(su);
+
+		if (comm != null) {
+			comm.uploadFiles(su, true);
+		} else {
+			// don't worry about it, an error message is displayed somewhere else.
+		}
 	}
 
 	public void doFetchAlbums(StatusUpdate su) {

@@ -1,3 +1,13 @@
+2005-02-28  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b11)
+
+	* Fixed setting proxy info for downloading images already
+	  on server.
+	* Yet another attempt at fixing applet URL logic. Added a
+	  manual gr_url_override applet parameter as a fix
+	  for people whose Gallery URLs hopelessly confuse GR.
+	* Applet jars are signed with the new cert, which expires
+	  in 2007.
+
 2005-01-23  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b10)
 
 	* Fixed mis-caching of files downloaded from the server

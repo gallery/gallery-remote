@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
+import java.util.Properties;
 
 /**
  * This interface is a temporary mechanism to let us use version
@@ -81,17 +82,22 @@ public abstract class GalleryComm implements PreferenceNames {
 			}
 		});
 
+		// http://cvs.sourceforge.net/viewcvs.py/jameleon/jameleon/src/java/net/sf/jameleon/util/JsseSettings.java?rev=1.4&view=markup
+		// http://tp.its.yale.edu/pipermail/cas/2004-March/000348.html
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = new TrustManager[]{
 			new X509TrustManager() {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return null;
+					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.getAcceptedIssuers");
+					return new java.security.cert.X509Certificate[0];
 				}
 				public void checkClientTrusted(
 						java.security.cert.X509Certificate[] certs, String authType) {
+					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.checkClientTrusted");
 				}
 				public void checkServerTrusted(
 						java.security.cert.X509Certificate[] certs, String authType) {
+					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.checkServerTrusted");
 				}
 			}
 		};
@@ -246,6 +252,12 @@ public abstract class GalleryComm implements PreferenceNames {
 					AuthorizationInfo.addBasicAuthorization(proxyHost, proxyPort, "",
 							proxyUsername, proxyPassword);
 				}
+
+				// also set Java URLConnection proxy
+				Properties sprops = System.getProperties();
+				sprops.setProperty("http.proxySet", "true");
+				sprops.setProperty("http.proxyHost", proxyHost);
+				sprops.setProperty("http.proxyPort", ""+proxyPort);
 			} else {
 				HTTPConnection.setProxyServer(null, 0);
 			}

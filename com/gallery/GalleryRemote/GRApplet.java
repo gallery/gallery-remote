@@ -90,6 +90,7 @@ public class GRApplet extends JApplet {
 
 		String url = getParameter("gr_url");
 		String urlFull = getParameter("gr_url_full");
+		String urlOverride = getParameter("gr_url_override");
 		String cookieName = getParameter("gr_cookie_name");
 		String cookieValue = getParameter("gr_cookie_value");
 		String cookieDomain = getParameter("gr_cookie_domain");
@@ -101,6 +102,7 @@ public class GRApplet extends JApplet {
 		Log.log(Log.LEVEL_INFO, MODULE, "Applet parameters:");
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_url: " + url);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_url_full: " + urlFull);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_url_override: " + urlOverride);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_name: " + cookieName);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain: " + cookieDomain);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path: " + cookiePath);
@@ -126,7 +128,11 @@ public class GRApplet extends JApplet {
 			}
 		}
 
-		if (urlFull != null) {
+		if (urlOverride != null) {
+			info.gallery.setType(Gallery.TYPE_APPLET);
+			info.gallery.setApUrlString(urlOverride);
+			urlFull = urlOverride;
+		} else if (urlFull != null) {
 			// the server specified a full URL, we're probably in embedded mode
 			// and we have to recreate the URL
 
@@ -151,19 +157,25 @@ public class GRApplet extends JApplet {
 				Log.log(Log.LEVEL_TRACE, MODULE, "urlFull is not a valid URL: recomposing it from documentBase");
 
 				try {
+					String path = null;
 
-					String path = documentBase.getPath();
-					int i = path.lastIndexOf("/");
-					if (i != -1) {
-						path = path.substring(0, i);
+					if (urlFull.startsWith("/")) {
+						path = urlFull;
+					} else {
+						path = documentBase.getPath();
+						int i = path.lastIndexOf("/");
+						if (i != -1) {
+							path = path.substring(0, i);
+						}
+
+						 path += "/" + urlFull;
 					}
 
 					urlFull = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
-							path + "/" + urlFull).toString();
+							path).toString();
 
 					info.gallery.setType(Gallery.TYPE_APPLET);
 					info.gallery.setApUrlString(urlFull);
-					info.gallery.setUserAgent(userAgent);
 
 					Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
 				} catch (MalformedURLException ee) {
@@ -177,9 +189,9 @@ public class GRApplet extends JApplet {
 			// old versions of Gallery, or bad urlFull
 			info.gallery.setType(Gallery.TYPE_STANDALONE);
 			info.gallery.setStUrlString(url);
-			info.gallery.setUserAgent(userAgent);
 		}
 
+		info.gallery.setUserAgent(userAgent);
 		info.gallery.cookieLogin = true;
 
 		CookieModule.discardAllCookies();
