@@ -42,7 +42,7 @@ th {
 
 <body>
 
-<h1 align="center">Gallery Remote 1.0 features</h1>
+<h1 align="center">Gallery Remote 1.x features</h1>
 <h2>Document goal</h2>
 <p>Serve as a basis for team and community discussions about GR 1.0 features, 
   how they will be implemented, and by whom. </p>
@@ -71,7 +71,7 @@ th {
   <tr valign="top"> 
     <td>Preferences</td>
     <td>P2</td>
-    <td>10%</td>
+    <td>80%</td>
     <td>paour</td>
     <td>A preferences dialog, that allows users to set most or all the preferences 
       that are exposed in the properties files, and create/edit Gallery connection 
@@ -165,7 +165,7 @@ th {
     <td>Pre-upload rotate</td>
     <td>P3</td>
     <td>0%</td>
-    <td>&nbsp;</td>
+    <td>paour</td>
     <td>Pictures can be rotated on the client.</td>
     <td>This can probably be done in Java, since it's not resource-intensive (only 
       for JPEG, though).</td>
@@ -174,7 +174,7 @@ th {
     <td>Proxy support</td>
     <td>P3</td>
     <td>0%</td>
-    <td>&nbsp;</td>
+    <td>paour</td>
     <td>Allow setting up and using a proxy to access to Gallery.</td>
     <td>&nbsp;</td>
   </tr>
@@ -184,6 +184,14 @@ th {
     <td>0%</td>
     <td>&nbsp;</td>
     <td>Allow using SSL/https to access Gallery.</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td>Watermarking</td>
+    <td>P3</td>
+    <td>10%</td>
+    <td>paour</td>
+    <td>Allow watermarking operations using ImageMagick. Also arbitrary IM operations.</td>
     <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
@@ -198,12 +206,12 @@ th {
   <tr valign="top"> 
     <td>XML serialization</td>
     <td>P4</td>
-    <td>10%</td>
+    <td>100%</td>
     <td>paour</td>
     <td>Album objects need to be able to serialize themselves, so batch uploads 
       can be considered</td>
     <td>Data is now stored in Bean classes that could be serialized automatically 
-      (Castor) or by hand (lighter).</td>
+      (Castor) or by hand (lighter). Final choice: </td>
   </tr>
   <tr valign="top"> 
     <td>Batch uploading</td>
@@ -243,7 +251,8 @@ th {
     <td>tim</td>
     <td>One person needs to be in charge of auditing the security of any protocol 
       change. Maybe we can ask help from Bharrat for this.</td>
-    <td>&nbsp;</td>
+    <td><a href="http://gallery.menalto.com/index.php?name=PNphpBB2&file=viewtopic&t=5027#27545">Security 
+      problem</a></td>
   </tr>
   <tr valign="top"> 
     <td>Modularity</td>
@@ -308,7 +317,7 @@ th {
   <tr valign="top"> 
     <td>Album order upload</td>
     <td>P3</td>
-    <td>30%</td>
+    <td>0%</td>
     <td>tim</td>
     <td>Expose an interface to allow remotely changing the order of pictures/sub-albums 
       in an album.</td>
@@ -356,10 +365,12 @@ th {
     <td><p>Every user task and network task should be logged (using the Log class) 
         so we can figure out what happened when something doesn't work.</p>
       <p>Shipping versions of GR should write nothing to System.out and System.err</p></td>
-    <td>Log.log(level, message)<br>
-      Log.log(level, module, message)<br>
-      Log.log(level, class, message)<br>
-      Log.logStack(level, module)</td>
+    <td><p>Log.log(level, message)<br>
+        Log.log(level, module, message)<br>
+        Log.log(level, class, message)<br>
+        Log.logStack(level, module)<br>
+        Log.logException(level, module, throwable)</p>
+      </td>
   </tr>
   <tr valign="top"> 
     <td>Status and progress</td>

@@ -67,8 +67,9 @@ code {
   <li><a href="#whatisGR">What is Gallery Remote?</a></li>
   <li><a href="#whatisG">What is Gallery?</a></li>
   <li><a href="#using">Using Gallery Remote</a></li>
-  <li><a href="#run">Can I run Gallery Remote on platforms for which there is no 
-    installer?</a></li>
+  <li><a href="#run">Can I run Gallery Remote on platforms for which there is 
+    no installer?</a></li>
+  <li><a href="#bundled">Bundled software</a></li>
   <li><a href="#problems">Known problems</a></li>
   <li><a href="#help">HELP!! Where do I go for Help?</a></li>
 </ol>
@@ -79,6 +80,7 @@ code {
 <p>It works best with newer versions of Gallery. Gallery 1.3.2 and later support 
   a new protocol, which allows uploading captions along with images, creating 
   new albums, etc.</p>
+<p>Gallery Remote is licensed under the GPL.</p>
 
 <h2><a name="whatisG"></a>What is Gallery?</h2>
 <p>Gallery is a web-based photo album viewer/creator. For the latest information, 
@@ -87,11 +89,11 @@ code {
 <h2><a name="using"></a>Using Gallery Remote</h2>
 <p>You're on your own here, but it's pretty straightforward.</p>
 <h3>Preferences</h3>
-<p>There is currently no way to set some (most) of the preferences. However, the 
-  preference files can be edited. You should not modify the <code>defaults.properties</code> 
-  file, but you should read it to understand what each preference does. Then, 
-  you can edit the <code>GalleryRemote.properties</code> (it is created the first time GR is 
-  run) and add or replace the preferences you want to change.</p>
+<p>Even though there is now a Preferences dialog, the preference files can still 
+  be edited. You should not modify the <code>defaults.properties</code> file, 
+  but you should read it to understand what each preference does. Then, you can 
+  edit the <code>GalleryRemote.properties</code> (it is created the first time 
+  GR is run) and add or replace the preferences you want to change.</p>
 <p>The preferences files used to be stored in the same directory as the GalleryRemote 
   executable, and has been moved (and renamed) to the current user's home directory. 
   On recent versions of Windows, this is the <code>Documents and Settings/<em>&lt;username&gt;</em></code> 
@@ -132,6 +134,18 @@ toSysOut=true</pre>
   installed on your machine, you may be able to run the app with the command:</p>
 <pre>java -cp GalleryRemote.jar com.gallery.GalleryRemote.GalleryRemote</pre>
 <p>assuming you are in the same directory as the GalleryRemote.jar file.</p>
+<h2><a name="bundled"></a>Bundled software</h2>
+<h3>ImageMagick</h3>
+<p>ImageMagick can be found <a href="http://www.imagemagick.org">here</a>. We 
+  use ImageMagick to resize images prior to uploading them. In the future, we'll 
+  implement features such as watermarking or arbitrary ImageMagick manipulation.</p>
+<p>JSX is licensed under its own <a href="http://www.imagemagick.org/www/Copyright.html">license</a>.</p>
+<h3>JSX</h3>
+<p>JSX can be found <a href="http://www.csse.monash.edu.au/%7Ebren/JSX/">here</a>. 
+  We use JSX to provide save/load support. In the future, this may be used to 
+  allow external tools to automatically generate projects that can then be loaded 
+  into Gallery Remote.</p>
+<p>JSX is licensed under the GPL.</p>
 <h2><a name="problems"></a>Known problems</h2>
 <p>There are many, I am sure.</p>
 <p>Right now, the lack of out of the box support for ImageMagick on non-Windows 
