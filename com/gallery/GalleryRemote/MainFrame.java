@@ -362,6 +362,11 @@ public class MainFrame extends javax.swing.JFrame
 		if (progressOn)
 		{
 			Log.log(Log.INFO, "Hijacking progress by creating a new one");
+
+			if (undeterminedThread != null) {
+				undeterminedThread.interrupt();
+				undeterminedThread = null;
+			}
 		}
 
 		progressOn = true;
