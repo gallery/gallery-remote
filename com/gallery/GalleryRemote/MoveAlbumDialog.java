@@ -135,7 +135,12 @@ public class MoveAlbumDialog extends JDialog
 		if (command.equals("Cancel")) {
 			setVisible(false);
 		} else if (command.equals("OK")) {
-			album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), (Album) jAlbum.getSelectedItem());
+			Album newParent = (Album) jAlbum.getSelectedItem();
+			if (newParent == rootAlbum) {
+				newParent = null;
+			}
+
+			album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), newParent);
 
 			setVisible(false);
 		}

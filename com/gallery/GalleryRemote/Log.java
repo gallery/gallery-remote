@@ -169,7 +169,7 @@ public class Log implements PreferenceNames, Runnable {
 		BufferedWriter writer = null;
 		running = true;
 		try {
-			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "log.txt")));
+			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "GalleryRemoteLog.txt")));
 			while (running) {
 				Thread.sleep(sleepInterval);
 				while (!logLines.isEmpty()) {

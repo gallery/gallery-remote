@@ -1,3 +1,11 @@
+2004-02-11  Pierre-Luc Paour <gallery@paour.com> (1.3)
+
+	* Fixed moving album to root of Gallery.
+	* Changed log file name to GalleryRemoteLog.txt and updated the
+	  docs to reflect the change of name and location.
+
+	Release!
+
 2004-02-10  Pierre-Luc Paour <gallery@paour.com> (1.3-b29)
 
 	* Added support for flushing caches. This is useful when uploading

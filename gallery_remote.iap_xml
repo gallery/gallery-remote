@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This script was automatically generated using Zero G's InstallAnywhere 6.0 Enterprise, Build 2262
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Tue Dec 02 19:54:11 PST 2003 -->
-<InstallAnywhere_Deployment_Project increments="3443">
+     DATE:   Wed Feb 11 11:08:04 PST 2004 -->
+<InstallAnywhere_Deployment_Project increments="3447">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
 		<versionID major="6" minor="0" revision="-1"/>
@@ -10,7 +10,7 @@
 		<scriptID>12,42,11,90,81,52,54,53,54,68,86,83,81,54,80,74</scriptID>
 		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,51,46,49,95,48,56,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,83,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,-16,51,62,-80,80,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,4,3,88,106,9,0,0,0</authorizationID>
+		<authorizationID>1,0,0,-16,-93,-2,-128,32,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,9,11,90,101,10,0,0,0</authorizationID>
 	</essentialScriptInfo>
 	<installationObjects uniqueObjects="175">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="4db9a8eea49e">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="b96f811ba519">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -263,7 +263,7 @@ and any path to a file to read from that file]]></string>
 								<string><![CDATA[GalleryRemote.jar]]></string>
 							</property>
 							<property name="fileSize">
-								<long>437759</long>
+								<long>531993</long>
 							</property>
 							<property name="macBinary">
 								<boolean>false</boolean>
@@ -294,7 +294,7 @@ and any path to a file to read from that file]]></string>
 								<string><![CDATA[JSX1.0.7.4.jar]]></string>
 							</property>
 							<property name="fileSize">
-								<long>204076</long>
+								<long>92256</long>
 							</property>
 							<property name="macBinary">
 								<boolean>false</boolean>
@@ -964,6 +964,12 @@ and any path to a file to read from that file]]></string>
 					<method name="addElement">
 						<string><![CDATA[en]]></string>
 					</method>
+					<method name="addElement">
+						<string><![CDATA[ca]]></string>
+					</method>
+					<method name="addElement">
+						<string><![CDATA[fr]]></string>
+					</method>
 				</object>
 			</property>
 			<property name="installLabels">
@@ -1239,7 +1245,7 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 								<string><![CDATA[Choose Java Virtual Machine]]></string>
 							</property>
 							<property name="header">
-								<string><![CDATA[Please Choose a Java VM for Use by the Installed Application]]></string>
+								<string><![CDATA[Please Choose a Java VM for Use by the Installed Application (1.4 or later)]]></string>
 							</property>
 							<property name="canUseJRE">
 								<boolean>true</boolean>
@@ -1631,7 +1637,7 @@ If the commands above do not work, you should download and install these package
 				<object class="java.util.Properties">
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[December 2, 2003 7:54:10 PM PST]]></string>
+						<string><![CDATA[February 11, 2004 11:08:03 AM PST]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
@@ -1679,7 +1685,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.build.last.date]]></string>
-						<string><![CDATA[December 2, 2003 7:47:51 PM PST]]></string>
+						<string><![CDATA[February 11, 2004 11:08:03 AM PST]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.installer.options.heap.size.initial]]></string>
@@ -1891,7 +1897,7 @@ If the commands above do not work, you should download and install these package
 						<int>1</int>
 					</property>
 					<property name="productVersionMinor">
-						<int>2</int>
+						<int>3</int>
 					</property>
 					<property name="productVersionRevision">
 						<int>0</int>
@@ -1903,7 +1909,7 @@ If the commands above do not work, you should download and install these package
 						<string><![CDATA[gallery.menalto.com]]></string>
 					</property>
 					<property name="vendorName">
-						<string><![CDATA[Gallery team]]></string>
+						<string><![CDATA[Gallery Core team]]></string>
 					</property>
 					<property name="vendorID">
 						<object class="com.zerog.registry.UUID">
@@ -1919,7 +1925,7 @@ If the commands above do not work, you should download and install these package
 						<string><![CDATA[paour@sourceforge.net]]></string>
 					</property>
 					<property name="copyright">
-						<string><![CDATA[2003]]></string>
+						<string><![CDATA[2004]]></string>
 					</property>
 				</object>
 			</property>
@@ -2421,7 +2427,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[ChangeLog]]></string>
 											</property>
 											<property name="fileSize">
-												<long>19059</long>
+												<long>30154</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2450,7 +2456,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[defaults.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>3799</long>
+												<long>5080</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2960,7 +2966,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.faq.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>7227</long>
+												<long>7904</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2989,7 +2995,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>5274</long>
+												<long>6726</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3047,7 +3053,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.problems.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>2077</long>
+												<long>6605</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3076,7 +3082,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.protocol.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>43266</long>
+												<long>45916</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3105,7 +3111,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.software.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>5409</long>
+												<long>5544</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3134,7 +3140,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.using.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>10344</long>
+												<long>10742</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3192,7 +3198,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[index.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>6019</long>
+												<long>7505</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3342,7 +3348,7 @@ and any path to a file to read from that file]]></string>
 												<boolean>false</boolean>
 											</property>
 											<property name="totalSize">
-												<long>0</long>
+												<long>76723</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3651,7 +3657,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[convert.exe]]></string>
 											</property>
 											<property name="fileSize">
-												<long>126976</long>
+												<long>94282</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3680,7 +3686,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_jpeg_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>135168</long>
+												<long>172112</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3709,7 +3715,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_lcms_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>102400</long>
+												<long>90192</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3738,7 +3744,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_magick_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>1101824</long>
+												<long>1138770</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3767,7 +3773,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_png_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>135168</long>
+												<long>176207</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3796,7 +3802,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_ttf_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>286720</long>
+												<long>278607</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3926,7 +3932,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_bmp_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>19968</long>
+												<long>32849</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3955,7 +3961,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_gif_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>14336</long>
+												<long>32849</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3984,7 +3990,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_jpeg_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>24576</long>
+												<long>32850</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4013,7 +4019,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_pict_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>21504</long>
+												<long>36946</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4042,7 +4048,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_png_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>94208</long>
+												<long>69713</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4071,7 +4077,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[IM_MOD_RL_psd_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>18944</long>
+												<long>32849</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4100,7 +4106,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[modules.mgk]]></string>
 											</property>
 											<property name="fileSize">
-												<long>3240</long>
+												<long>2647</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4486,7 +4492,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_bzlib_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>61440</long>
+												<long>94289</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4515,7 +4521,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[CORE_RL_zlib_.dll]]></string>
 											</property>
 											<property name="fileSize">
-												<long>45568</long>
+												<long>77904</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
