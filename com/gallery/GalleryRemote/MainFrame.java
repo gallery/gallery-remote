@@ -154,10 +154,10 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		// if no galleries available, create a blank one
-		if ( galleries.getSize() == 0 ) {
+		/*if ( galleries.getSize() == 0 ) {
 			Gallery g = new Gallery(this);
 			galleries.addElement( g );
-		}
+		}*/
 
 		setIconImage(GalleryRemote.iconImage);
 	}
@@ -262,9 +262,11 @@ public class MainFrame extends javax.swing.JFrame
 				jGalleryCombo.setEnabled( !inProgress );
 				jNewGalleryButton.setEnabled( !inProgress );
 
-				if (getCurrentGallery().getUsername() != null
-					&& getCurrentGallery().hasComm()
-					&& getCurrentGallery().getComm(MainFrame.this).isLoggedIn()) {
+				Gallery currentGallery = getCurrentGallery();
+				if (currentGallery != null
+					&& currentGallery.getUsername() != null
+					&& currentGallery.hasComm()
+					&& currentGallery.getComm(MainFrame.this).isLoggedIn()) {
 					jLoginButton.setText("Log out");
 				} else {
 					jLoginButton.setText("Log in");
@@ -276,8 +278,10 @@ public class MainFrame extends javax.swing.JFrame
 				jPictureInspector.setEnabled( enabled );
 				jPicturesList.setEnabled( enabled );
 				jAlbumCombo.setEnabled( enabled );
-				jNewAlbumButton.setEnabled( !inProgress && getCurrentGallery().hasComm()
-					&& getCurrentGallery().getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
+					&& currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
+
+				jLoginButton.setEnabled(currentGallery != null);
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
@@ -288,7 +292,7 @@ public class MainFrame extends javax.swing.JFrame
 					sel = -1;
 				}*/
 
-				if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
+				if ( GalleryRemote.getInstance().properties.getShowPreview() && previewFrame != null ) {
 					if ( sel != -1 ) {
 						previewFrame.displayFile( getCurrentAlbum().getPicture( sel ) );
 					} else {
@@ -341,12 +345,12 @@ public class MainFrame extends javax.swing.JFrame
 		Gallery currentGallery = getCurrentGallery();
 		Log.log(Log.TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
 
-		if (jAlbumCombo.getModel() != currentGallery) {
+		if (currentGallery != null && jAlbumCombo.getModel() != currentGallery) {
 			jAlbumCombo.setModel( currentGallery );
 			currentGallery.addListDataListener(this);
 		}
 
-		if (currentGallery.getSize() < 1) {
+		if (currentGallery == null || currentGallery.getSize() < 1) {
 			jAlbumCombo.setEnabled( false );
 			jPicturesList.setEnabled( false );
 
