@@ -23,7 +23,7 @@ goto :EOF
 
 :make_clean_jar
 call :make_all
-jar cvf GalleryRemote.jar com/gallery/GalleryRemote/*.class HTTPClient/*.class
+jar cvf GalleryRemote.jar com/gallery/GalleryRemote/*.class com/gallery/GalleryRemote/model/*.class HTTPClient/*.class
 goto :EOF
 
 :make_zip
