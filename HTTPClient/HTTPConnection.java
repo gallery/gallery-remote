@@ -49,7 +49,6 @@ import java.util.Vector;
 import java.applet.Applet;
 
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocketFactory;
 import javax.security.cert.X509Certificate;
 

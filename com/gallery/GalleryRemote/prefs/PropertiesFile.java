@@ -20,6 +20,8 @@
  */
 package com.gallery.GalleryRemote.prefs;
 
+import com.gallery.GalleryRemote.Log;
+
 import java.io.*;
 import java.util.*;
 
@@ -137,10 +139,23 @@ public class PropertiesFile extends GalleryProperties
 	 */
 	public synchronized void read()
 		throws FileNotFoundException {
+
 		if ( mFilename != null ) {
-			FileInputStream fileIn = null;
+			InputStream fileIn = null;
 			try {
-				fileIn = new FileInputStream( mFilename );
+				// try to get from JAR
+				if (mFilename.indexOf("/") == -1) {
+					// only if the resource is local
+					Log.log(Log.TRACE, MODULE, "Trying to find " + mFilename + " in Classpath");
+					fileIn = PropertiesFile.class.getResourceAsStream("/" + mFilename);
+				}
+
+				if (fileIn == null) {
+					// no dice? OK, from cwd then...
+					Log.log(Log.TRACE, MODULE, "Trying to find " + mFilename + " in Current Working Dir");
+					fileIn = new FileInputStream( mFilename );
+				}
+
 				load( fileIn );
 			} catch ( IOException e ) {
 				//e.printStackTrace();

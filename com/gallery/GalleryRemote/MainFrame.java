@@ -30,6 +30,7 @@ import java.awt.event.KeyEvent;
 import java.io.*;
 import java.text.NumberFormat;
 import java.util.Collections;
+import java.lang.reflect.Method;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -128,10 +129,15 @@ public class MainFrame extends javax.swing.JFrame
 	public static ImageIcon iLeft;
 	public static ImageIcon iFlip;
 
+	public static boolean IS_MAC_OS_X = (System.getProperty("mrj.version") != null);
+	//final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+
 	/**
 	 *  Constructor for the MainFrame object
 	 */
 	public MainFrame() {
+		macOSXRegistration();
+
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 
 		// load galleries
@@ -233,6 +239,10 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
+		shutdown(false);
+	}
+
+	public void shutdown() {
 		shutdown(false);
 	}
 
@@ -884,16 +894,21 @@ public class MainFrame extends javax.swing.JFrame
 			jMenuItemSave.setEnabled(false);
 		}
 
-		jMenuFile.addSeparator();
-		jMenuFile.add( jMenuItemQuit );
+		if (!IS_MAC_OS_X) {
+			jMenuFile.addSeparator();
+			jMenuFile.add( jMenuItemQuit );
 
-		jMenuHelp.add( jMenuItemAbout );
+			jMenuHelp.add( jMenuItemAbout );
+		}
 
 		jMenuOptions.add( jCheckBoxMenuThumbnails );
 		jMenuOptions.add( jCheckBoxMenuPreview );
 		jMenuOptions.add( jCheckBoxMenuPath );
-		jMenuOptions.addSeparator();
-		jMenuOptions.add( jMenuItemPrefs );
+
+		if (!IS_MAC_OS_X) {
+			jMenuOptions.addSeparator();
+			jMenuOptions.add( jMenuItemPrefs );
+		}
 	}//}}}
 
 
@@ -1008,7 +1023,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}
 
-	private void showPreferencesDialog() {
+	public void showPreferencesDialog() {
 		showPreferencesDialog(null);
 	}
 
@@ -1247,19 +1262,32 @@ public class MainFrame extends javax.swing.JFrame
 		return gallery;
 	}
 
-//	public void setCurrentGallery(Gallery currentGallery) {
-//		this.currentGallery = currentGallery;
-//	}
-
 	public Album getCurrentAlbum() {
 		Album album = (Album) jAlbumCombo.getSelectedItem();
 		return album;
 	}
 
-//	public void setCurrentAlbum(Album currentAlbum) {
-//		this.currentAlbum = currentAlbum;
-//	}
+	private void macOSXRegistration() {
+		if (IS_MAC_OS_X) {
+			try {
+				Class theMacOSXAdapter;
+				theMacOSXAdapter = Class.forName("com.gallery.GalleryRemote.util.MacOSXAdapter");
 
+				Class[] defArgs = {JFrame.class, String.class, String.class, String.class };
+				Method registerMethod = theMacOSXAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);
+				if (registerMethod != null) {
+					Object[] args = { this, "showAboutBox", "shutdown", "showPreferencesDialog" };
+					registerMethod.invoke(theMacOSXAdapter, args);
+				}
+			} catch (NoClassDefFoundError e) {
+				Log.logException(Log.ERROR, MODULE, e);
+			} catch (ClassNotFoundException e) {
+				Log.logException(Log.ERROR, MODULE, e);
+			} catch (Exception e) {
+				Log.logException(Log.ERROR, MODULE, e);
+			}
+		}
+	}
 
 	/**
 	 *  Cell renderer

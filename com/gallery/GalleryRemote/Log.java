@@ -52,7 +52,7 @@ public class Log extends Thread implements PreferenceNames
 	public final static String emptyTime = "       ";
 	public final static long startTime = System.currentTimeMillis();
 
-	public static int maxLevel;
+	public static int maxLevel = TRACE;
 	public static boolean toSysOut;
 
 	static int threadPriority = ( Thread.MIN_PRIORITY + Thread.NORM_PRIORITY ) / 2;

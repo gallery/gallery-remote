@@ -5,8 +5,13 @@
 	<!-- set global properties for this build -->
 	<property name="src" location="."/>
 	<property name="build" location="build"/>
+	<property name="lib" location="lib"/>
 	<property name="dist"  location="dist"/>
 	<property name="install"  location="gallery_remote_Build_Output/Web_Installers/InstData"/>
+
+	<taskdef name="jarbundler"
+		classpath="${lib}/jarbundler-0.1.jar"
+		classname="com.loomcom.ant.tasks.jarbundler.JarBundler" />
 
 	<target name="init">
 		<!-- Create the time stamp -->
@@ -19,8 +24,13 @@
 		description="compile the source" >
 		<!-- Compile the java code from ${src} into ${build} -->
 		<javac srcdir="${src}" destdir="${build}"
-			includes="com/**,HTTPClient/**,edu/**" classpath="lib/JSX1.0.7.4.jar"
-			listfiles="on" debug="on" source="1.3" />
+			includes="com/**,HTTPClient/**,edu/**"
+			listfiles="on" debug="on" source="1.3">
+			<classpath>
+				<pathelement path="lib/JSX1.0.7.4.jar"/>
+				<pathelement path="lib/ui.jar"/>
+			</classpath>
+		</javac>
 
 		<!-- other files needed -->
 		<copy file="${src}/rar_about_gr1.png" todir="${build}" />
@@ -44,7 +54,10 @@
 	<target name="jar" depends="clean,compile"
 		description="create a jar of the source">
 
-		<jar destfile="GalleryRemote.jar" basedir="${build}" />
+		<jar destfile="GalleryRemote.jar">
+			<fileset dir="${build}" />
+			<fileset dir="." includes="*.properties" />
+		</jar>
 	</target>
 
 	<target name="zip" depends="jar"
@@ -101,11 +114,29 @@
 		</exec>
 	</target>
 
+	<target name="installer_macosx">
+		<jarbundler dir="."
+			name="Gallery Remote"
+			mainclass="com.gallery.GalleryRemote.GalleryRemote"
+			icon="rar_icon_128_gr1.icns"
+			jars="./GalleryRemote.jar ${lib}/JSX1.0.7.4.jar"
+			version="1.1"
+			infostring="Gallery Remote 1.1, (c) 2003"
+			aboutmenuname="Gallery Remote"
+			jvmversion="1.3+"
+			smalltabs="true"
+			antialiasedgraphics="true"
+			antialiasedtext="true"
+			liveresize="true"
+			growboxintrudes="false"
+			screenmenu="true"/>
+	</target>
+
 	<target name="upload" depends="installer"
 		description="Upload to SF.net" >
 		<move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" tofile="${install}/staging/InstallGalleryRemote.Win32.NoVM.exe" />
 		<move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/InstallGalleryRemote.Win32.VM.exe" />
-		<move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/InstallGalleryRemote.MacOSX.NoVM.zip" />
+		<!--move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/InstallGalleryRemote.MacOSX.NoVM.zip" /-->
 		<move file="${install}/Linux/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Linux.NoVM.bin" />
 		<move file="${install}/Linux/VM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Linux.VM.bin" />
 		<move file="${install}/Solaris/NoVM/InstallGalleryRemote.bin" tofile="${install}/staging/InstallGalleryRemote.Solaris.NoVM.bin" />
