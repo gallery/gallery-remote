@@ -33,16 +33,12 @@ import java.util.*;
  *@author     paour
  *@created    11 août 2002
  */
-public class Picture implements Transferable {
+public class Picture {
     File source = null;
     String caption = null;
     double fileSize = -1;
     Album album = null;
-    
-    public static final DataFlavor[] flavors = { DataFlavor.javaFileListFlavor };
-    private static final java.util.List flavorList = Arrays.asList( flavors );
-    
-    
+
     /**
      *  Constructor for the Picture object
      */
@@ -133,27 +129,6 @@ public class Picture implements Transferable {
     public Album getAlbum() {
         return album;
     }
-    
-    //this is to implement transferable
-    
-    public synchronized DataFlavor[] getTransferDataFlavors() {
-        return flavors;
-    }
-    
-    public boolean isDataFlavorSupported( DataFlavor flavor ) {
-        return (flavorList.contains(flavor));
-    }
-    
-    public synchronized Object getTransferData(DataFlavor flavor)
-    throws UnsupportedFlavorException, IOException {
-        
-        if (isDataFlavorSupported(flavor)) {
-            ArrayList list = new ArrayList();
-            list.add(this.source);
-            return list;
-        } else {
-            throw new UnsupportedFlavorException(flavor);
-        }
-    }
+
 }
 
