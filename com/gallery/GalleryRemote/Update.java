@@ -45,6 +45,7 @@ import javax.swing.UIManager;
 import edu.stanford.ejalbert.BrowserLauncher;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 /**
  *  Update check and dialog
@@ -55,7 +56,8 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 public class Update extends JFrame implements ActionListener, PreferenceNames {
 	public final String MODULE = "Update";
-	
+    public static GRI18n grRes = GRI18n.getInstance();
+
 	public static final int NO_UPDATE = 0;
 	public static final int RELEASE = 1;
 	public static final int BETA = 2;
@@ -162,15 +164,15 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 	}
 	
 	private void jbInit() throws Exception {
-		this.setTitle("Gallery Remote new version");
+		this.setTitle(grRes.getString(MODULE, "title"));
 		this.getContentPane().setLayout(gridBagLayout1);
 
 		jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
-		jLabel1.setText("A new version of Gallery Remote is available!");
-		jLabel2.setText("Version");
-		jLabel3.setText("Release date");
-		jLabel4.setText("Release Notes");
-		jLabel5.setText("Download URL");
+		jLabel1.setText(grRes.getString(MODULE, "newVerAvail"));
+		jLabel2.setText(grRes.getString(MODULE, "ver"));
+		jLabel3.setText(grRes.getString(MODULE, "relDate"));
+		jLabel4.setText(grRes.getString(MODULE, "relNotes"));
+		jLabel5.setText(grRes.getString(MODULE, "dnURL"));
 
 		jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -179,7 +181,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		jDate.setFont(new java.awt.Font("SansSerif", 0, 11));
 		if (which.releaseDate != null) jDate.setText(DateFormat.getDateInstance().format(which.releaseDate));
 
-		jBrowse.setText("Open in Browser");
+		jBrowse.setText(grRes.getString(MODULE, "openInBrwsr"));
 		jBrowse.addActionListener(this);
 
 		jReleaseNotes.setEditable(false);

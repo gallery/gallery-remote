@@ -22,6 +22,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Picture;
 
 import java.awt.Graphics;
@@ -43,7 +44,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 	int previewCacheSize = 10;
 
 	public void initComponents() {
-		setTitle("Preview");
+		setTitle(GRI18n.getInstance().getString(MODULE, "title"));
 
 		setIconImage(GalleryRemote.iconImage);
 

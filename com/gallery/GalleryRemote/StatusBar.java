@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -174,7 +175,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	public void error(String message ) {
-		JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this), message, "Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this), message, GRI18n.getInstance().getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void jbInit() {

@@ -44,6 +44,7 @@ import javax.swing.border.BevelBorder;
 import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.util.DialogUtil;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 /**
  *  Description of the Class
@@ -55,6 +56,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		 implements ActionListener
 {
 	public final static String MODULE = "NewAlbum";
+    public static GRI18n grRes = GRI18n.getInstance();
 
 	Gallery gallery = null;
 	Album defaultAlbum = null;
@@ -110,12 +112,12 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		throws Exception {
 		this.getContentPane().setLayout( gridBagLayout1 );
 		this.setModal( true );
-		this.setTitle( "New Album" );
+		this.setTitle( grRes.getString(MODULE, "title") );
 		
 		Vector albums = new Vector(gallery.getAlbumList());
 		rootAlbum = new Album();
 		rootAlbum.setGallery(gallery);
-		rootAlbum.setTitle("Gallery main page");
+		rootAlbum.setTitle(grRes.getString(MODULE, "rootAlbmTitle"));
 		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
 
@@ -128,27 +130,27 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			album.setSelectedItem(defaultAlbum);
 		}
 
-		cancel.setText( "Cancel" );
+		cancel.setText( grRes.getString(MODULE, "cancel") );
+        cancel.setActionCommand("Cancel");
 		description.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray ) );
 		description.setLineWrap(true);
 		description.setRows(2);
 		description.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 		galleryName.setText( gallery.toString() );
 		name.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
-		name.setToolTipText("What do you want to name this album? The name cannot contain any " +
-			"of the following characters: \\ / * ? \" \' & \\u  | . + # or spaces. " +
-			"Those characters will be ignored in your new album name.");
-		ok.setText( "OK" );
+		name.setToolTipText(grRes.getString(MODULE, "albmNameTip"));
+		ok.setText( grRes.getString(MODULE, "OK") );
+        ok.setActionCommand("OK");
 		title.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 
 		flowLayout1.setAlignment( FlowLayout.LEFT );
 		gridLayout1.setColumns( 2 );
 		gridLayout1.setHgap( 5 );
-		jLabel1.setText( "Creating a new album on Gallery: " );
-		jLabel2.setText( "Parent album" );
-		jLabel3.setText( "Album title" );
-		jLabel4.setText( "Album name" );
-		jLabel5.setText( "Album description" );
+		jLabel1.setText( grRes.getString(MODULE, "createAlbm") );
+		jLabel2.setText( grRes.getString(MODULE, "parentAlbm") );
+		jLabel3.setText( grRes.getString(MODULE, "albmTitle") );
+		jLabel4.setText( grRes.getString(MODULE, "albmName") );
+		jLabel5.setText( grRes.getString(MODULE, "albmDesc") );
 		jPanel1.setLayout( flowLayout1 );
 		jPanel2.setLayout( gridLayout1 );
 

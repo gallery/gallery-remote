@@ -29,6 +29,7 @@ import javax.swing.ImageIcon;
 
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 /**
  *  Thumbnail cache loads and resizes images in the background for display in
@@ -40,7 +41,8 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 public class ThumbnailCache implements Runnable
 {
 	public static final String MODULE = "ThumbCache";
-	
+    public static GRI18n grRes = GRI18n.getInstance();
+
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
 	Hashtable thumbnails = new Hashtable();
@@ -63,7 +65,7 @@ public class ThumbnailCache implements Runnable
 	public void run() {
 		Thread.yield();
 		int loaded = 0;
-		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), "Loading thumbnails", false);
+		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), grRes.getString(MODULE, "loadThmb"), false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
@@ -84,7 +86,7 @@ public class ThumbnailCache implements Runnable
 		}
 		stillRunning = false;
 		
-		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, "Thumbnails loaded");
+		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, grRes.getString(MODULE, "thmbLoaded"));
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}

@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.OsShutdown;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,6 +12,7 @@ import java.awt.event.ActionEvent;
 
 public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
 	public static final String MODULE= "UploadProgress";
+    public static GRI18n grRes = GRI18n.getInstance();
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -56,13 +58,14 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jComputer2.setIcon(MainFrame.iComputer);
 		jUploading.setIcon(MainFrame.iUploading);
 
-		jLabelGlobal.setText("Uploading image n of m");
-		jLabelDetail.setText("Uploading img.gif");
+		jLabelGlobal.setText(grRes.getString(MODULE, "upImgNM"));
+		jLabelDetail.setText(grRes.getString(MODULE, "upImgGif"));
 
-		jCancel.setText("Cancel");
+		jCancel.setText(grRes.getString(MODULE, "Cancel"));
 		jCancel.addActionListener(this);
-		jShutdown.setToolTipText("Shut down the computer when the transfer completes");
-		jShutdown.setText("Shutdown when done");
+        jCancel.setActionCommand("Cancel");
+		jShutdown.setToolTipText(grRes.getString(MODULE, "shutDownTip"));
+		jShutdown.setText(grRes.getString(MODULE, "shutDown"));
 
 		jPanel1.add(jComputer1,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
@@ -148,7 +151,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	}
 
 	public void error(String message) {
-		JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, message, grRes.getString(MODULE, "Error"), JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void setStatus(String message) {

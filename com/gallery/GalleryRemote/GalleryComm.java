@@ -32,6 +32,7 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
 
@@ -46,6 +47,7 @@ import javax.swing.*;
  */
 public abstract class GalleryComm implements PreferenceNames {
 	private static final String MODULE = "GalComm";
+    private static GRI18n grRes = GRI18n.getInstance();
 	int[] capabilities = null;
 	private static int lastRespCode = 0;
 	
@@ -222,9 +224,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				if (ioe instanceof javax.net.ssl.SSLPeerUnverifiedException) {
 					Log.logException(Log.ERROR, MODULE, ioe);
 
-					JOptionPane.showMessageDialog((Component) su, "The site you are trying to connect to is not signed by an authorized provider.\n" +
-							"Please refer to the following document for help:\n" +
-							"http://www.infy.com/knowledge_capital/thought-papers/usingHTTPwith_java.pdf", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog((Component) su, grRes.getString(MODULE, "noAuth"), grRes.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
 				} else {
 					Log.logException(Log.ERROR, MODULE, ioe);
 				}
