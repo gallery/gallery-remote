@@ -136,10 +136,10 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 				"sent to the server, which lowers bandwidth usage. Only possible if " +
 				"ImageMagick is installed.");
 		resizeBeforeUpload.setText("Resize before upload");
-		resizeToDefault.setToolTipText("Resize to the Gallery\'s default");
-		resizeToDefault.setText("Default");
+		resizeToDefault.setToolTipText("Resize to the Album\'s default");
+		resizeToDefault.setText("Album default");
 		resizeToForce.setToolTipText("Force the resize dimension, and disregard the dimensions set by the " +
-				"Gallery");
+				"Album");
 		resizeToForce.setText("Force resize to");
 		htmlEscapeCaptionsNot.setToolTipText("When checked, you can (and have to) write your captions in HTML markup. " +
 				"When unchecked, just type any text, and HTML markup will be generated " +
