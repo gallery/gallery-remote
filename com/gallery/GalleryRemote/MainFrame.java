@@ -189,34 +189,36 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
-		PropertiesFile p = GalleryRemote.getInstance().properties;
-		for (int i = 0; i < galleries.getSize(); i++) {
-			Gallery g = (Gallery) galleries.getElementAt(i);
-			p.setProperty( "url." + i, g.getUrlString() );
-			
-			if (g.getUsername() != null) {
-				p.setProperty( "username." + i, g.getUsername() );
+		try {
+			PropertiesFile p = GalleryRemote.getInstance().properties;
+			for (int i = 0; i < galleries.getSize(); i++) {
+				Gallery g = (Gallery) galleries.getElementAt(i);
+				p.setProperty( "url." + i, g.getUrlString() );
+				
+				if (g.getUsername() != null) {
+					p.setProperty( "username." + i, g.getUsername() );
+				}
+				
+				if (p.getBooleanProperty("savePasswords") && g.getPassword() != null) {
+					p.setBase64Property( "password." + i, g.getPassword() );
+				}
 			}
-			
-			if (p.getBooleanProperty("savePasswords") && g.getPassword() != null) {
-				p.setBase64Property( "password." + i, g.getPassword() );
-			}
+	
+			p.setMainBounds( getBounds() );
+			p.setPreviewBounds( previewFrame.getBounds() );
+			p.setIntProperty( "inspectorDividerLocation", inspectorDivider.getDividerLocation() );
+	
+			p.write();
+	
+			setVisible( false );
+			dispose();
+	
+			ImageUtils.purgeTemp();
+		} catch (Throwable t) {
+			Log.log(Log.ERROR, MODULE, "Error while closing: " + t);
 		}
-
-		p.setMainBounds( getBounds() );
-		p.setPreviewBounds( previewFrame.getBounds() );
-		p.setIntProperty( "inspectorDividerLocation", inspectorDivider.getDividerLocation() );
-
-		p.write();
-
-		setVisible( false );
-		dispose();
-
-		ImageUtils.purgeTemp();
-
-		Log.log(Log.INFO, "Shutting log down");
+		Log.log(Log.INFO, MODULE, "Shutting log down");
 		Log.shutdown();
-
 		System.exit( 0 );
 	}
 
