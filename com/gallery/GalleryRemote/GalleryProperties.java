@@ -72,7 +72,7 @@ public class GalleryProperties extends Properties {
 	 *@return    The currentDirectory value
 	 */
 	public File getCurrentDirectory() {
-		String currentDirectory = (String) getProperty( "filedialogPath" );
+		String currentDirectory = getProperty( "filedialogPath" );
 		if ( currentDirectory != null ) {
 			return new File( currentDirectory );
 		} else {
@@ -305,6 +305,10 @@ public class GalleryProperties extends Properties {
 		}
 	}
 
+	public void setBooleanProperty( String name, boolean value ) {
+		setProperty( name, value?"true":"false" );
+	}
+
 
 	/**
 	 *  Gets the intProperty attribute of the PropertiesFile object
@@ -329,7 +333,7 @@ public class GalleryProperties extends Properties {
 	 *@param  value  The new intProperty value
 	 */
 	public void setIntProperty( String name, int value ) {
-		setProperty( name, String.valueOf( (int) value ) );
+		setProperty( name, String.valueOf( value ) );
 	}
 
 
@@ -410,7 +414,7 @@ public class GalleryProperties extends Properties {
 		ArrayList names = new ArrayList(100);
         Enumeration e = propertyNames();
         while (e.hasMoreElements()) {
-            names.add( (String) e.nextElement() );
+            names.add( e.nextElement() );
         }
 		
 		Object[] namesArray = names.toArray();
@@ -421,5 +425,11 @@ public class GalleryProperties extends Properties {
 			Log.log(level, module, name + "= |" + getProperty(name) + "|");
 		}
     }
+
+	public void uncache()	{
+		thumbnailSize = null;
+		mainBounds = null;
+		previewBounds = null;
+	}
 }
 
