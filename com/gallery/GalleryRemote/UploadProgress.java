@@ -40,7 +40,16 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jProgress[LEVEL_UPLOAD_ONE] = jProgressDetail;
 		jProgress[LEVEL_UPLOAD_PROGRESS] = jProgressGlobal;
 
-		pack();
+		// wierd bug prevents upload... this happens on some versions of the VM
+		// apparently 1.4.2_03-b02 Windows.
+		try {
+			pack();
+		} catch (NullPointerException e) {
+			Log.log(Log.LEVEL_ERROR, MODULE, "Wierd VM bug");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			setSize(400, 300);
+		}
+
 		DialogUtil.center(this, f);
 		setVisible(true);
 	}
