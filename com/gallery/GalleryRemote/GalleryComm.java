@@ -186,6 +186,8 @@ public class GalleryComm {
 				new NVPair("uname", mUsername),
 				new NVPair("password", mPassword)
 			};
+			Log.log(Log.TRACE, MODULE, "login parameters: uname:" + mUsername 
+				+ " password: " + mPassword + " url: " + mURLString);
 			
 			mConnection = new HTTPConnection(url);
 			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
@@ -194,8 +196,9 @@ public class GalleryComm {
 				loginMessage = "HTTP Error: "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
-
-				if (response.equals("SUCCESS")) {
+				Log.log(Log.TRACE, MODULE, response);
+				
+				if (response.indexOf("SUCCESS") >= 0) {
 					mLoggedIn = true;
 					loginMessage = "Success";
 				} else {
@@ -232,6 +235,8 @@ public class GalleryComm {
 				new NVPair("uname", mUsername),
 				new NVPair("password", mPassword)
 			};
+			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: uname:" + mUsername 
+				+ " password: " + mPassword + " url: " + mURLString);
 			
 			mConnection = new HTTPConnection(url);
 			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
@@ -241,11 +246,11 @@ public class GalleryComm {
 				albumMessage = "HTTP Error: "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
+				Log.log(Log.TRACE, MODULE, response);
 
 				if (response.indexOf("SUCCESS") >= 0) {
 					albumMessage = "Success";
 					
-					Log.log(Log.INFO, MODULE, "Fetch Albums: " + response);
 					mAlbumList = new ArrayList();
 					
 					// build the list of hashtables here...
@@ -296,6 +301,9 @@ public class GalleryComm {
 				new NVPair("cmd", "add-item"), 
 				new NVPair("protocal_version", PROTOCAL_VERSION)
 			};
+			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: album name:" + mAlbum 
+				+ " url: " + mURLString);
+
 			NVPair[] afile = { new NVPair("userfile", file.getAbsolutePath()) };
 			NVPair[] hdrs = new NVPair[1];
 			byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
@@ -305,6 +313,7 @@ public class GalleryComm {
 				uploadMessage = "HTTP Error: "+rsp.getReasonLine();
 			} else {
 				String response = new String(rsp.getData()).trim();
+				Log.log(Log.TRACE, MODULE, response);
 
 				if (response.indexOf("SUCCESS") >= 0) {
 					uploadMessage = "Success";
