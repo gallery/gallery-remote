@@ -50,9 +50,10 @@ public class PictureInspector extends JPanel
 	JLabel jLabel1 = new JLabel();
 	JLabel size = new JLabel();
 	JTextField caption = new JTextField();
-	
+
 	MainFrame mf = null;
 	Picture p = null;
+
 
 	/**
 	 *  Constructor for the PictureInspector object
@@ -118,22 +119,42 @@ public class PictureInspector extends JPanel
 		this.add( caption, new GridBagConstraints( 1, 4, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 	}
-	
-	public void setMainFrame(MainFrame mf)
-	{
+
+
+	/**
+	 *  Sets the mainFrame attribute of the PictureInspector object
+	 *
+	 *@param  mf  The new mainFrame value
+	 */
+	public void setMainFrame( MainFrame mf ) {
 		this.mf = mf;
+		icon.setIcon( mf.defaultThumbnail );
 	}
-	
-	public void setPicture(Picture p)
-	{
+
+
+	/**
+	 *  Sets the picture attribute of the PictureInspector object
+	 *
+	 *@param  p  The new picture value
+	 */
+	public void setPicture( Picture p ) {
 		this.p = p;
-		
-		icon.setText(p.getSource().getName());
-		icon.setIcon(mf.getThumbnail(p));
-		path.setText(p.getSource().getParent());
-		album.setText(p.getAlbum().getName());
-		caption.setText(p.getCaption());
-		size.setText(String.valueOf(p.getFileSize()));
+
+		if ( p != null ) {
+			icon.setText( p.getSource().getName() );
+			icon.setIcon( mf.getThumbnail( p ) );
+			path.setText( p.getSource().getParent() );
+			album.setText( p.getAlbum().getName() );
+			caption.setText( p.getCaption() );
+			size.setText( String.valueOf( (int) p.getFileSize() ) + " bytes" );
+		} else {
+			icon.setText("no picture selected");
+			icon.setIcon( mf.defaultThumbnail );
+			path.setText( "" );
+			album.setText( "" );
+			caption.setText( "" );
+			size.setText( "" );
+		}
 	}
 }
 
