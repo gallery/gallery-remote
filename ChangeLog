@@ -1,3 +1,8 @@
+2002-12-14  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b1)
+	
+	* Fixed dropping files when thumbnails are off.
+	* Fixed application closing problem.
+
 2002-11-11  Pierre-Luc Paour <gallery@paour.com> (1.0)
 	
 	* Changed icons and about box (thanks to Ross A. Reyman)
