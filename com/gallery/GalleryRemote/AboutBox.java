@@ -29,11 +29,10 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -112,7 +111,7 @@ public class AboutBox extends JDialog {
      */
     public class AboutPanel extends JComponent {
         ImageIcon image;
-        Vector text;
+        ArrayList text;
         int scrollPosition;
         AnimationThread thread;
         int maxWidth;
@@ -132,12 +131,12 @@ public class AboutBox extends JDialog {
             
             setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );
             
-            text = new Vector( );
+            text = new ArrayList( );
             StringTokenizer st = new StringTokenizer(
             GalleryRemote.getInstance().properties.getProperty( "aboutText" ), "\n" );
             while ( st.hasMoreTokens() ) {
                 String line = st.nextToken();
-                text.addElement( line );
+                text.add( line );
                 maxWidth = Math.max( maxWidth,
                 fm.stringWidth( line ) + 10 );
             }

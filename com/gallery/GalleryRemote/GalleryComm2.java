@@ -29,6 +29,7 @@ import java.net.URLDecoder;
 import java.util.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.*;
 
 import HTTPClient.*;
 
@@ -38,6 +39,7 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
 import javax.swing.*;
 
@@ -92,6 +94,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	private static int[] capabilities1;
 	private static int[] capabilities2;
 	private static int[] capabilities5;
+	private static int[] capabilities9;
 
 	
 	/* -------------------------------------------------------------------------
@@ -121,6 +124,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		capabilities5 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 			CAPA_FORCE_FILENAME};
+		capabilities9 = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+			CAPA_FORCE_FILENAME, CAPA_FETCH_ALBUM_IMAGES};
 		Arrays.sort(capabilities);
 	}
 	
@@ -177,6 +183,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		return newAlbumTask.getNewAlbumName();
 	}
 		
+	public void fetchAlbumImages(StatusUpdate su, Album a, boolean async) {
+		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask( su,
+				a);
+		doTask( fetchAlbumImagesTask, async);
+	}
 	/* -------------------------------------------------------------------------
 	 * UTILITY METHODS
 	 */ 
@@ -262,11 +273,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		/**
 		 *	POSTSs a request to the Gallery server with the given form data.
 		 */	
-		Properties requestResponse( NVPair form_data[] ) throws GR2Exception, ModuleException, IOException {
+		GalleryProperties requestResponse( NVPair form_data[] ) throws GR2Exception, ModuleException, IOException {
 			return requestResponse( form_data, null, g.getGalleryUrl(SCRIPT_NAME), true);
 		}
 
-		Properties requestResponse( NVPair form_data[], URL galUrl ) throws GR2Exception, ModuleException, IOException {
+		GalleryProperties requestResponse( NVPair form_data[], URL galUrl ) throws GR2Exception, ModuleException, IOException {
 			return requestResponse( form_data, null, galUrl, true);
 		}
 
@@ -274,7 +285,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		 *	POSTSs a request to the Gallery server with the given form data.  If data is
 		 *	not null, a multipart MIME post is performed.
 		 */	
-		Properties requestResponse( NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
+		GalleryProperties requestResponse( NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
 			// assemble the URL
 			String urlPath = galUrl.getFile();
 			Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath );
@@ -336,7 +347,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);
 					}
 
-					Properties p = new Properties();
+					GalleryProperties p = new GalleryProperties();
 					p.load( new StringBufferInputStream( response ) );
 
 					su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, grRes.getString(MODULE, "addImgOk"));
@@ -451,7 +462,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		private void handleCapabilities() {
-			if (serverMinorVersion >= 5) {
+			if (serverMinorVersion >= 9) {
+				// we have more than the 2.5 capabilities, we have 2.9 capabilities.
+				capabilities = capabilities9;
+			} else if (serverMinorVersion >= 5) {
 				// we have more than the 2.2 capabilities, we have 2.5 capabilities.
 				capabilities = capabilities5;
 			} else if (serverMinorVersion >= 2) {
@@ -473,7 +487,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		void runTask() {
-			ArrayList pictures = g.getAllPictures();
+			ArrayList pictures = g.getAllUploadablePictures();
 			
 			su.startProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, 0, pictures.size(), grRes.getString(MODULE, "upPic"), false);
 
@@ -975,6 +989,105 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 	}
 	
+	/**
+	 *	An extension of GalleryTask to handle getting album information.
+	 */
+	class FetchAlbumImagesTask extends GalleryTask {
+		Album a;
+
+		FetchAlbumImagesTask( StatusUpdate su, Album a ) {
+			super(su);
+			this.a = a;
+		}
+
+		void runTask() {
+            Object [] params = {g.toString()};
+			status(su, StatusUpdate.LEVEL_GENERIC,
+					grRes.getString(MODULE, "fetchAlbImages",
+							new String[] {a.getName()}));
+
+			try {
+				// setup the protocol parameters
+				NVPair form_data[] = {
+					new NVPair("cmd", "fetch-album-images"),
+					new NVPair("protocol_version", PROTOCOL_VERSION ),
+					new NVPair("set_albumName", a.getName() )
+				};
+				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
+						Arrays.asList(form_data));
+
+				// load and validate the response
+				GalleryProperties p = requestResponse( form_data );
+				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+					// parse and store the data
+					int numImages = p.getIntProperty("image_count");
+					String baseUrl = p.getProperty("baseurl");
+					int width;
+					int height;
+					ArrayList extraFields = a.getExtraFields();
+					ArrayList newPictures = new ArrayList();
+					for (int i = 1; i <= numImages; i++) {
+						Picture picture = new Picture();
+						picture.setOnline(true);
+						picture.setUrlFull(new URL(baseUrl + p.getProperty("image.name." + i)));
+						width = p.getIntProperty("image.raw_width." + i);
+						height = p.getIntProperty("image.raw_height." + i);
+						picture.setSizeFull(new Dimension(width, height));
+
+						String resizedName = p.getProperty("image.resizedName." + i);
+						if (resizedName != null) {
+							picture.setUrlResized(new URL(baseUrl + resizedName));
+							width = p.getIntProperty("image.resized_width." + i);
+							height = p.getIntProperty("image.resized_height." + i);
+							picture.setSizeResized(new Dimension(width, height));
+						}
+
+						picture.setUrlThumbnail(new URL(baseUrl + p.getProperty("image.thumbName." + i)));
+						width = p.getIntProperty("image.thumb_width." + i);
+						height = p.getIntProperty("image.thumb_height." + i);
+						picture.setSizeResized(new Dimension(width, height));
+
+						picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
+						picture.setCaption(p.getProperty("image.caption." + i));
+
+						for (Iterator it = extraFields.iterator(); it.hasNext();) {
+							String name = (String) it.next();
+							String value = p.getProperty("image.extrafield." + name + "." + i);
+
+							if (value != null) {
+								picture.setExtraField(name, value);
+							}
+						}
+
+						newPictures.add(picture);
+					}
+
+					status(su, StatusUpdate.LEVEL_GENERIC,
+							grRes.getString(MODULE, "fetchAlbImagesDone",
+									new String[] {"" + numImages}));
+
+					a.addPictures(newPictures);
+					GalleryRemote.getInstance().mainFrame.thumbnailCache.preloadThumbnails( newPictures.iterator() );
+				} else {
+					error(su, "Error: " + p.getProperty( "status_text" ));
+				}
+
+			} catch ( GR2Exception gr2e ) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
+                Object [] params2 = {gr2e.getMessage()};
+				error(su, grRes.getString(MODULE, "error", params2));
+			} catch (IOException ioe) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
+                Object [] params2 = {ioe.toString()};
+				error(su, grRes.getString(MODULE, "error", params2));
+			} catch (ModuleException me) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
+                Object [] params2 = {me.toString()};
+				error(su, grRes.getString(MODULE, "error", params2));
+			}
+		}
+	}
+
 	boolean isTrue( String s ){
 		return s.equals( "true" );	
 	}

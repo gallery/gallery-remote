@@ -232,7 +232,7 @@ public class AlbumInspector extends JPanel
 		Log.log(Log.LEVEL_TRACE, MODULE, "Action selected " + command );
 
 		if (source == jFetch) {
-			// todo
+			mf.fetchAlbumImages();
 		} else if (source == jNew) {
 			mf.newAlbum();
 		} else if (source == jApply) {
@@ -319,9 +319,13 @@ public class AlbumInspector extends JPanel
 		if ( album == null ) {
 			/*setActive(jName, false);
 			setActive(jTitle, false);
-			setActive(jSummary, false);
+			setActive(jSummary, false);*/
 
-			jPictures.setText("");*/
+			jName.setText("");
+			jTitle.setText("");
+			jSummary.setText("");
+			jPictures.setText("");
+
 			setEnabledInternal(false);
 		} else {
 			setEnabledInternal(true);
@@ -343,6 +347,11 @@ public class AlbumInspector extends JPanel
 			jResizeToWidth.setText("" + album.getResizeDimension().width);
 			jResizeToHeight.setText("" + album.getResizeDimension().height);
 			jBeginning.setSelected(album.getAddToBeginning());
+
+			jFetch.setEnabled(album.getGallery().getComm(mf.jStatusBar).hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES));
+
+			// todo
+			jApply.setEnabled(false);
 		}
 
 		resetUIState();
@@ -350,7 +359,7 @@ public class AlbumInspector extends JPanel
 		ignoreItemChanges = oldIgnoreItemChanges;
 	}
 
-	public void setActive(JTextArea t, boolean active) {
+	/*public void setActive(JTextArea t, boolean active) {
 		if (active) {
 			t.setEditable(true);
 			t.setBackground(UIManager.getColor("TextField.background"));
@@ -359,7 +368,7 @@ public class AlbumInspector extends JPanel
 			t.setEditable(false);
 			t.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		}
-	}
+	}*/
 
 	public void setEnabledInternal(boolean enabled) {
 		//Log.log(Log.TRACE, MODULE, "setEnabled " + enabled);

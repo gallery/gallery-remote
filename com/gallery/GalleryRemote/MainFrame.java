@@ -29,6 +29,7 @@ import java.text.ChoiceFormat;
 import java.text.Format;
 import java.util.Collections;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.lang.reflect.Method;
 
 import javax.swing.*;
@@ -517,13 +518,14 @@ public class MainFrame extends javax.swing.JFrame
 			album = getCurrentAlbum();
 		}
 
+		ArrayList newPictures = null;
 		if (index == -1) {
-			album.addPictures( files );
+			newPictures = album.addPictures( files );
 		} else {
-			album.addPictures( files, index );
+			newPictures = album.addPictures( files, index );
 		}
 
-		thumbnailCache.preloadThumbnailFiles( files );
+		thumbnailCache.preloadThumbnails( newPictures.iterator() );
 
 		if (select) {
 			selectAddedPictures(files, index);
@@ -548,9 +550,9 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		if (index == -1) {
-			album.addPictures( pictures );
+			album.addPictures( Arrays.asList(pictures) );
 		} else {
-			album.addPictures( pictures, index );
+			album.addPictures( Arrays.asList(pictures), index );
 		}
 
 		if (select) {
@@ -610,6 +612,12 @@ public class MainFrame extends javax.swing.JFrame
 		if (jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) > 0) {
 			jAlbumTree.setSelectionPath(null);
 		}
+	}
+
+	public void fetchAlbumImages() {
+		Log.log(Log.LEVEL_INFO, MODULE, "fetchAlbumImages starting");
+
+		getCurrentAlbum().fetchAlbumImages( jStatusBar );
 	}
 
 	public void newAlbum() {
@@ -764,7 +772,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if ( show ) {
 			if ( getCurrentAlbum() != null ) {
-				thumbnailCache.preloadThumbnailPictures( getCurrentAlbum().getPictures() );
+				thumbnailCache.preloadThumbnails( getCurrentAlbum().getPictures() );
 			}
 
 			jPicturesList.setFixedCellHeight( GalleryRemote.getInstance().properties.getThumbnailSize().height + 4 );
@@ -796,7 +804,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  filename  Description of Parameter
 	 *@return           The thumbnail value
 	 */
-	public ImageIcon getThumbnail( String filename ) {
+	/*public ImageIcon getThumbnail( String filename ) {
 		if ( filename == null ) {
 			return null;
 		}
@@ -808,7 +816,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		return r;
-	}
+	}*/
 
 
 	/**
@@ -818,9 +826,17 @@ public class MainFrame extends javax.swing.JFrame
 	 *@return    The thumbnail value
 	 */
 	public ImageIcon getThumbnail( Picture p ) {
-		ImageIcon thumb = getThumbnail( p.getSource().getPath() );
+		if ( p == null ) {
+			return null;
+		}
 
-		thumb = ImageUtils.rotateImageIcon(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
+		ImageIcon thumb = thumbnailCache.getThumbnail( p );
+
+		if ( thumb == null ) {
+			thumb = ImageUtils.defaultThumbnail;
+		} else {
+			thumb = ImageUtils.rotateImageIcon(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
+		}
 
 		return thumb;
 	}
@@ -859,7 +875,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	public void doPaste() {
 		if (jPicturesList.isEnabled() && ps != null && !ps.isEmpty()) {
-			getCurrentAlbum().addPictures((Picture[]) ps.toArray(new Picture[0]), jPicturesList.getSelectedIndex());
+			getCurrentAlbum().addPictures(ps, jPicturesList.getSelectedIndex());
 		}
 	}
 
@@ -1232,7 +1248,7 @@ public class MainFrame extends javax.swing.JFrame
 					newGalleries.addElement(galleryArray[i]);
 					//galleryArray[i].checkTransients();
 					galleryArray[i].addListDataListener(this);
-					thumbnailCache.preloadThumbnailPictures(Collections.enumeration(galleryArray[i].getAllPictures()));
+					thumbnailCache.preloadThumbnails(galleryArray[i].getAllPictures().iterator());
 				}
 
 				setGalleries( newGalleries );
@@ -1300,8 +1316,7 @@ public class MainFrame extends javax.swing.JFrame
 		int sel = jPicturesList.getSelectedIndex();
 
 		if ( sel != -1 ) {
-			String filename = ( getCurrentAlbum().getPicture( sel ).getSource() ).getPath();
-			thumbnailCache.preloadThumbnailFilenameFirst( filename );
+			thumbnailCache.preloadThumbnailFirst( getCurrentAlbum().getPicture( sel ) );
 		}
 
 		resetUIState();
@@ -1466,7 +1481,12 @@ public class MainFrame extends javax.swing.JFrame
 
 			if (value != null && index != -1) {
 				Picture p = getCurrentAlbum().getPicture( index );
-				File f = p.getSource();
+
+				if (p.isOnline()) {
+					setBackground(Color.GREEN);
+				} else {
+					setBackground(Color.WHITE);
+				}
 
 				if ( GalleryRemote.getInstance().properties.getShowThumbnails() ) {
 					ImageIcon icon = getThumbnail( p );
@@ -1477,9 +1497,14 @@ public class MainFrame extends javax.swing.JFrame
 				StringBuffer text = new StringBuffer();
 				text.append("<html><p>");
 
-				text.append(f.getName());
-				if ( GalleryRemote.getInstance().properties.getShowPath() ) {
-					text.append(" [").append(f.getParent()).append("]</p>");
+				if (p.isOnline()) {
+					text.append(p.getName());
+				} else {
+					File f = p.getSource();
+					text.append(f.getName());
+					if ( GalleryRemote.getInstance().properties.getShowPath() ) {
+						text.append(" [").append(f.getParent()).append("]</p>");
+					}
 				}
 
 				if (p.getCaption() != null) {

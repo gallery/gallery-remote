@@ -48,7 +48,7 @@ import javax.swing.ImageIcon;
 public class ImageUtils {
 	public static final String MODULE = "ImageUtils";
 
-	static Vector toDelete = new Vector();
+	static ArrayList toDelete = new ArrayList();
 	static long totalTime = 0;
 	static int totalIter = 0;
 
@@ -498,9 +498,9 @@ public class ImageUtils {
 
 	public static void purgeTemp()
 	{
-		Enumeration e = toDelete.elements();
-		while (e.hasMoreElements()) {
-			((File) e.nextElement()).delete();
+		for (Iterator it = toDelete.iterator(); it.hasNext();) {
+			File file = (File) it.next();
+			file.delete();
 		}
 	}
 

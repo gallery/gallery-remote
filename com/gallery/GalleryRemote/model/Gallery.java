@@ -59,7 +59,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	ArrayList albumList = null;
 	Album selectedAlbum = null;
 	int type = TYPE_STANDALONE;
-	Object root = new Object();
+	Album root = new Album(this);
 	ArrayList rootAlbums = new ArrayList();
 
 	transient GalleryComm comm = null;
@@ -157,13 +157,13 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 				Album a = (Album) i.next();
 
 				Log.log(Log.LEVEL_TRACE, MODULE, a.toString());
-				if (! a.getPicturesVector().isEmpty()) {
+				if (! a.getPicturesList().isEmpty()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Album " + a + " had pictures");
 					int j = albumList.indexOf(a);
 
 					if (j != -1) {
 						Album newAlbum = (Album) albumList.get(j);
-						newAlbum.setPicturesVector(a.getPicturesVector());
+						newAlbum.setPicturesList(a.getPicturesList());
 					}
 				}
 			}
@@ -210,6 +210,14 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public ArrayList getAllPictures() {
+		return getAllPictures(false);
+	}
+
+	public ArrayList getAllUploadablePictures() {
+		return getAllPictures(true);
+	}
+
+	public ArrayList getAllPictures(boolean onlyUploadable) {
 		ArrayList pictures = new ArrayList();
 
 		if (albumList != null) {
@@ -217,14 +225,18 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			while (i.hasNext()) {
 				Album a = (Album) i.next();
 
-				pictures.addAll(a.getPicturesVector());
+				if (onlyUploadable) {
+					pictures.addAll(a.getUploadablePicturesList());
+				} else {
+					pictures.addAll(a.getPicturesList());
+				}
 			}
 		}
 
 		return pictures;
 	}
 
-	public ArrayList getAllPictureFiles() {
+	/*public ArrayList getAllPictureFiles() {
 		ArrayList files = new ArrayList();
 
 		if (albumList != null) {
@@ -237,7 +249,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		}
 
 		return files;
-	}
+	}*/
 
 	public int countAllPictures() {
 		int c = 0;
@@ -380,7 +392,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (phpnGalleryUrlString != null) {
 			return phpnGalleryUrlString.toString();
 		} else {
-			return "http://your.host.com/nuke/modules.php?name=gallery&include=$GALLERYFILE$";
+			return "http://your.host.com/modules.php?name=gallery&include=$GALLERYFILE$";
 		}
 	}
 
@@ -404,7 +416,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		if (phpnLoginUrlString != null) {
 			return phpnLoginUrlString.toString();
 		} else {
-			return "http://your.host.com/nuke/modules.php?name=Your_Account&op=login&username=$USERNAME$&user_password=$PASSWORD$";
+			return "http://your.host.com/modules.php?name=Your_Account&op=login&username=$USERNAME$&user_password=$PASSWORD$";
 		}
 	}
 

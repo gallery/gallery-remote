@@ -51,7 +51,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	/* -------------------------------------------------------------------------
 	 * LOCAL STORAGE
 	 */
-	Vector pictures = new Vector();
+	ArrayList pictures = new ArrayList();
 
 
 	/* -------------------------------------------------------------------------
@@ -98,8 +98,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *@param  gallery  The new gallery
 	 */
 	public void fetchAlbumProperties( StatusUpdate su ) {
-		if ( ! hasFetchedInfo && getGallery().getComm( su ).hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO))
-		{
+		if ( ! hasFetchedInfo && getGallery().getComm( su ).hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
 			if ( su == null ) {
 				su = new StatusUpdateAdapter(){};
 			}
@@ -113,6 +112,21 @@ public class Album extends Picture implements ListModel, Serializable {
 		}
 	}
 	
+	public void fetchAlbumImages( StatusUpdate su ) {
+		if ( getGallery().getComm( su ).hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
+			if ( su == null ) {
+				su = new StatusUpdateAdapter(){};
+			}
+
+			try {
+				gallery.getComm( su ).fetchAlbumImages( su, this, false );
+			} catch (RuntimeException e) {
+				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-fetch-images");
+				Log.logException(Log.LEVEL_INFO, MODULE, e);
+			}
+		}
+	}
+
 	/**
 	 *  Sets the server auto resize dimension.
 	 *
@@ -157,8 +171,8 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *
 	 *@return    The pictures value
 	 */
-	public Enumeration getPictures() {
-		return pictures.elements();
+	public Iterator getPictures() {
+		return pictures.iterator();
 	}
 	
 	/**
@@ -178,12 +192,14 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *
 	 *@param  file  the file to create the picture from
 	 */
-	public void addPicture( File file ) {
+	public Picture addPicture( File file ) {
 		Picture p = new Picture( file );
 		p.setAlbum( this );
 		addPictureInternal( p );
 
 		notifyListeners();
+
+		return p;
 	}
 
 	/**
@@ -191,8 +207,8 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *
 	 *@param  files  the files to create the pictures from
 	 */
-	public void addPictures( File[] files ) {
-		addPictures(files, -1);
+	public ArrayList addPictures( File[] files ) {
+		return addPictures(files, -1);
 	}
 
     /**
@@ -201,7 +217,9 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *@param  files  the files to create the pictures from
          *@param  index  the index in the list at which to begin adding
 	 */
-	public void addPictures( File[] files, int index ) {
+	public ArrayList addPictures( File[] files, int index ) {
+		ArrayList pictures = new ArrayList(files.length);
+
 		for ( int i = 0; i < files.length; i++ ) {
 			Picture p = new Picture( files[i] );
 			p.setAlbum( this );
@@ -210,9 +228,13 @@ public class Album extends Picture implements ListModel, Serializable {
 			} else {
 				addPictureInternal( index++, p );
 			}
+
+			pictures.add(p);
 		}
 
 		notifyListeners();
+
+		return pictures;
 	}
 
 	/**
@@ -220,19 +242,13 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *
 	 *@param  picturesA the picturesA
 	 */
-	public void addPictures( Picture[] picturesA ) {
-		addPictures(picturesA, -1);
+	public void addPictures( List picturesL ) {
+		addPictures(picturesL, -1);
 	}
 
-    /**
-	 *  Adds pictures to the album at a specified index
-	 *
-	 *@param  pictures  the pictures
-     *@param  index  the index in the list at which to begin adding
-	 */
-	public void addPictures( Picture[] picturesA, int index ) {
-		for ( int i = 0; i < picturesA.length; i++ ) {
-			Picture p = picturesA[i];
+	public void addPictures( List picturesL, int index ) {
+		for (Iterator it = picturesL.iterator(); it.hasNext();) {
+			Picture p = (Picture) it.next();
 			p.setAlbum( this );
 			if (index == -1) {
 				pictures.add(p);
@@ -351,7 +367,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *
 	 *@return    The fileList value
 	 */
-	public ArrayList getFileList() {
+	/*public ArrayList getFileList() {
 		ArrayList l = new ArrayList( pictures.size() );
 
 		Enumeration e = pictures.elements();
@@ -360,7 +376,7 @@ public class Album extends Picture implements ListModel, Serializable {
 		}
 
 		return l;
-	}
+	}*/
 
 	/**
 	 *  Sets the name attribute of the Album object
@@ -504,7 +520,7 @@ public class Album extends Picture implements ListModel, Serializable {
 	 *@return        The elementAt value
 	 */
 	public Object getElementAt( int index ) {
-		return pictures.elementAt( index );
+		return pictures.get( index );
 	}
 
 	/**
@@ -614,17 +630,30 @@ public class Album extends Picture implements ListModel, Serializable {
 	 */
 	 
 	/**
-	 *	Package access to get the whole picture vector at once.
+	 *	Package access to get the whole picture list at once.
 	 */
-	Vector getPicturesVector() {
+	ArrayList getPicturesList() {
 		return pictures;
 	}
-	
-	void setPicturesVector(Vector pictures) {
+
+	ArrayList getUploadablePicturesList() {
+		ArrayList uploadable = new ArrayList();
+
+		for (Iterator it = pictures.iterator(); it.hasNext();) {
+			Picture picture = (Picture) it.next();
+			if (!picture.isOnline()) {
+				uploadable.add(picture);
+			}
+		}
+
+		return uploadable;
+	}
+
+	void setPicturesList(ArrayList pictures) {
 		this.pictures = pictures;
 		
-		for (Enumeration e = pictures.elements(); e.hasMoreElements(); ) {
-			((Picture) e.nextElement()).setAlbum(this);
+		for (Iterator e = pictures.iterator(); e.hasNext(); ) {
+			((Picture) e.next()).setAlbum(this);
 		}
 		
 		notifyListeners();

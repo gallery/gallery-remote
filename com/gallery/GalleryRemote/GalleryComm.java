@@ -122,7 +122,11 @@ public abstract class GalleryComm implements PreferenceNames {
 			String newAlbumDesc, boolean async ) {
 		throw new RuntimeException( "This method is not available on this protocol" );
 	}
-	
+
+	public void fetchAlbumImages(StatusUpdate su, Album a, boolean async) {
+		throw new RuntimeException( "This method is not available on this protocol" );
+	}
+
 	public void logOut() {
 		isLoggedIn = false;
 		CookieModule.discardAllCookies();
