@@ -27,7 +27,7 @@ public class GeneralPanel extends PreferencePanel implements PreferenceNames {
 	GridBagLayout gridBagLayout2 = new GridBagLayout();
 	JLabel jLabel3 = new JLabel();
 	JComboBox logLevel = new JComboBox(new String[] {"Only critical errors", "Critical and normal errors",
-													 "Also print information messages", "detailed, very verbose log"});
+													 "Also print information messages", "Detailed, very verbose log"});
 	JPanel jPanel3 = new JPanel();
 	JPanel jPanel4 = new JPanel();
 	JCheckBox updateCheck = new JCheckBox();
