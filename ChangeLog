@@ -1,3 +1,10 @@
+2004-07-29  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b1)
+
+	* Fixed double-upload to old versions of Gallery.
+	* Fixed not able to select root album in the new album dialog.
+	* Stripping HTML tags in slideshow.
+	* Hiding mouse pointer in slideshow.
+
 2004-07-20  Pierre-Luc Paour <gallery@paour.com> (1.4)
 
 	* Released.

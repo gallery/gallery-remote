@@ -78,9 +78,4 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	void handleCapabilities() {
 		// don't do anything and leave capabilities to the default value
 	}
-
-	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
-		// G2 doesn't return debug login info. This prevents GR from uploading each image to G2 twice.
-		return requestResponse(form_data, data, galUrl, checkResult, su, task, true);
-	}
 }

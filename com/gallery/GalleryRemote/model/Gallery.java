@@ -862,6 +862,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 		Album album = new Album(this);
 		album.setTitle(GRI18n.getString("Common", "rootAlbmTitle"));
+		album.setName("root.album");
 		setRoot(album);
 
 		return (Album) getRoot();

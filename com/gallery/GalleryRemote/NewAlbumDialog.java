@@ -26,6 +26,7 @@ import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -101,8 +102,6 @@ public class NewAlbumDialog extends JDialog
 
 		jAlbum = new JComboBox(albums);
 		jAlbum.setRenderer(new AlbumListRenderer());
-		jAlbum.setFont(UIManager.getFont("Label.font"));
-		jAlbum.addItemListener(this);
 
 		if (defaultAlbum == null) {
 			jAlbum.setSelectedItem(gallery.getRoot());
@@ -156,6 +155,7 @@ public class NewAlbumDialog extends JDialog
 
 		jOk.addActionListener(this);
 		jCancel.addActionListener(this);
+		jAlbum.addItemListener(this);
 
 		getRootPane().setDefaultButton(jOk);
 
@@ -199,7 +199,9 @@ public class NewAlbumDialog extends JDialog
 	}
 
 	public void itemStateChanged(ItemEvent e) {
-		resetUIState();
+		if (e.getStateChange() == ItemEvent.SELECTED) {
+			resetUIState();
+		}
 	}
 
 	void resetUIState() {
@@ -220,7 +222,9 @@ public class NewAlbumDialog extends JDialog
 					isSelected, cellHasFocus);
 
 			if (((Album) value).getCanCreateSubAlbum()) {
-				setForeground(Color.BLACK);
+				if (! isSelected) {
+					setForeground(Color.BLACK);
+				}
 			} else {
 				setForeground(Color.GRAY);
 			}

@@ -729,7 +729,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			form_data = fudgeFormParameters(form_data);
 
 			// load and validate the response
-			Properties p = requestResponse(form_data, su, this);
+			GalleryProperties p = requestResponse(form_data, su, this);
 			if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 				ArrayList albums = new ArrayList();
 
@@ -868,9 +868,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					depth++;
 				}
 
-				if ("no".equals(p.getProperty("can_create_root"))) {
-					rootAlbum.setCanCreateSubAlbum(false);
-				}
+				rootAlbum.setCanCreateSubAlbum(p.getBooleanProperty("can_create_root"));
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Ordered " + orderedAlbums.size() + " albums");
 
@@ -1340,6 +1338,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				// catch session expiration problems
 				if (!alreadyRetried && !g.cookieLogin && g.getUsername() != null && g.getUsername().length() != 0
+						&& p.getProperty("debug_user_already_logged_in") != null
 						&& ! "1".equals(p.getProperty("debug_user_already_logged_in"))) {
 					Log.log(Log.LEVEL_INFO, MODULE, "The session seems to have expired: trying to login and retry...");
 

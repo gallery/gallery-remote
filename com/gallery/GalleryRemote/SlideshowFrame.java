@@ -9,19 +9,23 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.MemoryImageSource;
 import java.awt.geom.Rectangle2D;
 import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Created by IntelliJ IDEA.
  * User: paour
  * Date: Dec 9, 2003
  */
-public class SlideshowFrame extends PreviewFrame implements Runnable, PreferenceNames, CancellableTransferListener {
+public class SlideshowFrame extends PreviewFrame
+		implements Runnable, PreferenceNames, CancellableTransferListener, MouseMotionListener {
 	public static final String MODULE = "SlideFrame";
 
 	List pictures = null;
@@ -58,6 +62,10 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	long controllerUntil = 0;
 	long dontShowUntil = 0;
 	Thread controllerThread = null;
+
+	public static Cursor transparentCursor = null;
+	public static Pattern stripper = Pattern.compile("<[^<>]*>");
+	public static Pattern spacer = Pattern.compile("[\r\n]");
 
 	public SlideshowFrame() {
 		setUndecorated(true);
@@ -118,6 +126,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		if (!isShowing()) {
 			return;
 		}
+
+		showCursor();
 
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		gd.setFullScreenWindow(null);
@@ -185,6 +195,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 				}
 			}
 		});
+
+		addMouseMotionListener(this);
 
 		PreviewFrame.ImageContentPane cp = new PreviewFrame.ImageContentPane();
 		setContentPane(cp);
@@ -383,7 +395,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		if (picture != null) {
 			// todo: captions are not printed outline because they are HTML and that's a fucking mess
-			caption = picture.getCaption();
+			caption = stripTags(picture.getCaption());
+			Log.log(Log.LEVEL_TRACE, MODULE, caption);
 			updateProgress(picture, STATE_NONE);
 			extra = picture.getExtraFieldsString();
 			if (picture.isOnline()) {
@@ -393,7 +406,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			}
 		}
 
-		//Log.log(Log.LEVEL_TRACE, MODULE, "TIMESTAMP");
 		pictureShownTime = System.currentTimeMillis();
 
 		super.pictureReady(image, picture);
@@ -447,6 +459,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		repaint();
+
+		hideCursor();
 	}
 
 	public boolean dataTransferred(int transferred, int overall, double kbPerSecond, Picture p) {
@@ -507,6 +521,35 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		repaint();
+	}
+
+	public void hideCursor() {
+		if (transparentCursor == null) {
+			int[] pixels = new int[16 * 16];
+			Image image = Toolkit.getDefaultToolkit().createImage(
+					new MemoryImageSource(16, 16, pixels, 0, 16));
+			transparentCursor =
+					Toolkit.getDefaultToolkit().createCustomCursor
+						(image, new Point(0, 0), "invisiblecursor");
+		}
+
+		setCursor(transparentCursor);
+	}
+
+	public static String stripTags(String text) {
+		Matcher m = stripper.matcher(text);
+		m = spacer.matcher(m.replaceAll(""));
+		return m.replaceAll(" ");
+	}
+
+	public void showCursor() {
+		setCursor(Cursor.getDefaultCursor());
+	}
+
+	public void mouseDragged(MouseEvent e) {}
+
+	public void mouseMoved(MouseEvent e) {
+		showCursor();
 	}
 
 	public class FeedbackGlassPane extends JComponent {
