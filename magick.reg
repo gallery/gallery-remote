@@ -1,0 +1,23 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ImageMagick]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ImageMagick\5.4.8]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ImageMagick\5.4.8\Q:16]
+"ApplicationDefaultsPath"="@PATH@\\config"
+"BinPath"="@PATH@"
+"LibPath"="@PATH@"
+"ModulesPath"="@PATH@\\modules"
+"SharePath"="@PATH@\\config"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\ImageMagick\Current]
+"Version"="5.4.8"
+"QuantumDepth"=dword:00000010
+"ApplicationDefaultsPath"="@PATH@\\config"
+"BinPath"="@PATH@"
+"LibPath"="@PATH@"
+"ModulesPath"="@PATH@\\modules"
+"SharePath"="@PATH@\\config"
+
+toto@PATH@tata
