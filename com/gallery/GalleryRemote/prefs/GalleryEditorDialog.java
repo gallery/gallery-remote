@@ -91,11 +91,14 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jCancel.setText("Cancel");
 		jPanel2.setLayout(gridLayout1);
 		gridLayout1.setHgap(5);
-		jLabel7.setPreferredSize(new Dimension(300, 60));
+		jLabel7.setPreferredSize(new Dimension(300, 80));
 		jLabel7.setText("<HTML>Where <b>$USERNAME$</b> and <b>$PASSWORD$</b> will be replaced when Gallery " +
 				"Remote tries to log in by the username and password you enter above " +
 				"and <b>$GALLERYFILE$</b> is replaced with the PHP file Gallery Remote uses " +
-				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).</HTML>");
+				"to communicate with Gallery (usually <i>gallery_remote2.php</i>).<BR>" +
+				"The <b>name</b> parameter is the PostNuke module name of your gallery; set it " +
+				"accordingly.<BR>" +
+				"This functionality is only available with Gallery 1.3.5 (beta 10) and later.</HTML>");
 		jLabel7.setVerticalAlignment(SwingConstants.TOP);
 		jLabel8.setText("<HTML>The Gallery URL is the URL users would use to connect to your " +
 				"Gallery.</HTML>");
