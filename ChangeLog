@@ -1,3 +1,10 @@
+2003-07-19  Pierre-Luc Paour <gallery@paour.com> (1.1-b13)
+
+	* Added a jpegQuality field to the ImageMagick settings.
+	* Better handling of null username or password.
+	* Clearing cookies when Log out is clicked, so it's possible
+	  to log in with different credentials without having to restart GR.
+
 2003-07-01  Pierre-Luc Paour <gallery@paour.com> (1.1-b12)
 
 	* Uses a shutdown handler on Mac for those folks who use Cmd-Q to quit.
