@@ -588,9 +588,11 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		public void paintInfo(Graphics g, String text, int position) {
 			if (position == 0 || text == null || text.length() == 0) return;
 
+			text = text.trim();
+
 			Dimension d = getSize();
 			g.setFont(getFont());
-			FontMetrics fm = g.getFontMetrics();
+			FontMetrics fm = g.getFontMetrics(getFont());
 			Rectangle2D bounds = fm.getStringBounds(text, g);
 			int x;
 			int y;
@@ -618,15 +620,15 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 					break;
 
 				case 2:
-					y = (int) (d.height / 2);
+					y = (int) ((d.height -bounds.getHeight()) / 2);
 					break;
 
 				case 3:
-					y = d.height - inset;
+					y = (int) (d.height - bounds.getHeight() - inset);
 					break;
 			}
 
-			y += bounds.getHeight();
+			y += fm.getAscent();
 
 			paintOutline(g, text, x, y);
 		}

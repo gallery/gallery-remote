@@ -540,6 +540,5 @@ public class PictureInspector extends JPanel
 			CoreUtils.selectPrevPicture();
 		}
 	};
-
 }
 

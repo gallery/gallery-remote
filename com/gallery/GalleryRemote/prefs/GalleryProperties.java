@@ -170,6 +170,27 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty(key, ((int) d.getWidth()) + "," + ((int) d.getHeight()));
 	}
 
+	public int getIntDimensionProperty(String key) {
+		int i = getIntProperty(key + "1", -1);
+
+		if (i == -1) {
+			Dimension d = getDimensionProperty(key);
+			if (d != null)	{
+				i = d.width;
+			} else {
+				i = 0;
+			}
+
+			setIntDimensionProperty(key, i);
+		}
+		
+		return i;
+	}
+
+	public void setIntDimensionProperty(String key, int i) {
+		setProperty(key + "1", String.valueOf(i));
+	}
+
 	public Color getColorProperty(String key) {
 		String value = getProperty(key);
 		if (value == null) return null;

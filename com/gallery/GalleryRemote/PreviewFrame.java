@@ -504,11 +504,23 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 				int dx = (int) (px - start.getX());
 				int dy = (int) (py - start.getY());
 
-				Dimension target = new Dimension(dx, dy);
+				// reverse rectangle
+				Dimension target;
+				int sameOrientation = (Math.abs(dx) - Math.abs(dy)) * (imageRect.width - imageRect.height);
+				if (sameOrientation > 0) {
+					target = new Dimension(dx, dy);
+				} else {
+					target = new Dimension(dy, dx);
+				}
+
 				Dimension d = ImageUtils.getSizeKeepRatio(imageRect.getSize(),
 						target, false);
 
-				p.setLocation(start.getX() + d.width, start.getY() + d.height);
+				if (sameOrientation > 0) {
+					p.setLocation(start.getX() + d.width, start.getY() + d.height);
+				} else {
+					p.setLocation(start.getX() + d.height, start.getY() + d.width);
+				}
 			}
 
 			centerMode = (modifiers & InputEvent.ALT_DOWN_MASK) == InputEvent.ALT_DOWN_MASK;

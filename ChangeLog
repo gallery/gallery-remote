@@ -1,3 +1,12 @@
+2004-06-02  Pierre-Luc Paour <gallery@paour.com> (1.4-b14)
+
+	* Resize before upload is now a 1-dimension editable ComboBox
+	  of popular sizes, like Gallery.
+	* Fixed displaying information at the bottom of slideshow.
+	* When constraining to aspect ratio while cropping, now
+	  able to use portrait and landscape of aspect ratio.
+	* Fixed EXIF support to trim spaces.
+
 2004-05-18  Pierre-Luc Paour <gallery@paour.com> (1.4-b13)
 
 	* Added support for non-8bit characters in album and image data.

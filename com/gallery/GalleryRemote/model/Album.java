@@ -73,7 +73,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	Boolean overrideResize = null;
 	Boolean overrideResizeDefault = null;
-	Dimension overrideResizeDimension = null;
+	int overrideResizeDimension = -1;
 	Boolean overrideAddToBeginning = null;
 
 	int autoResize = 0;
@@ -808,11 +808,11 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		this.overrideResizeDefault = overrideResizeDefault;
 	}
 
-	public Dimension getOverrideResizeDimension() {
+	public int getOverrideResizeDimension() {
 		return overrideResizeDimension;
 	}
 
-	public void setOverrideResizeDimension(Dimension overrideResizeDimension) {
+	public void setOverrideResizeDimension(int overrideResizeDimension) {
 		this.overrideResizeDimension = overrideResizeDimension;
 	}
 
@@ -836,15 +836,15 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		if (overrideResizeDefault != null) {
 			return overrideResizeDefault.booleanValue();
 		} else {
-			return new Dimension(0, 0).equals(GalleryRemote._().properties.getDimensionProperty(RESIZE_TO));
+			return GalleryRemote._().properties.getIntDimensionProperty(RESIZE_TO) == 0;
 		}
 	}
 
-	public Dimension getResizeDimension() {
-		if (overrideResizeDimension != null) {
+	public int getResizeDimension() {
+		if (overrideResizeDimension != -1) {
 			return overrideResizeDimension;
 		} else {
-			return GalleryRemote._().properties.getDimensionProperty(RESIZE_TO);
+			return GalleryRemote._().properties.getIntDimensionProperty(RESIZE_TO);
 		}
 	}
 

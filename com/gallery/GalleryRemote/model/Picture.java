@@ -202,27 +202,22 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 		// resize
 		if (album.getResize()) {
-			Dimension d = album.getResizeDimension();
+			int i = album.getResizeDimension();
 
-			if (d == null || d.equals(new Dimension(0, 0))) {
-				d = null;
+			if (i <= 0) {
 				int l = album.getServerAutoResize();
 
 				if (l != 0) {
-					d = new Dimension(l, l);
+					i = l;
 				} else {
 					// server can't tell us how to resize, try default
-					d = GalleryRemote._().properties.getDimensionProperty(RESIZE_TO_DEFAULT);
-
-					if (d.equals(new Dimension(0, 0))) {
-						d = null;
-					}
+					i = GalleryRemote._().properties.getIntDimensionProperty(RESIZE_TO_DEFAULT);
 				}
 			}
 
-			if (d != null || useLossyCrop) {
+			if (i != -1 || useLossyCrop) {
 				try {
-					picture = ImageUtils.resize(picture.getPath(), d, useLossyCrop?cropTo:null);
+					picture = ImageUtils.resize(picture.getPath(), new Dimension(i, i), useLossyCrop?cropTo:null);
 				} catch (UnsupportedOperationException e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -547,6 +542,24 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setCropTo(Rectangle cropTo) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "setCropTo " + cropTo);
+
+		if (cropTo != null) {
+			// make very sure the crop dimensions make sense
+			Dimension d = getDimension();
+			if (cropTo.x < 0) {
+				cropTo.x = 0;
+			}
+			if (cropTo.y < 0) {
+				cropTo.y = 0;
+			}
+			if (cropTo.width + cropTo.x > d.width) {
+				cropTo.width = d.width - cropTo.x;
+			}
+			if (cropTo.height + cropTo.y > d.height) {
+				cropTo.height = d.height - cropTo.y;
+			}
+		}
+
 		this.cropTo = cropTo;
 	}
 

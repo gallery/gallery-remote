@@ -9,6 +9,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,14 +19,10 @@ import java.awt.event.ActionListener;
 public class UploadPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "UploadPa";
 
-
 	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
 
-	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
-	JTextField resizeToWidth = new JTextField();
-	JLabel jLabel2 = new JLabel();
-	JTextField resizeToHeight = new JTextField();
+	JComboBox resizeTo = new JComboBox(defaultSizes);
 	JPanel jPanel2 = new JPanel();
 
 	JRadioButton setCaptionNone = new JRadioButton();
@@ -33,9 +30,6 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 	JCheckBox captionStripExtension = new JCheckBox();
 	JRadioButton setCaptionWithMetadata = new JRadioButton();
 	ButtonGroup buttonGroup2 = new ButtonGroup();
-
-	GridBagLayout gridBagLayout2 = new GridBagLayout();
-	GridBagLayout gridBagLayout4 = new GridBagLayout();
 
 	JPanel jPanel6 = new JPanel();
 	JPanel jPanel7 = new JPanel();
@@ -49,9 +43,9 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 	JCheckBox htmlEscapeCaptionsNot = new JCheckBox();
 
-	Border border1;
-	TitledBorder titledBorder1;
 	JCheckBox exifAutorotate = new JCheckBox();
+
+	public static Vector defaultSizes = new Vector();
 
 	public JLabel getIcon() {
 		return icon;
@@ -59,14 +53,16 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 	public void readProperties(PropertiesFile props) {
 		resizeBeforeUpload.setSelected(props.getBooleanProperty(RESIZE_BEFORE_UPLOAD));
-		if (new Dimension(0, 0).equals(props.getDimensionProperty(RESIZE_TO))) {
+		int size = props.getIntDimensionProperty(RESIZE_TO);
+
+		if (size == 0) {
 			// use default dimension
 			resizeToDefault.setSelected(true);
 		} else {
 			resizeToForce.setSelected(true);
-			resizeToWidth.setText("" + (int) props.getDimensionProperty(RESIZE_TO).getWidth());
-			resizeToHeight.setText("" + (int) props.getDimensionProperty(RESIZE_TO).getHeight());
 		}
+
+		setupComboValue(size, resizeTo);
 
 		setCaptionNone.setSelected(props.getBooleanProperty(SET_CAPTIONS_NONE));
 
@@ -81,21 +77,54 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		resetUIState();
 	}
 
+	public static void setupComboValue(int size, JComboBox resizeTo) {
+		MutableComboBoxModel model = (MutableComboBoxModel) resizeTo.getModel();
+		boolean found = false;
+
+		for (int i = 0; i < model.getSize(); i++) {
+			Object item = model.getElementAt(i);
+			if ((item instanceof ResizeSize && ((ResizeSize) item).size == size)
+					|| String.valueOf(size).equals(item)) {
+				resizeTo.setSelectedIndex(i);
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			String s;
+			if (size == 0) {
+				s = "";
+			} else {
+				s = String.valueOf(size);
+			}
+
+			resizeTo.addItem(s);
+			resizeTo.setSelectedItem(s);
+		}
+	}
+
 	public void writeProperties(PropertiesFile props) {
 		props.setBooleanProperty(RESIZE_BEFORE_UPLOAD, resizeBeforeUpload.isSelected());
 		if (resizeBeforeUpload.isSelected()) {
-			Dimension d = null;
+			int i = -1;
+
 			if (resizeToDefault.isSelected()) {
-				d = new Dimension(0, 0);
+				i = 0;
 			} else {
 				try {
-					d = new Dimension(Integer.parseInt(resizeToWidth.getText()), Integer.parseInt(resizeToHeight.getText()));
+					//Object selectedItem = resizeTo.getSelectedItem();
+					//if (selectedItem instanceof ResizeSize) {
+					//	i = ((ResizeSize) selectedItem).size;
+					//}
+					i = Integer.parseInt(resizeTo.getSelectedItem().toString());
 				} catch (Exception e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "resizeTo size should be integer numbers");
 				}
 			}
-			if (d != null) {
-				props.setDimensionProperty(RESIZE_TO, d);
+
+			if (i != -1) {
+				props.setIntDimensionProperty(RESIZE_TO, i);
 			}
 		}
 
@@ -116,23 +145,17 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 			resizeToForce.setEnabled(true);
 
 			if (resizeToForce.isSelected()) {
-				resizeToHeight.setEnabled(true);
-				resizeToWidth.setEnabled(true);
-				resizeToHeight.setBackground(UIManager.getColor("TextField.background"));
-				resizeToWidth.setBackground(UIManager.getColor("TextField.background"));
+				resizeTo.setEnabled(true);
+				resizeTo.setBackground(UIManager.getColor("TextField.background"));
 			} else {
-				resizeToHeight.setEnabled(false);
-				resizeToWidth.setEnabled(false);
-				resizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
-				resizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+				resizeTo.setEnabled(false);
+				resizeTo.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 			}
 		} else {
 			resizeToDefault.setEnabled(false);
 			resizeToForce.setEnabled(false);
-			resizeToHeight.setEnabled(false);
-			resizeToWidth.setEnabled(false);
-			resizeToHeight.setBackground(UIManager.getColor("TextField.inactiveBackground"));
-			resizeToWidth.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			resizeTo.setEnabled(false);
+			resizeTo.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		}
 		
 		if (setCaptionWithFilename.isSelected()) {
@@ -147,19 +170,15 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 	}
 
 	private void jbInit() {
-		border1 = BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140));
-		titledBorder1 = new TitledBorder(border1, GRI18n.getString(MODULE, "res_rot"));
-		this.setLayout(gridBagLayout1);
-		jPanel1.setLayout(gridBagLayout4);
-		resizeToWidth.setMinimumSize(new Dimension(25, 21));
-		resizeToWidth.setPreferredSize(new Dimension(25, 21));
-		resizeToWidth.setToolTipText(GRI18n.getString(MODULE, "res2W"));
-		jLabel2.setText("x");
-		resizeToHeight.setMinimumSize(new Dimension(25, 21));
-		resizeToHeight.setPreferredSize(new Dimension(25, 21));
-		resizeToHeight.setToolTipText(GRI18n.getString(MODULE, "res2H"));
-		jPanel1.setBorder(titledBorder1);
-		jPanel2.setLayout(gridBagLayout2);
+		this.setLayout(new GridBagLayout());
+		jPanel1.setLayout(new GridBagLayout());
+
+		resizeTo.setEditable(true);
+		resizeTo.setToolTipText(GRI18n.getString(MODULE, "res2W"));
+		resizeTo.setRenderer(new SizeListRenderer());
+
+		jPanel1.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "res_rot")));
+		jPanel2.setLayout(new GridBagLayout());
 		setCaptionNone.setToolTipText(GRI18n.getString(MODULE, "captNoneTip"));
 		setCaptionNone.setText(GRI18n.getString(MODULE, "captNone"));
 		setCaptionWithFilename.setToolTipText(GRI18n.getString(MODULE, "captTip"));
@@ -182,36 +201,27 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		this.add(jPanel1, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		jPanel1.add(resizeToWidth, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
+		jPanel1.add(resizeTo, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		jPanel1.add(resizeToDefault, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+		jPanel1.add(resizeToDefault, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
 		jPanel1.add(resizeToForce, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 0, 0), 0, 0));
 		jPanel1.add(exifAutorotate, new GridBagConstraints(0, 3, 5, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-
-		buttonGroup1.add(resizeToDefault);
-		buttonGroup1.add(resizeToForce);
-
-		jPanel1.add(jLabel2, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-		jPanel1.add(resizeToHeight, new GridBagConstraints(3, 2, 1, 1, 0.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+//		jPanel1.add(jLabel2, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
+//				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
 		jPanel1.add(jPanel6, new GridBagConstraints(4, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel1.add(resizeBeforeUpload, new GridBagConstraints(0, 0, 4, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+
 		this.add(jPanel2, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-
 		jPanel2.add(setCaptionNone, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-
 		jPanel2.add(setCaptionWithFilename, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(jPanel7, new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		jPanel2.add(captionStripExtension, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 20, 0, 0), 0, 0));
 
@@ -220,6 +230,11 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		jPanel2.add(htmlEscapeCaptionsNot, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(jPanel7, new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
+		buttonGroup1.add(resizeToDefault);
+		buttonGroup1.add(resizeToForce);
 
 		buttonGroup2.add(setCaptionNone);
 		buttonGroup2.add(setCaptionWithFilename);
@@ -232,11 +247,50 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		setCaptionNone.addActionListener(this);
 		setCaptionWithFilename.addActionListener(this);
 		setCaptionWithMetadata.addActionListener(this);
-
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		resetUIState();
+	}
+
+	static class ResizeSize {
+		public int size;
+		public String desc;
+
+		public ResizeSize(int size, String desc) {
+			this.size = size;
+			this.desc = desc;
+		}
+
+		public String toString() {
+			return String.valueOf(size);
+		}
+	}
+
+	public static class SizeListRenderer extends DefaultListCellRenderer {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(
+					list, value, index,
+					isSelected, cellHasFocus);
+
+			if (value instanceof ResizeSize) {
+				this.setText(((ResizeSize) value).desc);
+			}
+
+			return this;
+		}
+	}
+
+	static {
+		defaultSizes.add(new ResizeSize(400, "400"));
+		defaultSizes.add(new ResizeSize(500, "500"));
+		defaultSizes.add(new ResizeSize(600, "600"));
+		defaultSizes.add(new ResizeSize(640, "640"));
+		defaultSizes.add(new ResizeSize(800, "800"));
+		defaultSizes.add(new ResizeSize(1024, "1024"));
+		defaultSizes.add(new ResizeSize(1280, "1280 (1 MPix)"));
+		defaultSizes.add(new ResizeSize(1600, "1600 (2 MPix)"));
+		defaultSizes.add(new ResizeSize(2048, "2048 (3 MPix)"));
 	}
 }
 

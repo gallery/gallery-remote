@@ -5,8 +5,6 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
-import java.applet.Applet;
-import java.io.FilePermission;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -111,7 +109,6 @@ public class GRApplet extends JApplet {
 			try {
 				cookieDomain = new URL(url).getHost();
 			} catch (MalformedURLException e) {
-				//Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				URL documentBase = getDocumentBase();
 				cookieDomain = documentBase.getHost();
 
@@ -121,9 +118,6 @@ public class GRApplet extends JApplet {
 				try {
 					url = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
 							url).toString();
-
-					if (urlFull != null) {
-					}
 				} catch (MalformedURLException e1) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 				}
@@ -131,17 +125,23 @@ public class GRApplet extends JApplet {
 		}
 
 		if (urlFull != null) {
+			// the server specified a full URL, we're probably in embedded mode
+			// and we have to recreate the URL
 			try {
 				URL documentBase = getDocumentBase();
+
 				String path = documentBase.getPath();
 				int i = path.lastIndexOf("/");
 				if (i != -1) {
 					path = path.substring(0, i);
 				}
+
 				urlFull = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
 						path + "/" + urlFull).toString();
+
 				info.gallery.setType(Gallery.TYPE_APPLET);
 				info.gallery.setApUrlString(urlFull);
+
 				Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
 			} catch (MalformedURLException e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -157,6 +157,7 @@ public class GRApplet extends JApplet {
 
 		info.gallery.cookieLogin = true;
 
+		CookieModule.discardAllCookies();
 		CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
 
 		return info;

@@ -23,7 +23,6 @@ public class ExifImageUtils {
 	public static final String MODULE = "ExifUtils";
 	
 	public static String getMetadataCaptionString(String filename) {
-
 		if (GalleryFileFilter.canManipulateJpeg(filename)) {
 			File jpegFile = new File(filename);
 			try {
@@ -38,7 +37,7 @@ public class ExifImageUtils {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no EXIF DESCRIPTION tag");
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " EXIF DESCRIPTION: " + exifDescription);
-					return exifDescription;
+					return exifDescription.trim();
 				}
 					
 				/* If there is no EXIF tag, look for the IPTC TAG_CAPTION one */
@@ -50,7 +49,7 @@ public class ExifImageUtils {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no IPTC DESCRIPTION tag");
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " IPTC DESCRIPTION: " + iptcDescription);
-					return iptcDescription;
+					return iptcDescription.trim();
 				}
 					
 				return null;
