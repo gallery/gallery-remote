@@ -63,8 +63,6 @@ public class MainFrame extends javax.swing.JFrame
 	ImageIcon defaultThumbnail = null;
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
 
-	boolean highQualityThumbnails = false;
-	
 	int progressId = 0;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
@@ -110,9 +108,10 @@ public class MainFrame extends javax.swing.JFrame
 		mAlbum = new Album();
 		mAlbumList = new ArrayList();
 
-		defaultThumbnail = thumbnailCache.loadThumbnail( DEFAULT_IMAGE );
-
-		highQualityThumbnails = GalleryRemote.getInstance().properties.getBooleanProperty( "highQualityThumbnails" );
+		defaultThumbnail = ImageUtils.load( 
+			DEFAULT_IMAGE, 
+			GalleryRemote.getInstance().properties.getThumbnailSize(),
+			ImageUtils.THUMB );
 	}
 
 
@@ -186,6 +185,8 @@ public class MainFrame extends javax.swing.JFrame
 
 		setVisible( false );
 		dispose();
+		
+		ImageUtils.purgeTemp();
 		
 		Log.log(Log.INFO, "Shutting log down");
 		Log.shutdown();
@@ -329,7 +330,6 @@ public class MainFrame extends javax.swing.JFrame
 	*/
 	public void addPictures( File[] files ) {
 		addPictures( files, -1 );
-		thumbnailCache.preloadThumbnails( files );
 		updateUI();
 	}
 	
