@@ -23,6 +23,7 @@ package com.gallery.GalleryRemote.model;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.Serializable;
+import java.util.HashMap;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.util.ImageUtils;
@@ -46,6 +47,8 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
     File source = null;
     String caption = null;
     Album album = null;
+
+	HashMap extraFields;
 
 	int angle = 0;
 	boolean flipped = false;
@@ -253,6 +256,34 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 
 	public boolean isFlipped() {
 		return flipped;
+	}
+
+	public String getExtraField(String name) {
+		if (extraFields == null) {
+			return null;
+		}
+
+		return (String) extraFields.get(name);
+	}
+
+	public void setExtraField(String name, String value) {
+		if (extraFields == null) {
+			extraFields = new HashMap();
+		}
+
+		extraFields.put(name, value);
+	}
+
+	public void removeExtraField(String name) {
+		if (extraFields == null) {
+			extraFields = new HashMap();
+		}
+
+		extraFields.remove(name);
+	}
+
+	public HashMap getExtraFieldsMap() {
+		return extraFields;
 	}
 }
 

@@ -61,6 +61,7 @@ public class Album extends Picture implements ListModel, Serializable
 	Album parent; // parent Album
 	String title = "Not yet connected to Gallery";
 	String name;
+	String extraFields;
 
 	transient int autoResize = 0;
 	// permissions -- default to true for the sake of old protocols ...
@@ -464,7 +465,15 @@ public class Album extends Picture implements ListModel, Serializable
 	public void setParentAlbum( Album a ) {
 		parent = a;
 	}
-	
+
+	public String getExtraFields() {
+		return extraFields;
+	}
+
+	public void setExtraFields(String extraFields) {
+		this.extraFields = extraFields;
+	}
+
 	public void setCanRead( boolean b ){
 		canRead = b;
 	}

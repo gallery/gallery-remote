@@ -452,11 +452,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		
 		boolean uploadPicture(Picture p) {
 			try	{
+				boolean escapeCaptions = GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
+				
 				// can't set null as an NVPair value
 				String caption = p.getCaption();
 				caption = (caption == null) ? "" : caption;
 
-				if (GalleryRemote.getInstance().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
+				if (escapeCaptions) {
 					caption = HTMLEscaper.escape(caption);
 				}
 
@@ -467,6 +469,28 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("set_albumName", p.getAlbum().getName()),
 					new NVPair("caption", caption )
 				};
+
+				// set up extra fields
+				if (p.getExtraFieldsMap().size() > 0) {
+					ArrayList optsList = new ArrayList(Arrays.asList(opts));
+
+					Iterator it = p.getExtraFieldsMap().keySet().iterator();
+					while (it.hasNext()) {
+						String name = (String) it.next();
+						String value = p.getExtraField(name);
+
+						if (value != null) {
+							if (escapeCaptions) {
+								value = HTMLEscaper.escape(value);
+							}
+
+							optsList.add(new NVPair("extrafield_" + name, value));
+						}
+					}
+
+					opts = (NVPair[]) optsList.toArray(opts);
+				}
+
 				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
 				
 				// setup the multipart form data
@@ -569,12 +593,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String permsDelItemKey = "album.perms.del_item." + i;
 					String permsDelAlbKey = "album.perms.del_alb." + i;
 					String permsCreateSubKey = "album.perms.create_sub." + i;
+					String infoExtraFieldsKey = "album.info.extrafields." + i;
 
 					a.setCanAdd( isTrue( p.getProperty( permsAddKey ) ) );
 					a.setCanWrite( isTrue( p.getProperty( permsWriteKey ) ) );
 					a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
 					a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
 					a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
+					a.setExtraFields( p.getProperty( infoExtraFieldsKey ) );
 
 					a.setName( p.getProperty( nameKey ) );
 					a.setTitle( p.getProperty( titleKey ) );
@@ -642,6 +668,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String permsDelItemKey = "album.perms.del_item." + i;
 					String permsDelAlbKey = "album.perms.del_alb." + i;
 					String permsCreateSubKey = "album.perms.create_sub." + i;
+					String infoExtraFieldKey = "album.info.extrafields." + i;
 
 					a.setCanAdd( isTrue( p.getProperty( permsAddKey ) ) );
 					a.setCanWrite( isTrue( p.getProperty( permsWriteKey ) ) );
@@ -653,6 +680,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String title = p.getProperty( titleKey );
 					a.setName( name );
 					a.setTitle( title );
+					a.setExtraFields( p.getProperty(infoExtraFieldKey));
 
 					a.setGallery( g );
 					mAlbumList.add( a );

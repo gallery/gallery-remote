@@ -1,3 +1,7 @@
+2003-06-26  Pierre-Luc Paour <gallery@paour.com> (1.1-b9)
+
+	* Implemented extra fields in UI and protocol.
+
 2003-06-25  Pierre-Luc Paour <gallery@paour.com> (1.1-b8)
 
 	* Implemented a new way to communicate with the server for getting
