@@ -392,6 +392,17 @@ public class PropertiesFile extends Properties
 	}
 
 
+	public String getProperty( String name, String defaultValue ) {
+		String tmp = getProperty( name );
+		
+		if (tmp == null) {
+			return defaultValue;
+		} else {
+			return tmp;
+		}
+	}
+
+
 	/**
 	 *  Overrides default method to track dirty state
 	 */
@@ -426,7 +437,7 @@ public class PropertiesFile extends Properties
 				load( fileIn );
 			} catch ( IOException e ) {
 				//e.printStackTrace();
-				write();
+				//write();
 			} finally {
 				try {
 					fileIn.close();
