@@ -206,7 +206,7 @@ public class PictureInspector extends JPanel
 	 */
 	public void setMainFrame( MainFrame mf ) {
 		this.mf = mf;
-		icon.setIcon( mf.defaultThumbnail );
+		icon.setIcon( ImageUtils.defaultThumbnail );
 	}
 
 
@@ -228,7 +228,7 @@ public class PictureInspector extends JPanel
 
 		if ( pictures == null || pictures.length == 0 ) {
 			icon.setText("no picture selected");
-			icon.setIcon( mf.defaultThumbnail );
+			icon.setIcon( ImageUtils.defaultThumbnail );
 			path.setText( "" );
 			album.setText( "" );
 			caption.setText( "" );
@@ -255,7 +255,7 @@ public class PictureInspector extends JPanel
 			Picture p = (Picture) pictures[0];
 
 			icon.setText( pictures.length + " elements selected" );
-			icon.setIcon( mf.defaultThumbnail );
+			icon.setIcon( ImageUtils.defaultThumbnail );
 			path.setText( "" );
 			album.setText( p.getAlbum().getTitle() );
 			caption.setText( "" );

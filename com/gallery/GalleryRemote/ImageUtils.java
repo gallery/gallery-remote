@@ -49,6 +49,12 @@ public class ImageUtils {
 	static String[] filterName = new String[3]; 
 	static String[] format = new String[3]; 
 	
+	public final static String DEFAULT_IMAGE = "default.gif";
+	public final static String UNRECOGNIZED_IMAGE = "default.gif";
+
+	public static ImageIcon defaultThumbnail = null;
+	public static ImageIcon unrecognizedThumbnail = null;
+
 	/**
 	 *  Perform the actual icon loading
 	 *
@@ -58,6 +64,10 @@ public class ImageUtils {
 	public static ImageIcon load( String filename, Dimension d, int usage ) {
 		ImageIcon r = null;
 		long start = System.currentTimeMillis();
+		
+		if ( ! GalleryFileFilter.canManipulate(filename) ) {
+			return unrecognizedThumbnail;
+		}
 		
 		if (useIM) {
 			try {
@@ -130,6 +140,10 @@ public class ImageUtils {
 	public static File resize( String filename, Dimension d ) {
 		File r = null;
 		long start = System.currentTimeMillis();
+		
+		if ( ! GalleryFileFilter.canManipulate(filename) ) {
+			return new File(filename);
+		}
 		
 		if (useIM) {
 			try {
@@ -232,6 +246,16 @@ public class ImageUtils {
 			Log.logException(Log.CRITICAL, MODULE, e);
 			useIM = false;
 		}
+
+		defaultThumbnail = load(
+			DEFAULT_IMAGE,
+			GalleryRemote.getInstance().properties.getThumbnailSize(),
+			THUMB );
+			
+		unrecognizedThumbnail = load(
+			UNRECOGNIZED_IMAGE,
+			GalleryRemote.getInstance().properties.getThumbnailSize(),
+			THUMB );
 	}
 
 	

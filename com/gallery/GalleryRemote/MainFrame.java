@@ -61,9 +61,6 @@ public class MainFrame extends javax.swing.JFrame
 	private javax.swing.Timer mTimer;
 	private boolean progressOn = false;
 
-	public final static String DEFAULT_IMAGE = "default.gif";
-
-	ImageIcon defaultThumbnail = null;
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
 
 	int progressId = 0;
@@ -111,11 +108,6 @@ public class MainFrame extends javax.swing.JFrame
 		//mGalleryComm = new GalleryComm();
 
 		PropertiesFile p = GalleryRemote.getInstance().properties;
-
-		defaultThumbnail = ImageUtils.load(
-			DEFAULT_IMAGE,
-			p.getThumbnailSize(),
-			ImageUtils.THUMB );
 
 		galleries = new DefaultComboBoxModel();
 		int i = -1;
@@ -227,6 +219,8 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	void resetUIState() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
 		// if the list is empty or comm, disable upload
 		upload.setEnabled( mAlbum != null
 			&& mAlbum.sizePictures() > 0 
@@ -249,11 +243,11 @@ public class MainFrame extends javax.swing.JFrame
 		
 		// change image displayed
 		int sel = picturesList.getSelectedIndex();
-		if (mAlbum != null && mAlbum.getSize() < 1) {
+		/*if (mAlbum != null && mAlbum.getSize() < 1) {
 			// if album was just emptied, it takes a while for the pictureList
 			// to notice...
 			sel = -1;
-		}
+		}*/
 		
 		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
 			if ( sel != -1 ) {
@@ -294,6 +288,7 @@ public class MainFrame extends javax.swing.JFrame
 
 			setStatus( "No selection" );
 		}
+		}});
 	}
 
 
@@ -601,7 +596,7 @@ public class MainFrame extends javax.swing.JFrame
 		ImageIcon r = thumbnailCache.getThumbnail( filename );
 
 		if ( r == null ) {
-			r = defaultThumbnail;
+			r = ImageUtils.defaultThumbnail;
 		}
 
 		return r;

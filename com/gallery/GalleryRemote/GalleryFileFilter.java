@@ -31,6 +31,10 @@ public class GalleryFileFilter extends FileFilter {
 		= { "gif", "jpeg", "jpg", "avi", "mpg", "mpeg", "moov", "png" };
 	public static final List validExtensions = Arrays.asList( ext );
 	
+	public static String[] ext1
+		= { "gif", "jpeg", "jpg", "png" };
+	public static final List manipulateExtensions = Arrays.asList( ext1 );
+	
 	// Accept all directories and all gif, jpg files.
 	public boolean accept(File f) {
 		if (f.isDirectory()) {
@@ -40,6 +44,12 @@ public class GalleryFileFilter extends FileFilter {
 		String extension = getExtension(f);
 		
 		return ( extension != null && validExtensions.contains(extension) );
+	}
+	
+	public static boolean canManipulate(String filename) {
+		String extension = getExtension(filename);
+		
+		return ( extension != null && manipulateExtensions.contains(extension) );
 	}
 	
 	// The description of this filter
