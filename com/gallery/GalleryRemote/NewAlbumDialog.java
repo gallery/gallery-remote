@@ -101,7 +101,9 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		rootAlbum = new Album();
 		rootAlbum.setGallery(gallery);
 		rootAlbum.setTitle("Gallery main page");
+		rootAlbum.setName("root.root");
 		albums.add(0, rootAlbum);
+
 		album = new JComboBox(albums);
 		album.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
 		album.setSelectedItem(defaultAlbum);
