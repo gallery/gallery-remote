@@ -1,3 +1,9 @@
+2004-06-24  Pierre-Luc Paour <gallery@paour.com> (1.4-b16)
+
+	* New Album dialog now prevents user from attempting to create
+	  a new album inside an album where the user doesn't have
+	  privileges to do so. Bug 925434.
+
 2004-06-21  Pierre-Luc Paour <gallery@paour.com> (1.4-b15)
 
 	* Improved DE language file (thanks Joerg Napp).

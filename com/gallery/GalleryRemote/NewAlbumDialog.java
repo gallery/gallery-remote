@@ -30,6 +30,8 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 import java.util.Vector;
 
 /**
@@ -39,7 +41,7 @@ import java.util.Vector;
  * @created October 18, 2002
  */
 public class NewAlbumDialog extends JDialog
-		implements ActionListener {
+		implements ActionListener, ItemListener {
 	public final static String MODULE = "NewAlbum";
 
 	Gallery gallery = null;
@@ -98,7 +100,9 @@ public class NewAlbumDialog extends JDialog
 		//albums.add(0, rootAlbum);
 
 		jAlbum = new JComboBox(albums);
+		jAlbum.setRenderer(new AlbumListRenderer());
 		jAlbum.setFont(UIManager.getFont("Label.font"));
+		jAlbum.addItemListener(this);
 
 		if (defaultAlbum == null) {
 			jAlbum.setSelectedItem(gallery.getRoot());
@@ -154,6 +158,8 @@ public class NewAlbumDialog extends JDialog
 		jCancel.addActionListener(this);
 
 		getRootPane().setDefaultButton(jOk);
+
+		resetUIState();
 	}
 
 
@@ -179,18 +185,6 @@ public class NewAlbumDialog extends JDialog
 
 			parentAlbum = (Album) jAlbum.getSelectedItem();
 			parentAlbum.getGallery().insertNodeInto(newAlbum, parentAlbum, parentAlbum.getChildCount());
-			//if (selectedAlbum == rootAlbum) {
-			//	Log.log(Log.LEVEL_TRACE, MODULE, "Selected root album");
-			//	a.setParentAlbum(null);
-			//} else {
-			//selectedAlbum.add(newAlbum);
-			//}
-
-			//newAlbumName = gallery.doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
-
-			//if (newAlbumName == null) {
-			//	newAlbumName = jName.getText();
-			//}
 
 			setVisible(false);
 		}
@@ -202,6 +196,37 @@ public class NewAlbumDialog extends JDialog
 
 	public Album getParentAlbum() {
 		return parentAlbum;
+	}
+
+	public void itemStateChanged(ItemEvent e) {
+		resetUIState();
+	}
+
+	void resetUIState() {
+		Album a = (Album) jAlbum.getSelectedItem();
+
+		boolean canCreateSubAlbum = a.getCanCreateSubAlbum();
+
+		jOk.setEnabled(canCreateSubAlbum);
+		jName.setEnabled(canCreateSubAlbum);
+		jTitle.setEnabled(canCreateSubAlbum);
+		jDescription.setEnabled(canCreateSubAlbum);
+	}
+
+	public class AlbumListRenderer extends DefaultListCellRenderer {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(
+					list, value, index,
+					isSelected, cellHasFocus);
+
+			if (((Album) value).getCanCreateSubAlbum()) {
+				setForeground(Color.BLACK);
+			} else {
+				setForeground(Color.GRAY);
+			}
+
+			return this;
+		}
 	}
 }
 
