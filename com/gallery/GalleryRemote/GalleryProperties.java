@@ -48,7 +48,7 @@ public class GalleryProperties extends Properties {
 	 *
 	 *@param  p  Description of Parameter
 	 */
-	public GalleryProperties( GalleryProperties p ) {
+	public GalleryProperties( Properties p ) {
 		super( p );
 	}
 
@@ -393,5 +393,26 @@ public class GalleryProperties extends Properties {
 			return tmp;
 		}
 	}
+
+
+    public void logProperties(int level, String module) {
+		if (module == null) {
+			module = MODULE;
+		}
+		
+		ArrayList names = new ArrayList(100);
+        Enumeration e = propertyNames();
+        while (e.hasMoreElements()) {
+            names.add( (String) e.nextElement() );
+        }
+		
+		Object[] namesArray = names.toArray();
+		Arrays.sort(namesArray);
+		
+		for (int i = 0; i < namesArray.length; i++) {
+			String name = (String) namesArray[i];
+			Log.log(level, module, name + "= |" + getProperty(name) + "|");
+		}
+    }
 }
 

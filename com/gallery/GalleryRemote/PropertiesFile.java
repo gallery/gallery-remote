@@ -101,6 +101,23 @@ public class PropertiesFile extends GalleryProperties
 	 *@return       The property value
 	 */
 	public String getProperty( String name ) {
+		checkRead();
+
+		return super.getProperty( name );
+	}
+
+	public Enumeration propertyNames() {
+		checkRead();
+		
+		return super.propertyNames();
+	}
+	
+	protected void checkRead() {
+		if ( defaults != null && defaults instanceof PropertiesFile ) {
+			// also load defaults
+			((PropertiesFile) defaults).checkRead();
+		}
+		
 		if ( !read ) {
 			try {
 				read();
@@ -108,9 +125,8 @@ public class PropertiesFile extends GalleryProperties
 				e.printStackTrace();
 			}
 		}
-
-		return super.getProperty( name );
 	}
+		
 
 	/**
 	 *  Read the property file from disk
