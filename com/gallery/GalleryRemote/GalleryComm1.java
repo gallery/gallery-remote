@@ -34,7 +34,6 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	public static final String PROTOCAL_VERSION = "1";
 	public static final String SCRIPT_NAME = "gallery_remote.php";
 	
-	protected boolean isLoggedIn = false;
 	protected Gallery g = null;
 	int pId = -1;
 	

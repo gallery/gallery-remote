@@ -41,6 +41,11 @@ import java.io.*;
 public abstract class GalleryComm {
 	private static final String MODULE = "GalComm";
 	int[] capabilities = null;
+	
+	/**
+	 *	Flag to hold logged in status.  Only need to log in once.
+	 */
+	protected boolean isLoggedIn = false;
 
 	/* -------------------------------------------------------------------------
 	 * STATIC INITIALIZATON
@@ -105,16 +110,14 @@ public abstract class GalleryComm {
 		throw new RuntimeException( "This method is not available on this protocol" );
 	}
 	
-	/**
-	 *	Causes the GalleryComm instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 */
 	public void logOut() {
-		throw new RuntimeException( "This method is not available on this protocol" );
+		isLoggedIn = false;
 	}
 	
+	public boolean isLoggedIn() {
+		return isLoggedIn;
+	}
+		
 	public boolean hasCapability(int capability) {
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
 	}

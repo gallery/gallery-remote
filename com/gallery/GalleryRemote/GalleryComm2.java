@@ -61,11 +61,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	
 	/**
-	 *	Flag to hold logged in status.  Only need to log in once.
-	 */
-	protected boolean isLoggedIn = false;
-	
-	/**
 	 *	The gallery this GalleryComm2 instance is attached to.
 	 */
 	protected final Gallery g;
@@ -164,12 +159,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			newAlbumTitle, newAlbumDesc ), async );
 	}
 	
-	/**
-	 *	Causes the GalleryComm2 instance to fetch the album properties
-	 *	for the given Album.
-	 *	
-	 *	@param su an instance that implements the StatusUpdate interface.
-	 */
 	public void logOut() {
 		isLoggedIn = false;
 	}
@@ -471,6 +460,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				// load and validate the response
 				Properties p = requestResponse( form_data );
 				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+					ArrayList mAlbumList = new ArrayList();
 					
 					// parse and store the data
 					int albumCount = Integer.parseInt( p.getProperty( "album_count" ) );
@@ -499,7 +489,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						a.setTitle( p.getProperty( titleKey ) );
 						
 						a.setGallery( g );
-						g.addAlbum( a );
+						mAlbumList.add( a );
 						
 						// map album ref nums to albums
 						ref2album.put( "" + i, a );
@@ -526,6 +516,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					
 					status(su, "Fetched albums");
 					
+					g.setAlbumList(mAlbumList);
 				} else {
 					error(su, "Error: " + p.getProperty( "status_text" ));
 				}
