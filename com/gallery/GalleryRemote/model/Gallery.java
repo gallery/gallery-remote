@@ -22,10 +22,7 @@ package com.gallery.GalleryRemote.model;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
 import java.io.Serializable;
 
 import javax.swing.ComboBoxModel;
@@ -44,40 +41,40 @@ import com.gallery.GalleryRemote.*;
 public class Gallery implements ComboBoxModel, Serializable
 {
 	public static final String MODULE="Gallery";
-	
-	URL url = null;
+
+	String stUrlString = null;
+	String pnLoginUrlString = null;
+	String pnGalleryUrlString = null;
 	String username;
 	String password;
 	ArrayList albumList = null;
 	Album selectedAlbum = null;
-	
+	int type = TYPE_STANDALONE;
+
 	transient GalleryComm comm = null;
 
 	// ListModel
 	transient Vector listeners = null;
 
 	transient StatusUpdate su;
+	transient private int prefsIndex;
 
-	/**
-	 *  Constructor for the Gallery object
-	 */
-	public Gallery() { }
+	public static String types[] = new String[] {"Standalone", "PostNuke"};
+	public static final int TYPE_STANDALONE = 0;
+	public static final int TYPE_POSTNUKE = 1;
 
-	/**
-	 *  Constructor for the Gallery object
-	 *
-	 *@param  url       Description of Parameter
-	 *@param  username  Description of Parameter
-	 *@param  password  Description of Parameter
-	 */
-	public Gallery( URL url, String username, String password, /*TEMPORARY*/ StatusUpdate su ) {
-		setUrl( url );
-		this.username = username;
-		this.password = password;
+	public Gallery(StatusUpdate su) {
 		this.su = su;
+
+		if (su instanceof MainFrame) {
+			prefsIndex = ((MainFrame) su).galleries.getSize();
+		}
 	}
-	
-	
+
+	/*
+	 * **** Gallery online management ****
+	 */
+
 	public void uploadFiles( StatusUpdate su ) {
 		getComm( su ).uploadFiles( su, true );
 	}
@@ -98,70 +95,7 @@ public class Gallery implements ComboBoxModel, Serializable
 		// refresh album list asynchronously
 		fetchAlbums( su );
 	}
-	
-	/**
-	 *  Sets the url attribute of the Gallery object
-	 *
-	 *@param  url  The new url value
-	 */
-	public void setUrlString( String urlString ) throws MalformedURLException {
-		if ( urlString == null ) {
-			throw new IllegalArgumentException( "urlString must not be null" );
-		}
-	
-		if (!urlString.endsWith("/")) {
-			urlString += "/";
-		}
-		
-		if (!urlString.startsWith("http://"))
-		{
-			urlString = "http://" + urlString;
-		}
-		
-		this.url = new URL( urlString );
-	}
-	
-	/** 
-	 *
-	 */
-	public void setUrl( URL url ) {
-		this.url = url;
-	}
-	
 
-	/**
-	 *  Sets the username attribute of the Gallery object
-	 *
-	 *@param  username  The new username value
-	 */
-	public void setUsername( String username ) {
-		//Log.log(Log.TRACE, MODULE, "setusername: " + username);
-		if ( username != null && username.length() > 0
-			&& ! username.equals( this.username ) ) {
-			
-			this.username = username;
-			
-			logOut();
-		}
-	}
-
-
-	/**
-	 *  Sets the password attribute of the Gallery object
-	 *
-	 *@param  password  The new password value
-	 */
-	public void setPassword( String password ) {
-		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
-		if ( password != null && password.length() > 0 
-			&& ! password.equals( this.password ) ) {
-			
-			this.password = password;
-			
-			logOut();
-		}
-	}
-	
 	public void logOut() {
 		albumList = null;
 		selectedAlbum = null;
@@ -169,13 +103,10 @@ public class Gallery implements ComboBoxModel, Serializable
 		notifyListeners();
 	}
 
-
-	/**
-	 *  Sets the albumList attribute of the Gallery object
-	 *
-	 *@param  albumList  The new albumList value
-	 *@deprecated
+	/*
+	 * **** Gallery contents handling ****
 	 */
+
 	public void setAlbumList( ArrayList albumList ) {
 		if ( albumList == null ) {
 			throw new IllegalArgumentException( "Must supply non-null album list." );
@@ -233,90 +164,339 @@ public class Gallery implements ComboBoxModel, Serializable
 		notifyListeners();
 	}
 
+	public ArrayList getAlbumList() {
+		return albumList;
+	}
 
-	/**
-	 *  Gets the url attribute of the Gallery object
-	 *
-	 *@return    The url value
+	public void clearAlbumList() {
+		albumList.clear();
+		notifyListeners();
+	}
+
+	public ArrayList getAllPictures() {
+		ArrayList pictures = new ArrayList();
+
+		if (albumList != null) {
+			Iterator i = albumList.iterator();
+			while (i.hasNext()) {
+				Album a = (Album) i.next();
+
+				pictures.addAll(a.getPicturesVector());
+			}
+		}
+
+		return pictures;
+	}
+
+	public ArrayList getAllPictureFiles() {
+		ArrayList files = new ArrayList();
+
+		if (albumList != null) {
+			Iterator i = albumList.iterator();
+			while (i.hasNext()) {
+				Album a = (Album) i.next();
+
+				files.addAll(a.getFileList());
+			}
+		}
+
+		return files;
+	}
+
+
+	/*
+	 * **** Gallery URL management ****
 	 */
-	public String getUrlString() {
-		if (url != null) {
-			return url.toString();
+
+	public static String reformatUrlString(String urlString, boolean trailingSlash) throws MalformedURLException {
+		if ( urlString == null ) {
+			throw new IllegalArgumentException( "urlString must not be null" );
+		}
+
+		if (trailingSlash && !urlString.endsWith("/")) {
+			urlString += "/";
+		}
+
+		if (!urlString.startsWith("http://") && !urlString.startsWith("https://")) {
+			urlString = "http://" + urlString;
+		}
+
+		return urlString;
+	}
+
+	/* Standalone URL */
+
+	public void setStUrlString( String urlString ) throws MalformedURLException {
+		if (urlString == null)
+		{
+			stUrlString = null;
+			return;
+		}
+
+		stUrlString = reformatUrlString( urlString, true );
+
+		if (stUrlString != null) {
+			GalleryRemote.getInstance().properties.setProperty("url." + prefsIndex, stUrlString);
+		}
+	}
+
+	public String getStUrlString() {
+		if (stUrlString != null) {
+			return stUrlString;
 		} else {
+			return "http://your.host.com/gallery";
+		}
+	}
+
+	/* PostNuke Gallery URL */
+
+	public void setPnGalleryUrlString( String urlString ) throws MalformedURLException {
+		if (urlString == null)
+		{
+			pnGalleryUrlString = null;
+			return;
+		}
+
+		pnGalleryUrlString = reformatUrlString( urlString, false );
+
+		if (pnGalleryUrlString != null) {
+			GalleryRemote.getInstance().properties.setProperty("pnGalleryUrl." + prefsIndex, pnGalleryUrlString);
+		}
+	}
+
+	public String getPnGalleryUrlString() {
+		if (pnGalleryUrlString != null) {
+			return pnGalleryUrlString.toString();
+		} else {
+			return "http://your.host.com/modules.php?op=modload&name=gallery&file=index&include=$GALLERYFILE$";
+		}
+	}
+
+	/* PostNuke Login URL */
+
+	public void setPnLoginUrlString( String urlString ) throws MalformedURLException {
+		if (urlString == null)
+		{
+			pnLoginUrlString = null;
+			return;
+		}
+
+		pnLoginUrlString = reformatUrlString( urlString, false );
+
+		if (pnLoginUrlString != null) {
+			GalleryRemote.getInstance().properties.setProperty("pnLoginUrl." + prefsIndex, pnLoginUrlString);
+		}
+	}
+
+	public String getPnLoginUrlString() {
+		if (pnLoginUrlString != null) {
+			return pnLoginUrlString.toString();
+		} else {
+			return "http://your.host.com/user.php?uname=$USERNAME$&password=$PASSWORD$&module=NS-User&op=login";
+		}
+	}
+
+	/* Generic */
+
+	public URL getLoginUrl(String galleryFile) {
+		try {
+			switch (type) {
+				case TYPE_STANDALONE:
+					return new URL(stUrlString + galleryFile);
+
+				case TYPE_POSTNUKE:
+					return new URL(replace(pnLoginUrlString, galleryFile));
+
+				default:
+					throw new RuntimeException("Unknown type: " + type);
+			}
+		} catch (MalformedURLException e) {
+			Log.log(Log.ERROR, MODULE, "Malformed URL. This should never ever happen." +
+					"Things will probably go wrong...");
+			Log.logException(Log.ERROR, MODULE, e);
 			return null;
 		}
 	}
 
+	public URL getGalleryUrl(String galleryFile) {
+		try {
+			switch (type) {
+				case TYPE_STANDALONE:
+					return new URL(stUrlString + galleryFile);
 
-	/**
-	 *  Gets the url attribute of the Gallery object
-	 *
-	 *@return    The url value
-	 */
-	public URL getUrl() {
-		return url;
+				case TYPE_POSTNUKE:
+					return new URL(replace(pnGalleryUrlString, galleryFile));
+
+				default:
+					throw new RuntimeException("Unknown type: " + type);
+			}
+		} catch (MalformedURLException e) {
+			Log.log(Log.ERROR, MODULE, "Malformed URL. This should never ever happen." +
+					"Things will probably go wrong...");
+			Log.logException(Log.ERROR, MODULE, e);
+			return null;
+		}
+	}
+
+	String replace(String urlString, String galleryFile) {
+		StringBuffer sb = new StringBuffer(urlString);
+
+		replace(sb, "$USERNAME$", username);
+		replace(sb, "$PASSWORD$", password);
+		replace(sb, "$GALLERYFILE$", galleryFile);
+
+		return sb.toString();
+	}
+
+	boolean replace(StringBuffer sb, String token, String value) {
+		int n = sb.indexOf(token);
+
+		if (n != -1) {
+			sb.replace(n, n + token.length(), value);
+			return true;
+		}
+
+		return false;
 	}
 
 
-	/**
-	 *  Gets the username attribute of the Gallery object
-	 *
-	 *@return    The username value
+	/*
+	 * **** Gallery properties management ****
 	 */
+
+	public void setUsername( String username ) {
+		if ( username != null && username.length() > 0
+			&& ! username.equals( this.username ) ) {
+
+			this.username = username;
+
+			logOut();
+
+			GalleryRemote.getInstance().properties.setProperty("username." + prefsIndex, username);
+		}
+	}
+
+	public void setPassword( String password ) {
+		//Log.log(Log.TRACE, MODULE, "setpassword: " + password);
+		if ( password != null && password.length() > 0
+			&& ! password.equals( this.password ) ) {
+
+			this.password = password;
+
+			logOut();
+
+			GalleryRemote.getInstance().properties.setBase64Property("password." + prefsIndex, password);
+		}
+	}
+
+	public void setType(int type) {
+		this.type = type;
+
+		GalleryRemote.getInstance().properties.setProperty("type." + prefsIndex, types[type]);
+	}
+
 	public String getUsername() {
 		return username;
 	}
 
 
-	/**
-	 *  Gets the password attribute of the Gallery object
-	 *
-	 *@return    The password value
-	 */
 	public String getPassword() {
 		return password;
 	}
 
 
-	/**
-	 *  Gets the albumList attribute of the Gallery object
-	 *
-	 *@return    The albumList value
-	 */
-	public ArrayList getAlbumList() {
-		return albumList;
+	public int getType() {
+		return type;
 	}
-	
-	public void clearAlbumList() {
-		albumList.clear();
-		notifyListeners();
-	}
-	
-	public ArrayList getAllPictures() {
-		ArrayList pictures = new ArrayList();
-		
-		Iterator i = albumList.iterator();
-		while (i.hasNext()) {
-			Album a = (Album) i.next();
-			
-			pictures.addAll(a.getPicturesVector());
+
+
+	public static Gallery readFromProperties(PropertiesFile p, int prefsIndex, StatusUpdate su) throws MalformedURLException {
+		String url = p.getProperty( "url." + prefsIndex );
+		String username = p.getProperty( "username." + prefsIndex );
+
+		if (username == null) {
+			return null;
 		}
-		
-		return pictures;
+
+		String password = null;
+		try {
+			password = p.getBase64Property( "password." + prefsIndex );
+		} catch (NumberFormatException e) {}
+
+		Log.log(Log.INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)" );
+
+		Gallery g = new Gallery(su);
+		g.username = username;
+		g.password = password;
+		g.setStUrlString(url);
+		g.setPnLoginUrlString(p.getProperty("pnLoginUrl." + prefsIndex));
+		g.setPnGalleryUrlString(p.getProperty("pnGalleryUrl." + prefsIndex));
+		g.setPrefsIndex(prefsIndex);
+
+		String typeS = p.getProperty( "type." + prefsIndex );
+		if (typeS != null) {
+			g.setType(Arrays.asList(types).indexOf(typeS));
+		}
+
+		return g;
 	}
 
+	public void writeToProperties(PropertiesFile p) {
+		Log.log(Log.TRACE, MODULE, "Wrote to properties: " + toString() );
 
-	/**
-	 *  For the list models to display the Gallery
-	 *
-	 *@return    Description of the Returned Value
-	 */
+		p.setProperty("url." + prefsIndex, getStUrlString());
+		p.setProperty("username." + prefsIndex, getUsername());
+		if (getPassword() != null ) {
+			p.setBase64Property("password." + prefsIndex, getPassword());
+		} else {
+			p.remove("password." + prefsIndex);
+		}
+		p.setProperty("type." + prefsIndex, types[getType()]);
+
+		if (pnLoginUrlString != null) {
+			p.setProperty("pnLoginUrl." + prefsIndex, pnLoginUrlString);
+		}
+		if (pnGalleryUrlString != null) {
+			p.setProperty("pnGalleryUrl." + prefsIndex, pnGalleryUrlString);
+		}
+	}
+
+	public static void removeFromProperties(PropertiesFile p, int n) {
+		Log.log(Log.TRACE, MODULE, "Removed from properties: " + n );
+
+		p.remove("url." + n);
+		p.remove("username." + n);
+		p.remove("password." + n);
+		p.remove("type." + n);
+		p.remove("pnLoginUrl." + n);
+		p.remove("pnGalleryUrl." + n);
+	}
+
+	public void setPrefsIndex(int prefsIndex) {
+		this.prefsIndex = prefsIndex;
+	}
+
 	public String toString() {
-		if (url == null) {
-			return "http://";
+		String tmp = null;
+
+		switch (type) {
+			case TYPE_STANDALONE:
+				tmp = stUrlString;
+				break;
+
+			case TYPE_POSTNUKE:
+				tmp = pnGalleryUrlString;
+				break;
+
+			default:
+				throw new RuntimeException("Unknown type: " + type);
+		}
+
+		if (tmp == null) {
+			tmp = "http://";
 		}
 		
-		return url.toString();
+		return tmp;
 	}
 
 	public Album getSelectedAlbum() {
@@ -361,19 +541,22 @@ public class Gallery implements ComboBoxModel, Serializable
 		}
 	}
 
+	/*
+	 * Miscelaneous
+	 */
 
 	/**
 	 *	Lazy instantiation for the GalleryComm instance.
 	 */
 	public GalleryComm getComm(StatusUpdate su) {
-		if ( comm == null && url != null ) {
-			comm = GalleryComm.getCommInstance(su, url, this);
+		if ( comm == null && stUrlString != null ) {
+			comm = GalleryComm.getCommInstance(su, getGalleryUrl(""), this);
 			
 			if (comm == null) {
 				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
 				su.error("Gallery Remote can find no protocol implementation at the URL "
-					+ url.toString() + "\nCheck with a web browser that "
-					+ url.toString() + "gallery_remote.php is a valid URL");
+					+ stUrlString.toString() + "\nCheck with a web browser that "
+					+ stUrlString.toString() + "gallery_remote.php is a valid URL");
 			}
 		}
 		
@@ -383,7 +566,7 @@ public class Gallery implements ComboBoxModel, Serializable
 	public boolean hasComm() {
 		return comm != null;
 	}
-	
+
 	void notifyListeners() {
 		ListDataEvent lde;
 		if (albumList != null) {
