@@ -23,6 +23,12 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.model.*;
 
+import HTTPClient.*;
+
+import java.net.URL;
+
+import java.io.*;
+
 /**
  *	This interface is a temporary mechanism to let us use version
  *	1 and 2 of the protocol by changing a little code -- a replacement for
@@ -33,8 +39,28 @@ import com.gallery.GalleryRemote.model.*;
  *  @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  */
 public abstract class GalleryComm {
+	private static final String MODULE = "GalComm";
 	int[] capabilities = null;
 
+	/* -------------------------------------------------------------------------
+	 * STATIC INITIALIZATON
+	 */ 
+	
+	static {
+		/* Configures HTTPClient to accept all cookies
+		 * this should be done at least once per GalleryRemote
+		 * invokation */
+		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
+			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
+				return true;
+			}
+			public boolean sendCookie(Cookie cookie, RoRequest req) {
+				return true;
+			}
+		});
+	}
+	
+	
 	/**
 	 *	Causes the GalleryComm instance to upload the pictures in the
 	 *	associated Gallery to the server.
@@ -91,5 +117,57 @@ public abstract class GalleryComm {
 	
 	public boolean hasCapability(int capability) {
 		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
+	}
+	
+	public static GalleryComm getCommInstance(URL url, Gallery g) {
+		try {
+			// create a connection	
+			HTTPConnection mConnection = new HTTPConnection( url );
+			
+			// assemble the URL
+			String urlPath = url.getFile();
+			
+			Log.log(Log.TRACE, MODULE, "Trying protocol 2 for " + url);
+			// Test GalleryComm2
+			String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
+			if (tryComm(mConnection, urlPath2)) {
+				Log.log(Log.TRACE, MODULE, "Server has protocol 2");
+				return new GalleryComm2(g);
+			}
+			
+			Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
+			// Test GalleryComm1
+			String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
+			if (tryComm(mConnection, urlPath1)) {
+				Log.log(Log.TRACE, MODULE, "Server has protocol 1");
+				return new GalleryComm1(g);
+			}
+		} catch (HTTPClient.ProtocolNotSuppException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private static boolean tryComm(HTTPConnection mConnection, String urlPath) {
+		try {
+			HTTPResponse rsp = null;
+			
+			rsp = mConnection.Head(urlPath);
+			
+			// handle 30x redirects
+			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+				// retry, the library will have fixed the URL
+				rsp = mConnection.Post(urlPath);
+			}
+			
+			return rsp.getStatusCode() == 200;
+		} catch (IOException ioe)	{
+			Log.logException(Log.ERROR, MODULE, ioe);
+		} catch (ModuleException me) {
+			Log.logException(Log.ERROR, MODULE, me);
+		}
+		
+		return false;
 	}
 }

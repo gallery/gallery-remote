@@ -1,3 +1,7 @@
+2002-11-10  Pierre-Luc Paour <gallery@paour.com> (1.0-b12)
+	
+	* Added protocol auto-detection.
+
 2002-11-02 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b11)
 	
 	* Added support for the "new-album" command to GalleryComm2.

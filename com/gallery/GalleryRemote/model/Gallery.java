@@ -331,11 +331,13 @@ public class Gallery implements ComboBoxModel
 	 */
 	public GalleryComm getComm() {
 		if ( comm == null ) {
-			/* TEMPORARY*/
-			if (GalleryRemote.getInstance().properties.getIntProperty("protocolVersion") == 2) {
-				comm = new GalleryComm2( this );
-			} else {
-				comm = new GalleryComm1( su, this );
+			comm = GalleryComm.getCommInstance(url, this);
+			
+			if (comm == null) {
+				Log.log(Log.ERROR, MODULE, "No protocol implementation found");
+				su.error("Gallery Remote can find no protocol implementation at the URL "
+					+ url.toString() + "\nCheck with a web browser that "
+					+ url.toString() + "gallery_remote.php is a valid URL");
 			}
 		}
 		

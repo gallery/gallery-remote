@@ -31,41 +31,14 @@ import com.gallery.GalleryRemote.model.*;
 public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities {
 	private static final String MODULE = "GalComm1";
 	
-	private static final String PROTOCAL_VERSION = "1";
-	private static final String SCRIPT_NAME = "gallery_remote.php";
-
-	/*private String mURLString = null;
-	private String mUsername = null;
-	private String mPassword = null;
-	private String mAlbum = null;
+	public static final String PROTOCAL_VERSION = "1";
+	public static final String SCRIPT_NAME = "gallery_remote.php";
 	
-	private ArrayList mFileList;
-	private ArrayList mAlbumList;
-	
-	private String mStatus;
-	private int mUploadedCount;
-	
-	private boolean mDone = false;*/
-	
-	StatusUpdate su;
 	protected boolean isLoggedIn = false;
 	protected Gallery g = null;
 	int pId = -1;
 	
-	static {
-		//-- our policy handler accepts all cookies ---
-		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
-			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
-				return true;
-			}
-			public boolean sendCookie(Cookie cookie, RoRequest req) {
-				return true;
-			}
-		});
-	}
-	
-	public GalleryComm1(StatusUpdate su, Gallery g) {
-		this.su = su;
+	protected GalleryComm1(Gallery g) {
 		this.g = g;
 		
 		capabilities = new int[] {CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS};
@@ -82,11 +55,11 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	}
 	
 	public void uploadFiles( StatusUpdate su, boolean async ) {
-		 doTask(new UploadTask(), async);
+		doTask(new UploadTask( su ), async);
 	}
 
 	public void fetchAlbums( StatusUpdate su, boolean async ) {
-		doTask(new AlbumListTask(), async);
+		doTask(new AlbumListTask( su ), async);
 	}	
 	
 	
@@ -95,9 +68,17 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	//-------------------------------------------------------------------------	
 	abstract class GalleryTask implements Runnable {
 		HTTPConnection mConnection;
-		
+		StatusUpdate su;
 		boolean interrupt = false;
 		
+		public GalleryTask( StatusUpdate su ) {
+			if ( su == null ) {
+				this.su = new StatusUpdateAdapter(){};
+			} else {
+				this.su = su;	
+			}
+		}
+
 		public void run() {
 			su.setInProgress(true);
 			if ( ! isLoggedIn ) {
@@ -172,9 +153,31 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	
 			return false;
 		}
+		
+		void status(String message) {
+			Log.log(Log.INFO, MODULE, message);
+			if (pId != -1) {
+				su.setStatus(message);
+			} else {
+				su.updateProgressStatus(pId, message);
+			}
+		}
+		
+		void error(String message) {
+			su.error( message );
+			status(message);
+		}
+		
+		void trace(String message) {
+			Log.log(Log.TRACE, MODULE, message);
+		}
 	}
 	
 	class UploadTask extends GalleryTask {		
+		UploadTask( StatusUpdate su ) {
+			super(su);	
+		}
+		
 		void runTask() {
 			ArrayList pictures = g.getAllPictures();
 			
@@ -260,6 +263,10 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 	}
 	
 	class AlbumListTask extends GalleryTask {
+		AlbumListTask( StatusUpdate su ) {
+			super(su);	
+		}
+		
 		void runTask() {
 			pId = su.startProgress(0, 10, "Fetching albums from " + g.toString(), true);
 			
@@ -333,26 +340,5 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		
 			su.stopProgress(pId, "Fetch complete");
 		}
-	}
-
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	void status(String message) {
-		Log.log(Log.INFO, MODULE, message);
-		if (pId != -1) {
-			su.setStatus(message);
-		} else {
-			su.updateProgressStatus(pId, message);
-		}
-	}
-	
-	void error(String message) {
-		su.error( message );
-		status(message);
-	}
-	
-	void trace(String message) {
-		Log.log(Log.TRACE, MODULE, message);
 	}
 }

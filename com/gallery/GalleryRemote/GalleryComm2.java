@@ -90,32 +90,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	
 	
 	/* -------------------------------------------------------------------------
-	 * STATIC INITIALIZATON
-	 */ 
-	
-	static {
-		/* Configures HTTPClient to accept all cookies
-		 * this should be done at least once per GalleryRemote
-		 * invokation */
-		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
-			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
-				return true;
-			}
-			public boolean sendCookie(Cookie cookie, RoRequest req) {
-				return true;
-			}
-		});
-	}
-	
-	
-	/* -------------------------------------------------------------------------
 	 * CONSTRUCTION
 	 */ 
 	
 	/**
 	 *	Create an instance of GalleryComm2 by supplying an instance of Gallery.
 	 */
-	public GalleryComm2( Gallery g ) {
+	protected GalleryComm2( Gallery g ) {
 		if ( g == null ) {
 			throw new IllegalArgumentException( "Must supply a non-null gallery." );
 		}
