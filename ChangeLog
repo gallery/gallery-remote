@@ -1,3 +1,8 @@
+2002-08-06  Pierre-Luc Paour <gallery@paour.com> (0.4-b2)
+	
+	* Fixed bug 523219: protocol is no longer needed in gallery URL
+	* Fixed thumbnail loading when using the options menu to enable or disable thumbnails
+
 2002-07-30  Pierre-Luc Paour <gallery@paour.com> (0.4-b1)
 	
 	* Renewed development of Gallery Remote!

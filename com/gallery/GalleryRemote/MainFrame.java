@@ -109,7 +109,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
         
         String showPreviewS = (String) mPropertiesFile.getProperty("showpreview");
-        System.out.println(showPreviewS);
         if (showPreviewS != null) {
             showPreview = Boolean.valueOf(showPreviewS).booleanValue();
         }
@@ -179,7 +178,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuOptionsPath.setText("Show Path");
         jMenuOptionsPath.setSelected(true);
         
-        //-- the settongs panel ---
+        //-- the settings panel ---
         jLabelURL.setSize(new java.awt.Dimension(90, 20));
         jLabelURL.setLocation(new java.awt.Point(7, 20));
         jLabelURL.setVisible(true);
@@ -263,12 +262,6 @@ public class MainFrame extends javax.swing.JFrame {
         
         jListItems = new DroppableList(this);
         
-        /*
-        if (showThumbnails) {
-            jListItems.setCellRenderer(new FileCellRenderer());
-            jListItems.setFixedCellHeight(thumbnailSize.height + 4);
-        }
-         */
         showThumbs(showThumbnails);
         
         jScrollPane.getViewport().add(jListItems);
@@ -428,14 +421,12 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         
-        //if (showPreview) {
         jPreview.initComponents(mPropertiesFile);
         jPreview.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
                 jMenuOptionsPreview.setSelected(false);
             }
         });
-        //}
         
         updateUI();
         
@@ -475,21 +466,19 @@ public class MainFrame extends javax.swing.JFrame {
         mPropertiesFile.setProperty("mainx", ""+getLocation().x);
         mPropertiesFile.setProperty("mainy", ""+getLocation().y);
         
-        if (showPreview) {
-            mPropertiesFile.setProperty("previewwidth", ""+jPreview.getSize().width);
-            mPropertiesFile.setProperty("previewheight", ""+jPreview.getSize().height);
-            mPropertiesFile.setProperty("previewx", ""+jPreview.getLocation().x);
-            mPropertiesFile.setProperty("previewy", ""+jPreview.getLocation().y);
-        }
+		mPropertiesFile.setProperty("showpreview",String.valueOf(showPreview));
+        mPropertiesFile.setProperty("previewwidth", ""+jPreview.getSize().width);
+        mPropertiesFile.setProperty("previewheight", ""+jPreview.getSize().height);
+        mPropertiesFile.setProperty("previewx", ""+jPreview.getLocation().x);
+        mPropertiesFile.setProperty("previewy", ""+jPreview.getLocation().y);
         
         if (AddFileDialog.currentDirectory != null) {
             mPropertiesFile.setProperty("filedialogpath", ""+AddFileDialog.currentDirectory.getPath());
         }
         
-        //mPropertiesFile.setProperty("showthumbnails", ""+showThumbnails);
-        //mPropertiesFile.setProperty("showpreview", ""+showPreview);
-        //mPropertiesFile.setProperty("thumbnailwidth", ""+thumbnailSize.width);
-        //mPropertiesFile.setProperty("thumbnailheight", ""+thumbnailSize.height);
+        mPropertiesFile.setProperty("showthumbnails", ""+showThumbnails);
+        mPropertiesFile.setProperty("thumbnailwidth", ""+thumbnailSize.width);
+        mPropertiesFile.setProperty("thumbnailheight", ""+thumbnailSize.height);
         
         mPropertiesFile.write();
         
@@ -843,7 +832,6 @@ public class MainFrame extends javax.swing.JFrame {
             jPreview.hide();
             showPreview = false;
         }
-        mPropertiesFile.setProperty("showpreview",String.valueOf(showPreview));
     }
     
     //-------------------------------------------------------------------------
@@ -851,10 +839,17 @@ public class MainFrame extends javax.swing.JFrame {
     //-------------------------------------------------------------------------
     public void jMenuOptionsThumbItemSelected(java.awt.event.ItemEvent e) {
         showThumbnails = (e.getStateChange() == ItemEvent.SELECTED) ? true : false;
-        if (showThumbnails) thumbnailLoader.preloadThumbnails(new Vector(mFileList));
+        if (showThumbnails)
+		{
+			thumbnailLoader.preloadThumbnailFiles(new Vector(mFileList));
+		}
+		else
+		{
+			thumbnailLoader.cancelLoad();
+		}
+		
         showThumbs(showThumbnails);
         updateUI();
-        mPropertiesFile.setProperty("showthumbnails",String.valueOf(showThumbnails));  
     }
     
     //-------------------------------------------------------------------------
@@ -915,7 +910,6 @@ public class MainFrame extends javax.swing.JFrame {
         }
         
     }
-    
     
     //-------------------------------------------------------------------------
     //--
@@ -1001,9 +995,21 @@ public class MainFrame extends javax.swing.JFrame {
         }
         
         public void preloadThumbnails(Vector filenames) {
-            //System.out.println("loadPreview " + filename);
+            //System.out.println("loadPreview " + filenames);
             
             toLoad.addAll(0, filenames);
+            
+            rerun();
+        }
+        
+         public void preloadThumbnailFiles(Vector files) {
+            //System.out.println("loadPreview " + files);
+            
+            Enumeration e = files.elements();
+			while (e.hasMoreElements())
+			{
+                toLoad.add(0, ((File) e.nextElement()).getPath());
+            }
             
             rerun();
         }
@@ -1025,6 +1031,11 @@ public class MainFrame extends javax.swing.JFrame {
                 new Thread(this).start();
             }
         }
+		
+		void cancelLoad()
+		{
+			toLoad.clear();
+		}
     }
     
     //-------------------------------------------------------------------------

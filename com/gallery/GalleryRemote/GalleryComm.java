@@ -60,7 +60,13 @@ public class GalleryComm {
 		//-- needs to have a trailing slash ---
 		if (!mURLString.endsWith("/")) {
 			mURLString = mURLString + "/";
-		}	
+		}
+		
+		if (!mURLString.startsWith("http://"))
+		{
+			mURLString = "http://" + mURLString;
+		}
+		
 		mLoggedIn = false;
 	}
 	public String getURLString () {
