@@ -220,73 +220,74 @@ public class MainFrame extends javax.swing.JFrame
 	void resetUIState() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-		// if the list is empty or comm, disable upload
-		upload.setEnabled( mAlbum != null
-			&& mAlbum.sizePictures() > 0 
-			&& !mInProgress
-			&& album.getSelectedIndex() >= 0 );
-		
-		// during comm, don't change Gallery or do any other comm
-		fetch.setEnabled( !mInProgress );
-		gallery.setEnabled( !mInProgress );
-		newGallery.setEnabled( !mInProgress );
-		username.setEnabled( !mInProgress );
-		password.setEnabled( !mInProgress );
-		
-		// if the selected album is uploading, disable everything
-		boolean enabled = ! mInProgress && mAlbum != null && album.getModel().getSize() >= 1;
-		browse.setEnabled( enabled );
-		pictureInspector.setEnabled( enabled );
-		picturesList.setEnabled( enabled );
-		album.setEnabled( enabled );
-		
-		// change image displayed
-		int sel = picturesList.getSelectedIndex();
-		/*if (mAlbum != null && mAlbum.getSize() < 1) {
-			// if album was just emptied, it takes a while for the pictureList
-			// to notice...
-			sel = -1;
-		}*/
-		
-		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
-			if ( sel != -1 ) {
-				String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
-				previewFrame.displayFile( filename );
-			} else {
-				previewFrame.displayFile( null );
-			}
-
-			if ( !previewFrame.isVisible() ) {
-				previewFrame.setVisible( true );
-			}
-		}
-		
-		// status
-		if ( mAlbum == null) {
-			pictureInspector.setPictures( (Object[]) null );
-
-			setStatus( "Select a Gallery URL and click Fetch Albums..." );
-		} else if ( mAlbum.sizePictures() > 0 ) {
-			pictureInspector.setPictures( picturesList.getSelectedValues() );
-
-			int selN = picturesList.getSelectedIndices().length;
-
-			if ( sel == -1 ) {
-				setStatus( mAlbum.sizePictures() + " pictures / "
-				+ NumberFormat.getInstance().format(
-					( (int) mAlbum.getPictureFileSize() / 1024 ) )
-				+ " K" );
-			} else {
-				setStatus( "Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
-				+ NumberFormat.getInstance().format(
-					( (int) mAlbum.getObjectFileSize( picturesList.getSelectedValues() ) / 1024 ) )
-				+ " K" );
-			}
-		} else {
-			pictureInspector.setPictures( (Object[]) null );
-
-			setStatus( "No selection" );
-		}
+				// if the list is empty or comm, disable upload
+				upload.setEnabled( mAlbum != null
+				&& mAlbum.sizePictures() > 0 
+				&& !mInProgress
+				&& album.getSelectedIndex() >= 0 );
+				
+				// during comm, don't change Gallery or do any other comm
+				fetch.setEnabled( !mInProgress );
+				gallery.setEnabled( !mInProgress );
+				newGallery.setEnabled( !mInProgress );
+				username.setEnabled( !mInProgress );
+				password.setEnabled( !mInProgress );
+				
+				// if the selected album is uploading, disable everything
+				boolean enabled = ! mInProgress && mAlbum != null && album.getModel().getSize() >= 1;
+				browse.setEnabled( enabled );
+				pictureInspector.setEnabled( enabled );
+				picturesList.setEnabled( enabled );
+				album.setEnabled( enabled );
+				
+				// change image displayed
+				int sel = picturesList.getSelectedIndex();
+				/*if (mAlbum != null && mAlbum.getSize() < 1) {
+					// if album was just emptied, it takes a while for the pictureList
+					// to notice...
+					// this is fixed by using invokeLater
+					sel = -1;
+				}*/
+				
+				if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
+					if ( sel != -1 ) {
+						String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
+						previewFrame.displayFile( filename );
+					} else {
+						previewFrame.displayFile( null );
+					}
+					
+					if ( !previewFrame.isVisible() ) {
+						previewFrame.setVisible( true );
+					}
+				}
+				
+				// status
+				if ( mAlbum == null) {
+					pictureInspector.setPictures( (Object[]) null );
+					
+					setStatus( "Select a Gallery URL and click Fetch Albums..." );
+				} else if ( mAlbum.sizePictures() > 0 ) {
+					int selN = picturesList.getSelectedIndices().length;
+					
+					pictureInspector.setPictures( picturesList.getSelectedValues() );
+					
+					if ( sel == -1 ) {
+						setStatus( mAlbum.sizePictures() + " pictures / "
+						+ NumberFormat.getInstance().format(
+						( (int) mAlbum.getPictureFileSize() / 1024 ) )
+						+ " K" );
+					} else {
+						setStatus( "Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
+						+ NumberFormat.getInstance().format(
+						( (int) mAlbum.getObjectFileSize( picturesList.getSelectedValues() ) / 1024 ) )
+						+ " K" );
+					}
+				} else {
+					pictureInspector.setPictures( (Object[]) null );
+					
+					setStatus( "No selection" );
+				}
 		}});
 	}
 
@@ -314,8 +315,9 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void updateAlbumCombo() {
 		album.setModel( currentGallery );
-		
+		Log.log(Log.TRACE, MODULE, "updateAlbumCombo");
 		if (album.getModel().getSize() < 1) {
+			Log.log(Log.TRACE, MODULE, "no albums");
 			album.setEnabled( false );
 			picturesList.setEnabled( false );
 			
@@ -337,6 +339,7 @@ public class MainFrame extends javax.swing.JFrame
 			picturesList.setModel( new Album() );
 		} else {
 			picturesList.setModel( mAlbum );
+			mAlbum.setListSelectionModel(picturesList.getSelectionModel());
 			picturesList.getModel().addListDataListener( this );
 		}
 	}
@@ -514,7 +517,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void deleteSelectedPictures() {
 		int[] indices = picturesList.getSelectedIndices();
-
+		
 		mAlbum.removePictures( indices );
 	}
 
@@ -753,7 +756,7 @@ public class MainFrame extends javax.swing.JFrame
 		jCheckBoxMenuThumbnails.addItemListener( this );
 		jCheckBoxMenuPreview.addItemListener( this );
 		jCheckBoxMenuPath.addItemListener( this );
-		// in Swing 1.3, using an ItemListenet for a JComboBox doesn't work,
+		// in Swing 1.3, using an ItemListener for a JComboBox doesn't work,
 		// using ActionListener instead
 		//album.addItemListener( this );
 		album.addActionListener( this );
@@ -886,10 +889,14 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  ListSelection event
 	 */
 	public void contentsChanged( ListDataEvent e ) {
-		// Also tell MainFrame (ugly, but works around bug in Swing where when
-		// the list data changes (and nothing remains to be selected), no
-		// selection change events are fired.
-		resetUIState();
+		Object source = e.getSource();
+		
+		if (source == picturesList) {
+			// Also tell MainFrame (ugly, but works around bug in Swing where when
+			// the list data changes (and nothing remains to be selected), no
+			// selection change events are fired.
+			resetUIState();
+		}
 	}
 	public void intervalAdded(ListDataEvent e) {}
 	public void intervalRemoved(ListDataEvent e) {}
@@ -901,8 +908,10 @@ public class MainFrame extends javax.swing.JFrame
 		
 		if (c == username) {
 			currentGallery.setUsername(username.getText());
+			resetUIState();
 		} else if ( c == password ) {
 			currentGallery.setPassword(password.getText());
+			resetUIState();
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled caret update " + c );
 		}
