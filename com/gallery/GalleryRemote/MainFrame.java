@@ -1137,7 +1137,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if (source instanceof Gallery) {
 			updateAlbumCombo();
 		} else if (source instanceof DefaultComboBoxModel) {
-			// do nothing
+			updateGalleryParams();
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unknown source " + source);
 		}
