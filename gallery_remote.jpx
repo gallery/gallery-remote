@@ -51,6 +51,7 @@
   <property category="sys" name="Version" value="1.0"/>
   <property category="sys" name="VersionLabel" value="@version"/>
   <property category="sys" name="WorkingDirectory" value="."/>
+  <property category="sys" name="palette.bean.chooser.beans" value="com.gallery.GalleryRemote.StatusBar;"/>
   <property category="sys" name="uidesign.size.com.gallery.GalleryRemote.MainFrame" value="593,523"/>
   <property category="sys" name="uidesign.size.com.gallery.GalleryRemote.NewAlbumDialog" value="400,170"/>
   <property category="sys" name="uidesign.size.com.gallery.GalleryRemote.Update" value="563,437"/>

@@ -266,7 +266,7 @@ public class ImageUtils {
 			File orig = null;
 			File dest = null;
 			try {
-				if (MainFrame.IS_MAC_OS_X) {
+				if (GalleryRemote.IS_MAC_OS_X) {
 					orig = new File(filename);
 					dest = File.createTempFile("tmp"
 							, "." + GalleryFileFilter.getExtension(filename), tmpDir);
@@ -811,8 +811,8 @@ public class ImageUtils {
 		useIM = false;
 
 		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM)) {
-			if (GalleryRemote.getInstance().mainFrame != null
-					&& GalleryRemote.getInstance().mainFrame.isVisible()) {
+			if (GalleryRemote.getInstance().getMainFrame() != null
+					&& GalleryRemote.getInstance().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextIM"),
 						GRI18n.getString(MODULE, "warningUrlIM"),
@@ -832,8 +832,8 @@ public class ImageUtils {
 		useJpegtran = false;
 
 		if (!GalleryRemote.getInstance().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN)) {
-			if (GalleryRemote.getInstance().mainFrame != null
-					&& GalleryRemote.getInstance().mainFrame.isVisible()) {
+			if (GalleryRemote.getInstance().getMainFrame() != null
+					&& GalleryRemote.getInstance().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
 						GRI18n.getString(MODULE, "warningTextJpegtran"),
 						GRI18n.getString(MODULE, "warningUrlJpegtran"),

@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.util.GRI18n;
 
@@ -8,6 +9,7 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -114,7 +116,11 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				Gallery.uncacheAmbiguousUrl();
 			}
 		} else if (cmd.equals("New")) {
-			Gallery newG = new Gallery(mainFrame.jStatusBar);
+			Gallery newG = new Gallery(GalleryRemote.getInstance().getCore().getMainStatusUpdate());
+			if (GalleryRemote.getInstance().getCore() instanceof TreeModelListener) {
+				newG.addTreeModelListener((TreeModelListener) GalleryRemote.getInstance().getCore());
+			}
+
 			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, newG);
 
 			if (ged.isOK()) {

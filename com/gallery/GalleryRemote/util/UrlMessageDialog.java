@@ -21,7 +21,7 @@ public class UrlMessageDialog extends JDialog {
 	JButton jOk = new JButton();
 
 	public UrlMessageDialog(String message, String url, String urlText) {
-		super(GalleryRemote.getInstance().mainFrame,
+		super(GalleryRemote.getInstance().getMainFrame(),
 				GRI18n.getString(MODULE, "warningTitle"),
 				true);
 

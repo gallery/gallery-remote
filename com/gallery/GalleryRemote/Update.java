@@ -109,7 +109,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 			DialogUtil.center(this);
 
-			setIconImage(MainFrame.iconImage);
+			setIconImage(GalleryRemote.getInstance().getMainFrame().getIconImage());
 
 			setVisible(true);
 		} catch (Exception e) {
@@ -186,7 +186,7 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		if (which.releaseNotes != null) jReleaseNotes.setText(which.releaseNotes);
 
 		if (which.releaseUrl != null) {
-			if (MainFrame.IS_MAC_OS_X) {
+			if (GalleryRemote.IS_MAC_OS_X) {
 				jUrl.setText(which.releaseUrlMac);
 			} else {
 				jUrl.setText(which.releaseUrl);

@@ -199,7 +199,6 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 				}
 			}
 
-
 			if (d != null) {
 				try {
 					picture = ImageUtils.resize(picture.getPath(), d);

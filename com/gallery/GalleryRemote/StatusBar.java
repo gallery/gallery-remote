@@ -17,14 +17,10 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	JProgressBar jProgress = new JProgressBar();
 	JLabel jStatus = new JLabel();
 
-	MainFrame mf = null;
-
 	StatusLevelData data[] = new StatusLevelData[NUM_LEVELS];
 	int currentLevel = -1;
 
-	public StatusBar(MainFrame mf) {
-		this.mf = mf;
-
+	public StatusBar() {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = new StatusLevelData();
 		}
@@ -173,7 +169,7 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	}
 
 	public void setInProgress(boolean inProgress) {
-		mf.setInProgress(inProgress);
+		GalleryRemote.getInstance().getCore().setInProgress(inProgress);
 	}
 
 	public void error(String message) {

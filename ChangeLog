@@ -1,3 +1,11 @@
+2003-01-15  Pierre-Luc Paour <gallery@paour.com> (1.3-b16)
+
+	* MASSIVE refactoring to make GR more modular to prepare
+	  for the various applet versions.
+	* Changed log location from working directory to temp dir.
+	* Added a mini applet that only contains a list of files
+	  and buttons to add pictures and upload.
+
 2003-01-13  Pierre-Luc Paour <gallery@paour.com> (1.3-b15)
 
 	* Detect even more screwed up album hierarchies and

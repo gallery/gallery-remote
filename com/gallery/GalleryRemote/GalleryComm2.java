@@ -231,7 +231,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 * This class serves as the base class for each GalleryComm2 task.
 	 */
 	abstract class GalleryTask implements Runnable {
-
 		StatusUpdate su;
 		HTTPConnection mConnection;
 		boolean interrupt = false;
@@ -394,9 +393,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			String username = g.getUsername();
 			String password = g.getPassword();
 
-			if (username == null || username.length() == 0) {
+			if ((username == null || username.length() == 0)
+					&& ! g.cookieLogin) {
 				username = (String) JOptionPane.showInputDialog(
-						GalleryRemote.getInstance().mainFrame,
+						GalleryRemote.getInstance().getMainFrame(),
 						GRI18n.getString(MODULE, "usernameLbl"),
 						GRI18n.getString(MODULE, "username"),
 						JOptionPane.PLAIN_MESSAGE,
@@ -411,7 +411,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 			if (username != null && (password == null || password.length() == 0)) {
 				password = (String) JOptionPane.showInputDialog(
-						GalleryRemote.getInstance().mainFrame,
+						GalleryRemote.getInstance().getMainFrame(),
 						GRI18n.getString(MODULE, "passwdLbl"),
 						GRI18n.getString(MODULE, "passwd"),
 						JOptionPane.PLAIN_MESSAGE,
@@ -562,11 +562,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				if (su instanceof UploadProgress) {
 					if (((UploadProgress) su).isShutdown()) {
-						GalleryRemote.getInstance().mainFrame.shutdown(true);
+						GalleryRemote.getInstance().getCore().shutdown(true);
 					}
 				}
 
-				GalleryRemote.getInstance().mainFrame.flushMemory();
+				GalleryRemote.getInstance().getCore().flushMemory();
 			} else {
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upFailed"));
 			}
@@ -1108,12 +1108,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
 						picture.setCaption(p.getProperty("image.caption." + i));
 
-						for (Iterator it = extraFields.iterator(); it.hasNext();) {
-							String name = (String) it.next();
-							String value = p.getProperty("image.extrafield." + name + "." + i);
+						if (extraFields != null) {
+							for (Iterator it = extraFields.iterator(); it.hasNext();) {
+								String name = (String) it.next();
+								String value = p.getProperty("image.extrafield." + name + "." + i);
 
-							if (value != null) {
-								picture.setExtraField(name, value);
+								if (value != null) {
+									picture.setExtraField(name, value);
+								}
 							}
 						}
 
@@ -1129,7 +1131,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					a.setHasFetchedImages(true);
 					a.addPictures(newPictures);
-					GalleryRemote.getInstance().mainFrame.thumbnailCache.preloadThumbnails(newPictures.iterator());
+					GalleryRemote.getInstance().getCore().preloadThumbnails(newPictures.iterator());
 				} else {
 					error(su, "Error: " + p.getProperty("status_text"));
 				}

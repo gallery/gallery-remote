@@ -59,7 +59,7 @@ public class Log extends Thread implements PreferenceNames {
 
 	private Log() {
 		try {
-			writer = new BufferedWriter(new FileWriter("log.txt"));
+			writer = new BufferedWriter(new FileWriter(new File(System.getProperty("java.io.tmpdir"), "log.txt")));
 		} catch (IOException e) {
 			System.err.println("Can't open log file 'log.txt'. Disabling log.");
 			maxLevel = -1;

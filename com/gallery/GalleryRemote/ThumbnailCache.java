@@ -44,17 +44,6 @@ public class ThumbnailCache implements Runnable {
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
 	HashMap thumbnails = new HashMap();
-	MainFrame mf;
-
-	/**
-	 * Constructor for the ThumbnailCache object
-	 * 
-	 * @param mf Description of Parameter
-	 */
-	public ThumbnailCache(MainFrame mf) {
-		this.mf = mf;
-	}
-
 
 	/**
 	 * Main processing method for the ThumbnailLoader object
@@ -62,7 +51,7 @@ public class ThumbnailCache implements Runnable {
 	public void run() {
 		Thread.yield();
 		int loaded = 0;
-		mf.jStatusBar.startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), GRI18n.getString(MODULE, "loadThmb"), false);
+		GalleryRemote.getInstance().getCore().getMainStatusUpdate().startProgress(StatusUpdate.LEVEL_CACHE, 0, toLoad.size(), GRI18n.getString(MODULE, "loadThmb"), false);
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while (!toLoad.isEmpty()) {
 			Picture p = (Picture) toLoad.pop();
@@ -92,13 +81,13 @@ public class ThumbnailCache implements Runnable {
 				loaded++;
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
-				mf.jStatusBar.updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
-				mf.thumbnailLoadedNotify();
+				GalleryRemote.getInstance().getCore().getMainStatusUpdate().updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
+				GalleryRemote.getInstance().getCore().thumbnailLoadedNotify();
 			}
 		}
 		stillRunning = false;
 
-		mf.jStatusBar.stopProgress(StatusUpdate.LEVEL_CACHE, GRI18n.getString(MODULE, "thmbLoaded"));
+		GalleryRemote.getInstance().getCore().getMainStatusUpdate().stopProgress(StatusUpdate.LEVEL_CACHE, GRI18n.getString(MODULE, "thmbLoaded"));
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}
@@ -155,44 +144,6 @@ public class ThumbnailCache implements Runnable {
 		rerun();
 	}
 
-
-	/**
-	 *  Ask for several thumnails to be loaded
-	 *
-	 *@param  filenames  an array of File objects
-	 */
-	/*public void preloadThumbnailFiles( File[] files ) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailPictures " + files);
-
-		for ( int i = 0; i < files.length; i++ ) {
-			String filename = files[i].getPath();
-
-			if (!thumbnails.containsKey(filename)) {
-				toLoad.add( 0, filename );
-			}
-		}
-
-		rerun();
-	}*/
-
-	/**
-	 * Ask for an enumeration fo file names to be loaded
-	 * 
-	 * @param filenames an enumeration of String file names
-	 */
-	/*public void preloadThumbnailFilenames( Enumeration filenames ) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilenames " + filenames);
-
-		while ( filenames.hasMoreElements() ) {
-			String filename = (String) filenames.nextElement();
-			if (!thumbnails.containsKey(filename)) {
-				toLoad.add( 0, filename );
-			}
-		}
-
-		rerun();
-	}*/
-
 	public void reload() {
 		Iterator it = ((HashMap) thumbnails.clone()).keySet().iterator();
 		thumbnails.clear();
@@ -209,7 +160,6 @@ public class ThumbnailCache implements Runnable {
 		thumbnails.clear();
 	}
 
-
 	void rerun() {
 		if (!stillRunning && GalleryRemote.getInstance().properties.getShowThumbnails()) {
 			stillRunning = true;
@@ -217,7 +167,6 @@ public class ThumbnailCache implements Runnable {
 			new Thread(this).start();
 		}
 	}
-
 
 	void cancelLoad() {
 		toLoad.clear();

@@ -131,7 +131,7 @@ public class PictureInspector extends JPanel
 		jUpButton.setText(GRI18n.getString(MODULE, "upBtn"));
 		jUpButton.setActionCommand("Up");
 		jUpButton.setHorizontalAlignment(SwingConstants.LEFT);
-		jUpButton.setIcon(MainFrame.iUp);
+		jUpButton.setIcon(GalleryRemote.iUp);
 		jDownButton.setMaximumSize(new Dimension(120, 23));
 		jDownButton.setMinimumSize(new Dimension(120, 23));
 		jDownButton.setPreferredSize(new Dimension(120, 23));
@@ -139,7 +139,7 @@ public class PictureInspector extends JPanel
 		jDownButton.setText(GRI18n.getString(MODULE, "dnBtn"));
 		jDownButton.setActionCommand("Down");
 		jDownButton.setHorizontalAlignment(SwingConstants.LEFT);
-		jDownButton.setIcon(MainFrame.iDown);
+		jDownButton.setIcon(GalleryRemote.iDown);
 		jDeleteButton.setMaximumSize(new Dimension(120, 23));
 		jDeleteButton.setMinimumSize(new Dimension(120, 23));
 		jDeleteButton.setPreferredSize(new Dimension(120, 23));
@@ -147,7 +147,7 @@ public class PictureInspector extends JPanel
 		jDeleteButton.setActionCommand("Delete");
 		jDeleteButton.setHorizontalAlignment(SwingConstants.LEFT);
 		jDeleteButton.setText(GRI18n.getString(MODULE, "Delete"));
-		jDeleteButton.setIcon(MainFrame.iDelete);
+		jDeleteButton.setIcon(GalleryRemote.iDelete);
 
 		jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jScrollPane1.setBorder(null);
@@ -162,15 +162,15 @@ public class PictureInspector extends JPanel
 		jRotateLeftButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		jRotateLeftButton.setToolTipText(GRI18n.getString(MODULE, "rotLtTip"));
 		jRotateLeftButton.setActionCommand("Left");
-		jRotateLeftButton.setIcon(MainFrame.iLeft);
+		jRotateLeftButton.setIcon(GalleryRemote.iLeft);
 		jRotateRightButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		jRotateRightButton.setToolTipText(GRI18n.getString(MODULE, "rotRtTip"));
 		jRotateRightButton.setActionCommand("Right");
-		jRotateRightButton.setIcon(MainFrame.iRight);
+		jRotateRightButton.setIcon(GalleryRemote.iRight);
 		jFlipButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 		jFlipButton.setToolTipText(GRI18n.getString(MODULE, "flipTip"));
 		jFlipButton.setActionCommand("Flip");
-		jFlipButton.setIcon(MainFrame.iFlip);
+		jFlipButton.setIcon(GalleryRemote.iFlip);
 
 		add(jLabel5, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				, GridBagConstraints.NORTHEAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0));
@@ -255,11 +255,11 @@ public class PictureInspector extends JPanel
 		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 
 		if (command.equals("Delete")) {
-			mf.deleteSelectedPictures();
+			CoreUtils.deleteSelectedPictures();
 		} else if (command.equals("Up")) {
-			mf.movePicturesUp();
+			CoreUtils.movePicturesUp();
 		} else if (command.equals("Down")) {
-			mf.movePicturesDown();
+			CoreUtils.movePicturesDown();
 		} else if (command.equals("Left")) {
 			for (int i = 0; i < pictures.length; i++) {
 				((Picture) pictures[i]).rotateLeft();
@@ -529,13 +529,13 @@ public class PictureInspector extends JPanel
 
 	public Action nextPictureAction = new AbstractAction("Select Next Picture") {
 		public void actionPerformed(ActionEvent evt) {
-			mf.selectNextPicture();
+			CoreUtils.selectNextPicture();
 		}
 	};
 
 	public Action prevPictureAction = new AbstractAction("Select Prev Picture") {
 		public void actionPerformed(ActionEvent evt) {
-			mf.selectPrevPicture();
+			CoreUtils.selectPrevPicture();
 		}
 	};
 

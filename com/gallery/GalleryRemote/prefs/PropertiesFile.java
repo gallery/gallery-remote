@@ -37,6 +37,7 @@ public class PropertiesFile extends GalleryProperties {
 	protected boolean read = false;
 	protected boolean written = false;
 	protected String mFilename;
+	protected boolean readOnly = false;
 
 	/**
 	 * Constructor for the PropertiesFile object
@@ -97,6 +98,10 @@ public class PropertiesFile extends GalleryProperties {
 		} else {
 			mFilename = name;
 		}
+	}
+
+	public void setReadOnly() {
+		readOnly = true;
 	}
 
 
@@ -181,7 +186,12 @@ public class PropertiesFile extends GalleryProperties {
 	 * Write the property file to disk
 	 */
 	public synchronized void write() {
-		if (!written) {
+		if (readOnly && defaults != null && defaults instanceof PropertiesFile) {
+			((PropertiesFile) defaults).write();
+			written = true;
+		}
+
+		if (!written && !readOnly) {
 			FileOutputStream fileOut = null;
 			try {
 				fileOut = new FileOutputStream(mFilename);

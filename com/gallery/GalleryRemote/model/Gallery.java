@@ -26,6 +26,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.io.File;
@@ -66,6 +67,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	transient private int prefsIndex;
 	transient private Boolean ambiguousUrl;
 	transient private boolean blockWrites = false;
+	transient public boolean cookieLogin = false;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE};
 	public static final int TYPE_STANDALONE = 0;
@@ -79,8 +81,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		// when loading from prefs, galleries not yet created. No matter: in that case, the
 		// prefsIndex is forced.
-		if (GalleryRemote.getInstance().mainFrame != null) {
-			prefsIndex = GalleryRemote.getInstance().mainFrame.galleries.getSize();
+		if (GalleryRemote.getInstance().getMainFrame() != null) {
+			prefsIndex = GalleryRemote.getInstance().getCore().getGalleries().getSize();
 		}
 	}
 
@@ -93,9 +95,13 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public void fetchAlbums(StatusUpdate su) {
+		fetchAlbums(su, true);
+	}
+
+	public void fetchAlbums(StatusUpdate su, boolean async) {
 		//albumList = null;
 
-		getComm(su).fetchAlbums(su, true);
+		getComm(su).fetchAlbums(su, async);
 	}
 
 	public String newAlbum(Album a, StatusUpdate su) {
@@ -263,21 +269,6 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		return pictures;
 	}
-
-	/*public ArrayList getAllPictureFiles() {
-		ArrayList files = new ArrayList();
-
-		if (albumList != null) {
-			Iterator i = albumList.iterator();
-			while (i.hasNext()) {
-				Album a = (Album) i.next();
-
-				files.addAll(a.getFileList());
-			}
-		}
-
-		return files;
-	}*/
 
 	/**
 	 * Delete all of the pictures from the current gallery without
@@ -610,6 +601,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		Log.log(Log.LEVEL_INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)");
 
 		Gallery g = new Gallery(su);
+		if (GalleryRemote.getInstance().getCore() instanceof TreeModelListener) {
+			g.addTreeModelListener((TreeModelListener) GalleryRemote.getInstance().getCore());
+		}
+
 		g.setBlockWrites(true);
 		g.username = username;
 		g.password = password;
@@ -728,7 +723,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 	public boolean isAmbiguousUrl() {
 		if (ambiguousUrl == null) {
-			DefaultComboBoxModel galleries = GalleryRemote.getInstance().mainFrame.galleries;
+			ListModel galleries = GalleryRemote.getInstance().getCore().getGalleries();
 			String myUrl = toString(false);
 
 			for (int i = 0; i < galleries.getSize(); i++) {
@@ -749,7 +744,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public static void uncacheAmbiguousUrl() {
-		DefaultComboBoxModel galleries = GalleryRemote.getInstance().mainFrame.galleries;
+		ListModel galleries = GalleryRemote.getInstance().getCore().getGalleries();
 
 		for (int i = 0; i < galleries.getSize(); i++) {
 			Gallery g = (Gallery) galleries.getElementAt(i);
@@ -789,8 +784,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 		// this either...
 		//GalleryRemote.getInstance().mainFrame.jAlbumTree.treeDidChange();
 
-		// ugly... didn't want to have to implement TreeModelListener in MainFrame
-		GalleryRemote.getInstance().mainFrame.albumChanged(a);
+		// todo: ugly... didn't want to have to implement TreeModelListener in MainFrame
+		//GalleryRemote.getInstance().getMainFrame().albumChanged(a);
 	}
 
 
@@ -989,19 +984,4 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		return new TreePath(path.toArray());
 	}
-
-	/*public void checkTransients() {
-		root = new Object();
-		rootAlbums = new ArrayList();
-
-		if (albumList != null) {
-			for (Iterator it = albumList.iterator(); it.hasNext();) {
-				Album album = (Album) it.next();
-
-				if (album.getParentAlbum() == null) {
-					rootAlbums.add(album);
-				}
-			}
-		}
-	}*/
 }

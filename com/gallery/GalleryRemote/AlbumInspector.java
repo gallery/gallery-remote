@@ -426,13 +426,13 @@ public class AlbumInspector extends JPanel
 
 	public Action nextPictureAction = new AbstractAction("Select Next Picture") {
 		public void actionPerformed(ActionEvent evt) {
-			mf.selectNextPicture();
+			CoreUtils.selectNextPicture();
 		}
 	};
 
 	public Action prevPictureAction = new AbstractAction("Select Prev Picture") {
 		public void actionPerformed(ActionEvent evt) {
-			mf.selectPrevPicture();
+			CoreUtils.selectPrevPicture();
 		}
 	};
 

@@ -28,14 +28,12 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	JLabel jLabel[] = new JLabel[NUM_LEVELS];
 	JProgressBar jProgress[] = new JProgressBar[NUM_LEVELS];
 
-	MainFrame mf;
 	ActionListener cancelListener = null;
 	JButton jCancel = new JButton();
 	JCheckBox jShutdown = new JCheckBox();
 
-	public UploadProgress(MainFrame mf) {
-		super(mf);
-		this.mf = mf;
+	public UploadProgress(Frame f) {
+		super(f);
 
 		jbInit();
 
@@ -45,7 +43,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jProgress[LEVEL_UPLOAD_PROGRESS] = jProgressGlobal;
 
 		pack();
-		DialogUtil.center(this, mf);
+		DialogUtil.center(this, f);
 		setVisible(true);
 	}
 
@@ -54,9 +52,9 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
 		jPanel1.setLayout(gridBagLayout1);
 
-		jComputer1.setIcon(MainFrame.iComputer);
-		jComputer2.setIcon(MainFrame.iComputer);
-		jUploading.setIcon(MainFrame.iUploading);
+		jComputer1.setIcon(GalleryRemote.iComputer);
+		jComputer2.setIcon(GalleryRemote.iComputer);
+		jUploading.setIcon(GalleryRemote.iUploading);
 
 		jLabelGlobal.setText(GRI18n.getString(MODULE, "upImgNM"));
 		jLabelDetail.setText(GRI18n.getString(MODULE, "upImgGif"));
@@ -151,7 +149,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 	/* level-independant methods */
 	public void setInProgress(boolean inProgress) {
-		mf.setInProgress(inProgress);
+		GalleryRemote.getInstance().getCore().setInProgress(inProgress);
 	}
 
 	public void error(String message) {

@@ -48,7 +48,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
 
-		setIconImage(MainFrame.iconImage);
+		setIconImage(GalleryRemote.getInstance().getMainFrame().getIconImage());
 
 		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
 		setContentPane(new ImageContentPane());
@@ -115,7 +115,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 		if (r == null) {
 			if (picture.isOnline()) {
-				File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote.getInstance().mainFrame.jStatusBar);
+				File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote.getInstance().getCore().getMainStatusUpdate());
 
 				r = ImageUtils.load(
 						f.getPath(),

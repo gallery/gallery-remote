@@ -6,6 +6,7 @@ package com.gallery.GalleryRemote;
 
 import HTTPClient.NVPair;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.DialogUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,8 +65,7 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 		synchronized (getClass()) {
 			if (inp == null) {
 
-				MainFrame fr = GalleryRemote.getInstance().mainFrame;
-				inp = new BasicAuthBox(fr);
+				inp = new BasicAuthBox(GalleryRemote.getInstance().getMainFrame());
 			}
 		}
 
@@ -81,14 +81,12 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 	 * @version 0.3-3 06/05/2001
 	 * @created February 2, 2003
 	 */
-	private static class BasicAuthBox extends javax.swing.JDialog {
+	private static class BasicAuthBox extends JDialog {
 		private final static String title = GRI18n.getString(MODULE, "authReq");
-		private Dimension screen;
 		private JLabel line1, line2, line3;
 		private JTextField user, pass;
 		private int done;
 		private final static int OK = 1, CANCEL = 0;
-		private MainFrame theFrame;
 
 
 		/**
@@ -96,12 +94,8 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 		 * 
 		 * @param container Description of Parameter
 		 */
-		BasicAuthBox(MainFrame container) {
-
+		BasicAuthBox(Frame container) {
 			super(container, title, true);
-			theFrame = container;
-
-			screen = getToolkit().getScreenSize();
 
 			addNotify();
 			addWindowListener(new Close());
@@ -174,27 +168,9 @@ public class AuthorizePopup implements HTTPClient.AuthorizationPrompter {
 			pack();
 			setResizable(false);
 			// put popup at upper right of the parent frame (assuming we have one)
-			if (theFrame != null) {
-				int popX = theFrame.getX() + 20;
-				Dimension sz = getPreferredSize();
-				if (popX + sz.width > screen.width) {
-					popX = screen.width - sz.width;
-				}
-				if (popX < 0) {
-					popX = 0;
-				}
-				int popY = theFrame.getY() + 65;
-				if (popY + sz.height + 30 > screen.height) {
-					popY = screen.height - sz.height - 30;
-				}
-				if (popY < 0) {
-					popY = 0;
-				}
-				setLocation(popX, popY);
-			} else {
-				setLocation((screen.width - getPreferredSize().width) / 2,
-						(int) ((screen.height - getPreferredSize().height) / 2 * .7));
-			}
+
+			DialogUtil.center(getOwner());
+
 			boolean user_focus = true;
 			if (scheme.equalsIgnoreCase("NTLM")) {
 				// prefill the user field with the username

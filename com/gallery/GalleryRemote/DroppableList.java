@@ -201,14 +201,14 @@ public class DroppableList
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + fileList.size() + " new files(s) to list at index " + listIndex);
 
-				mf.addPictures((File[]) fileList.toArray(new File[0]), listIndex, false);
+				GalleryRemote.getInstance().getCore().addPictures((File[]) fileList.toArray(new File[0]), listIndex, false);
 			} else {
 				List pictureList = (List)
 						tr.getTransferData(PictureSelection.flavors[0]);
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "Adding " + pictureList.size() + " new pictures(s) to list at index " + listIndex);
 
-				mf.addPictures((Picture[]) pictureList.toArray(new Picture[0]), listIndex, true);
+				GalleryRemote.getInstance().getCore().addPictures((Picture[]) pictureList.toArray(new Picture[0]), listIndex, true);
 			}
 
 			dropTargetDropEvent.getDropTargetContext().dropComplete(true);
@@ -240,7 +240,7 @@ public class DroppableList
 			PictureSelection ps = (PictureSelection) dragSourceDropEvent.getDragSourceContext().getTransferable();
 
 			for (Iterator it = ps.iterator(); it.hasNext();) {
-				mf.getCurrentAlbum().removePicture((Picture) it.next());
+				GalleryRemote.getInstance().getCore().getCurrentAlbum().removePicture((Picture) it.next());
 			}
 		}
 	}
@@ -268,10 +268,6 @@ public class DroppableList
 		} else {
 			Log.log(Log.LEVEL_TRACE, MODULE, "nothing was selected");
 		}
-	}
-
-	public void setMainFrame(MainFrame mf) {
-		this.mf = mf;
 	}
 
 	int safeGetFixedCellHeight() {
