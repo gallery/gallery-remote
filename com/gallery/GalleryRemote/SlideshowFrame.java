@@ -67,8 +67,8 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		// todo: this is a hack to prevent painting problems (the status bar paints
-		// on top of the slide show
-		JFrame mainFrame = GalleryRemote._().getMainFrame();
+		// on top of the slide show)
+		Frame mainFrame = GalleryRemote._().getMainFrame();
 		if (mainFrame != null) {
 			mainFrame.setVisible(false);
 		}
@@ -333,7 +333,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		super.hide();
 
-		JFrame mainFrame = GalleryRemote._().getMainFrame();
+		Frame mainFrame = GalleryRemote._().getMainFrame();
 		if (mainFrame != null) {
 			mainFrame.setVisible(true);
 		}

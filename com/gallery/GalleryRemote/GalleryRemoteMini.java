@@ -1,6 +1,8 @@
 package com.gallery.GalleryRemote;
 
-import javax.swing.*;
+import com.gallery.GalleryRemote.util.DialogUtil;
+
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,12 +16,11 @@ public class GalleryRemoteMini extends GalleryRemote {
 		Log.setMaxLevel();
 	}
 
-	public JFrame getMainFrame() {
-		//throw new IllegalStateException("This method should not be called in mini mode");
-		return null;
+	public Frame getMainFrame() {
+		return DialogUtil.findParentWindow(applet);
 	}
 
 	public GalleryRemoteCore getCore() {
-		return (GRAppletMini) applet;
+		return (GalleryRemoteCore) applet;
 	}
 }

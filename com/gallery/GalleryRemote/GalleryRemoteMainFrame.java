@@ -4,6 +4,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import java.io.File;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +31,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		super.run();
 
 		try {
-			if (appletMode || !Update.upgrade()) {
+			if (isAppletMode() || !Update.upgrade()) {
 				mainFrame = new MainFrame();
 				mainFrame.initComponents();
 			} else {
@@ -42,13 +43,13 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 			Log.shutdown();
 		}
 
-		if (!appletMode) {
+		if (!isAppletMode()) {
 			Update update = new Update();
 			update.check(true);
 		}
 	}
 
-	public JFrame getMainFrame() {
+	public Frame getMainFrame() {
 		return mainFrame;
 	}
 
@@ -72,6 +73,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 			iNewGallery = new ImageIcon(GalleryRemote.class.getResource("/WebComponentAdd16.gif"));
 			iLogin = new ImageIcon(GalleryRemote.class.getResource("/WebComponent16.gif"));
 			iNewAlbum = new ImageIcon(GalleryRemote.class.getResource("/New16.gif"));
+			iNew = iNewAlbum;
 
 			iUp = new ImageIcon(GalleryRemote.class.getResource("/Up16.gif"));
 			iDown = new ImageIcon(GalleryRemote.class.getResource("/Down16.gif"));

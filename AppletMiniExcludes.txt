@@ -10,7 +10,6 @@ edu/stanford/ejalbert/BrowserLauncher*
 com/gallery/GalleryRemote/AboutBox*
 com/gallery/GalleryRemote/*Inspector*
 com/gallery/GalleryRemote/DroppableTree*
-com/gallery/GalleryRemote/GRApplet
 com/gallery/GalleryRemote/GalleryRemoteMainFrame*
 com/gallery/GalleryRemote/MainFrame*
 com/gallery/GalleryRemote/MoveAlbumDialog*

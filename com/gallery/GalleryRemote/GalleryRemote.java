@@ -25,6 +25,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.*;
 import java.applet.Applet;
 import java.util.Enumeration;
 
@@ -41,7 +42,6 @@ public abstract class GalleryRemote {
 
 	public PropertiesFile properties = null;
 	public PropertiesFile defaults = null;
-	protected boolean appletMode = false;
 	protected Applet applet = null;
 
 	public static ImageIcon iLogin;
@@ -51,6 +51,7 @@ public abstract class GalleryRemote {
 	public static ImageIcon iOpen;
 	public static ImageIcon iPreferences;
 	public static ImageIcon iNewAlbum;
+	public static ImageIcon iNew;
 	public static ImageIcon iQuit;
 	public static ImageIcon iCut;
 	public static ImageIcon iCopy;
@@ -79,7 +80,7 @@ public abstract class GalleryRemote {
 			} catch (Exception e) {
 			}
 
-			if (appletMode) {
+			if (isAppletMode()) {
 				if (properties == null) {
 					properties = new PropertiesFile(defaults);
 				} else {
@@ -113,14 +114,14 @@ public abstract class GalleryRemote {
 	}
 
 	public boolean isAppletMode() {
-		return appletMode;
+		return applet != null;
 	}
 
 	public Applet getApplet() {
 		return applet;
 	}
 
-	public abstract JFrame getMainFrame();
+	public abstract Frame getMainFrame();
 
 	public abstract GalleryRemoteCore getCore();
 
@@ -128,14 +129,14 @@ public abstract class GalleryRemote {
 		return singleton;
 	}
 
-	public static GalleryRemote createInstance(boolean appletMode, Applet applet) {
+	public static GalleryRemote createInstance(String className, Applet applet) {
 		if (singleton == null) {
+			System.out.println("Instanciating Gallery Remote...");
+
+			setProperties();
+
 			try {
-				if (applet != null && applet.getClass().getName().equals("com.gallery.GalleryRemote.GRAppletMini")) {
-					singleton = (GalleryRemote) Class.forName("com.gallery.GalleryRemote.GalleryRemoteMini").newInstance();
-				} else {
-					singleton = (GalleryRemote) Class.forName("com.gallery.GalleryRemote.GalleryRemoteMainFrame").newInstance();
-				}
+				singleton = (GalleryRemote) Class.forName(className).newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -144,7 +145,6 @@ public abstract class GalleryRemote {
 				e.printStackTrace();
 			}
 
-			singleton.appletMode = appletMode;
 			singleton.applet = applet;
 
 			singleton.run();
@@ -159,14 +159,14 @@ public abstract class GalleryRemote {
 	}
 
 	public static void shutdownInstance() {
+		System.out.println("Shutting down Gallery Remote");
+
 		singleton = null;
 	}
 
 	// Main entry point
 	public static void main(String[] args) {
-		setProperties();
-
-		createInstance(false, null);
+		createInstance("com.gallery.GalleryRemote.GalleryRemoteMainFrame", null);
 	}
 
 	public static void setProperties() {

@@ -1,3 +1,14 @@
+2003-01-22  Pierre-Luc Paour <gallery@paour.com> (1.3-b19)
+
+	* Fixed file loading behavior: GR now logs into each Gallery
+	  that it was previously logged into, and displays better
+	  feedback.
+	* Fixed NPEs when logging out and closing dirty but unsaved
+	  files.
+	* Added slideshow applet
+	* More refactoring to support the new applet. The Applet code
+	  is now modular and duplication-free.
+
 2003-01-20  Pierre-Luc Paour <gallery@paour.com> (1.3-b18)
 
 	* Fixed some threading problems in slideshow.

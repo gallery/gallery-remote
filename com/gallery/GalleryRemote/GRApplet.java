@@ -12,30 +12,53 @@ import java.io.FilePermission;
  * Date: Oct 30, 2003
  */
 public class GRApplet extends JApplet {
-	private JLabel jLabel;
+	protected JLabel jLabel;
+	boolean hasStarted = false;
+	String coreClass = "com.gallery.GalleryRemote.GalleryRemoteMainFrame";
 
-	public void init() {
+	public void init() {}
+
+	public void start() {
+		initGalleryRemote();
+
+		if (hasStarted) {
+			//SwingUtilities.invokeLater(new Runnable() {
+			new Thread() {
+				public void run() {
+					initUI();
+				}
+			//});
+			}.start();
+		} else {
+			initDummyUI();
+		}
+	}
+
+	protected void initUI() {
 		jLabel = new JLabel("<HTML>The Gallery Remote applet is running. Please don't close this window or navigate away!</HTML>");
 		getContentPane().add(jLabel);
 	}
 
-	public void start() {
-		GalleryRemote.setProperties();
+	protected void initDummyUI() {
+		jLabel = new JLabel("<HTML>The Gallery Remote applet is not running because another is running in the same browser</HTML>");
+		getContentPane().add(jLabel);
+	}
 
-		if (GalleryRemote.createInstance(true, this) == null) {
+	protected void initGalleryRemote() {
+		if (GalleryRemote.createInstance(coreClass, this) == null) {
 			JOptionPane.showMessageDialog(DialogUtil.findParentWindow(this),
 					"Only one instance of the Gallery Remote can run at the same time...",
 					"Error", JOptionPane.ERROR_MESSAGE);
-
-			return;
+		} else {
+			hasStarted = true;
 		}
-
-		// update the look and feel
-		SwingUtilities.updateComponentTreeUI(this);
 	}
 
 	public void stop() {
-		GalleryRemote._().getCore().shutdown();
+		// don't shutdown the applet if it didn't start...
+		if (hasStarted) {
+			GalleryRemote._().getCore().shutdown();
+		}
 	}
 
 	public void hasShutdown() {

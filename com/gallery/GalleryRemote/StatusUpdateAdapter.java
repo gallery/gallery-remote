@@ -26,7 +26,7 @@ package com.gallery.GalleryRemote;
  * @author <a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
  * @version $id$
  */
-public abstract class StatusUpdateAdapter implements StatusUpdate {
+public class StatusUpdateAdapter implements StatusUpdate {
 	/* level-bound methods */
 	public void startProgress(int level, int min, int max, String message, boolean undetermined) {
 	}

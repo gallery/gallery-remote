@@ -75,7 +75,7 @@ public class MainFrame extends JFrame
 	 * This File is the last opened file or null if the user has not opened
 	 * a file or has just pressed New.
 	 */
-	private File m_lastOpenedFile = null;
+	private File lastOpenedFile = null;
 
 	/**
 	 * This flag indicates whether the currently loaded file is dirty
@@ -240,6 +240,9 @@ public class MainFrame extends JFrame
 		setBounds(GalleryRemote._().properties.getMainBounds());
 		setJMenuBar(jMenuBar1);
 
+		jGalleryCombo.setEditable(false);
+		jGalleryCombo.setRenderer(new GalleryListRenderer());
+
 		jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
 		jPicturesList.setInputMap(JComponent.WHEN_FOCUSED, null);
@@ -291,7 +294,7 @@ public class MainFrame extends JFrame
 
 		resetUIState();
 
-		// Load a test file
+		// Load a state file
 		if (GalleryRemote._().properties.getLoadLastMRU()) {
 			String lastMRUFile = GalleryRemote._().properties.getMRUItem(1);
 
@@ -337,7 +340,7 @@ public class MainFrame extends JFrame
 	private void shutdown(boolean halt, boolean shutdownOs) {
 		// check that we don't have galleries with data
 		if (!shutdownOs) {
-			if (null != m_lastOpenedFile || m_isDirty) {
+			if (m_isDirty) {
 				if (JOptionPane.showConfirmDialog(
 						(JFrame) this,
 						GRI18n.getString(MODULE, "quitQuestion"),
@@ -428,13 +431,13 @@ public class MainFrame extends JFrame
 						&& jAlbumTree.getSelectionCount() > 0);
 				jSortButton.setEnabled(jUploadButton.isEnabled());
 
-				if (null == m_lastOpenedFile) {
+				if (null == lastOpenedFile) {
 					setTitle(DIALOGTITLE
 							+ GRI18n.getString(MODULE, "noTitleHeader")
 							+ (m_isDirty ? "*" : ""));
 				} else {
 					setTitle(DIALOGTITLE
-							+ m_lastOpenedFile.getName()
+							+ lastOpenedFile.getName()
 							+ (m_isDirty ? "*" : ""));
 				}
 
@@ -449,7 +452,7 @@ public class MainFrame extends JFrame
 				jMenuItemSave.setEnabled(!inProgress);
 				jMenuItemSaveAs.setEnabled(!inProgress);
 				jMenuItemClose.setEnabled(!inProgress
-						&& null != m_lastOpenedFile);
+						&& null != lastOpenedFile);
 
 				// in the event the library we use to save is missing, dim the menus
 				try {
@@ -682,7 +685,7 @@ public class MainFrame extends JFrame
 	public void uploadPictures() {
 		Log.log(Log.LEVEL_INFO, MODULE, "uploadPictures starting");
 
-		File f = m_lastOpenedFile;
+		File f = lastOpenedFile;
 
 		if (null == f) {
 			// No open file, use the default
@@ -918,6 +921,8 @@ public class MainFrame extends JFrame
 
 		jMenuItemNew.setText(GRI18n.getString(MODULE, "menuNew"));
 		jMenuItemNew.setActionCommand("File.New");
+		jMenuItemNew.setIcon(GalleryRemote.iNew);
+		jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, GalleryRemote.ACCELERATOR_MASK));
 
 		jMenuItemOpen.setText(GRI18n.getString(MODULE, "menuOpen"));
 		jMenuItemOpen.setActionCommand("File.Open");
@@ -934,7 +939,11 @@ public class MainFrame extends JFrame
 
 		jMenuItemClose.setText(GRI18n.getString(MODULE, "menuClose"));
 		jMenuItemClose.setActionCommand("File.Close");
-		jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, GalleryRemote.ACCELERATOR_MASK));
+		if (GalleryRemote.IS_MAC_OS_X) {
+			jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, GalleryRemote.ACCELERATOR_MASK));
+		} else {
+			jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, GalleryRemote.ACCELERATOR_MASK));
+		}
 
 		jMenuItemQuit.setText(GRI18n.getString(MODULE, "menuQuit"));
 		jMenuItemQuit.setActionCommand("File.Quit");
@@ -1131,11 +1140,11 @@ public class MainFrame extends JFrame
 		int response = JOptionPane.showConfirmDialog(
 				this,
 				GRI18n.getString(MODULE, "OK_toSaveBeforeClose"),
-				m_lastOpenedFile.getName(),
+				lastOpenedFile == null?GRI18n.getString(MODULE, "noTitleHeader"):lastOpenedFile.getName(),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 
 		if (JOptionPane.YES_OPTION == response) {
-			if (null == m_lastOpenedFile) {
+			if (null == lastOpenedFile) {
 				saveAsState();
 
 				// If we are still dirty, they cancelled out of save as
@@ -1187,11 +1196,10 @@ public class MainFrame extends JFrame
 
 			resetState();
 		} else if (command.equals("File.Open")) {
-
 			openState(MRUFileName);
 		} else if (command.equals("File.Save")) {
 			// Do Save As if the file is the default
-			if (m_lastOpenedFile == null) {
+			if (lastOpenedFile == null) {
 				saveAsState();
 			} else {
 				saveState();
@@ -1220,18 +1228,15 @@ public class MainFrame extends JFrame
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 
 				// we're currently logged in: log out
-				int response = saveOnPermission();
-
-				if (JOptionPane.CANCEL_OPTION == response) {
+				if (JOptionPane.showConfirmDialog(
+						(JFrame) this,
+						GRI18n.getString(MODULE, "logoutQuestion", new Object[] {getCurrentGallery().toString()}),
+						"Warning",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
 
 				getCurrentGallery().logOut();
-
-				m_lastOpenedFile = null;
-
-				// We've been logged out, we are now clean.
-				setDirtyFlag(false);
 			} else {
 				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -1314,7 +1319,7 @@ public class MainFrame extends JFrame
 	private void resetState() {
 		getCurrentGallery().deleteAllPictures();
 
-		m_lastOpenedFile = null;
+		lastOpenedFile = null;
 
 		// We've been reset, we are now clean.
 		setDirtyFlag(false);
@@ -1339,13 +1344,13 @@ public class MainFrame extends JFrame
 			}
 
 			// Remember the file
-			m_lastOpenedFile = new File(name);
+			lastOpenedFile = new File(name);
 
 			resetUIState();
 
-			saveState(m_lastOpenedFile);
+			saveState(lastOpenedFile);
 
-			saveMRUItem(m_lastOpenedFile);
+			saveMRUItem(lastOpenedFile);
 
 			// We've been saved, we are now clean.
 			setDirtyFlag(false);
@@ -1353,13 +1358,13 @@ public class MainFrame extends JFrame
 	}
 
 	private void saveState() {
-		if (null == m_lastOpenedFile) {
+		if (null == lastOpenedFile) {
 			Log.log(Log.LEVEL_ERROR, MODULE,
 					"Trying to save with no file open");
 			return;
 		}
 
-		saveState(m_lastOpenedFile);
+		saveState(lastOpenedFile);
 
 		// We've been saved, we are now clean.
 		setDirtyFlag(false);
@@ -1485,67 +1490,91 @@ public class MainFrame extends JFrame
 	 *                   should be used.
 	 */
 	private void openState(String fileToOpen) {
-		getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		JFileChooser fc = null;
-		try {
-			if (null == fileToOpen) {
-				fc = new JFileChooser();
-				fc.setAcceptAllFileFilterUsed(false);
-				fc.setFileFilter(galleryFileFilter);
+		if (null == fileToOpen) {
+			fc = new JFileChooser();
+			fc.setAcceptAllFileFilterUsed(false);
+			fc.setFileFilter(galleryFileFilter);
 
-				int returnVal = fc.showOpenDialog(this);
+			int returnVal = fc.showOpenDialog(this);
 
-				if (returnVal != JFileChooser.APPROVE_OPTION) {
-					return;
-				}
-
-				// Remember the file
-				m_lastOpenedFile = fc.getSelectedFile();
-
-				Log.log(Log.LEVEL_INFO, MODULE,
-						"Opening state from file " + fc.getSelectedFile().getPath());
-
-			} else {
-				m_lastOpenedFile = new File(fileToOpen);
-
-				Log.log(Log.LEVEL_INFO, MODULE,
-						"Opening state from file " + fileToOpen);
-			}
-
-			// Before we change galleries, ask them if they want to save.
-			int response = saveOnPermission();
-
-			if (JOptionPane.CANCEL_OPTION == response) {
+			if (returnVal != JFileChooser.APPROVE_OPTION) {
 				return;
 			}
 
-			ObjIn in = new ObjIn(new BufferedReader(new FileReader(m_lastOpenedFile)));
-			Gallery[] galleryArray = (Gallery[]) in.readObject();
-			DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
+			// Remember the file
+			lastOpenedFile = fc.getSelectedFile();
 
-			for (int i = 0; i < galleryArray.length; i++) {
-				newGalleries.addElement(galleryArray[i]);
-				//galleryArray[i].checkTransients();
-				galleryArray[i].addListDataListener(this);
-				preloadThumbnails(galleryArray[i].getAllPictures().iterator());
-			}
+			Log.log(Log.LEVEL_INFO, MODULE,
+					"Opening state from file " + fc.getSelectedFile().getPath());
 
-			saveMRUItem(m_lastOpenedFile);
+		} else {
+			lastOpenedFile = new File(fileToOpen);
 
-			setGalleries(newGalleries);
-
-			resetUIState();
-		} catch (IOException e) {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-		} catch (ClassNotFoundException e) {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-		} catch (NoClassDefFoundError e) {
-			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't read state...");
-		} finally {
-			getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			Log.log(Log.LEVEL_INFO, MODULE,
+					"Opening state from file " + fileToOpen);
 		}
+
+		// Before we change galleries, ask them if they want to save.
+		int response = saveOnPermission();
+
+		if (JOptionPane.CANCEL_OPTION == response) {
+			return;
+		}
+
+		new Thread() {
+			public void run() {
+				try {
+					getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					setInProgress(true);
+
+					ObjIn in = new ObjIn(new BufferedReader(new FileReader(lastOpenedFile)));
+					Gallery[] galleryArray = (Gallery[]) in.readObject();
+					DefaultComboBoxModel newGalleries = new DefaultComboBoxModel();
+					Gallery selectGallery = null;
+
+					for (int i = 0; i < galleryArray.length; i++) {
+						Gallery gallery = galleryArray[i];
+
+						newGalleries.addElement(gallery);
+						//galleryArray[i].checkTransients();
+						gallery.addListDataListener(MainFrame.this);
+
+						ArrayList pictures = gallery.getAllPictures();
+						preloadThumbnails(pictures.iterator());
+
+						if (pictures.size() > 0) {
+							gallery.fetchAlbums(jStatusBar, false);
+
+							if (selectGallery == null) {
+								selectGallery = gallery;
+							}
+						}
+					}
+
+					saveMRUItem(lastOpenedFile);
+
+					setGalleries(newGalleries);
+
+					resetUIState();
+
+					if (selectGallery != null) {
+						jGalleryCombo.setSelectedItem(selectGallery);
+					}
+
+				} catch (IOException e) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				} catch (ClassNotFoundException e) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				} catch (NoClassDefFoundError e) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't read state...");
+				} finally {
+					getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
+		}.start();
 	}
 
 	public void removeGallery(Gallery g) {
@@ -1824,6 +1853,32 @@ public class MainFrame extends JFrame
 
 			return this;
 		}
+	}
+
+	class GalleryListRenderer extends DefaultListCellRenderer {
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(
+					list, value, index,
+					isSelected, cellHasFocus);
+			Gallery gallery = null;
+
+			if (value instanceof Gallery && value != null) {
+				gallery = (Gallery) value;
+			}
+
+			if (gallery != null && gallery.getAlbumList() != null) {
+				Font font = getFont().deriveFont(Font.BOLD);
+				setFont(font);
+				//list.setFont(font);
+			} else {
+				Font font = getFont().deriveFont(Font.PLAIN);
+				setFont(font);
+				//list.setFont(font);
+			}
+
+			return this;
+		}
+
 	}
 }
 

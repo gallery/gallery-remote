@@ -20,14 +20,22 @@ public class StatusBar extends JPanel implements StatusUpdate {
 	StatusLevelData data[] = new StatusLevelData[NUM_LEVELS];
 	int currentLevel = -1;
 
-	public StatusBar() {
+	int progressWidth;
+
+	public StatusBar(int progressWidth) {
 		for (int i = 0; i < data.length; i++) {
 			data[i] = new StatusLevelData();
 		}
 
 		data[0].active = true;
 
+		this.progressWidth = progressWidth;
+
 		jbInit();
+	}
+
+	public StatusBar() {
+		this(150);
 	}
 
 	boolean raiseLevel(int level) {
@@ -147,18 +155,19 @@ public class StatusBar extends JPanel implements StatusUpdate {
 
 	public void jbInit() {
 		jProgress.setMinimumSize(new Dimension(10, 18));
-		jProgress.setPreferredSize(new Dimension(150, 18));
+		jProgress.setPreferredSize(new Dimension(progressWidth, 18));
+		jProgress.setMaximumSize(new Dimension(progressWidth, 18));
 		jProgress.setStringPainted(false);
 
 		jStatus.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, SystemColor.control, SystemColor.control, Color.gray));
 		jStatus.setMinimumSize(new Dimension(100, 18));
-		jStatus.setPreferredSize(new Dimension(38, 18));
+		jStatus.setPreferredSize(new Dimension(100, 18));
 
 		setLayout(new GridBagLayout());
-		add(jProgress, new GridBagConstraints(1, 0, 1, 1, 0.25, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		add(jStatus, new GridBagConstraints(0, 0, 1, 1, 0.75, 0.0
+		add(jStatus, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		add(jProgress, new GridBagConstraints(1, 0, 1, 1, 0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 	}
 
 	private void resetUIState() {
