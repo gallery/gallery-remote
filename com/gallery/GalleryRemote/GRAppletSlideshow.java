@@ -111,9 +111,9 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	}
 
 	public void shutdown() {
-		if (hasStarted) {
+		if (hasStarted && GalleryRemote._() != null) {
 			jSlidePanel.writeProperties(GalleryRemote._().properties);
-			GalleryRemote._().properties.write();
+			//GalleryRemote._().properties.write();
 		}
 
 		super.shutdown();

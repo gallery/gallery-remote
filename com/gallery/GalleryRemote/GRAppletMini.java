@@ -104,8 +104,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	}
 
 	public void shutdown() {
-		if (hasStarted) {
-			GalleryRemote._().properties.setIntProperty(APPLET_DIVIDER_LOCATION, jDivider.getDividerLocation());
+		if (hasStarted && GalleryRemote._() != null) {
+			// this is also executed from GRAppletSlideshow
+			if (jDivider != null) {
+				GalleryRemote._().properties.setIntProperty(APPLET_DIVIDER_LOCATION, jDivider.getDividerLocation());
+			}
+
 			GalleryRemote._().properties.write();
 			GalleryRemote.shutdownInstance();
 		}
