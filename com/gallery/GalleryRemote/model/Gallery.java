@@ -20,11 +20,17 @@
  */
 package com.gallery.GalleryRemote.model;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+import java.io.Serializable;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import com.gallery.GalleryRemote.*;
 
@@ -35,7 +41,7 @@ import com.gallery.GalleryRemote.*;
  *@created    17 août 2002
  */
 
-public class Gallery implements ComboBoxModel
+public class Gallery implements ComboBoxModel, Serializable
 {
 	public static final String MODULE="Gallery";
 	
@@ -45,19 +51,18 @@ public class Gallery implements ComboBoxModel
 	ArrayList albumList = null;
 	Album selectedAlbum = null;
 	
-	GalleryComm comm = null;
+	transient GalleryComm comm = null;
 
 	// ListModel
-	Vector listeners = new Vector( 1 );
+	transient Vector listeners = null;
+
+	transient StatusUpdate su;
 
 	/**
 	 *  Constructor for the Gallery object
 	 */
 	public Gallery() { }
 
-	
-	/*TEMPORARY*/ StatusUpdate su;
-	
 	/**
 	 *  Constructor for the Gallery object
 	 *
@@ -69,7 +74,7 @@ public class Gallery implements ComboBoxModel
 		setUrl( url );
 		this.username = username;
 		this.password = password;
-		/*TEMPORARY*/ this.su = su;
+		this.su = su;
 	}
 	
 	
@@ -88,7 +93,7 @@ public class Gallery implements ComboBoxModel
 
 		// create album synchronously
 		getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
-			a.getTitle(), a.getCaption(), false );
+				a.getTitle(), a.getCaption(), false );
 		
 		// refresh album list asynchronously
 		fetchAlbums( su );
@@ -344,12 +349,16 @@ public class Gallery implements ComboBoxModel
 	}
 	
 	public void addListDataListener( ListDataListener ldl ) {
+		if (listeners == null) listeners = new Vector(1);
+
 		listeners.addElement( ldl );
 	}
 
 
 	public void removeListDataListener( ListDataListener ldl ) {
-		listeners.removeElement( ldl );
+		if (listeners != null) {
+			listeners.removeElement( ldl );
+		}
 	}
 
 
@@ -387,12 +396,13 @@ public class Gallery implements ComboBoxModel
 	}
 	
 	void notifyListeners(ListDataEvent lde) {
-		Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
-		Enumeration e = listeners.elements();
-		while ( e.hasMoreElements() ) {
-			ListDataListener ldl = (ListDataListener) e.nextElement();
-			ldl.contentsChanged( lde );
+		if (listeners != null) {
+			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
+			Enumeration e = listeners.elements();
+			while ( e.hasMoreElements() ) {
+				ListDataListener ldl = (ListDataListener) e.nextElement();
+				ldl.contentsChanged( lde );
+			}
 		}
 	}
 }
-

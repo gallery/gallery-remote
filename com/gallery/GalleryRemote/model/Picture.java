@@ -20,13 +20,14 @@
  */
 package com.gallery.GalleryRemote.model;
 
-import java.io.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.io.File;
+import java.io.Serializable;
 
-import com.gallery.GalleryRemote.*;
+import com.gallery.GalleryRemote.GalleryRemote;
+import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.HTMLEscaper;
+import com.gallery.GalleryRemote.Log;
 
 /**
  *  Picture model
@@ -34,13 +35,17 @@ import com.gallery.GalleryRemote.*;
  *@author     paour
  *@created    11 août 2002
  */
-public class Picture {
+public class Picture implements Serializable {
+	public static final String MODULE="Picture";
+
     File source = null;
     String caption = null;
-    double fileSize = -1;
     Album album = null;
     private int listIndex;
-    
+
+	transient double fileSize = -1;
+	transient String escapedCaption = null;
+
     /**
      *  Constructor for the Picture object
      */
@@ -80,6 +85,7 @@ public class Picture {
      */
     public void setCaption( String caption ) {
         this.caption = caption;
+		this.escapedCaption = null;
     }
     
     
@@ -127,12 +133,23 @@ public class Picture {
 					}
 				}
 			}
-			
+
+			File picture = null;
+
 			if ( d != null ) {
-				return ImageUtils.resize( getSource().getPath(), d );
-			} else {
-				return getSource();
+				try {
+					picture = ImageUtils.resize( getSource().getPath(), d );
+				} catch (UnsupportedOperationException e) {
+					Log.log(Log.ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
+					Log.logException(Log.ERROR, MODULE, e);
+				}
 			}
+
+			if (picture == null) {
+				picture = getSource();
+			}
+
+			return picture;
 		} else {
 			return getSource();
 		}
@@ -146,8 +163,21 @@ public class Picture {
     public String getCaption() {
         return caption;
     }
-    
-    
+
+	/**
+	 * Cache the escapedCaption because the escaping is lengthy and this is called by a frequent UI method
+	 * @return the HTML escaped version of the caption
+	 */
+	public String getEscapedCaption() {
+		if (escapedCaption == null) {
+			if (caption != null) {
+				escapedCaption = HTMLEscaper.escape(caption);
+			}
+		}
+
+		return escapedCaption;
+	}
+
     /**
      *  Gets the size of the file
      *
@@ -176,7 +206,7 @@ public class Picture {
      *
      */
     public int getListIndex() {
-	return this.listIndex;
+		return this.listIndex;
     }
     
     /** Setter for property listIndex.

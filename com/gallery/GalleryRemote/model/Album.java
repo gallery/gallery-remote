@@ -20,12 +20,21 @@
  */
 package com.gallery.GalleryRemote.model;
 
-import java.io.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import com.gallery.GalleryRemote.*;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+
+import com.gallery.GalleryRemote.GalleryCommCapabilities;
+import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.StatusUpdate;
+import com.gallery.GalleryRemote.StatusUpdateAdapter;
 
 /**
  *  Album model
@@ -34,7 +43,7 @@ import com.gallery.GalleryRemote.*;
  *@created    11 août 2002
  */
 
-public class Album extends Picture implements ListModel
+public class Album extends Picture implements ListModel, Serializable
 {
 	/* -------------------------------------------------------------------------
 	 * CONSTANTS
@@ -50,7 +59,7 @@ public class Album extends Picture implements ListModel
 	/* -------------------------------------------------------------------------
 	 * WORKAROUND FOR LIST SELECTION BUG
 	 */
-	ListSelectionModel listSelectionModel;
+	transient ListSelectionModel listSelectionModel;
 	
 	/* -------------------------------------------------------------------------
 	 * SERVER INFO
@@ -59,25 +68,26 @@ public class Album extends Picture implements ListModel
 	Album parent; // parent Album
 	String title = "Not yet connected to Gallery";
 	String name;
-	int autoResize = 0;
+
+	transient int autoResize = 0;
 	// permissions -- default to true for the sake of old protocols ...
-	boolean canRead = true;
-	boolean canAdd = true;
-	boolean canWrite = true;
-	boolean canDeleteFrom = true;
-	boolean canDeleteThisAlbum = true;
-	boolean canCreateSubAlbum = true;
+	transient boolean canRead = true;
+	transient boolean canAdd = true;
+	transient boolean canWrite = true;
+	transient boolean canDeleteFrom = true;
+	transient boolean canDeleteThisAlbum = true;
+	transient boolean canCreateSubAlbum = true;
 	
-	boolean hasFetchedInfo = false;
+	transient boolean hasFetchedInfo = false;
 	
 	
 	/* -------------------------------------------------------------------------
 	 * INSTANCE VARIABLES
 	 */ 
-	long pictureFileSize = -1;
+	transient long pictureFileSize = -1;
 	
 	// ListModel
-	Vector listeners = new Vector( 1 );
+	transient Vector listeners = null;
 
 
 	/* -------------------------------------------------------------------------
@@ -461,6 +471,8 @@ public class Album extends Picture implements ListModel
 	 *@param  ldl  The feature to be added to the ListDataListener attribute
 	 */
 	public void addListDataListener( ListDataListener ldl ) {
+		if (listeners == null) listeners = new Vector(1);
+
 		listeners.addElement( ldl );
 	}
 
@@ -470,7 +482,9 @@ public class Album extends Picture implements ListModel
 	 *@param  ldl  Description of Parameter
 	 */
 	public void removeListDataListener( ListDataListener ldl ) {
-		listeners.removeElement( ldl );
+		if (listeners != null) {
+			listeners.removeElement( ldl );
+		}
 	}
 
 	/**
@@ -577,13 +591,15 @@ public class Album extends Picture implements ListModel
 	}
 	
 	void notifyListeners(ListDataEvent lde) {
-		pictureFileSize = -1;
-		
-		Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
-		Enumeration e = listeners.elements();
-		while ( e.hasMoreElements() ) {
-			ListDataListener ldl = (ListDataListener) e.nextElement();
-			ldl.contentsChanged( lde );
+		if (listeners != null) {
+			pictureFileSize = -1;
+
+			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
+			Enumeration e = listeners.elements();
+			while ( e.hasMoreElements() ) {
+				ListDataListener ldl = (ListDataListener) e.nextElement();
+				ldl.contentsChanged( lde );
+			}
 		}
 	}
 }
