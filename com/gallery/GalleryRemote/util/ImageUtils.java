@@ -984,7 +984,7 @@ public class ImageUtils {
 			Method m = c.getMethod("getMetadataCaptionString", new Class[]{String.class});
 			return (String) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
 			return null;
 		}
 	}
@@ -995,7 +995,7 @@ public class ImageUtils {
 			Method m = c.getMethod("getExifTargetOrientation", new Class[]{String.class});
 			return (AngleFlip) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
 			return null;
 		}
 	}
