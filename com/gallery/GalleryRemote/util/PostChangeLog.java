@@ -19,7 +19,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 		PropertiesFile defaultProps = new PropertiesFile("defaults");
 
 		// should we even be doing this?
-		boolean active = changeProps.getBooleanProperty("active");
+		boolean active = changeProps.getBooleanProperty("active", false);
 		if (!active) {
 			System.out.println("Not active");
 			return;
