@@ -2,6 +2,8 @@
 	
 	* Reorganized storage of list of files to upload in preparation for XML serialization
 	* Reorganized preferences storage in preparation for preferences dialog
+	* Rewrote main frame UI for flexibility and robustness
+	* Now also saving password to preferences file (should be made customizable)
 
 2002-08-06  Pierre-Luc Paour <gallery@paour.com> (0.4-b2)
 	
