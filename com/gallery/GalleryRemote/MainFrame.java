@@ -203,7 +203,7 @@ public class MainFrame extends javax.swing.JFrame
 		browse.setEnabled( !mInProgress );
 		fetch.setEnabled( !mInProgress );
 
-		pictureInspector.setPicture( (Picture) picturesList.getSelectedValue() );
+		pictureInspector.setPictures( picturesList.getSelectedValues() );
 
 		int sel = picturesList.getSelectedIndex();
 		int selN = picturesList.getSelectedIndices().length;
@@ -212,7 +212,7 @@ public class MainFrame extends javax.swing.JFrame
 			setStatus( mAlbum.sizePictures() + " pictures, "
 				+ ( (int) mAlbum.getPictureFileSize() / 1024 ) + " K" );
 		} else {
-			setStatus( "Selected " + selN + ((sel==1)?" picture, ":" pictures, ")
+			setStatus( "Selected " + selN + ((selN == 1)?" picture, ":" pictures, ")
 				+ ( (int) mAlbum.getObjectFileSize(picturesList.getSelectedValues()) / 1024 ) + " K" );
 		}
 		

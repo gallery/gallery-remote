@@ -55,7 +55,7 @@ public class PictureInspector extends JPanel
 	JTextField caption = new JTextField();
 
 	MainFrame mf = null;
-	Picture p = null;
+	Object[] pictures = null;
 	JButton delete = new JButton();
 	JLabel jLabel2 = new JLabel();
 
@@ -89,11 +89,13 @@ public class PictureInspector extends JPanel
 		up.setMinimumSize( new Dimension( 100, 23 ) );
 		up.setPreferredSize( new Dimension( 100, 23 ) );
 		up.setText( "Move up" );
+		up.setActionCommand( "Up" );
 		jLabel8.setText( "Move:" );
 		down.setMaximumSize(new Dimension( 100, 23 ) );
 		down.setMinimumSize( new Dimension( 100, 23 ) );
 		down.setPreferredSize( new Dimension( 100, 23 ) );
 		down.setText( "Move down" );
+		down.setActionCommand( "Down" );
 		jLabel1.setText( "Size:" );
 		size.setText( "size" );
 		caption.setBackground(SystemColor.control);
@@ -182,24 +184,50 @@ public class PictureInspector extends JPanel
 	 *
 	 *@param  p  The new picture value
 	 */
-	public void setPicture( Picture p ) {
-		this.p = p;
+	public void setPictures( Object[] pictures ) {
+		this.pictures = pictures;
 
-		if ( p != null ) {
-			icon.setText( p.getSource().getName() );
-			icon.setIcon( mf.getThumbnail( p ) );
-			path.setText( p.getSource().getParent() );
-			album.setText( p.getAlbum().getName() );
-			caption.setText( p.getCaption() );
-			size.setText( String.valueOf( (int) p.getFileSize() ) + " bytes" );
-		} else {
+		if ( pictures == null || pictures.length == 0 ) {
 			icon.setText("no picture selected");
 			icon.setIcon( mf.defaultThumbnail );
 			path.setText( "" );
 			album.setText( "" );
 			caption.setText( "" );
 			size.setText( "" );
+			
+			up.setEnabled(false);
+			down.setEnabled(false);
+			delete.setEnabled(false);
+		} else if ( pictures.length == 1) {
+			Picture p = (Picture) pictures[0];
+			
+			icon.setText( p.getSource().getName() );
+			icon.setIcon( mf.getThumbnail( p ) );
+			path.setText( p.getSource().getParent() );
+			album.setText( p.getAlbum().getName() );
+			caption.setText( p.getCaption() );
+			size.setText( String.valueOf( (int) p.getFileSize() ) + " bytes" );
+
+			up.setEnabled(true);
+			down.setEnabled(true);
+			delete.setEnabled(true);
+		} else {
+			Picture p = (Picture) pictures[0];
+
+			icon.setText( pictures.length + " elements selected" );
+			icon.setIcon( mf.defaultThumbnail );
+			path.setText( "" );
+			album.setText( p.getAlbum().getName() );
+			caption.setText( "" );
+			size.setText( Album.getObjectFileSize(pictures) + " bytes" );
+
+			up.setEnabled(false);
+			down.setEnabled(false);
+			delete.setEnabled(true);
 		}
+	}
+	
+	public void setPictures( Picture[] ps) {
 	}
 }
 

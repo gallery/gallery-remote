@@ -1,3 +1,7 @@
+2002-09-02  Pierre-Luc Paour <gallery@paour.com> (1.0-b3)
+	
+	* Added multi-selection support to the PcitureInspector. Fixed buttons.
+
 2002-09-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b2)
 	
 	* Now optionally using ImageMagick to load thumbnails and preview, for a 5x speedup
