@@ -82,7 +82,7 @@ th {
     <td>Preferences</td>
     <td>P2</td>
     <td>10%</td>
-    <td>&nbsp;</td>
+    <td>paour</td>
     <td>A preferences dialog, that allows users to set most or all the preferences 
       that are exposed in the properties files, and create/edit Gallery connection 
       profiles. </td>
@@ -315,30 +315,35 @@ th {
   <tr> 
     <th>Name</th>
     <th>Priority</th>
-    <th>Status</th>
     <th>Description</th>
     <th>Comments</th>
   </tr>
   <tr valign="top"> 
     <td>Logging</td>
     <td>P1</td>
-    <td>0%</td>
     <td><p>Every user task and network task should be logged (using the Log class) 
         so we can figure out what happened when something doesn't work.</p>
       <p>Shipping versions of GR should write nothing to System.out and System.err</p></td>
     <td>Log.log(level, message)<br>
       Log.log(level, module, message)<br>
-      Log.log(level, class, message)</td>
+      Log.log(level, class, message)<br>
+      Log.logStack(level, module)</td>
   </tr>
   <tr valign="top"> 
     <td>Status and progress</td>
     <td>P2</td>
-    <td>20%</td>
-    <td>Most user actions should update the status bar. All actions that take 
-      time (network stuff, image manipulation) should also update the progress 
-      bar built into the status bar.</td>
+    <td><p>Most user actions should update the status bar. All actions that take 
+        time (network stuff, image manipulation) should also update the progress 
+        bar built into the status bar.</p>
+      <p>When the progress bar is being used, it locks the status message so that 
+        only updateProgressStatus can be used to change the message. This suppresses 
+        'normal' status messages.</p></td>
     <td><p>MainFrame.setStatus(message)</p>
-      <p>MainFrame.setProgress(% complete)</p></td>
+      <p>MainFrame.startProgress(min, max, message)<br>
+        MainFrame.updateProgressValue(value)<br>
+        MainFrame.updateProgressValue(value, newMax)<br>
+        MainFrame.updateProgressStatus(message)<br>
+        MainFrame.stopProgress(message) </p></td>
   </tr>
 </table>
 <p>&nbsp;</p>
