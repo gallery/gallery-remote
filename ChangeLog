@@ -5,6 +5,9 @@
           but it means users will have to either copy the preferences file over themselves
           or recreate their preferences.
 	* Fixed bug 612281: redirects needed two clicks.
+	* Fixed bug 521237: non-unique album titles would confuse the Albums combo-box.
+		  The changes implemented for this fix open the way for multiple album uploads. Yay!
+		  I'll add this shortly.
 
 2002-09-17  Pierre-Luc Paour <gallery@paour.com> (1.0-b5)
 	

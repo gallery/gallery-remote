@@ -25,20 +25,27 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import com.gallery.GalleryRemote.*;
+
 /**
- *  Album model
+ *  Gallery model
  *
  *@author     paour
  *@created    17 août 2002
  */
 
-public class Gallery
+public class Gallery implements ComboBoxModel
 {
+	public static final String MODULE="Gallery";
+	
 	String url = "http://";
 	String username;
 	String password;
 	ArrayList albumList = null;
+	Album selectedAlbum = null;
 
+	// ListModel
+	Vector listeners = new Vector( 1 );
 
 	/**
 	 *  Constructor for the Gallery object
@@ -96,7 +103,23 @@ public class Gallery
 	 *@param  albumList  The new albumList value
 	 */
 	public void setAlbumList( ArrayList albumList ) {
-		this.albumList = albumList;
+		//this.albumList = albumList;
+		ArrayList buf = new ArrayList(albumList.size());
+		
+		Iterator iter = albumList.iterator();
+		while (iter.hasNext()) {
+			Hashtable h = (Hashtable) iter.next();
+			Album a = new Album();
+			a.setName((String) h.get( "name" ));
+			a.setTitle((String) h.get( "title" ));
+			a.setGallery(this);
+			
+			buf.add(a);
+		}
+		
+		this.albumList = buf;
+		
+		notifyListeners();
 	}
 
 
@@ -147,6 +170,60 @@ public class Gallery
 	 */
 	public String toString() {
 		return url;
+	}
+
+	public Album getSelectedAlbum() {
+		return selectedAlbum;
+	}
+	
+
+	/*
+	 *	ListModel Implementation
+	 */
+	public int getSize() {
+		if (albumList != null) {
+			return albumList.size();
+		} else {
+			return 0;
+		}
+	}
+
+
+	public Object getElementAt( int index ) {
+		return albumList.get( index );
+	}
+
+	public void setSelectedItem(Object anItem) {
+		selectedAlbum = (Album) anItem;
+	}
+	
+	public Object getSelectedItem() {
+		return selectedAlbum;
+	}
+	
+	public void addListDataListener( ListDataListener ldl ) {
+		listeners.addElement( ldl );
+	}
+
+
+	public void removeListDataListener( ListDataListener ldl ) {
+		listeners.removeElement( ldl );
+	}
+
+
+	void notifyListeners() {
+		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, albumList.size() );
+		
+		notifyListeners(lde);
+	}
+	
+	void notifyListeners(ListDataEvent lde) {
+		Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
+		Enumeration e = listeners.elements();
+		while ( e.hasMoreElements() ) {
+			ListDataListener ldl = (ListDataListener) e.nextElement();
+			ldl.contentsChanged( lde );
+		}
 	}
 }
 

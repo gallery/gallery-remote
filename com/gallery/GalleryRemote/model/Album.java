@@ -39,7 +39,8 @@ public class Album extends Picture implements ListModel
 	public static final String MODULE="Album";
 	
 	Vector pictures = new Vector();
-	String name = "Not yet connected to Gallery";
+	String title = "Not yet connected to Gallery";
+	String name;
 	String url;
 	String username;
 	String password;
@@ -248,6 +249,26 @@ public class Album extends Picture implements ListModel
 
 
 	/**
+	 *  Sets the title attribute of the Album object
+	 *
+	 *@param  title  The new title
+	 */
+	public void setTitle( String title ) {
+		this.title = title;
+	}
+
+
+	/**
+	 *  Gets the title attribute of the Album object
+	 *
+	 *@return    The title
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+
+	/**
 	 *  Gets the aggregated file size of all the pictures in the album
 	 *
 	 *@return    The file size (bytes)
@@ -287,6 +308,10 @@ public class Album extends Picture implements ListModel
 		}
 
 		return total;
+	}
+	
+	public String toString() {
+		return title;
 	}
 
 

@@ -241,7 +241,7 @@ public class PictureInspector extends JPanel
 			icon.setText( p.getSource().getName() );
 			icon.setIcon( mf.getThumbnail( p ) );
 			path.setText( p.getSource().getParent() );
-			album.setText( p.getAlbum().getName() );
+			album.setText( p.getAlbum().getTitle() );
 			caption.setText( p.getCaption() );
 			size.setText( NumberFormat.getInstance().format( 
 				(int) p.getFileSize() ) + " bytes" );
@@ -255,7 +255,7 @@ public class PictureInspector extends JPanel
 			icon.setText( pictures.length + " elements selected" );
 			icon.setIcon( mf.defaultThumbnail );
 			path.setText( "" );
-			album.setText( p.getAlbum().getName() );
+			album.setText( p.getAlbum().getTitle() );
 			caption.setText( "" );
 			size.setText( NumberFormat.getInstance().format(
 				Album.getObjectFileSize(pictures) ) + " bytes" );

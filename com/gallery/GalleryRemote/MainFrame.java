@@ -55,6 +55,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private GalleryComm mGalleryComm;
 	private DefaultComboBoxModel galleries = null;
+	//private DefaultComboBoxModel albums = null;
 	private Gallery currentGallery = null;
 	private Album mAlbum;
 	private boolean mInProgress = false;
@@ -119,6 +120,7 @@ public class MainFrame extends javax.swing.JFrame
 			ImageUtils.THUMB );
 
 		galleries = new DefaultComboBoxModel();
+		//albums = new DefaultComboBoxModel();
 		int i = -1;
 		String url;
 		while ( ( url = p.getProperty( "url." + (++i) ) ) != null ) {
@@ -283,15 +285,15 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	private void updateAlbumCombo() {
-		album.removeAllItems();
+		album.setModel(currentGallery);
 		
-		if (currentGallery.getAlbumList() != null) {
+		/*if (currentGallery.getAlbumList() != null) {
 			Iterator iter = currentGallery.getAlbumList().iterator();
 			while ( iter.hasNext() ) {
 				Hashtable h = (Hashtable) iter.next();
 				album.addItem( (String) h.get( "title" ) );
 			}
-		}
+		}*/
 	}
 
 
@@ -443,8 +445,8 @@ public class MainFrame extends javax.swing.JFrame
 		mGalleryComm.setPassword( currentGallery.getPassword() );
 
 		int index = album.getSelectedIndex();
-		Hashtable h = (Hashtable) currentGallery.getAlbumList().get( index );
-		mGalleryComm.setAlbum( (String) h.get( "name" ) );
+		//Hashtable h = (Hashtable) currentGallery.getAlbumList().get( index );
+		mGalleryComm.setAlbum( currentGallery.getSelectedAlbum().getName() );
 		picturesList.disable();
 		mGalleryComm.uploadFiles( mAlbum.getFileList() );
 
@@ -512,7 +514,7 @@ public class MainFrame extends javax.swing.JFrame
 						currentGallery.setAlbumList(mGalleryComm.getAlbumList());
 						mInProgress = false;
 						
-						if (currentGallery.getAlbumList() != null) {
+						if (mGalleryComm.getAlbumList() != null) {
 							updateAlbumCombo();
 							resetUIState();
 						} else {
@@ -863,7 +865,8 @@ public class MainFrame extends javax.swing.JFrame
 			GalleryRemote.getInstance().properties.setShowPath( ( e.getStateChange() == ItemEvent.SELECTED ) ? true : false );
 			picturesList.repaint();
 		} else if ( item == album ) {
-			mAlbum.setName( (String) ( (JComboBox) item ).getSelectedItem() );
+			mAlbum = (Album) ( (JComboBox) item ).getSelectedItem();
+			picturesList.setModel( mAlbum );
 		} else {
 			Log.log(Log.ERROR, MODULE, "Unhandled item state change " + item );
 		}
