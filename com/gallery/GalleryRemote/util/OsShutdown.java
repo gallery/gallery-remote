@@ -26,16 +26,16 @@ public class OsShutdown {
 		} else if (isUnix()) {
 			cmd = unix;
 		} else {
-			Log.log(Log.ERROR, MODULE, "Platform not recognized; shutdown will not be performed");
+			Log.log(Log.LEVEL_ERROR, MODULE, "Platform not recognized; shutdown will not be performed");
 		}
 
 		try {
 			if (cmd != null) {
-				Log.log(Log.TRACE, MODULE, "Executing " + cmd);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmd);
 				Runtime.getRuntime().exec(cmd);
 			}
 		} catch(java.io.IOException io) {
-			Log.logException(Log.ERROR, MODULE, io);
+			Log.logException(Log.LEVEL_ERROR, MODULE, io);
 		}
 	}
 

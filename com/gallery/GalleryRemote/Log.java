@@ -39,10 +39,10 @@ import java.util.List;
  */
 public class Log extends Thread implements PreferenceNames
 {
-	public final static int CRITICAL = 0;
-	public final static int ERROR = 1;
-	public final static int INFO = 2;
-	public final static int TRACE = 3;
+	public final static int LEVEL_CRITICAL = 0;
+	public final static int LEVEL_ERROR = 1;
+	public final static int LEVEL_INFO = 2;
+	public final static int LEVEL_TRACE = 3;
 
 	static String levelName[] = {"CRITI", "ERROR", "INFO ", "TRACE"};
 
@@ -52,7 +52,7 @@ public class Log extends Thread implements PreferenceNames
 	public final static String emptyTime = "       ";
 	public final static long startTime = System.currentTimeMillis();
 
-	public static int maxLevel = TRACE;
+	public static int maxLevel = LEVEL_TRACE;
 	public static boolean toSysOut;
 
 	static int threadPriority = ( Thread.MIN_PRIORITY + Thread.NORM_PRIORITY ) / 2;
@@ -112,19 +112,19 @@ public class Log extends Thread implements PreferenceNames
 	}
 
 	public static void log( Class c, String message ) {
-		log( TRACE, getShortClassName(c), message );
+		log( LEVEL_TRACE, getShortClassName(c), message );
 	}
 
 	public static void log( Object o, String message ) {
-		log( TRACE, getShortClassName(o.getClass()), message );
+		log( LEVEL_TRACE, getShortClassName(o.getClass()), message );
 	}
 
 	public static void log( String module, String message ) {
-		log( TRACE, module, message );
+		log( LEVEL_TRACE, module, message );
 	}
 
 	public static void log( String message ) {
-		log( TRACE, (String) null, message );
+		log( LEVEL_TRACE, (String) null, message );
 	}
 	
 	public static void logStack(int level, String module) {
@@ -206,7 +206,7 @@ public class Log extends Thread implements PreferenceNames
 		if (maxLevel != GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL )) {
 			maxLevel = GalleryRemote.getInstance().properties.getIntProperty( LOG_LEVEL );
 			singleton.logLines.add( emptyTime + "|"
-					+ levelName[TRACE] + "|"
+					+ levelName[LEVEL_TRACE] + "|"
 					+ emptyModule + "|"
 					+ "Setting Log level to " + levelName[maxLevel] );
 		}

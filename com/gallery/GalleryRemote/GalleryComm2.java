@@ -189,7 +189,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	}
 	
 	void status( StatusUpdate su, int level, String message) {
-		Log.log(Log.INFO, MODULE, message);
+		Log.log(Log.LEVEL_INFO, MODULE, message);
 		su.updateProgressStatus(level, message);
 	}
 	
@@ -199,7 +199,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	}
 	
 	void trace(String message) {
-		Log.log(Log.TRACE, MODULE, message);
+		Log.log(Log.LEVEL_TRACE, MODULE, message);
 	}
 
 
@@ -231,14 +231,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			su.setInProgress(true);
 			if ( ! isLoggedIn ) {
 				if ( !login() ) {
-					Log.log(Log.TRACE, MODULE, "Failed to log in to " + g.toString());
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed to log in to " + g.toString());
 					su.setInProgress(false);
 					return;
 				}
 				
 				isLoggedIn = true;
 			} else {
-				Log.log(Log.TRACE, MODULE, "Still logged in to " + g.toString());
+				Log.log(Log.LEVEL_TRACE, MODULE, "Still logged in to " + g.toString());
 			}
 
 			runTask();
@@ -276,8 +276,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		Properties requestResponse( NVPair form_data[], byte[] data, URL galUrl, boolean checkResult) throws GR2Exception, ModuleException, IOException {
 			// assemble the URL
 			String urlPath = galUrl.getFile();
-			//urlPath = urlPath + ( (urlPath.endsWith( "/" )) ? SCRIPT_NAME : "/" + SCRIPT_NAME );
-			Log.log(Log.TRACE, MODULE, "Url: " + urlPath );
+			Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath );
 
 			if (data != null) {
 				su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, grRes.getString(MODULE, "upStart"), false);
@@ -322,7 +321,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			} else {
 				// load response 
 				String response = new String(rsp.getData()).trim();
-				Log.log(Log.TRACE, MODULE, response);
+				Log.log(Log.LEVEL_TRACE, MODULE, response);
 
 				if (checkResult) {
 					// validate response
@@ -333,7 +332,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						throw new GR2Exception(grRes.getString(MODULE, "gllryNotFound", params));
 					} else if ( i > 0 ) {
 						response = response.substring(i);
-						Log.log(Log.TRACE, MODULE, "Short response: " + response);
+						Log.log(Log.LEVEL_TRACE, MODULE, "Short response: " + response);
 					}
 
 					Properties p = new Properties();
@@ -358,11 +357,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				try {
 					requestResponse( null, null, g.getLoginUrl(SCRIPT_NAME), false );
 				} catch (IOException ioe) {
-					Log.logException(Log.ERROR, MODULE, ioe);
+					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                     Object [] params2 = {ioe.toString() };
 					error(su, grRes.getString(MODULE, "error", params2));
 				} catch (ModuleException me) {
-					Log.logException(Log.ERROR, MODULE, me);
+					Log.logException(Log.LEVEL_ERROR, MODULE, me);
                     Object [] params2 = {me.getMessage()};
 					error(su, grRes.getString(MODULE, "errReq" , params2));
 				}
@@ -404,7 +403,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				new NVPair("uname", username),
 				new NVPair("password", password)
 			};
-			Log.log(Log.TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+			Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 
 			// make the request
 			try	{
@@ -417,12 +416,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						int i = serverVersion.indexOf( "." );
 						serverMinorVersion = Integer.parseInt( serverVersion.substring( i+1 ) );
 
-						Log.log(Log.TRACE, MODULE, "Server minor version: " + serverMinorVersion);
+						Log.log(Log.LEVEL_TRACE, MODULE, "Server minor version: " + serverMinorVersion);
 
 						handleCapabilities();
 					} catch (Exception e) {
-						Log.log( Log.ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
-						Log.logException(Log.ERROR, MODULE, e);
+						Log.log( Log.LEVEL_ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
 					}
 					return true;
 				} else if (GR_STAT_PASSWD_WRONG.equals(p.getProperty("status"))) {
@@ -434,15 +433,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					return false;
 				}
 			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.ERROR, MODULE, gr2e );
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
                 Object [] params2 = {gr2e.getMessage() };
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params2 = {ioe.toString() };
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params2 = {me.getMessage() };
 				error(su, grRes.getString(MODULE, "errReq", params2));
 			}
@@ -492,7 +491,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						}
 
 						if (!terminated) {
-							Log.log(Log.ERROR, "Thread would not terminate properly: killing it");
+							Log.log(Log.LEVEL_ERROR, "Thread would not terminate properly: killing it");
 							thread.stop();
 
 							// since we killed the thread, it's not going to clean up after itself
@@ -586,7 +585,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					opts = (NVPair[]) optsList.toArray(opts);
 				}
 
-				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
+				Log.log(Log.LEVEL_TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
 				
 				// setup the multipart form data
 				NVPair[] afile = { new NVPair("userfile", p.getUploadSource().getAbsolutePath()) };
@@ -605,19 +604,19 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 				
 			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.ERROR, MODULE, gr2e );
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
                 Object [] params = {gr2e.getMessage()};
 				error(su, grRes.getString(MODULE, "error", params));
 			} catch (SocketException swe) {
-				Log.logException(Log.ERROR, MODULE, swe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, swe);
                 Object [] params = {swe.toString()};
 				error(su, grRes.getString(MODULE, "confErr" , params));
 			} catch (IOException ioe)	{
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params = {ioe.toString()};
 				error(su, grRes.getString(MODULE, "error", params));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params = {me.getMessage()};
 				error(su, grRes.getString(MODULE, "errReq", params));
 			}		
@@ -648,17 +647,17 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					list22();
 				}
 
-				Log.log(Log.INFO, MODULE, "execution time for AlbumList: " + (System.currentTimeMillis() - startTime));
+				Log.log(Log.LEVEL_INFO, MODULE, "execution time for AlbumList: " + (System.currentTimeMillis() - startTime));
 			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.ERROR, MODULE, gr2e );
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
                 Object [] params2 = {gr2e.getMessage()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params2 = {ioe.toString()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params2 = {me.toString()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			}
@@ -672,7 +671,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				new NVPair("cmd", "fetch-albums"),
 				new NVPair("protocol_version", PROTOCOL_VERSION )
 			};
-			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
+			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
 			// load and validate the response
 			Properties p = requestResponse( form_data );
@@ -748,7 +747,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				new NVPair("cmd", "fetch-albums-prune"),
 				new NVPair("protocol_version", PROTOCOL_VERSION )
 			};
-			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
+			Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 
 			// load and validate the response
 			Properties p = requestResponse( form_data );
@@ -868,7 +867,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("protocol_version", PROTOCOL_VERSION ),
 					new NVPair("set_albumName", a.getName() )
 				};
-				Log.log(Log.TRACE, MODULE, "album-info parameters: " + Arrays.asList(form_data));
+				Log.log(Log.LEVEL_TRACE, MODULE, "album-info parameters: " + Arrays.asList(form_data));
 				
 				// load and validate the response
 				Properties p = requestResponse( form_data );
@@ -884,15 +883,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 				
 			} catch ( GR2Exception gr2e ) {
-				Log.logException(Log.ERROR, MODULE, gr2e );
+				Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
                 Object [] params2 = {gr2e.getMessage()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params2 = {ioe.toString()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params2 = {me.toString()};
 				error(su, grRes.getString(MODULE, "error", params2));
 			}
@@ -942,7 +941,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("newAlbumTitle", albumTitle ),
 					new NVPair("newAlbumDesc", albumDesc )
 				};
-				Log.log(Log.TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
+				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 				
 				// load and validate the response
 				Properties p = requestResponse( form_data );
@@ -955,15 +954,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 
             } catch ( GR2Exception gr2e ) {
-                Log.logException(Log.ERROR, MODULE, gr2e );
+                Log.logException(Log.LEVEL_ERROR, MODULE, gr2e );
                 Object [] params2 = {gr2e.getMessage()};
                 error(su, grRes.getString(MODULE, "error", params2));
             } catch (IOException ioe) {
-                Log.logException(Log.ERROR, MODULE, ioe);
+                Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params2 = {ioe.toString()};
                 error(su, grRes.getString(MODULE, "error", params2));
             } catch (ModuleException me) {
-                Log.logException(Log.ERROR, MODULE, me);
+                Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params2 = {me.toString()};
                 error(su, grRes.getString(MODULE, "error", params2));
             }

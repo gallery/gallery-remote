@@ -93,7 +93,11 @@ public class PropertiesFile extends GalleryProperties
 	 *@param  name  The new filename value
 	 */
 	public synchronized void setFilename( String name ) {
-		mFilename = name + ".properties";
+		if (name.length() - name.lastIndexOf('.') > 5) {
+			mFilename = name + ".properties";
+		} else {
+			mFilename = name;
+		}
 	}
 
 
@@ -139,20 +143,19 @@ public class PropertiesFile extends GalleryProperties
 	 */
 	public synchronized void read()
 		throws FileNotFoundException {
-
 		if ( mFilename != null ) {
 			InputStream fileIn = null;
 			try {
 				// try to get from JAR
 				if (mFilename.indexOf("/") == -1) {
 					// only if the resource is local
-					Log.log(Log.TRACE, MODULE, "Trying to find " + mFilename + " in Classpath");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Trying to find " + mFilename + " in Classpath");
 					fileIn = PropertiesFile.class.getResourceAsStream("/" + mFilename);
 				}
 
 				if (fileIn == null) {
 					// no dice? OK, from cwd then...
-					Log.log(Log.TRACE, MODULE, "Trying to find " + mFilename + " in Current Working Dir");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Trying to find " + mFilename + " in Current Working Dir");
 					fileIn = new FileInputStream( mFilename );
 				}
 

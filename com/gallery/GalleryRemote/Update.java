@@ -26,26 +26,21 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.text.DateFormat;
 import java.util.Date;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import edu.stanford.ejalbert.BrowserLauncher;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.DialogUtil;
 
 /**
  *  Update check and dialog
@@ -55,7 +50,7 @@ import com.gallery.GalleryRemote.util.GRI18n;
  */
 
 public class Update extends JFrame implements ActionListener, PreferenceNames {
-	public final String MODULE = "Update";
+	public static final String MODULE = "Update";
     public static GRI18n grRes = GRI18n.getInstance();
 
 	public static final int NO_UPDATE = 0;
@@ -116,14 +111,13 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 			pack();
 
-			Dimension s = Toolkit.getDefaultToolkit().getScreenSize();
-			setLocation( (int) ( s.getWidth() - getWidth() ) / 2, (int) ( s.getHeight() - getHeight() ) / 2 );
-			
+			DialogUtil.center(this);
+
 			setIconImage(GalleryRemote.iconImage);
 			
 			setVisible( true );
 		} catch ( Exception e ) {
-			Log.logException( Log.CRITICAL, MODULE, e );
+			Log.logException( Log.LEVEL_CRITICAL, MODULE, e );
 		}
 	}
 
@@ -151,12 +145,12 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 
 				Date myReleaseDate = GalleryRemote.getInstance().properties.getDateProperty("releaseDate");
 				
-				Log.log(Log.TRACE, MODULE, "Local release date: " + myReleaseDate + " new: " + releaseDate);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Local release date: " + myReleaseDate + " new: " + releaseDate);
 				
 				return releaseDate.after(myReleaseDate);
 			} catch (Exception e) {
-				Log.log(Log.CRITICAL, MODULE, "Update check failed");
-				Log.logException( Log.ERROR, MODULE, e );
+				Log.log(Log.LEVEL_CRITICAL, MODULE, "Update check failed");
+				Log.logException( Log.LEVEL_ERROR, MODULE, e );
 				
 				return false;
 			}
@@ -231,8 +225,67 @@ public class Update extends JFrame implements ActionListener, PreferenceNames {
 		try {
 			BrowserLauncher.openURL(which.releaseUrl);
 		} catch (Exception e) {
-			Log.log(Log.CRITICAL, MODULE, "Exception while trying to open browser");
-			Log.logException(Log.CRITICAL, MODULE, e);
+			Log.log(Log.LEVEL_CRITICAL, MODULE, "Exception while trying to open browser");
+			Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
+		}
+	}
+
+	public static boolean upgrade() {
+		PropertiesFile lax = new PropertiesFile("Gallery Remote.lax");
+
+		try {
+			lax.read();
+		} catch (FileNotFoundException e) {
+			// no LAX, no problem...
+			Log.log(Log.LEVEL_INFO, MODULE, "LAX file not found: probably running from Ant or IDE...");
+			return false;
+		}
+
+		String laxClasspath = lax.getProperty("lax.class.path");
+		String classpath = GalleryRemote.getInstance().properties.getProperty("classpath");
+
+		if (! classpath.equals(laxClasspath)) {
+			Log.log(Log.LEVEL_INFO, MODULE, "Patching LAX classpath");
+
+			try {
+				File laxFile = new File("Gallery Remote.lax");
+				File patchFile = new File("Gallery Remote.lax.patch");
+				File origFile = new File("Gallery Remote.lax.orig");
+
+				BufferedReader in = new BufferedReader(new FileReader(laxFile));
+				BufferedWriter out = new BufferedWriter(new FileWriter(patchFile));
+
+				String line = null;
+
+				String cr = System.getProperty("line.separator");
+				while ((line = in.readLine()) != null) {
+					if (line.startsWith("lax.class.path=")) {
+						out.write("lax.class.path=" + classpath + cr);
+					} else {
+						out.write(line + cr);
+					}
+				}
+
+				in.close();
+				out.close();
+
+				origFile.delete();
+				laxFile.renameTo(origFile);
+				patchFile.renameTo(laxFile);
+
+				JOptionPane.showMessageDialog(null, GRI18n.getInstance().getString(MODULE, "restart.text"), GRI18n.getInstance().getString(MODULE, "restart.title"), JOptionPane.WARNING_MESSAGE);
+
+				return true;
+			} catch (FileNotFoundException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+
+			return false;
+		} else {
+			Log.log(Log.LEVEL_INFO, MODULE, "LAX classpath up to date");
+			return false;
 		}
 	}
 }

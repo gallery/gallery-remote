@@ -101,7 +101,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		String cmd = e.getActionCommand();
 		Gallery g = (Gallery) jGalleries.getSelectedValue();
 
-		Log.log(Log.INFO, MODULE, "Command selected " + cmd + " Gallery: " + g);
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + cmd + " Gallery: " + g);
 
 		if (cmd.equals("Modify")) {
 			GalleryEditorDialog ged = new GalleryEditorDialog(dialog, g);
@@ -142,7 +142,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 
 			resetUIState();
 		} else {
-			Log.log(Log.ERROR, MODULE, "Unknown command: " + cmd);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Unknown command: " + cmd);
 		}
 	}
 

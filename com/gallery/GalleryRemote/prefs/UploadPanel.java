@@ -75,7 +75,7 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 				try {
 					d = new Dimension(Integer.parseInt(resizeToWidth.getText()), Integer.parseInt(resizeToHeight.getText()));
 				} catch (Exception e) {
-					Log.log(Log.ERROR, MODULE, "resizeTo size should be integer numbers");
+					Log.log(Log.LEVEL_ERROR, MODULE, "resizeTo size should be integer numbers");
 				}
 			}
 			if (d != null) {

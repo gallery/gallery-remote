@@ -94,8 +94,8 @@ public class Album extends Picture implements ListModel, Serializable
 			try {
 				gallery.getComm( su ).albumInfo( su, this, false );
 			} catch (RuntimeException e) {
-				Log.log(Log.INFO, MODULE, "Server probably doesn't support album-info");
-				Log.logException(Log.INFO, MODULE, e);
+				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-info");
+				Log.logException(Log.LEVEL_INFO, MODULE, e);
 			}
 		}
 	}

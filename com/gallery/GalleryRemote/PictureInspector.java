@@ -101,7 +101,7 @@ public class PictureInspector extends JPanel
 		}
 
 		emptyIconHeight = (int) jIcon.getPreferredSize().getHeight();
-		Log.log(Log.TRACE, MODULE, "emptyIconHeight: " + emptyIconHeight);
+		Log.log(Log.LEVEL_TRACE, MODULE, "emptyIconHeight: " + emptyIconHeight);
 	}
 
 
@@ -262,7 +262,7 @@ public class PictureInspector extends JPanel
 	 */
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
-		Log.log(Log.INFO, MODULE, "Command selected " + command );
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command );
 
 		if ( command.equals( "Delete" ) ) {
 			mf.deleteSelectedPictures();
@@ -527,7 +527,7 @@ public class PictureInspector extends JPanel
 			try {
 				((Component)evt.getSource()).transferFocusBackward();
 			} catch (NoSuchMethodError e) {
-				Log.log(Log.ERROR, MODULE, "Can't transfer focus backwards on 1.3");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Can't transfer focus backwards on 1.3");
 			}
         }
     };

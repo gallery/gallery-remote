@@ -40,12 +40,12 @@ public class GRI18n implements PreferenceNames {
     private GRI18n() {
         String myLocale;
         myLocale =
-                GalleryRemote.getInstance().properties.getProperty(GR_LOCALE);
+                GalleryRemote.getInstance().properties.getProperty(UI_LOCALE);
 
 		grLocale = parseLocaleString(myLocale);
 
         grMsgFrmt = new MessageFormat("");
-        Log.log(Log.INFO, MODULE, grLocale.toString());
+        Log.log(Log.LEVEL_INFO, MODULE, grLocale.toString());
 
         setResBundle();
     }
@@ -77,12 +77,12 @@ public class GRI18n implements PreferenceNames {
         try {
             msg = grResBundle.getString(extKey);
         } catch (NullPointerException e) {
-            Log.log(Log.ERROR, MODULE, "Key null error");
-            Log.logException(Log.ERROR, MODULE, e);
+            Log.log(Log.LEVEL_ERROR, MODULE, "Key null error");
+            Log.logException(Log.LEVEL_ERROR, MODULE, e);
             msg = "[NULLKEY]";
         } catch (MissingResourceException e) {
-            Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
-            Log.logException(Log.INFO, MODULE, e);
+            Log.log(Log.LEVEL_INFO, MODULE, "Key [" + extKey + "] not defined");
+            Log.logException(Log.LEVEL_INFO, MODULE, e);
             msg = "[" + extKey + "]";
         }
 
@@ -98,12 +98,12 @@ public class GRI18n implements PreferenceNames {
             grMsgFrmt.applyPattern(template);
             msg = grMsgFrmt.format(params);
         } catch (NullPointerException e) {
-            Log.log(Log.ERROR, MODULE, "Key null error");
-            Log.logException(Log.ERROR, MODULE, e);
+            Log.log(Log.LEVEL_ERROR, MODULE, "Key null error");
+            Log.logException(Log.LEVEL_ERROR, MODULE, e);
             msg = "[NULLKEY]";
         } catch (MissingResourceException e) {
-            Log.log(Log.INFO, MODULE, "Key [" + extKey + "] not defined");
-            Log.logException(Log.INFO, MODULE, e);
+            Log.log(Log.LEVEL_INFO, MODULE, "Key [" + extKey + "] not defined");
+            Log.logException(Log.LEVEL_INFO, MODULE, e);
             msg = "[" + extKey + "]";
         }
 
@@ -120,8 +120,8 @@ public class GRI18n implements PreferenceNames {
         try {
             grResBundle = ResourceBundle.getBundle(RESNAME, grLocale);
         } catch (MissingResourceException e) {
-            Log.log(Log.ERROR, MODULE, "Resource bundle error");
-            Log.logException(Log.ERROR, MODULE, e);
+            Log.log(Log.LEVEL_ERROR, MODULE, "Resource bundle error");
+            Log.logException(Log.LEVEL_ERROR, MODULE, e);
         }
 
         grMsgFrmt.setLocale(grLocale);
@@ -139,9 +139,12 @@ public class GRI18n implements PreferenceNames {
         String locPath;
         String loc;
         List aList = new LinkedList();
-//		long start = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
 
         Locale [] list = Locale.getAvailableLocales();
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "The platform supports " + list.length + " locales. Pruning...");
+
         String prefix = "##DUMMY";
         for (int i = 0; i < list.length; i++ ) {
             loc = list[i].toString();
@@ -152,7 +155,9 @@ public class GRI18n implements PreferenceNames {
                     aList.add(list[i]);
             }
         }
-        //Log.log(Log.TRACE, MODULE, "Parsed locales in " + (System.currentTimeMillis() - start) + "ms");
+
+        Log.log(Log.LEVEL_TRACE, MODULE, "Pruned locales in " + (System.currentTimeMillis() - start) + "ms");
+
         return aList;
     }
 }

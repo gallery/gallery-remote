@@ -113,22 +113,22 @@ public class ImageUtils {
 				
 				cmdline.append("\"" +temp.getPath() + "\"");
 				
-				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
+				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline.toString());
 			
 				Process p = Runtime.getRuntime().exec(cmdline.toString());
 				int exitValue = p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Returned with value " + exitValue);
 				
 				if (exitValue != 0 && ! imIgnoreErrorCode) {
-					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 					useIM = false;
 				} else {
 					r = new ImageIcon(temp.getPath());
 				}
 			} catch (IOException e1) {
-				Log.logException(Log.ERROR, MODULE, e1);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			} catch (InterruptedException e2) {
-				Log.logException(Log.ERROR, MODULE, e2);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e2);
 			}
 		}
 
@@ -148,7 +148,7 @@ public class ImageUtils {
 		long time = System.currentTimeMillis() - start;
 		totalTime += time;
 		totalIter++;
-		Log.log(Log.TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
 
 		return r;
 	}
@@ -185,21 +185,21 @@ public class ImageUtils {
 
 				cmdline.append(" \"").append(r.getPath()).append("\"");
 
-				Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
+				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline.toString());
 
 				Process p = Runtime.getRuntime().exec(cmdline.toString());
 				int exitValue = p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Returned with value " + exitValue);
 
 				if (exitValue != 0 && ! imIgnoreErrorCode) {
-					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
 					useIM = false;
 					r = null;
 				}
 			} catch (IOException e1) {
-				Log.logException(Log.ERROR, MODULE, e1);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			} catch (InterruptedException e2) {
-				Log.logException(Log.ERROR, MODULE, e2);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e2);
 			}
 		}
 
@@ -210,7 +210,7 @@ public class ImageUtils {
 		long time = System.currentTimeMillis() - start;
 		totalTime += time;
 		totalIter++;
-		Log.log(Log.TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
 
 		return r;
 	}
@@ -237,9 +237,9 @@ public class ImageUtils {
 					resetExifOrientation(filename);
 				}*/
 			} catch (IOException e1) {
-				Log.logException(Log.ERROR, MODULE, e1);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
 			} catch (InterruptedException e2) {
-				Log.logException(Log.ERROR, MODULE, e2);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e2);
 			}
 		}
 
@@ -266,14 +266,14 @@ public class ImageUtils {
 
 		cmdline.append(" \"").append(r.getPath()).append("\"");
 
-		Log.log(Log.TRACE, MODULE, "Executing " + cmdline.toString());
+		Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline.toString());
 
 		Process p = Runtime.getRuntime().exec(cmdline.toString());
 		int exitValue = p.waitFor();
-		Log.log(Log.TRACE, MODULE, "Returned with value " + exitValue);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Returned with value " + exitValue);
 
 		if (exitValue != 0 && ! jpegtranIgnoreErrorCode) {
-			Log.log(Log.CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
+			Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
 			useJpegtran = false;
 			r = null;
 		}
@@ -331,17 +331,17 @@ public class ImageUtils {
 				String orientation = exifDirectory.getString(ExifDirectory.TAG_ORIENTATION);
 
 				if (orientation == null) {
-					Log.log(Log.TRACE, MODULE, "Picture " + filename + " has no EXIF ORIENTATION tag");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no EXIF ORIENTATION tag");
 					return null;
 				} else {
-					Log.log(Log.TRACE, MODULE, "Picture " + filename + " EXIF ORIENTATION: " + orientation);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " EXIF ORIENTATION: " + orientation);
 
 					int or = 0;
 					AngleFlip af = null;
 					try {
 						or = Integer.parseInt(orientation);
 					} catch (NumberFormatException e) {
-						Log.log(Log.ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
+						Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
 						return null;
 					}
 
@@ -379,18 +379,18 @@ public class ImageUtils {
 							break;
 
 						default:
-							Log.log(Log.ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
+							Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't parse orientation " + orientation + " for " + filename);
 							return null;
 					}
 
-					Log.log(Log.TRACE, MODULE, "Angle: " + af.angle + " Flipped: " + af.flip);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Angle: " + af.angle + " Flipped: " + af.flip);
 					return af;
 				}
 			} catch (FileNotFoundException e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				return null;
 			} catch (JpegProcessingException e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				return null;
 			}
 		} else {
@@ -410,9 +410,9 @@ public class ImageUtils {
 				// todo: this doesn't do anything at present: the library can only READ
 				// EXIF, not write to it...
 			} catch (FileNotFoundException e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			} catch (JpegProcessingException e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
 	}
@@ -424,23 +424,23 @@ public class ImageUtils {
 			tmpDir.mkdirs();
 		}
 		
-		Log.log(Log.INFO, MODULE, "tmpDir: " + tmpDir.getPath());
+		Log.log(Log.LEVEL_INFO, MODULE, "tmpDir: " + tmpDir.getPath());
 
 		// Making sure ImageMagick works
 		try {
 			PropertiesFile p = new PropertiesFile("imagemagick/im");
 			
 			useIM = p.getBooleanProperty("enabled");
-			Log.log(Log.INFO, MODULE, "useIM: " + useIM);
+			Log.log(Log.LEVEL_INFO, MODULE, "useIM: " + useIM);
 			if (useIM) {
 				imPath = p.getProperty("imConvertPath");
-				Log.log(Log.INFO, MODULE, "imPath: " + imPath);
+				Log.log(Log.LEVEL_INFO, MODULE, "imPath: " + imPath);
 				
 				imIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", imIgnoreErrorCode);
-				Log.log(Log.INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
+				Log.log(Log.LEVEL_INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
 
 				if (! new File(imPath).exists()) {
-					Log.log(Log.CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
 					useIM = false;
 				}
 			}
@@ -460,7 +460,7 @@ public class ImageUtils {
 				jpegQuality = p.getIntProperty("jpegQuality", jpegQuality);
 			}
 		} catch (Exception e) {
-			Log.logException(Log.CRITICAL, MODULE, e);
+			Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
 			useIM = false;
 		}
 
@@ -479,21 +479,21 @@ public class ImageUtils {
 			PropertiesFile p = new PropertiesFile("jpegtran/jpegtran");
 
 			useJpegtran = p.getBooleanProperty("enabled");
-			Log.log(Log.INFO, MODULE, "useJpegtran: " + useJpegtran);
+			Log.log(Log.LEVEL_INFO, MODULE, "useJpegtran: " + useJpegtran);
 			if (useJpegtran) {
 				jpegtranPath = p.getProperty("jpegtranPath");
-				Log.log(Log.INFO, MODULE, "jpegtranPath: " + jpegtranPath);
+				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranPath: " + jpegtranPath);
 
 				jpegtranIgnoreErrorCode = p.getBooleanProperty("ignoreErrorCode", jpegtranIgnoreErrorCode);
-				Log.log(Log.INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
+				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
 
 				if (! new File(jpegtranPath).exists()) {
-					Log.log(Log.CRITICAL, MODULE, "Can't find jpegtran at the above path");
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find jpegtran at the above path");
 					useJpegtran = false;
 				}
 			}
 		} catch (Exception e) {
-			Log.logException(Log.CRITICAL, MODULE, e);
+			Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
 			useJpegtran = false;
 		}
 	}

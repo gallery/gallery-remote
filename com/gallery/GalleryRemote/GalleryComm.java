@@ -63,23 +63,27 @@ public abstract class GalleryComm implements PreferenceNames {
 	static {
 		/* Enable customized AuthorizePopup */
 		AuthorizePopup.enable();
-		
+
 		/* Configures HTTPClient to accept all cookies
 		 * this should be done at least once per GalleryRemote
 		 * invokation */
 		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
 			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
-				Log.log(Log.TRACE, MODULE, "Accepting cookie: " + cookie);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Accepting cookie: " + cookie);
 				return true;
 			}
 			public boolean sendCookie(Cookie cookie, RoRequest req) {
-				Log.log(Log.TRACE, MODULE, "Sending cookie: " + cookie);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Sending cookie: " + cookie);
 				return true;
 			}
 		});
 	}
-	
-	
+
+	public static void initHTTPClient() {
+		// no need to do anything: the static initializer does it...
+	}
+
+
 	/**
 	 *	Causes the GalleryComm instance to upload the pictures in the
 	 *	associated Gallery to the server.
@@ -153,7 +157,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				try { port = p.getIntProperty(PROXY_PORT); } catch (NumberFormatException e) {}
 				String username = p.getProperty(PROXY_USERNAME);
 
-				Log.log(Log.TRACE, MODULE, "Setting proxy to " + hostname + ":" + port);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Setting proxy to " + hostname + ":" + port);
 
 				HTTPConnection.setProxyServer(hostname, port);
 				
@@ -172,20 +176,20 @@ public abstract class GalleryComm implements PreferenceNames {
 				// assemble the URL
 				String urlPath = url.getFile();
 
-				Log.log(Log.TRACE, MODULE, "Trying protocol 2 for " + url);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2 for " + url);
 				// Test GalleryComm2
 				String urlPath2 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME );
 				if (tryComm(su, mConnection, urlPath2)) {
-					Log.log(Log.TRACE, MODULE, "Server has protocol 2");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
 					return new GalleryComm2(g);
 				}
 
-				Log.log(Log.TRACE, MODULE, "Trying protocol 1 for " + url);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
 				// Test GalleryComm1
 				// BUT: only if first try was not status code 401 = authorization failure
 				String urlPath1 = urlPath + ( (urlPath.endsWith( "/" )) ? GalleryComm1.SCRIPT_NAME : "/" + GalleryComm1.SCRIPT_NAME );
 				if (lastRespCode != 401 && tryComm(su, mConnection, urlPath1)) {
-					Log.log(Log.TRACE, MODULE, "Server has protocol 1");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 1");
 					return new GalleryComm1(g);
 				}
 			} else {
@@ -193,7 +197,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				return new GalleryComm2(g);
 			}
 		} catch (HTTPClient.ProtocolNotSuppException e) {
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 		
 		return null;
@@ -222,17 +226,17 @@ public abstract class GalleryComm implements PreferenceNames {
 			// loading this class at all. Instead, cast it inside another try-catch...
 			try {
 				if (ioe instanceof javax.net.ssl.SSLPeerUnverifiedException) {
-					Log.logException(Log.ERROR, MODULE, ioe);
+					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 
 					JOptionPane.showMessageDialog((Component) su, grRes.getString(MODULE, "noAuth"), grRes.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
 				} else {
-					Log.logException(Log.ERROR, MODULE, ioe);
+					Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 				}
 			} catch (NoClassDefFoundError ncdfe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
 			}
 		} catch (ModuleException me) {
-			Log.logException(Log.ERROR, MODULE, me);
+			Log.logException(Log.LEVEL_ERROR, MODULE, me);
 		}
 
 		return false;

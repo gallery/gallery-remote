@@ -95,7 +95,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		}
 
 		int selectedLocale = locales.indexOf(GRI18n.parseLocaleString(
-				GalleryRemote.getInstance().properties.getProperty(GR_LOCALE)));
+				GalleryRemote.getInstance().properties.getProperty(UI_LOCALE)));
 
 		if (selectedLocale == -1) {
 			localeStrings.add(0, "Default");
@@ -114,7 +114,7 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 			Dimension d = new Dimension(Integer.parseInt(thumbnailWidth.getText()), Integer.parseInt(thumbnailHeight.getText()));
 			props.setDimensionProperty(THUMBNAIL_SIZE, d);
 		} catch (Exception e) {
-			Log.log(Log.ERROR, MODULE, "Thumbnail size should be integer numbers");
+			Log.log(Log.LEVEL_ERROR, MODULE, "Thumbnail size should be integer numbers");
 		}
 
 		props.setBooleanProperty(SAVE_PASSWORDS, savePasswords.isSelected());
@@ -126,12 +126,12 @@ public class GeneralPanel extends /*JPanel*/ PreferencePanel implements Preferen
 		int selectedLocale = jLocale.getSelectedIndex();
 		if (defaultLocale) {
 			if (selectedLocale != 0) {
-				props.setProperty(GR_LOCALE, ((Locale) locales.get(selectedLocale - 1)).toString());
+				props.setProperty(UI_LOCALE, ((Locale) locales.get(selectedLocale - 1)).toString());
 			} else {
 				// still default, don't save it
 			}
 		} else {
-			props.setProperty(GR_LOCALE, ((Locale) locales.get(selectedLocale)).toString());
+			props.setProperty(UI_LOCALE, ((Locale) locales.get(selectedLocale)).toString());
 		}
 	}
 

@@ -155,8 +155,8 @@ public class MainFrame extends javax.swing.JFrame
 				g.addListDataListener(this);
 				galleries.addElement(g);
 			} catch (Exception e) {
-				Log.log(Log.ERROR, MODULE, "Error trying to load Gallery profile " + i);
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.log(Log.LEVEL_ERROR, MODULE, "Error trying to load Gallery profile " + i);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
 
@@ -190,7 +190,7 @@ public class MainFrame extends javax.swing.JFrame
 			jbInit();
 			jbInitEvents();
 		} catch ( Exception e ) {
-			Log.logException(Log.CRITICAL, MODULE, e);
+			Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
 		}
 
 		setBounds( GalleryRemote.getInstance().properties.getMainBounds() );
@@ -259,7 +259,7 @@ public class MainFrame extends javax.swing.JFrame
 		if (running) {
 			running = false;
 
-			Log.log(Log.INFO, MODULE, "Shutting down GR");
+			Log.log(Log.LEVEL_INFO, MODULE, "Shutting down GR");
 
 			try {
 				PropertiesFile p = GalleryRemote.getInstance().properties;
@@ -278,14 +278,14 @@ public class MainFrame extends javax.swing.JFrame
 
 				ImageUtils.purgeTemp();
 			} catch (Throwable t) {
-				Log.log(Log.ERROR, MODULE, "Error while closing: " + t);
+				Log.log(Log.LEVEL_ERROR, MODULE, "Error while closing: " + t);
 			}
 
 			if (shutdownOs) {
 				OsShutdown.shutdown();
 			}
 
-			Log.log(Log.INFO, MODULE, "Shutting down log");
+			Log.log(Log.LEVEL_INFO, MODULE, "Shutting down log");
 			Log.shutdown();
 
 			if (!halt) {
@@ -391,7 +391,7 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	private void updateGalleryParams() {
-		Log.log(Log.TRACE, MODULE, "updateGalleryParams: current gallery: " + getCurrentGallery());
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateGalleryParams: current gallery: " + getCurrentGallery());
 
 		updateAlbumCombo();
 	}
@@ -399,7 +399,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void updateAlbumCombo() {
 		Gallery currentGallery = getCurrentGallery();
-		Log.log(Log.TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateAlbumCombo: current gallery: " + currentGallery);
 
 		if (currentGallery != null && jAlbumCombo.getModel() != currentGallery) {
 			jAlbumCombo.setModel( currentGallery );
@@ -421,7 +421,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void updatePicturesList() {
 		Album currentAlbum = getCurrentAlbum();
-		Log.log(Log.TRACE, MODULE, "updatePicturesList: current album: " + currentAlbum);
+		Log.log(Log.LEVEL_TRACE, MODULE, "updatePicturesList: current album: " + currentAlbum);
 
 		if (currentAlbum == null) {
 			// fake empty album to clear the list
@@ -502,7 +502,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Upload the files
 	 */
 	public void uploadPictures() {
-		Log.log(Log.INFO, MODULE, "uploadPictures starting");
+		Log.log(Log.LEVEL_INFO, MODULE, "uploadPictures starting");
 
 		File f = new File(System.getProperty("user.home")
 			+ File.separator + ".GalleryRemote"
@@ -518,7 +518,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Fetch Albums from server and update UI
 	 */
 	public void fetchAlbums() {
-		Log.log(Log.INFO, MODULE, "fetchAlbums starting");
+		Log.log(Log.LEVEL_INFO, MODULE, "fetchAlbums starting");
 
 		getCurrentGallery().fetchAlbums( jStatusBar );
 
@@ -533,7 +533,7 @@ public class MainFrame extends javax.swing.JFrame
 		NewAlbumDialog dialog = new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
 		final String newAlbumName = dialog.getNewAlbumName();
 
-		Log.log(Log.TRACE, MODULE, "Album '" + newAlbumName + "' created. Selecting it...");
+		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbumName + "' created. Selecting it...");
 		// there is probably a better way... this is needed to give the UI time to catch up
 		// and load the combo up with the reloaded album list
 		new Thread() {
@@ -924,7 +924,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
-		Log.log(Log.INFO, MODULE, "Command selected " + command);
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 		//Log.log(Log.TRACE, MODULE, "        event " + e );
 
 		if ( command.equals( "File.Quit" ) ) {
@@ -983,7 +983,7 @@ public class MainFrame extends javax.swing.JFrame
 
 			//updatePicturesList( /*(Album) ( (JComboBox) e.getSource() ).getSelectedItem()*/);
 		} else {
-			Log.log(Log.ERROR, MODULE, "Unhandled command " + command );
+			Log.log(Log.LEVEL_ERROR, MODULE, "Unhandled command " + command );
 		}
 	}
 
@@ -1057,7 +1057,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void saveState(File f) {
 		try {
-			Log.log(Log.INFO, MODULE, "Saving state to file " + f.getPath());
+			Log.log(Log.LEVEL_INFO, MODULE, "Saving state to file " + f.getPath());
 
 			Gallery[] galleryArray = new Gallery[galleries.getSize()];
 
@@ -1068,10 +1068,10 @@ public class MainFrame extends javax.swing.JFrame
 			ObjOut out = new ObjOut(new BufferedWriter(new FileWriter(f)));
 			out.writeObject(galleryArray);
 		} catch (IOException e) {
-			Log.log(Log.ERROR, MODULE, "Exception while trying to save state");
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to save state");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (NoClassDefFoundError e) {
-			Log.log(Log.ERROR, MODULE, "JSX not installed, can't save state...");
+			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't save state...");
 		}
 	}
 
@@ -1084,7 +1084,7 @@ public class MainFrame extends javax.swing.JFrame
 			int returnVal = fc.showOpenDialog(this);
 
 			if(returnVal == JFileChooser.APPROVE_OPTION) {
-				Log.log(Log.INFO, MODULE, "Opening state from file " + fc.getSelectedFile().getPath());
+				Log.log(Log.LEVEL_INFO, MODULE, "Opening state from file " + fc.getSelectedFile().getPath());
 
 				ObjIn in = new ObjIn(new BufferedReader(new FileReader(fc.getSelectedFile())));
 				Gallery[] galleryArray = (Gallery[]) in.readObject();
@@ -1098,18 +1098,18 @@ public class MainFrame extends javax.swing.JFrame
 				setGalleries( newGalleries );
 			}
 		} catch (IOException e) {
-			Log.log(Log.ERROR, MODULE, "Exception while trying to read state");
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (ClassNotFoundException e) {
-			Log.log(Log.ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Exception while trying to read state (probably a version mismatch)");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (NoClassDefFoundError e) {
-			Log.log(Log.ERROR, MODULE, "JSX not installed, can't read state...");
+			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't read state...");
 		}
 	}
 
 	public void removeGallery(Gallery g) {
-		Log.log(Log.INFO, MODULE, "Deleting Gallery " + g);
+		Log.log(Log.LEVEL_INFO, MODULE, "Deleting Gallery " + g);
 		galleries.removeElement(g);
 
 		//g.removeFromProperties(GalleryRemote.getInstance().properties);
@@ -1144,7 +1144,7 @@ public class MainFrame extends javax.swing.JFrame
 		} /*else if ( item == album ) {
 			updatePicturesList( (Album) ( (JComboBox) item ).getSelectedItem());
 		}*/ else {
-			Log.log(Log.ERROR, MODULE, "Unhandled item state change " + item );
+			Log.log(Log.LEVEL_ERROR, MODULE, "Unhandled item state change " + item );
 		}
 	}
 
@@ -1175,7 +1175,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void contentsChanged( ListDataEvent e ) {
 		Object source = e.getSource();
-		Log.log(Log.TRACE, MODULE, "Contents changed: " + e);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Contents changed: " + e);
 
 		if (source instanceof Album) {
 			// Also tell MainFrame (ugly, but works around bug in Swing where when
@@ -1187,7 +1187,7 @@ public class MainFrame extends javax.swing.JFrame
 		} else if (source instanceof DefaultComboBoxModel) {
 			updateGalleryParams();
 		} else {
-			Log.log(Log.ERROR, MODULE, "Unknown source " + source);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Unknown source " + source);
 		}
 	}
 	public void intervalAdded(ListDataEvent e) {
@@ -1244,11 +1244,11 @@ public class MainFrame extends javax.swing.JFrame
 					registerMethod.invoke(theMacOSXAdapter, args);
 				}
 			} catch (NoClassDefFoundError e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			} catch (ClassNotFoundException e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			} catch (Exception e) {
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
 	}
@@ -1332,7 +1332,7 @@ public class MainFrame extends javax.swing.JFrame
 			iComputer = new ImageIcon(MainFrame.class.getResource("/computer.gif"));
 			iUploading = new ImageIcon(MainFrame.class.getResource("/uploading.gif"));
 		} catch (Exception e) {
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 	}
 }

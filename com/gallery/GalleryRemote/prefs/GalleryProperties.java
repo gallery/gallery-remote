@@ -157,7 +157,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			return new Dimension( Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ) );
 		} else {
-			Log.log(Log.ERROR, MODULE,  "Parameter " + key + " is missing or malformed (should be width,height)" );
+			Log.log(Log.LEVEL_ERROR, MODULE,  "Parameter " + key + " is missing or malformed (should be width,height)" );
 			return null;
 		}
 	}
@@ -178,7 +178,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 					Integer.parseInt( st.nextToken() ),
 					Integer.parseInt( st.nextToken() ) );
 		} else {
-			Log.log(Log.ERROR, MODULE,  "Parameter " + key + " is missing or malformed (should be x,y,width,height)" );
+			Log.log(Log.LEVEL_ERROR, MODULE,  "Parameter " + key + " is missing or malformed (should be x,y,width,height)" );
 			return null;
 		}
 	}

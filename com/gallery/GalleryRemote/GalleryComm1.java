@@ -101,7 +101,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 				
 				isLoggedIn = true;
 			} else {
-				Log.log(Log.TRACE, MODULE, "Still logged in to " + g.toString());
+				Log.log(Log.LEVEL_TRACE, MODULE, "Still logged in to " + g.toString());
 			}
 			
 			runTask();
@@ -122,7 +122,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			try	{
 				URL url = g.getGalleryUrl(SCRIPT_NAME);
 				String urlPath = url.getFile();
-				Log.log(Log.TRACE, MODULE, "Url: " + url);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + url);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "login"),
@@ -130,7 +130,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					new NVPair("uname", g.getUsername()),
 					new NVPair("password", g.getPassword())
 				};
-				Log.log(Log.TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+				Log.log(Log.LEVEL_TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
 				
 				HTTPConnection mConnection = new HTTPConnection(url);
 				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
@@ -148,7 +148,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					return false;
 				} else {
 					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
+					Log.log(Log.LEVEL_TRACE, MODULE, response);
 					
 					if (response.indexOf("SUCCESS") >= 0) {
 						status(StatusUpdate.LEVEL_GENERIC, grRes.getString(MODULE, "loggedIn"));
@@ -160,11 +160,11 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					}
 				}
 			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params3 = {ioe.toString() };
 				status(StatusUpdate.LEVEL_GENERIC, grRes.getString(MODULE, "error", params3));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params3 = {me.getMessage() };
 				status(StatusUpdate.LEVEL_GENERIC, grRes.getString(MODULE, "errReq", params3));
 			}
@@ -173,7 +173,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		}
 		
 		void status(int level, String message) {
-			Log.log(Log.INFO, MODULE, message);
+			Log.log(Log.LEVEL_INFO, MODULE, message);
 			su.updateProgressStatus(level, message);
 		}
 		
@@ -183,7 +183,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 		}
 		
 		void trace(String message) {
-			Log.log(Log.TRACE, MODULE, message);
+			Log.log(Log.LEVEL_TRACE, MODULE, message);
 		}
 	}
 	
@@ -225,14 +225,14 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			try	{
 				URL url = g.getGalleryUrl(SCRIPT_NAME);
 				String urlPath = url.getFile();
-				Log.log(Log.TRACE, MODULE, "Url: " + url);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + url);
 			
 				NVPair[] opts = {
 					new NVPair("set_albumName", p.getAlbum().getName()),
 					new NVPair("cmd", "add-item"), 
 					new NVPair("protocal_version", PROTOCAL_VERSION)
 				};
-				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
+				Log.log(Log.LEVEL_TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
 	
 				NVPair[] afile = { new NVPair("userfile", p.getUploadSource().getAbsolutePath()) };
 				NVPair[] hdrs = new NVPair[1];
@@ -253,7 +253,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					return false;
 				} else {
 					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
+					Log.log(Log.LEVEL_TRACE, MODULE, response);
 	
 					if (response.indexOf("SUCCESS") >= 0) {
 						trace(grRes.getString(MODULE, "upldSucc"));
@@ -265,11 +265,11 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					}
 				}
 			} catch (IOException ioe)	{
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params3 = {ioe.toString() };
 				error(grRes.getString(MODULE, "error", params3));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params3 = {me.getMessage() };
 				error(grRes.getString(MODULE, "errReq", params3));
 			}		
@@ -290,7 +290,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			try {
 				URL url =g.getGalleryUrl(SCRIPT_NAME);
 				String urlPath = url.getFile();
-				Log.log(Log.TRACE, MODULE, "Url: " + url);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + url);
 				
 				NVPair form_data[] = {
 					new NVPair("cmd", "fetch-albums"),
@@ -298,7 +298,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					new NVPair("uname", g.getUsername()),
 					new NVPair("password", g.getPassword())
 				};
-				Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
+				Log.log(Log.LEVEL_TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
 				
 				mConnection = new HTTPConnection(url);
 				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
@@ -316,7 +316,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					return;
 				} else {
 					String response = new String(rsp.getData()).trim();
-					Log.log(Log.TRACE, MODULE, response);
+					Log.log(Log.LEVEL_TRACE, MODULE, response);
 	
 					if (response.indexOf("SUCCESS") >= 0) {
 						ArrayList mAlbumList = new ArrayList();
@@ -347,15 +347,15 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 					}
 				}
 			} catch (IOException ioe) {
-				Log.logException(Log.ERROR, MODULE, ioe);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
                 Object [] params2 = {ioe.toString()};
 				status(StatusUpdate.LEVEL_BACKGROUND, grRes.getString(MODULE, "error", params2));
 			} catch (ModuleException me) {
-				Log.logException(Log.ERROR, MODULE, me);
+				Log.logException(Log.LEVEL_ERROR, MODULE, me);
                 Object [] params2 = {me.toString()};
 				status(StatusUpdate.LEVEL_BACKGROUND, grRes.getString(MODULE, "error", params2));
 			} catch (Exception ee) {
-				Log.logException(Log.ERROR, MODULE, ee);
+				Log.logException(Log.LEVEL_ERROR, MODULE, ee);
                 Object [] params2 = {ee.toString()};
 				status(StatusUpdate.LEVEL_BACKGROUND, grRes.getString(MODULE, "error", params2));
 			}

@@ -212,7 +212,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		Log.log(Log.INFO, MODULE, "Command selected " + cmd);
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + cmd);
 
 		if (cmd.equals("OK")) {
 			readUIState();
@@ -224,7 +224,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 			String panel = (String) jType.getSelectedItem();
 			jStyleLayout.show(jStylePanel, panel);
 		} else {
-			Log.log(Log.ERROR, MODULE, "Unknown command: " + cmd);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Unknown command: " + cmd);
 		}
 	}
 

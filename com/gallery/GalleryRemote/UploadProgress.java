@@ -186,8 +186,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		if (level == LEVEL_UPLOAD_ONE || level == LEVEL_UPLOAD_PROGRESS) {
 			return true;
 		} else {
-			Log.log(Log.ERROR, MODULE, "Bad level");
-			Log.logStack(Log.ERROR, MODULE);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Bad level");
+			Log.logStack(Log.LEVEL_ERROR, MODULE);
 
 			return false;
 		}

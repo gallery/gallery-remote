@@ -191,7 +191,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	 */
 	public void actionPerformed( ActionEvent e ) {
 		String command = e.getActionCommand();
-		Log.log(Log.INFO, MODULE, "Command selected " + command);
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 		
 		if ( command.equals( "Cancel" ) ) {
 			setVisible(false);
@@ -203,7 +203,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			
 			Album selectedAlbum = (Album) album.getSelectedItem();
 			if (selectedAlbum == rootAlbum) {
-				Log.log(Log.TRACE, MODULE, "Selected root album");
+				Log.log(Log.LEVEL_TRACE, MODULE, "Selected root album");
 				a.setParentAlbum(null);
 			} else {
 				a.setParentAlbum(selectedAlbum);

@@ -51,7 +51,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		try {
 			jbInit();
 		} catch(Exception e) {
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 
 		loadPanes();
@@ -82,14 +82,14 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 					panelNames.put(className, pp);
 				} catch (Exception e) {
-					Log.log(Log.ERROR, MODULE, "Bad panel: " + className);
-					Log.logException(Log.ERROR, MODULE, e);
+					Log.log(Log.LEVEL_ERROR, MODULE, "Bad panel: " + className);
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 			}
 
 			jIcons.setModel(panels);
 		} catch (IOException e) {
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		PreferencePanel pp = (PreferencePanel) jIcons.getSelectedValue();
 
 		String className = pp.getClass().getName();
-		Log.log(Log.TRACE, MODULE, "Showing panel: " + className);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Showing panel: " + className);
 
 		pp.readPropertiesFirst(GalleryRemote.getInstance().properties);
 		jPanelsLayout.show(jPanels, className);
@@ -152,7 +152,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
-		Log.log(Log.INFO, MODULE, "Command selected " + cmd);
+		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + cmd);
 
 		if (cmd.equals("OK")) {
 			GalleryRemote.getInstance().properties.uncache();
@@ -162,7 +162,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 				PreferencePanel pp = (PreferencePanel) enum.nextElement();
 
 				if (pp.hasBeenRead()) {
-					Log.log(Log.TRACE, MODULE, "Writing properties for panel " + pp.getClass());
+					Log.log(Log.LEVEL_TRACE, MODULE, "Writing properties for panel " + pp.getClass());
 
 					pp.writeProperties(GalleryRemote.getInstance().properties);
 				}
@@ -178,7 +178,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 			setVisible(false);
 		} else if (cmd.equals("revert")) {
 			PreferencePanel pp = (PreferencePanel) jIcons.getSelectedValue();
-			Log.log(Log.TRACE, MODULE, "Reverting panel " + pp.getClass());
+			Log.log(Log.LEVEL_TRACE, MODULE, "Reverting panel " + pp.getClass());
 			pp.readProperties(GalleryRemote.getInstance().properties);
 		}
 	}

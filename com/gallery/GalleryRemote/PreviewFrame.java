@@ -84,11 +84,11 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 				ImageIcon r = (ImageIcon) imageIcons.get(filename);
 				if (r != null) {
-					Log.log(Log.TRACE, MODULE, "Cache hit: " + filename);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + filename);
 					currentImage = r;
 					repaint();
 				} else {
-					Log.log(Log.TRACE, MODULE, "Cache miss: " + filename);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + filename);
 					previewLoader.loadPreview(filename);
 				}
 			}
@@ -104,7 +104,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 					getRootPane().getSize(),
 					ImageUtils.PREVIEW);
 
-			Log.log(Log.TRACE, MODULE, "Adding to cache: " + filename);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Adding to cache: " + filename);
 			imageIcons.put(filename, r);
 		}
 
@@ -116,7 +116,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		boolean stillRunning = false;
 
 		public void run() {
-			Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Starting " + iFilename);
 			while (iFilename != null) {
 				String tmpFilename;
 				synchronized (iFilename) {
@@ -129,17 +129,17 @@ public class PreviewFrame extends javax.swing.JFrame {
 			stillRunning = false;
 
 			repaint();
-			Log.log(Log.TRACE, MODULE, "Ending");
+			Log.log(Log.LEVEL_TRACE, MODULE, "Ending");
 		}
 
 		public void loadPreview(String filename) {
-			Log.log(Log.TRACE, MODULE, "loadPreview " + filename);
+			Log.log(Log.LEVEL_TRACE, MODULE, "loadPreview " + filename);
 
 			iFilename = filename;
 
 			if (!stillRunning) {
 				stillRunning = true;
-				Log.log(Log.TRACE, MODULE, "Calling Start");
+				Log.log(Log.LEVEL_TRACE, MODULE, "Calling Start");
 				new Thread(this).start();
 			}
 		}
@@ -153,7 +153,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			touch(key);
 			super.put(key, value);
 
-			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 			/*if (Runtime.getRuntime().freeMemory() < 2000000)
 			{
 				Log.log(Log.TRACE, MODULE, "Not enough free ram, shrinking...");
@@ -163,7 +163,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 			else */if (previewCacheSize > 0 && touchOrder.size() > previewCacheSize) {
 				shrink();
 			}
-			Log.log(Log.TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
+			Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 
 			return value;
 		}
@@ -184,7 +184,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		}
 
 		public void touch(Object key) {
-			Log.log(Log.TRACE, MODULE, "touch " + key);
+			Log.log(Log.LEVEL_TRACE, MODULE, "touch " + key);
 			int i = touchOrder.indexOf(key);
 
 			if (i != -1) {
@@ -196,7 +196,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 		public void shrink() {
 			if (touchOrder.size() == 0) {
-				Log.log(Log.ERROR, MODULE, "Empty SmartHashtable");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Empty SmartHashtable");
 				//throw new OutOfMemoryError();
 				return;
 			}
@@ -214,7 +214,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 
 			Runtime.getRuntime().gc();
 
-			Log.log(Log.TRACE, MODULE, "Shrunk " + key);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Shrunk " + key);
 		}
 	}
 }

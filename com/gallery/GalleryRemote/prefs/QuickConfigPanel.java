@@ -114,8 +114,8 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, "Could not find configuration file.", grRes.getString(MODULE, "error"), JOptionPane.ERROR_MESSAGE);
-			Log.log(Log.ERROR, MODULE, "Fetching configuration failed");
-			Log.logException( Log.ERROR, MODULE, ex );
+			Log.log(Log.LEVEL_ERROR, MODULE, "Fetching configuration failed");
+			Log.logException( Log.LEVEL_ERROR, MODULE, ex );
 		}
 	}
 

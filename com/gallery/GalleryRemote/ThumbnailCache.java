@@ -79,7 +79,7 @@ public class ThumbnailCache implements Runnable
 				
 				loaded++;
 				
-				Log.log(Log.TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
+				Log.log(Log.LEVEL_TRACE, MODULE, "update progress " + loaded + "/" + (loaded + toLoad.size()));
 				mf.jStatusBar.updateProgressValue(StatusUpdate.LEVEL_CACHE, loaded, loaded + toLoad.size());
 				mf.thumbnailLoadedNotify();
 			}
@@ -98,7 +98,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnailFilename( String filename ) {
-		Log.log(Log.TRACE, MODULE, "preloadThumbnailFilename " + filename);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilename " + filename);
 		
 		if (!thumbnails.containsKey(filename)) {
 			toLoad.add( 0, filename );
@@ -114,7 +114,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filename  path to the file
 	 */
 	public void preloadThumbnailFilenameFirst( String filename ) {
-		Log.log(Log.TRACE, MODULE, "preloadThumbnailFilenameFirst " + filename);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilenameFirst " + filename);
 
 		if (!thumbnails.containsKey(filename)) {
 			toLoad.push( filename );
@@ -130,7 +130,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  files  enumeration of Picture objects that should be loaded
 	 */
 	public void preloadThumbnailPictures( Enumeration files ) {
-		Log.log(Log.TRACE, MODULE, "preloadThumbnailFilename " + files);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilename " + files);
 
 		while ( files.hasMoreElements() ) {
 			String filename = ( (Picture) files.nextElement() ).getSource().getPath();
@@ -150,7 +150,7 @@ public class ThumbnailCache implements Runnable
 	 *@param  filenames  an array of File objects
 	 */
 	public void preloadThumbnailFiles( File[] files ) {
-		Log.log(Log.TRACE, MODULE, "preloadThumbnailPictures " + files);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailPictures " + files);
 
 		for ( int i = 0; i < files.length; i++ ) {
 			String filename = files[i].getPath();
@@ -169,7 +169,7 @@ public class ThumbnailCache implements Runnable
 	 * @param filenames an enumeration of String file names
 	 */
 	public void preloadThumbnailFilenames( Enumeration filenames ) {
-		Log.log(Log.TRACE, MODULE, "preloadThumbnailFilenames " + filenames);
+		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFilenames " + filenames);
 
 		while ( filenames.hasMoreElements() ) {
 			String filename = (String) filenames.nextElement();
@@ -191,7 +191,7 @@ public class ThumbnailCache implements Runnable
 	void rerun() {
 		if ( !stillRunning && GalleryRemote.getInstance().properties.getShowThumbnails() ) {
 			stillRunning = true;
-			Log.log(Log.TRACE, MODULE, "Calling Start");
+			Log.log(Log.LEVEL_TRACE, MODULE, "Calling Start");
 			new Thread( this ).start();
 		}
 	}

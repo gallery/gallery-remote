@@ -68,18 +68,24 @@ public class GalleryRemote {
 			//* /
 			
 			// log system properties
-			new GalleryProperties(System.getProperties()).logProperties(Log.INFO, "SysProps");
-			
+			new GalleryProperties(System.getProperties()).logProperties(Log.LEVEL_INFO, "SysProps");
+
 			// log properties
-			properties.logProperties(Log.TRACE, "UsrProps");
-			
-			mainFrame = new MainFrame();
-			mainFrame.initComponents();
+			properties.logProperties(Log.LEVEL_TRACE, "UsrProps");
+
+			if (!Update.upgrade()) {
+				mainFrame = new MainFrame();
+				mainFrame.initComponents();
+			} else {
+				Log.shutdown();
+				System.exit(0);
+			}
 		}
 		catch ( Exception e ) {
-			Log.logException(Log.CRITICAL, "Startup", e);
+			Log.logException(Log.LEVEL_CRITICAL, "Startup", e);
+			Log.shutdown();
 		}
-		
+
 		Update update = new Update();
 		update.check( true );
 	}

@@ -161,5 +161,13 @@
 		<move file="${install}/GenericUnix/InstallGalleryRemote.bin" tofile="${install}/staging/GalleryRemote.${version}.Unix.NoVM.bin" />
 		<move file="${install}/Java/InstallGalleryRemote.jar" tofile="${install}/staging/GalleryRemote.${version}.jar" />
 	</target>
+
+	<target name="post" description="Posts ChangeLog to menalto.com">
+		<taskdef name="postchangelog"
+			classpath="GalleryRemote.jar"
+			classname="com.gallery.GalleryRemote.util.PostChangeLog" />
+
+		<postchangelog />
+	</target>
 </project>
 

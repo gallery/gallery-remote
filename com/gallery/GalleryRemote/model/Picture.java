@@ -159,8 +159,8 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 				try {
 					picture = ImageUtils.resize( picture.getPath(), d );
 				} catch (UnsupportedOperationException e) {
-					Log.log(Log.ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
-					Log.logException(Log.ERROR, MODULE, e);
+					Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 			}
 		}
@@ -169,8 +169,8 @@ public class Picture extends GalleryAbstractListModel implements Serializable, P
 			try {
 				picture = ImageUtils.rotate( picture.getPath(), angle, flipped, true);
 			} catch (UnsupportedOperationException e) {
-				Log.log(Log.ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
-				Log.logException(Log.ERROR, MODULE, e);
+				Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
 

@@ -88,7 +88,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public String newAlbum( Album a, StatusUpdate su) {
-		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
+		Log.log(Log.LEVEL_INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
 		String newAlbumName = getComm( su ).newAlbum( su, a.getParentAlbum(), a.getName(),
@@ -129,9 +129,9 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			for (Iterator i = oldList.iterator(); i.hasNext(); ) {
 				Album a = (Album) i.next();
 
-				Log.log(Log.TRACE, MODULE, a.toString());
+				Log.log(Log.LEVEL_TRACE, MODULE, a.toString());
 				if (! a.getPicturesVector().isEmpty()) {
-					Log.log(Log.TRACE, MODULE, "Album " + a + " had pictures");
+					Log.log(Log.LEVEL_TRACE, MODULE, "Album " + a + " had pictures");
 					int j = albumList.indexOf(a);
 
 					if (j != -1) {
@@ -370,8 +370,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 					throw new RuntimeException("Unknown type: " + type);
 			}
 		} catch (MalformedURLException e) {
-			Log.log(Log.ERROR, MODULE, "Malformed URL.");
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Malformed URL.");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			JOptionPane.showMessageDialog((JFrame) su, "Malformed URL (" + e.getMessage() + ")",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return null;
@@ -394,8 +394,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 					throw new RuntimeException("Unknown type: " + type);
 			}
 		} catch (MalformedURLException e) {
-			Log.log(Log.ERROR, MODULE, "Malformed URL.");
-			Log.logException(Log.ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Malformed URL.");
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			JOptionPane.showMessageDialog((JFrame) su, "Malformed URL (" + e.getMessage() + ")",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return null;
@@ -494,7 +494,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 			password = p.getBase64Property( PASSWORD + prefsIndex );
 		} catch (NumberFormatException e) {}
 
-		Log.log(Log.INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)" );
+		Log.log(Log.LEVEL_INFO, MODULE, "Loaded saved URL " + prefsIndex + ": " + url + " (" + username + "/******)" );
 
 		Gallery g = new Gallery(su);
 		g.username = username;
@@ -518,7 +518,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public void writeToProperties(PropertiesFile p) {
-		Log.log(Log.TRACE, MODULE, "Wrote to properties: " + toString() );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Wrote to properties: " + toString() );
 
 		p.setProperty(URL + prefsIndex, stUrlString);
 		p.setProperty(USERNAME + prefsIndex, username);
@@ -545,7 +545,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {
-		Log.log(Log.TRACE, MODULE, "Removed from properties: " + n );
+		Log.log(Log.LEVEL_TRACE, MODULE, "Removed from properties: " + n );
 
 		p.remove(URL + n);
 		p.remove(USERNAME + n);
@@ -624,7 +624,7 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 				comm = GalleryComm.getCommInstance(su, url, this);
 
 				if (comm == null) {
-					Log.log(Log.ERROR, MODULE, "No protocol implementation found");
+					Log.log(Log.LEVEL_ERROR, MODULE, "No protocol implementation found");
 					su.error("Gallery Remote can find no protocol implementation at the URL "
 							+ stUrlString.toString() + "\nCheck with a web browser that "
 							+ stUrlString.toString() + "gallery_remote.php is a valid URL");

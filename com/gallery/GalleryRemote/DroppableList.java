@@ -114,7 +114,7 @@ public class DroppableList extends JList
 
 	/* ********* TargetListener ********** */
 	public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
-		Log.log( Log.TRACE, MODULE, "dragEnter - dtde" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "dragEnter - dtde" );
 		if ( isEnabled() ) {
 			dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
 		} else {
@@ -123,11 +123,11 @@ public class DroppableList extends JList
 	}
 
 	public void dragExit( DropTargetEvent dropTargetEvent ) {
-		Log.log( Log.TRACE, MODULE, "dragExit - dtde" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "dragExit - dtde" );
 		
 		if ( ps != null ) {
 			//add pictures back
-			Log.log( Log.INFO, MODULE, "dragging internal selection out..." );
+			Log.log( Log.LEVEL_INFO, MODULE, "dragging internal selection out..." );
 			try {
 				java.util.List fileList = (java.util.List) ps.getTransferData( DataFlavor.javaFileListFlavor );
 				if ( !ps.isEmpty() ) {
@@ -136,7 +136,7 @@ public class DroppableList extends JList
 				//kill dragEvent
 				//need to figure out why MainFrame becomes dropTarget for internal drops??!!
 			} catch ( Exception e ) {
-				Log.log( Log.INFO, MODULE, "coudn't kill drag " + e );
+				Log.log( Log.LEVEL_INFO, MODULE, "coudn't kill drag " + e );
 			}
 		}
 		ps = null;
@@ -170,7 +170,7 @@ public class DroppableList extends JList
 	}
 
 	public synchronized void drop( DropTargetDropEvent dropTargetDropEvent ) {
-		Log.log( Log.TRACE, MODULE, "drop - dtde" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "drop - dtde" );
 		
 		if ( !isEnabled() ) {
 			// for some reason this crappy system doesn't take rejectDrag for an answer
@@ -189,8 +189,8 @@ public class DroppableList extends JList
 				try {
 					fileList = expandDirectories( fileList );
 				} catch ( IOException ioe ) {
-					Log.log( Log.ERROR, MODULE, "i/o exception listing dirs in a drop" );
-					Log.logStack( Log.ERROR, MODULE );
+					Log.log( Log.LEVEL_ERROR, MODULE, "i/o exception listing dirs in a drop" );
+					Log.logStack( Log.LEVEL_ERROR, MODULE );
 					JOptionPane.showMessageDialog(
 							null,
 							grRes.getString(MODULE, "imgError"),
@@ -202,13 +202,13 @@ public class DroppableList extends JList
 				Point dropLocation = dropTargetDropEvent.getLocation();
 				int listIndex = snapIndex( (int) dropLocation.getY() );
 
-				Log.log( Log.TRACE, MODULE, "Adding new image(s) to list at index " + listIndex );
+				Log.log( Log.LEVEL_TRACE, MODULE, "Adding new image(s) to list at index " + listIndex );
 
 				mf.addPictures( (File[]) fileList.toArray( new File[0] ), listIndex );
 
 				dropTargetDropEvent.getDropTargetContext().dropComplete( true );
 			} else {
-				Log.log( Log.TRACE, MODULE, "rejecting drop: javaFileListFlavor is not supported for this data" );
+				Log.log( Log.LEVEL_TRACE, MODULE, "rejecting drop: javaFileListFlavor is not supported for this data" );
 				dropTargetDropEvent.rejectDrop();
 			}
 		} catch ( IOException io ) {
@@ -221,13 +221,13 @@ public class DroppableList extends JList
 	}
 
 	public void dropActionChanged( DropTargetDragEvent dropTargetDragEvent ) {
-		Log.log( Log.TRACE, MODULE, "dropActionChanged - dtde" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "dropActionChanged - dtde" );
 	}
 
 	
 	/* ********* DragSourceListener ********** */
 	public void dragDropEnd( DragSourceDropEvent dragSourceDropEvent ) {
-		Log.log( Log.TRACE, MODULE, "dragDropEnd - dsde" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "dragDropEnd - dsde" );
 	}
 
 	public void dragEnter( DragSourceDragEvent dragSourceDragEvent ) {
@@ -256,7 +256,7 @@ public class DroppableList extends JList
 
 	/* ********* DragGestureListener ********** */
 	public void dragGestureRecognized( DragGestureEvent event ) {
-		Log.log( Log.TRACE, MODULE, "dragGestureRecognized" );
+		Log.log( Log.LEVEL_TRACE, MODULE, "dragGestureRecognized" );
 		int[] selIndices = this.getSelectedIndices();
 		ps = new PictureSelection();
 		for ( int i = 0; i < selIndices.length; i++ ) {
@@ -272,7 +272,7 @@ public class DroppableList extends JList
 			dragSource.startDrag( event, DragSource.DefaultMoveDrop, ps, this );
 			mf.deleteSelectedPictures();
 		} else {
-			Log.log( Log.TRACE, MODULE, "nothing was selected" );
+			Log.log( Log.LEVEL_TRACE, MODULE, "nothing was selected" );
 		}
 
 	}
@@ -311,7 +311,7 @@ public class DroppableList extends JList
 				throw new IOException( "i/o exception listing directory: " + dir.getPath() );
 			} else {
 				/* this method should only be called on a directory */
-				Log.log( Log.CRITICAL, MODULE, "assertion failed: listFilesRecursive called on a non-dir file" );
+				Log.log( Log.LEVEL_CRITICAL, MODULE, "assertion failed: listFilesRecursive called on a non-dir file" );
 				return ret;
 			}
 		}

@@ -1,3 +1,12 @@
+2003-10-09  Pierre-Luc Paour <gallery@paour.com> (1.2-b11)
+
+	* Implemented patching mechanism for LAX file when the classpath
+	  needs to be changed.
+	* Build process can now update Menalto.com with the latest build information
+	  so automated daily builds are automatically propagated. Also now pushing
+	  beta builds to jpmullan.com.
+	* Cosmetic changes to the Log class.
+
 2003-10-06  Amedeo Paglione <apaglione@mac.com> (1.2-b10)
 
 	* Adoption of more generic locale

@@ -127,7 +127,7 @@ public class AboutBox extends JDialog {
             fm = getFontMetrics( getFont() );
             
 			URL imu = getClass().getResource( "/rar_about_gr1.png" );
-			Log.log(Log.TRACE, MODULE, "Looking for splash screen in " + imu.toString());
+			Log.log(Log.LEVEL_TRACE, MODULE, "Looking for splash screen in " + imu.toString());
             image = new ImageIcon( imu );
             
             setBorder( new MatteBorder( 1, 1, 1, 1, Color.gray ) );

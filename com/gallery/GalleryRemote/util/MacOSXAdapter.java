@@ -78,11 +78,11 @@ public class MacOSXAdapter extends ApplicationAdapter {
 				}
 
 			} catch (NoClassDefFoundError e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (ClassNotFoundException e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (Exception e) {
-				Log.log(Log.ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
 				e.printStackTrace();
 			}
 
@@ -102,11 +102,11 @@ public class MacOSXAdapter extends ApplicationAdapter {
 				}
 
 			} catch (NoClassDefFoundError e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (ClassNotFoundException e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (Exception e) {
-				Log.log(Log.ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
 				e.printStackTrace();
 			}
 
@@ -126,11 +126,11 @@ public class MacOSXAdapter extends ApplicationAdapter {
 				ae.setHandled(true);
 
 			} catch (NoClassDefFoundError e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (ClassNotFoundException e) {
-				Log.log(Log.ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
+				Log.log(Log.LEVEL_ERROR, MODULE, "This version of Mac OS X does not support the Apple EAWT.  Application Menu handling has been disabled (" + e + ")");
 			} catch (Exception e) {
-				Log.log(Log.ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Exception while loading the MacOSXAdapter:");
 				e.printStackTrace();
 			}
 
