@@ -1,4 +1,4 @@
-2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (still 1.0-b8)
+2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b9)
 	
 	* NOTE: GR CAN BE RUN IN GR PROTO 2 MODE BY CHANGING THE 
 	  getComm() METHOD IN Gallery.java.  NO GUARANTEES ON HOW WELL
