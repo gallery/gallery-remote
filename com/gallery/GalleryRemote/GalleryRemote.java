@@ -74,9 +74,7 @@ public class GalleryRemote {
 		}
 		
 		Update update = new Update();
-		if ( update.check() ) {
-			update.showNotice();
-		}
+		update.check( true );
 	}
 	
 	public static GalleryRemote getInstance() {

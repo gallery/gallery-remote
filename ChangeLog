@@ -1,8 +1,11 @@
-2002-09-28  Pierre-Luc Paour <gallery@paour.com> (1.0-b7)
+2002-10-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b7)
 	
 	* Added image resize before upload (this requires ImageMagick and can be enabled by 
 		changing the variables resizeTo and resizeBeforeUpload in
 		GalleryRemote.properties.
+	* Added automatic update notification for betas, too. Beta builds will come with
+		this enabled. Release builds will only check for new releases, unless
+		otherwise specified.
 
 2002-09-22  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
 	

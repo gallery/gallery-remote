@@ -40,11 +40,14 @@ import edu.stanford.ejalbert.*;
 
 public class Update extends JFrame implements ActionListener {
 	public final String MODULE = "Update";
-
-	String version = null;
-	Date releaseDate = null;
-	String releaseNotes = null;
-	String releaseUrl = null;
+	
+	public static final int NO_UPDATE = 0;
+	public static final int RELEASE = 1;
+	public static final int BETA = 2;
+	
+	Info release = null;
+	Info beta = null;
+	Info which = null;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JLabel jLabel1 = new JLabel();
@@ -60,37 +63,37 @@ public class Update extends JFrame implements ActionListener {
 	JTextArea jUrl = new JTextArea();
 	JButton jBrowse = new JButton();
 
-	public boolean check() {
-		if ( ! GalleryRemote.getInstance().properties.getBooleanProperty("updateCheck")) {
-			return false;
+	public int check(boolean showImmediate) {
+		int result = 0;
+		
+		if ( GalleryRemote.getInstance().properties.getBooleanProperty("updateCheck")) {
+			release = new Info( GalleryRemote.getInstance().properties.getProperty("updateUrl") );
+			
+			if (release.check()) {
+				result = 1;
+				which = release;
+			}
 		}
 
-		try {
-			URL url = new URL(GalleryRemote.getInstance().properties.getProperty("updateUrl"));
-
-			InputStream content = (InputStream) url.getContent();
-			GalleryProperties props = new GalleryProperties();
-			props.load(content);
-
-			releaseDate = props.getDateProperty("releaseDate");
-			version = props.getProperty("version");
-			releaseNotes = props.getProperty("releaseNotes");
-			releaseUrl = props.getProperty("releaseUrl");
-
-			Date myReleaseDate = GalleryRemote.getInstance().properties.getDateProperty("releaseDate");
-
-			Log.log(Log.TRACE, MODULE, "Local release date: " + myReleaseDate + " new: " + releaseDate);
-
-			return releaseDate.after(myReleaseDate);
-		} catch (Exception e) {
-			Log.log(Log.CRITICAL, MODULE, "Update check failed");
-			Log.logException( Log.ERROR, MODULE, e );
-
-			return true;
+		if ( result == 0 && GalleryRemote.getInstance().properties.getBooleanProperty("updateCheckBeta")) {
+			beta = new Info( GalleryRemote.getInstance().properties.getProperty("updateUrlBeta") );
+			
+			if (beta.check()) {
+				result = 2;
+				which = beta;
+			}
 		}
+		
+		if (showImmediate && which != null) {
+			showNotice();
+		}
+		
+		return result;
 	}
 
 	public void showNotice() {
+		if (which == null) return;
+		
 		try {
 			jbInit();
 
@@ -105,6 +108,42 @@ public class Update extends JFrame implements ActionListener {
 		}
 	}
 
+	class Info {
+		String version = null;
+		Date releaseDate = null;
+		String releaseNotes = null;
+		String releaseUrl = null;
+		String url = null;
+
+		Info(String url) {
+			this.url = url;
+		}
+		
+		boolean check() {
+			try {
+				InputStream content = (InputStream) new URL(url).getContent();
+				GalleryProperties props = new GalleryProperties();
+				props.load(content);
+	
+				releaseDate = props.getDateProperty("releaseDate");
+				version = props.getProperty("version");
+				releaseNotes = props.getProperty("releaseNotes");
+				releaseUrl = props.getProperty("releaseUrl");
+
+				Date myReleaseDate = GalleryRemote.getInstance().properties.getDateProperty("releaseDate");
+				
+				Log.log(Log.TRACE, MODULE, "Local release date: " + myReleaseDate + " new: " + releaseDate);
+				
+				return releaseDate.after(myReleaseDate);
+			} catch (Exception e) {
+				Log.log(Log.CRITICAL, MODULE, "Update check failed");
+				Log.logException( Log.ERROR, MODULE, e );
+				
+				return false;
+			}
+		}
+	}
+	
 	private void jbInit() throws Exception {
 		this.setTitle("Gallery Remote new version");
 		this.getContentPane().setLayout(gridBagLayout1);
@@ -121,7 +160,7 @@ public class Update extends JFrame implements ActionListener {
 		jDate.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jDate.setEditable(false);
 		jDate.setFont(new java.awt.Font("SansSerif", 0, 11));
-		jDate.setText(DateFormat.getDateInstance().format(releaseDate));
+		if (which.releaseDate != null) jDate.setText(DateFormat.getDateInstance().format(which.releaseDate));
 
 		jBrowse.setText("Open in Browser");
 		jBrowse.addActionListener(this);
@@ -130,18 +169,18 @@ public class Update extends JFrame implements ActionListener {
 		jReleaseNotes.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jReleaseNotes.setPreferredSize(new Dimension(520, 250));
 		jReleaseNotes.setMargin(new Insets(0, 3, 3, 3));
-		jReleaseNotes.setText(releaseNotes);
+		if (which.releaseNotes != null) jReleaseNotes.setText(which.releaseNotes);
 
 		jUrl.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jUrl.setEditable(false);
 		jUrl.setFont(new java.awt.Font("SansSerif", 0, 11));
 		jUrl.setForeground(Color.blue);
-		jUrl.setText(releaseUrl);
+		if (which.releaseUrl != null) jUrl.setText(which.releaseUrl);
 
 		jVersion.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jVersion.setEditable(false);
 		jVersion.setFont(new java.awt.Font("SansSerif", 0, 11));
-		jVersion.setText(version);
+		if (which.version != null) jVersion.setText(which.version);
 
 		this.getContentPane().add(jLabel1,       new GridBagConstraints(0, 0, 3, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 15, 0), 0, 0));
@@ -171,7 +210,7 @@ public class Update extends JFrame implements ActionListener {
 
 	public void actionPerformed(ActionEvent ae) {
 		try {
-			BrowserLauncher.openURL(releaseUrl);
+			BrowserLauncher.openURL(which.releaseUrl);
 		} catch (Exception e) {
 			Log.log(Log.CRITICAL, MODULE, "Exception while trying to open browser");
 			Log.logException(Log.CRITICAL, MODULE, e);
