@@ -25,6 +25,9 @@ import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 
+import Acme.JPM.*;
+import Acme.JPM.Filters.*;
+
 import com.gallery.GalleryRemote.model.*;
 
 /**
@@ -59,7 +62,7 @@ public class ThumbnailCache implements Runnable
 	 */
 	public void run() {
 		int loaded = 0;
-		mf.startProgress(0, toLoad.size(), "Loading thumbnails");
+		int pId = mf.startProgress(0, toLoad.size(), "Loading thumbnails");
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while ( !toLoad.isEmpty() ) {
 			String filename = (String) toLoad.pop();
@@ -68,13 +71,13 @@ public class ThumbnailCache implements Runnable
 				loadThumbnail( filename );
 				
 				loaded++;
-				mf.updateProgressValue(loaded, loaded + toLoad.size());
+				mf.updateProgressValue(pId, loaded, loaded + toLoad.size());
 				mf.thumbnailLoadedNotify();
 			}
 		}
 		stillRunning = false;
 		
-		mf.stopProgress("Thumbnails loaded");
+		mf.stopProgress(pId, "Thumbnails loaded");
 
 		//Log.log(Log.TRACE, MODULE, "Ending");
 	}
@@ -161,19 +164,38 @@ public class ThumbnailCache implements Runnable
 	 *@return           Resized icon
 	 */
 	public ImageIcon loadThumbnail( String filename ) {
-		ImageIcon r = new ImageIcon( filename );
-		Dimension d = PreviewFrame.getSizeKeepRatio( new Dimension( r.getIconWidth(), r.getIconHeight() ), GalleryRemote.getInstance().properties.getThumbnailSize() );
-
+		ImageIcon r = null;
 		long start = System.currentTimeMillis();
-		Image scaled = r.getImage().getScaledInstance( d.width, d.height, mf.highQualityThumbnails ? Image.SCALE_SMOOTH : Image.SCALE_FAST );
+		
+		r = new ImageIcon( filename );
+		
+		Image scaled = null;
+		if (true)
+		{
+			Dimension d = PreviewFrame.getSizeKeepRatio(
+				new Dimension( r.getIconWidth(), r.getIconHeight() ),
+				GalleryRemote.getInstance().properties.getThumbnailSize() );
+			scaled = r.getImage().getScaledInstance( d.width, d.height, mf.highQualityThumbnails ? Image.SCALE_SMOOTH : Image.SCALE_FAST );
+		} else {
+			float ratio = PreviewFrame.getRatio(
+				new Dimension( r.getIconWidth(), r.getIconHeight() ),
+				GalleryRemote.getInstance().properties.getThumbnailSize() );
+			scaled = JPMUtils.filterImage(mf, new ScaleCopy(r.getImage().getSource(), ratio));
+		}
+
 		r.getImage().flush();
 		r.setImage( scaled );
 
 		thumbnails.put( filename, r );
-		Log.log(Log.TRACE, MODULE, "Time: " + ( System.currentTimeMillis() - start ) );
+		long time = System.currentTimeMillis() - start;
+		totalTime += time;
+		totalIter++;
+		Log.log(Log.TRACE, MODULE, "Time: " + time + " - Avg: " + (totalTime/totalIter) );
 
 		return r;
 	}
+	long totalTime = 0;
+	int totalIter = 0;
 
 
 	/**
