@@ -88,15 +88,31 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 			StringBuffer overridden = new StringBuffer("<ul>");
 			if (newProps != null) {
 				GalleryProperties props = GalleryRemote.getInstance().properties;
+				boolean newGallery = false;
 
 				Iterator it = newProps.keySet().iterator();
 				while (it.hasNext()) {
 					String key = (String) it.next();
 					String value = newProps.getProperty(key);
 
-					props.setProperty(key, value);
+					if (key.endsWith(".99")) {
+						if (!newGallery) {
+							// add Gallery access settings
 
-					overridden.append("<li>").append(key).append("</li>");
+							Gallery g = Gallery.readFromProperties(newProps, 99, mainFrame, false);
+							if (g != null) {
+								g.setPrefsIndex(mainFrame.galleries.getSize());
+								mainFrame.galleries.addElement(g);
+								newGallery = true;
+
+								overridden.append("<li>").append(g.toString()).append("</li>");
+							}
+						}
+					} else {
+						props.setProperty(key, value);
+
+						overridden.append("<li>").append(key).append("</li>");
+					}
 				}
 
 				overridden.append("</ul>");
@@ -107,7 +123,7 @@ public class QuickConfigPanel extends PreferencePanel implements ActionListener 
 			}
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(this, "Could not find configuration file.", "Error", JOptionPane.ERROR_MESSAGE);
-			Log.log(Log.CRITICAL, MODULE, "Fetching configuration failed");
+			Log.log(Log.ERROR, MODULE, "Fetching configuration failed");
 			Log.logException( Log.ERROR, MODULE, ex );
 		}
 	}
