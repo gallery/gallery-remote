@@ -55,6 +55,7 @@ th {
     <th>Name</th>
     <th>Priority</th>
     <th>Status</th>
+    <th>Version</th>
     <th>Who</th>
     <th>Description</th>
     <th>Comments</th>
@@ -63,6 +64,7 @@ th {
     <td>Main UI</td>
     <td>P1</td>
     <td>90%</td>
+    <td>1.0</td>
     <td>paour</td>
     <td>The main UI needs to be rewritten using Layouts, in order to allow more 
       flexibility.</td>
@@ -72,6 +74,7 @@ th {
     <td>Preferences</td>
     <td>P2</td>
     <td>80%</td>
+    <td>1.1</td>
     <td>paour</td>
     <td>A preferences dialog, that allows users to set most or all the preferences 
       that are exposed in the properties files, and create/edit Gallery connection 
@@ -84,6 +87,7 @@ th {
     <td>Inspector</td>
     <td>P2</td>
     <td>60%</td>
+    <td>1.0</td>
     <td><p>paour</p></td>
     <td>In the UI, have an inspector pane for each Picture, that can display full 
       filename, file size, thumbnail, caption, order ID, resize/rotate buttons, 
@@ -95,6 +99,7 @@ th {
     <td>Create album</td>
     <td>P2</td>
     <td>100%</td>
+    <td>1.0</td>
     <td>&nbsp;</td>
     <td><p>Provide UI to create albums on server.</p>
       <p>Option to create albums before existing albums, or after.</p></td>
@@ -105,6 +110,7 @@ th {
     <td>Upload Picture captions</td>
     <td>P2</td>
     <td>100%</td>
+    <td>1.0</td>
     <td>tim</td>
     <td>When a picture is uploaded, also upload a caption.</td>
     <td>Needs protocol upgrade</td>
@@ -113,6 +119,7 @@ th {
     <td>Pre-upload resize</td>
     <td>P2</td>
     <td>100%</td>
+    <td>1.0</td>
     <td>paour</td>
     <td>Pictures can be resized on the client, thus minimizing the bandwidth necessary 
       for the upload.</td>
@@ -120,10 +127,22 @@ th {
       may need to use an external app. It may be worth investigating the plug-in 
       mechanism in G2 for resizing.</td>
   </tr>
+  <tr valign="top">
+    <td>Fetch only writeable albums</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>1.1</td>
+    <td>paour</td>
+    <td>Display only writeable albums (and albums that contain albums that are 
+      writeable) in the combo-box.</td>
+    <td>Needs protocol upgrade to optimize network traffic. Could be a client-side 
+      only solution too...</td>
+  </tr>
   <tr valign="top"> 
     <td>Reorder album</td>
     <td>P3</td>
     <td>50%</td>
+    <td>1.2</td>
     <td>dolan</td>
     <td><p>Drag-and-drop (intra-list) reordering of album, whether before uploading, 
         or an existing album.</p>
@@ -137,6 +156,7 @@ th {
     <td>Download Album</td>
     <td>P3</td>
     <td>0%</td>
+    <td>1.2</td>
     <td>&nbsp;</td>
     <td>In order to support reordering existing albums, we need to be able to 
       download albums from the server, including order, thumbnails and captions.</td>
@@ -146,6 +166,7 @@ th {
     <td>Upload Album order</td>
     <td>P3</td>
     <td>0%</td>
+    <td>1.2</td>
     <td>&nbsp;</td>
     <td>Upload updated order for album. Would be nice to do it in such a way that 
       we don't need to lock the album while the user is editing the album order.</td>
@@ -155,6 +176,7 @@ th {
     <td>Multi-album upload</td>
     <td>P3</td>
     <td>100%</td>
+    <td>1.0</td>
     <td>paour</td>
     <td>Allow pictures to be uploaded to different albums within one session. 
       This can be done without a protocol upgrade, and is slightly different than 
@@ -165,6 +187,7 @@ th {
     <td>Pre-upload rotate</td>
     <td>P3</td>
     <td>0%</td>
+    <td>1.1</td>
     <td>paour</td>
     <td>Pictures can be rotated on the client.</td>
     <td>This can probably be done in Java, since it's not resource-intensive (only 
@@ -174,6 +197,7 @@ th {
     <td>Proxy support</td>
     <td>P3</td>
     <td>0%</td>
+    <td>1.1</td>
     <td>paour</td>
     <td>Allow setting up and using a proxy to access to Gallery.</td>
     <td>&nbsp;</td>
@@ -182,14 +206,16 @@ th {
     <td>SSL support</td>
     <td>P3</td>
     <td>0%</td>
+    <td>1.1</td>
     <td>&nbsp;</td>
     <td>Allow using SSL/https to access Gallery.</td>
     <td>&nbsp;</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>Watermarking</td>
     <td>P3</td>
     <td>10%</td>
+    <td>1.2</td>
     <td>paour</td>
     <td>Allow watermarking operations using ImageMagick. Also arbitrary IM operations.</td>
     <td>&nbsp;</td>
@@ -198,6 +224,7 @@ th {
     <td>Explorer UI</td>
     <td>P4</td>
     <td>0%</td>
+    <td>1.2</td>
     <td>&nbsp;</td>
     <td>In the long run, I want to use a Windows Explorer-like UI, with albums 
       on the right, and their contents on the left.</td>
@@ -207,6 +234,7 @@ th {
     <td>XML serialization</td>
     <td>P4</td>
     <td>100%</td>
+    <td>1.1</td>
     <td>paour</td>
     <td>Album objects need to be able to serialize themselves, so batch uploads 
       can be considered</td>
@@ -217,6 +245,7 @@ th {
     <td>Batch uploading</td>
     <td>P4</td>
     <td>0%</td>
+    <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>Allow pictures to be uploaded using command-line tools, all in one go, 
       using saved files (XML) containing the upload parameters.</td>
@@ -229,6 +258,7 @@ th {
     <td>Shutdown after upload</td>
     <td>P4</td>
     <td>0%</td>
+    <td>&nbsp;</td>
     <td>&nbsp;</td>
     <td>Optionally shutdown the machine after upload is complete.</td>
     <td>Architecture-dependant.</td>
@@ -304,6 +334,15 @@ th {
     <td>Expose and interface to allow creating albums remotely.</td>
     <td>Does this mean we also need to handle album security setting, or just 
       that we only use the default settings?</td>
+  </tr>
+  <tr valign="top">
+    <td>Fetch only writeable albums</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>paour</td>
+    <td>Only send to the client albums that are writeable by the user, and albums 
+      where at least one decendent is writeable.</td>
+    <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
     <td>Album download</td>
