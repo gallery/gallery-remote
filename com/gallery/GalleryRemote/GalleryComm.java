@@ -40,7 +40,7 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void uploadFiles( StatusUpdate su );
+	public void uploadFiles( StatusUpdate su, boolean async );
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the albums contained by
@@ -48,7 +48,7 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void fetchAlbums( StatusUpdate su );
+	public void fetchAlbums( StatusUpdate su, boolean async );
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the album properties
@@ -56,7 +56,7 @@ public interface GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a );
+	public void albumInfo( StatusUpdate su, Album a, boolean async );
 	
 	/**
 	 *	Causes the GalleryComm instance to fetch the album properties

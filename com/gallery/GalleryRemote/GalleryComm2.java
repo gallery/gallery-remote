@@ -71,8 +71,16 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	
 	/**
 	 *	The process ID for StatusUpdate.  XXX: What's -1? -- tim
+	 *	-1 is an initialization value. means no id.
 	 */
 	int pId = -1;
+	
+	/**
+	 *  The minor revision of the server (2.x)
+	 *	Use this to decide whether some functionality
+	 *	should be disabled (because the server would not understand.
+	 */
+	protected int serverMinorVersion = 0;
 	
 	
 	/* -------------------------------------------------------------------------
@@ -80,8 +88,9 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	 */ 
 	
 	static {
-		/* Configures HTTPClient to accept all cookies */
-		/* XXX: Why should this be static? -- tim */
+		/* Configures HTTPClient to accept all cookies
+		 * this should be done at least once per GalleryRemote
+		 * invokation */
 		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
 			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
 				return true;
@@ -119,9 +128,8 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void uploadFiles( StatusUpdate su ) {
-		Thread t = new Thread( new UploadTask( su ) );
-		t.start();
+	public void uploadFiles( StatusUpdate su, boolean async ) {
+		doTask( new UploadTask( su ), async );
 	}
 	
 	/**
@@ -130,9 +138,8 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void fetchAlbums( StatusUpdate su ) {
-		Thread t = new Thread( new AlbumListTask( su ) );
-		t.start();
+	public void fetchAlbums( StatusUpdate su, boolean async ) {
+		doTask( new AlbumListTask( su ), async );
 	}
 	
 	/**
@@ -141,9 +148,8 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a ) {
-		Thread t = new Thread( new AlbumPropertiesTask( su, a ) );
-		t.start();
+	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
+		doTask( new AlbumPropertiesTask( su, a ), async );
 	}
 	
 	/**
@@ -160,6 +166,15 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 	/* -------------------------------------------------------------------------
 	 * UTILITY METHODS
 	 */ 
+	void doTask( GalleryTask task, boolean async ) {
+		if ( async ) {
+			Thread t = new Thread( task );
+			t.start();
+		} else {
+			task.run();
+		}
+	}
+	
 	void status( StatusUpdate su, String message) {
 		Log.log(Log.INFO, MODULE, message);
 		if (pId != -1) {
@@ -301,6 +316,16 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 				Properties p = requestResponse( form_data );
 				if ( p.getProperty( "status" ).equals( GR_STAT_SUCCESS ) ) {
 					status(su, "Logged in");
+					try {
+						String serverVersion = p.getProperty( "server_version" );
+						int i = serverVersion.indexOf( "." );
+						serverMinorVersion = Integer.parseInt( serverVersion.substring( i+1 ) );
+						
+						Log.log(Log.TRACE, MODULE, "Server minor version: " + serverMinorVersion);
+					} catch (Exception e) {
+						Log.log( Log.ERROR, MODULE, "Malformed server_version: " + p.getProperty( "server_version" ) );
+						Log.logException(Log.ERROR, MODULE, e);
+					}
 					return true;
 				} else {
 					error(su, "Login Error: " + p.getProperty( "status_text" ));
@@ -563,19 +588,19 @@ public class GalleryComm2 implements GalleryComm, GalleryComm2Consts {
 			StatusUpdate su = new StatusUpdateAdapter(){};
 			Gallery g = new Gallery( new URL( "http://www.deathcult.com/gallery/" ), "ted", "1qwe2asd", /*TEMPORARY*/ su );
 			GalleryComm2 gc = new GalleryComm2( g );
-			gc.fetchAlbums( su );
+			gc.fetchAlbums( su, false );
 			
-			try { Thread.sleep( 10000 ); } catch ( InterruptedException ie ) {}
+			//try { Thread.sleep( 10000 ); } catch ( InterruptedException ie ) {}
 			
 			ArrayList albumList = g.getAlbumList();
 			System.err.println( "albumList size = " + albumList.size() );
 			for ( int i = 0; i < albumList.size(); i++ ) {
 				Album a = (Album)albumList.get( i );
-				a.getAlbumProperties( su );
-				try { Thread.sleep( 500 ); } catch ( InterruptedException ie ) {}
+				a.fetchAlbumProperties( su );
+				//try { Thread.sleep( 500 ); } catch ( InterruptedException ie ) {}
 			}
 			
-			try { Thread.sleep( 10000 ); } catch ( InterruptedException ie ) {}
+			//try { Thread.sleep( 10000 ); } catch ( InterruptedException ie ) {}
 			
 			ArrayList albumList2 = g.getAlbumList();
 			System.err.println( "albumList2 size = " + albumList2.size() );

@@ -69,14 +69,21 @@ public class GalleryComm1 implements GalleryComm {
 		this.g = g;
 	}
 	
-	public void uploadFiles( StatusUpdate su ) {
-		Thread t = new Thread(new UploadTask());
-		t.start();
+	void doTask(GalleryTask task, boolean async) {
+		if (async) {
+			Thread t = new Thread(task);
+			t.start();
+		} else {
+			task.run();
+		}
+	}
+	
+	public void uploadFiles( StatusUpdate su, boolean async ) {
+		 doTask(new UploadTask(), async);
 	}
 
-	public void fetchAlbums( StatusUpdate su ) {
-		Thread t = new Thread(new AlbumListTask());
-		t.start();
+	public void fetchAlbums( StatusUpdate su, boolean async ) {
+		doTask(new AlbumListTask(), async);
 	}
 	
 	/**
@@ -85,7 +92,7 @@ public class GalleryComm1 implements GalleryComm {
 	 *	
 	 *	@param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo( StatusUpdate su, Album a ) {
+	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
 		/* TEMPORARY */	
 		throw new RuntimeException( "This method is not implemented yet" );
 	}
