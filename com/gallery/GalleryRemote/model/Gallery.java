@@ -59,6 +59,8 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 	public static final int TYPE_STANDALONE = 0;
 	public static final int TYPE_POSTNUKE = 1;
 
+	public static final int TOSTRING_MAXLEN = 40;
+
 	public Gallery(StatusUpdate su) {
 		this.su = su;
 
@@ -500,6 +502,10 @@ public class Gallery extends GalleryAbstractListModel implements ComboBoxModel, 
 
 		if (tmp == null) {
 			tmp = "http://";
+		}
+
+		if (tmp.length() > TOSTRING_MAXLEN) {
+			tmp = tmp.substring(0, TOSTRING_MAXLEN) + "...";
 		}
 
 		return tmp;

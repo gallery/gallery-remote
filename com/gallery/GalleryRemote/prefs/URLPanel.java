@@ -62,6 +62,8 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		gridLayout1.setColumns(1);
 		jDetails.setMinimumSize(new Dimension(0, 50));
 		jDetails.setPreferredSize(new Dimension(0, 50));
+		jDetails.setHorizontalAlignment(SwingConstants.LEFT);
+		jDetails.setVerticalAlignment(SwingConstants.TOP);
 		this.add(jScrollPane1,    new GridBagConstraints(0, 0, 1, 3, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jModify,    new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
