@@ -127,16 +127,26 @@ th {
       may need to use an external app. It may be worth investigating the plug-in 
       mechanism in G2 for resizing.</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>Fetch only writeable albums</td>
     <td>P3</td>
-    <td>0%</td>
+    <td>100%</td>
     <td>1.1</td>
     <td>paour</td>
     <td>Display only writeable albums (and albums that contain albums that are 
       writeable) in the combo-box.</td>
     <td>Needs protocol upgrade to optimize network traffic. Could be a client-side 
       only solution too...</td>
+  </tr>
+  <tr valign="top">
+    <td>Picture inspector: extra fields</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>1.2 (maybe 1.1)</td>
+    <td>paour</td>
+    <td>Display in the Picture Inspector text fields so extra fields can be set 
+      for each picture, in addition to Caption.</td>
+    <td>Needs protocol upgrade</td>
   </tr>
   <tr valign="top"> 
     <td>Reorder album</td>
@@ -335,13 +345,23 @@ th {
     <td>Does this mean we also need to handle album security setting, or just 
       that we only use the default settings?</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>Fetch only writeable albums</td>
     <td>P3</td>
-    <td>0%</td>
+    <td>100%</td>
     <td>paour</td>
     <td>Only send to the client albums that are writeable by the user, and albums 
       where at least one decendent is writeable.</td>
+    <td>The order is that of the creation of albums. Clients have to resort according 
+      to containment, for example.</td>
+  </tr>
+  <tr valign="top">
+    <td>Album: get extra fields; Picture upload: set extra fields</td>
+    <td>P3</td>
+    <td>0%</td>
+    <td>paour</td>
+    <td>In the album fetching, get the extra fields list. In the Picture upload, 
+      allow uploading extra field values.</td>
     <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
