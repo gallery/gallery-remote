@@ -1,5 +1,5 @@
 /*
- * @(#)RedirectionModule.java				0.3-3 06/05/2001
+ * @(#)RedirectionModule.java				0.3-3E 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschalär
@@ -41,7 +41,7 @@ import java.util.Hashtable;
  * This module handles the redirection status codes 301, 302, 303, 305, 306
  * and 307.
  *
- * @version	0.3-3  06/05/2001
+ * @version	0.3-3E  06/05/2001
  * @author	Ronald Tschalär
  */
 class RedirectionModule implements HTTPClientModule
@@ -162,6 +162,7 @@ class RedirectionModule implements HTTPClientModule
 				    "exception '" + e + "'");
 		}
 
+		con.setSSLSocketFactory(req.getConnection().getSSLSocketFactory());
 		con.setContext(req.getConnection().getContext());
 		req.setConnection(con);
 		return REQ_NEWCON_RST;
@@ -296,6 +297,7 @@ class RedirectionModule implements HTTPClientModule
 					     req.getConnection().getHost(),
 					     req.getConnection().getPort());
 		    mvd.setCurrentProxy(loc.getHost(), loc.getPort());
+		    mvd.setSSLSocketFactory(req.getConnection().getSSLSocketFactory());
 		    mvd.setContext(req.getConnection().getContext());
 		    new_con = true;
 
@@ -347,6 +349,7 @@ class RedirectionModule implements HTTPClientModule
 			    nres = loc.toExternalForm();
 			}
 
+			mvd.setSSLSocketFactory(req.getConnection().getSSLSocketFactory());
 			mvd.setContext(req.getConnection().getContext());
 			new_con = true;
 		    }

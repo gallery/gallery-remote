@@ -1,0 +1,58 @@
+
+This is a set of patches for the HTTPClient V0.3-3 to enable https using
+any SSL package which implements the latest javax.net.ssl interface
+defined by Sun. One implementation of this interface can be found in
+JSSE from Sun themselves. Note: the SSL implementation in HotJava 1.1.5
+and some versions of the JavaWebServer implements an older version of
+this interface - there is a different patch for those available.
+
+This package contains the modified sources and the resulting class
+files. Save a copy of the original files in the HTTPClient distribution,
+and then copy these files into there. When running your application make
+sure to include the neccessary jar file(s) in your CLASSPATH.
+
+IMPORTANT: When installing JSSE, make sure you follow all the steps! In
+particular, don't forget to configure the provider in java.security. If
+you don't have access to the java.security file, then add the following
+line to the beginning of your app:
+
+  java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+
+
+NOTE 1:
+    If you get a
+
+	java.net.SocketException: SSL implementation not available
+
+    then that means you haven't configured the JSSE provider correctly -
+    see above, and see the INSTALL.txt doc in the JSSE kit for details
+    on how to register the provider. If you've registered the provider
+    and still get this, then you've probably not got your classpath
+    correctly pointing to the JSSE jars.
+
+NOTE 2:
+    If you get a
+
+	javax.net.ssl.SSLPeerUnverifiedException: peer not authenticated
+
+    then that means that either the server's certificate was not
+    considered legal for some reason (validity expired, unknown critical
+    extensions, etc) or, more likely, the issuer is not trusted. To fix
+    the second case, add the issuer's certificate (or the server's
+    certificate) to the list of trusted certs (the cacerts or
+    jssecacerts file - see the JSSE docs for more info).
+
+http://www.infy.com/knowledge_capital/thought-papers/usingHTTPwith_java.pdf
+
+Comments:
+---------
+
+Mail suggestions, comments, bugs, enhancement-requests to:
+
+ronald@innovation.ch
+
+
+  Have fun,
+
+  Ronald
+

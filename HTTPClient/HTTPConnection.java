@@ -1,5 +1,5 @@
 /*
- * @(#)HTTPConnection.java				0.3-3 06/05/2001
+ * @(#)HTTPConnection.java				0.3-3E 06/05/2001
  *
  *  This file is part of the HTTPClient package
  *  Copyright (C) 1996-2001 Ronald Tschalär
@@ -48,6 +48,10 @@ import java.net.NoRouteToHostException;
 import java.util.Vector;
 import java.applet.Applet;
 
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.security.cert.X509Certificate;
 
 /**
  * This class implements http protocol requests; it contains most of HTTP/1.1
@@ -191,13 +195,13 @@ import java.applet.Applet;
  * <li> Trace ( file [, headers ] )
  * </ul>
  *
- * @version	0.3-3  06/05/2001
+ * @version	0.3-3E  06/05/2001
  * @author	Ronald Tschalär
  */
 public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstants
 {
     /** The current version of this package. */
-    public final static String   version = "RPT-HTTPClient/0.3-3";
+    public final static String   version = "RPT-HTTPClient/0.3-3E";
 
     /** The default context */
     private final static Object  dflt_context = new Object();
@@ -314,6 +318,13 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
     /** controls whether modules are allowed to interact with user */
     private boolean              allowUI;
+
+    /** JSSE's default socket factory */
+    private static SSLSocketFactory defaultSSLFactory =
+	(SSLSocketFactory) SSLSocketFactory.getDefault();
+
+    /** JSSE's socket factory */
+    private SSLSocketFactory     sslFactory;
 
 
     static
@@ -580,8 +591,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     {
 	prot = prot.trim().toLowerCase();
 
-	//if (!prot.equals("http")  &&  !prot.equals("https"))
-	if (!prot.equals("http"))
+	if (!prot.equals("http")  &&  !prot.equals("https"))
 	    throw new ProtocolNotSuppException("Unsupported protocol '" + prot + "'");
 
 	if (prot.equals("http"))
@@ -648,6 +658,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	allowUI      = defaultAllowUI;
 	if (noKeepAlives)
 	    setDefaultHeaders(new NVPair[] { new NVPair("Connection", "close") });
+	sslFactory   = defaultSSLFactory;
     }
 
 
@@ -1416,6 +1427,47 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	    demux.abort();
     }
 
+    /**
+     * Set the SSL socket factory for this connection. If not set, uses the
+     * default factory.
+     *
+     * @param sslFactory the SSL socket factory
+     */
+    public static void setDefaultSSLSocketFactory(SSLSocketFactory sslFactory)
+    {
+	defaultSSLFactory = sslFactory;
+    }
+
+    /**
+     * Set the current SSL socket factory for this connection.
+     *
+     * @return the current SSL socket factory
+     */
+    public static SSLSocketFactory getDefaultSSLSocketFactory()
+    {
+	return defaultSSLFactory;
+    }
+
+    /**
+     * Set the SSL socket factory for this connection. If not set, uses the
+     * default factory.
+     *
+     * @param sslFactory the SSL socket factory
+     */
+    public void setSSLSocketFactory(SSLSocketFactory sslFactory)
+    {
+	this.sslFactory = sslFactory;
+    }
+
+    /**
+     * Set the current SSL socket factory for this connection.
+     *
+     * @return the current SSL socket factory
+     */
+    public SSLSocketFactory getSSLSocketFactory()
+    {
+	return sslFactory;
+    }
 
     /**
      * Sets the default http headers to be sent with each request. The
@@ -2892,8 +2944,10 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 			    sock = sarr[0];
 			}
 
-			sock.setSoTimeout(con_timeout);
-			//sock = new SSLSocket(sock);
+                        sock.setSoTimeout(con_timeout);
+			sock = sslFactory.createSocket(sock, Host, Port, true);
+			checkCert(((SSLSocket) sock).getSession().
+					getPeerCertificateChain()[0], Host);
 		    }
 
 		    input_demux = new StreamDemultiplexor(Protocol, sock, this);
@@ -3231,6 +3285,29 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
 	    sock[0] = getSocket(timeout);
 	}
+    }
+
+    /**
+     * Check whether the name in the certificate matches the host
+     * we're talking to.
+     */
+    private static void checkCert(X509Certificate cert, String host)
+	    throws IOException
+    {
+	String name;
+	try
+	{
+	    name = ((sun.security.x509.X500Name) cert.getSubjectDN()).
+			getCommonName().toLowerCase();
+	}
+	catch (Throwable t)
+	    { return; } 	// Oh well, can't check the name in that case
+
+	if (Util.wildcardMatch(name, host))
+	    return;
+
+	throw new SSLException("Name in certificate `" + name + "' does not " +
+			       "match host name `" + host + "'");
     }
 
 
