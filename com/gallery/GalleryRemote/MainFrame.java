@@ -31,6 +31,7 @@ import java.util.*;
 import HTTPClient.*;
 import java.io.*;
 import java.net.URL;
+import javax.swing.Timer;
 
 public class MainFrame extends javax.swing.JFrame {
 
