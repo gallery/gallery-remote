@@ -39,7 +39,6 @@ public class GalleryRemote {
     private GalleryRemote() {
         defaults = new PropertiesFile("defaults");
         properties = new PropertiesFile(defaults, "remote");
-        System.out.println(defaults);
     }
     
     private void run() {
@@ -59,7 +58,7 @@ public class GalleryRemote {
             mainFrame.initComponents();
         }
         catch ( Exception e ) {
-            e.printStackTrace();
+			Log.logException(Log.CRITICAL, "Startup", e);
         }
     }
     
