@@ -52,7 +52,6 @@
 		<zip destfile="gallery_remote.zip">
 			<fileset dir="." includes="defaults.properties" />
 			<fileset dir="." includes="ChangeLog" />
-			<fileset dir="." includes="default.gif" />
 			<fileset dir="." includes="GalleryRemote.jar" />
 			<fileset dir="." includes="ReadMe.html" />
 			<zipfileset dir="./lib" includes="JSX1.0.7.4.jar" prefix="lib"/>
