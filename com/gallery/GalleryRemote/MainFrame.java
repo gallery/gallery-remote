@@ -247,6 +247,28 @@ public class MainFrame extends javax.swing.JFrame
 		picturesList.setEnabled( enabled );
 		album.setEnabled( enabled );
 		
+		// change image displayed
+		int sel = picturesList.getSelectedIndex();
+		if (mAlbum != null && mAlbum.getSize() < 1) {
+			// if album was just emptied, it takes a while for the pictureList
+			// to notice...
+			sel = -1;
+		}
+		
+		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
+			if ( sel != -1 ) {
+				String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
+				previewFrame.displayFile( filename );
+			} else {
+				previewFrame.displayFile( null );
+			}
+
+			if ( !previewFrame.isVisible() ) {
+				previewFrame.setVisible( true );
+			}
+		}
+		
+		// status
 		if ( mAlbum == null) {
 			pictureInspector.setPictures( (Object[]) null );
 
@@ -254,7 +276,6 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( mAlbum.sizePictures() > 0 ) {
 			pictureInspector.setPictures( picturesList.getSelectedValues() );
 
-			int sel = picturesList.getSelectedIndex();
 			int selN = picturesList.getSelectedIndices().length;
 
 			if ( sel == -1 ) {
@@ -841,18 +862,9 @@ public class MainFrame extends javax.swing.JFrame
 
 		int sel = picturesList.getSelectedIndex();
 
-		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
-			if ( sel != -1 ) {
-				String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
-				previewFrame.displayFile( filename );
-				thumbnailCache.preloadThumbnailFirst( filename );
-			} else {
-				previewFrame.displayFile( null );
-			}
-
-			if ( !previewFrame.isVisible() ) {
-				previewFrame.setVisible( true );
-			}
+		if ( sel != -1 ) {
+			String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
+			thumbnailCache.preloadThumbnailFirst( filename );
 		}
 
 		resetUIState();
