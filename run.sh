@@ -1,3 +1,3 @@
-export CLASSPATH=.:build
 
-java com.gallery.GalleryRemote.GalleryRemote
+java -classpath build com.gallery.GalleryRemote.GalleryRemote
+

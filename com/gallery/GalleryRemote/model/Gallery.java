@@ -84,8 +84,14 @@ public class Gallery implements ComboBoxModel
 	}
 	
 	public void newAlbum( Album a, StatusUpdate su) {
-		// TIM: Go crazy
 		Log.log(Log.INFO, MODULE, "Creating new album " + a.toString());
+
+		// create album synchronously
+		getComm().newAlbum( su, a.getParentAlbum(), a.getName(),
+			a.getTitle(), a.getCaption(), false );
+		
+		// refresh album list asynchronously
+		fetchAlbums( su );
 	}
 	
 	/**

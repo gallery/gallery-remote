@@ -26,7 +26,7 @@ package com.gallery.GalleryRemote;
  *	Gallery Remote protocol.
  *	
  *	@author	<a href="mailto:tim_miller@users.sourceforge.net">Tim Miller</a>
- *	@version  $id$
+ *	@version  $Id$
  */
 public interface GalleryComm2Consts {
 	
@@ -92,4 +92,24 @@ public interface GalleryComm2Consts {
 	 * either the username or password (or both) in the request.
 	 */
 	public static final String GR_STAT_UNKNOWN_CMD = "301";
+	
+	/**
+	 * The user does not have permission to add an item to the gallery.
+	 */
+	public static final String GR_STAT_NO_ADD_PERMISSION = "401";
+
+	/**
+	 * No filename was specified. 
+	 */
+	public static final String GR_STAT_NO_FILENAME = "402";
+
+	/**
+	 * The file was received, but could not be processed or added to the album. 
+	 */
+	public static final String GR_STAT_UPLOAD_PHOTO_FAIL = "403";
+
+	/**
+	 * The file was received, but could not be processed or added to the album. 
+	 */
+	public static final String GR_STAT_NO_CREATE_ALBUM_PERMISSION = "403";
 }

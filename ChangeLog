@@ -1,3 +1,8 @@
+2002-11-02 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b12)
+	
+	* Added support for the "new-album" command to GalleryComm2.
+	* Corrected a small path problem in ImageUtils.
+
 2002-10-28  Pierre-Luc Paour <gallery@paour.com> (1.0-b11)
 	
 	* Added client UI support for creating new albums.

@@ -207,7 +207,7 @@ public class ImageUtils {
 	}
 	
 	static {
-		tmpDir = new File(System.getProperty("java.io.tmpdir") + "thumbs");
+		tmpDir = new File(System.getProperty("java.io.tmpdir"), "thumbs");
 		
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();

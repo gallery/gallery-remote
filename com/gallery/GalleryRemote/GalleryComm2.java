@@ -122,7 +122,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		 *	protocol is, we'll be able to add more capabilities, such as
 		 *	CAPA_NEW_ALBUM (since 2.1) */
 		capabilities = new int[] { CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO/*, CAPA_NEW_ALBUM */ };
+			CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM };
 		Arrays.sort(capabilities);
 	}
 	
@@ -159,6 +159,21 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	public void albumInfo( StatusUpdate su, Album a, boolean async ) {
 		doTask( new AlbumPropertiesTask( su, a ), async );
+	}
+	
+	/**
+	 *	Causes the GalleryComm instance to create a new album as a child of
+	 *	the specified album (or at the root if album is null)
+	 *	
+	 *	@param su an instance that implements the StatusUpdate interface.
+	 *	@param a if null, create the album in the root of the gallery; otherwise
+	 *				create as a child of the given album
+	 */
+	public void newAlbum( StatusUpdate su, Album parentAlbum,
+			String newAlbumName, String newAlbumTitle,
+			String newAlbumDesc, boolean async ) {
+		doTask( new NewAlbumTask( su, parentAlbum, newAlbumName,
+			newAlbumTitle, newAlbumDesc ), async );
 	}
 	
 	/**
@@ -486,9 +501,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						a.setCanDeleteFrom( isTrue( p.getProperty( permsDelItemKey ) ) );
 						a.setCanDeleteThisAlbum( isTrue( p.getProperty( permsDelAlbKey ) ) );
 						a.setCanCreateSubAlbum( isTrue( p.getProperty( permsCreateSubKey ) ) );
-	
-						a.setName( URLDecoder.decode( p.getProperty( nameKey ) ) );
-						a.setTitle( URLDecoder.decode( p.getProperty( titleKey ) ) );
+						
+						a.setName( p.getProperty( nameKey ) );
+						a.setTitle( p.getProperty( titleKey ) );
 						
 						a.setGallery( g );
 						g.addAlbum( a );
@@ -569,6 +584,62 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					
 					status(su, "Fetched album properties.");
 					
+				} else {
+					error(su, "Error: " + p.getProperty( "status_text" ));
+				}
+				
+			} catch ( GR2Exception gr2e ) {
+				Log.logException(Log.ERROR, MODULE, gr2e );
+				error(su, "Error: " + gr2e.getMessage());
+			} catch (IOException ioe) {
+				Log.logException(Log.ERROR, MODULE, ioe);
+				error(su, "Error: " + ioe.toString());
+			} catch (ModuleException me) {
+				Log.logException(Log.ERROR, MODULE, me);
+				error(su, "Error: " + me.toString());
+			}
+		}
+	}
+	
+	/**
+	 *	An extension of GalleryTask to handle creating a new album.
+	 */
+	class NewAlbumTask extends GalleryTask {
+		Album parentAlbum;
+		String albumName;
+		String albumTitle;
+		String albumDesc;
+		
+		NewAlbumTask( StatusUpdate su, Album parentAlbum, String albumName,
+				String albumTitle, String albumDesc ) {
+			super(su);
+			this.parentAlbum = parentAlbum;
+			this.albumName = albumName;
+			this.albumTitle = albumTitle;
+			this.albumDesc = albumDesc;
+		}
+		
+		void runTask() {
+			status(su, "Getting album information from " + g.toString());
+			
+			String parentAlbumName = (parentAlbum == null) ? "" : parentAlbum.getName();
+			
+			try {
+				// setup the protocol parameters
+				NVPair form_data[] = {
+					new NVPair("cmd", "new-album"),
+					new NVPair("protocol_version", PROTOCOL_VERSION ),
+					new NVPair("set_albumName", parentAlbumName ),
+					new NVPair("newAlbumName", albumName ),
+					new NVPair("newAlbumTitle", albumTitle ),
+					new NVPair("newAlbumDesc", albumDesc )
+				};
+				Log.log(Log.TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
+				
+				// load and validate the response
+				Properties p = requestResponse( form_data );
+				if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
+					status(su, "Create album successful.");
 				} else {
 					error(su, "Error: " + p.getProperty( "status_text" ));
 				}
