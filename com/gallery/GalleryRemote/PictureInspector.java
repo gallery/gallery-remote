@@ -36,19 +36,23 @@ import com.gallery.GalleryRemote.model.*;
 public class PictureInspector extends JPanel
 {
 	GridBagLayout gridBagLayout4 = new GridBagLayout();
-	JLabel inspIcon = new JLabel();
+	JLabel icon = new JLabel();
 	JLabel jLabel5 = new JLabel();
-	JLabel inspPath = new JLabel();
+	JLabel path = new JLabel();
 	JLabel jLabel6 = new JLabel();
-	JLabel inspAlbum = new JLabel();
+	JLabel album = new JLabel();
 	JLabel Caption = new JLabel();
 	JLabel jLabel4 = new JLabel();
-	JLabel inspCaption = new JLabel();
 	JButton up = new JButton();
 	JLabel jLabel8 = new JLabel();
 	JButton down = new JButton();
 	JPanel spacer = new JPanel();
-
+	JLabel jLabel1 = new JLabel();
+	JLabel size = new JLabel();
+	JTextField caption = new JTextField();
+	
+	MainFrame mf = null;
+	Picture p = null;
 
 	/**
 	 *  Constructor for the PictureInspector object
@@ -65,45 +69,71 @@ public class PictureInspector extends JPanel
 	private void jbInit()
 		throws Exception {
 		setLayout( gridBagLayout4 );
-		inspIcon.setHorizontalAlignment( SwingConstants.CENTER );
-		inspIcon.setHorizontalTextPosition( SwingConstants.CENTER );
-		inspIcon.setText( "icon" );
-		inspIcon.setVerticalTextPosition( SwingConstants.BOTTOM );
+		icon.setHorizontalAlignment( SwingConstants.CENTER );
+		icon.setHorizontalTextPosition( SwingConstants.CENTER );
+		icon.setText( "icon" );
+		icon.setVerticalTextPosition( SwingConstants.BOTTOM );
 		jLabel5.setText( "Path:" );
-		inspPath.setText( "path" );
+		path.setText( "path" );
 		jLabel6.setText( "Album:" );
-		inspAlbum.setText( "album" );
+		album.setText( "album" );
 		jLabel4.setText( "Caption:" );
-		inspCaption.setText( "caption" );
 		up.setMinimumSize( new Dimension( 89, 23 ) );
 		up.setPreferredSize( new Dimension( 89, 23 ) );
 		up.setText( "Move up" );
 		jLabel8.setText( "Move:" );
 		down.setText( "Move down" );
-		add( inspIcon, new GridBagConstraints( 0, 0, 2, 1, 1.0, 0.0
+		jLabel1.setText( "Size:" );
+		size.setText( "size" );
+		caption.setFont( new java.awt.Font( "SansSerif", 0, 11 ) );
+		caption.setBorder( null );
+		caption.setEditable( false );
+		caption.setText( "caption" );
+		add( icon, new GridBagConstraints( 0, 0, 2, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 		add( jLabel5, new GridBagConstraints( 0, 1, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( inspPath, new GridBagConstraints( 1, 1, 1, 1, 1.0, 0.0
+		add( path, new GridBagConstraints( 1, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
 		add( jLabel6, new GridBagConstraints( 0, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( inspAlbum, new GridBagConstraints( 1, 2, 1, 1, 1.0, 0.0
+		add( album, new GridBagConstraints( 1, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( Caption, new GridBagConstraints( 0, 4, 1, 1, 0.0, 0.0
+		add( Caption, new GridBagConstraints( 0, 5, 1, 1, 0.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel4, new GridBagConstraints( 0, 3, 1, 1, 0.0, 0.0
-				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( inspCaption, new GridBagConstraints( 1, 3, 1, 1, 1.0, 0.0
-				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( up, new GridBagConstraints( 1, 5, 1, 1, 0.0, 0.0
+		add( jLabel4, new GridBagConstraints( 0, 4, 1, 1, 0.0, 0.0
+				, GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
+		add( up, new GridBagConstraints( 1, 6, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( jLabel8, new GridBagConstraints( 0, 5, 1, 1, 0.0, 0.0
+		add( jLabel8, new GridBagConstraints( 0, 6, 1, 2, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
-		add( down, new GridBagConstraints( 1, 6, 1, 1, 0.0, 0.0
+		add( down, new GridBagConstraints( 1, 7, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		add( spacer, new GridBagConstraints( 0, 7, 2, 1, 1.0, 1.0
+		add( spacer, new GridBagConstraints( 0, 8, 2, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+		this.add( jLabel1, new GridBagConstraints( 0, 3, 1, 1, 0.0, 0.0
+				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 2, 0 ) );
+		this.add( size, new GridBagConstraints( 1, 3, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+		this.add( caption, new GridBagConstraints( 1, 4, 1, 1, 1.0, 0.0
+				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+	}
+	
+	public void setMainFrame(MainFrame mf)
+	{
+		this.mf = mf;
+	}
+	
+	public void setPicture(Picture p)
+	{
+		this.p = p;
+		
+		icon.setText(p.getSource().getName());
+		icon.setIcon(mf.getThumbnail(p));
+		path.setText(p.getSource().getParent());
+		album.setText(p.getAlbum().getName());
+		caption.setText(p.getCaption());
+		size.setText(String.valueOf(p.getFileSize()));
 	}
 }
 

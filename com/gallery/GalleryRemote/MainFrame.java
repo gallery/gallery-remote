@@ -75,7 +75,7 @@ public class MainFrame extends javax.swing.JFrame
 	JComboBox album = new JComboBox();
 	JButton fetch = new JButton();
 	JSplitPane inspectorDivider = new JSplitPane();
-	JPanel jPanel2 = new PictureInspector();
+	PictureInspector pictureInspector = new PictureInspector();
 	JPanel jPanel3 = new JPanel();
 	GridLayout gridLayout1 = new GridLayout();
 	JButton upload = new JButton();
@@ -134,6 +134,8 @@ public class MainFrame extends javax.swing.JFrame
 		picturesList.setModel( mAlbum );
 		picturesList.setCellRenderer( new FileCellRenderer() );
 		( (DroppableList) picturesList ).setMainFrame( this );
+		
+		pictureInspector.setMainFrame(this);
 
 		previewFrame.initComponents();
 
@@ -158,7 +160,7 @@ public class MainFrame extends javax.swing.JFrame
 	/**
 	 *  Close the window when the close box is clicked
 	 *
-	 *@param  e  Description of Parameter
+	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
 		GalleryRemote.getInstance().properties.setProperty("url.1", (String) url.getSelectedItem());
@@ -294,59 +296,6 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	/**
-	 *  Implementation of the ListSelectionListener
-	 *
-	 *@param  e  Description of Parameter
-	 */
-	public void valueChanged( ListSelectionEvent e ) {
-		int sel = picturesList.getSelectedIndex();
-
-		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
-			if ( sel != -1 ) {
-				String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
-				previewFrame.displayFile( filename );
-				thumbnailCache.preloadThumbnailFirst( filename );
-			} else {
-				previewFrame.displayFile( null );
-			}
-
-			if ( !previewFrame.isVisible() ) {
-				previewFrame.setVisible( true );
-			}
-		}
-
-		delete.setEnabled( sel != -1 );
-
-		int selN = picturesList.getSelectedIndices().length;
-		//jButtonUp.setEnabled( selN == 1 );
-		//jButtonDown.setEnabled( selN == 1 );
-	}
-
-
-	/**
-	 *  Listen for key events
-	 *
-	 *@param  e  Description of Parameter
-	 */
-	public void jListKeyPressed( KeyEvent e ) {
-		int vKey = e.getKeyCode();
-
-		switch ( vKey ) {
-			case KeyEvent.VK_DELETE:
-			case KeyEvent.VK_BACK_SPACE:
-				deleteSelectedPictures();
-				break;
-			case KeyEvent.VK_LEFT:
-				movePictureUp();
-				break;
-			case KeyEvent.VK_RIGHT:
-				movePictureDown();
-				break;
-		}
-	}
-
-
-	/**
 	 *  Fetch Albums from server and update UI
 	 */
 	public void fetchAlbums() {
@@ -456,7 +405,6 @@ public class MainFrame extends javax.swing.JFrame
 	 *
 	 *@param  filename  Description of Parameter
 	 *@return           The thumbnail value
-	 *@since
 	 */
 	public ImageIcon getThumbnail( String filename ) {
 		if ( filename == null ) {
@@ -470,6 +418,17 @@ public class MainFrame extends javax.swing.JFrame
 		}
 
 		return r;
+	}
+
+
+	/**
+	 *  Get a thumbnail from the thumbnail cache
+	 *
+	 *@param  p		picture whose thumbnail is to be fetched
+	 *@return           The thumbnail value
+	 */
+	public ImageIcon getThumbnail( Picture p ) {
+		return getThumbnail(p.getSource().getPath());
 	}
 
 
@@ -566,7 +525,7 @@ public class MainFrame extends javax.swing.JFrame
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
 		this.getContentPane().add( inspectorDivider, new GridBagConstraints( 0, 1, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 2, 2, 2 ), 0, 0 ) );
-		inspectorDivider.add( jPanel2, JSplitPane.RIGHT );
+		inspectorDivider.add( pictureInspector, JSplitPane.RIGHT );
 		inspectorDivider.add( picturesList, JSplitPane.LEFT );
 		this.getContentPane().add( jPanel3, new GridBagConstraints( 0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 5, 5, 5, 5 ), 0, 0 ) );
@@ -613,13 +572,13 @@ public class MainFrame extends javax.swing.JFrame
 					thisWindowClosing( e );
 				}
 			} );
-		previewFrame.addWindowListener(
+		/*previewFrame.addWindowListener(
 			new java.awt.event.WindowAdapter()
 			{
 				public void windowClosing( java.awt.event.WindowEvent e ) {
 					setShowPreview( false );
 				}
-			} );
+			} );*/
 		picturesList.addKeyListener(
 			new KeyAdapter()
 			{
@@ -679,6 +638,61 @@ public class MainFrame extends javax.swing.JFrame
 
 
 	/**
+	 *  Implementation of the ListSelectionListener
+	 *
+	 *@param  e  ListSelection event
+	 */
+	public void valueChanged( ListSelectionEvent e ) {
+		int sel = picturesList.getSelectedIndex();
+
+		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
+			if ( sel != -1 ) {
+				String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
+				previewFrame.displayFile( filename );
+				thumbnailCache.preloadThumbnailFirst( filename );
+			} else {
+				previewFrame.displayFile( null );
+			}
+
+			if ( !previewFrame.isVisible() ) {
+				previewFrame.setVisible( true );
+			}
+		}
+		
+		pictureInspector.setPicture((Picture) picturesList.getSelectedValue());
+
+		delete.setEnabled( sel != -1 );
+
+		int selN = picturesList.getSelectedIndices().length;
+		//jButtonUp.setEnabled( selN == 1 );
+		//jButtonDown.setEnabled( selN == 1 );
+	}
+
+
+	/**
+	 *  Listen for key events
+	 *
+	 *@param  e  Key event
+	 */
+	public void jListKeyPressed( KeyEvent e ) {
+		int vKey = e.getKeyCode();
+
+		switch ( vKey ) {
+			case KeyEvent.VK_DELETE:
+			case KeyEvent.VK_BACK_SPACE:
+				deleteSelectedPictures();
+				break;
+			case KeyEvent.VK_LEFT:
+				movePictureUp();
+				break;
+			case KeyEvent.VK_RIGHT:
+				movePictureDown();
+				break;
+		}
+	}
+
+
+	/**
 	 *  Cell renderer
 	 *
 	 *@author     paour
@@ -707,7 +721,7 @@ public class MainFrame extends javax.swing.JFrame
 			File f = p.getSource();
 
 			if ( GalleryRemote.getInstance().properties.getShowThumbnails() ) {
-				ImageIcon icon = getThumbnail( f.getPath() );
+				ImageIcon icon = getThumbnail( p );
 				setIcon( icon );
 				setIconTextGap( 4 + GalleryRemote.getInstance().properties.getThumbnailSize().width - icon.getIconWidth() );
 			}
