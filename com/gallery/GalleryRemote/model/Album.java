@@ -22,6 +22,7 @@ package com.gallery.GalleryRemote.model;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.ExifImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.NaturalOrderComparator;
@@ -328,8 +329,9 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	private void addPictureInternal(int index, Picture p) {
 		// handle EXIF
-		if (GalleryRemote._().properties.getBooleanProperty(EXIF_AUTOROTATE)) {
-			ImageUtils.AngleFlip af = ImageUtils.getExifTargetOrientation(p.getSource().getPath());
+		if (GalleryRemote._().properties.getBooleanProperty(EXIF_AUTOROTATE)
+				&& p.getExifData() != null) {
+			ImageUtils.AngleFlip af = p.getExifData().getTargetOrientation();
 
 			if (af != null) {
 				p.setFlipped(af.flip);
@@ -349,6 +351,44 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		Collections.sort(pictures, new NaturalOrderComparator());
 		fireContentsChanged(this, 0, pictures.size() - 1);
 	}
+
+    /**
+     * Sorts pictures based on the EXIF Date Created.  If no
+     * date, then fall to the bottom.
+     */
+    public void sortPicturesCreated() {
+        Collections.sort(pictures, new Comparator() {
+
+            public int compare(Object o1, Object o2) {
+				Date d1 = null, d2 = null;
+
+                Picture p1 = (Picture) o1;
+                Picture p2 = (Picture) o2;
+
+				if (p1.getExifData() != null) {
+                	d1 = p1.getExifData().getCreationDate();
+				}
+				if (p2.getExifData() != null) {
+                	d2 = p2.getExifData().getCreationDate();
+				}
+
+                if (d1 != null && d2 == null) {
+                    return 1;
+                }
+                
+                if (d1 == null && d2 != null) {
+                    return -1;
+                }
+                
+                if (d1 == null && d2 == null) {
+                    return 0;
+                }
+                
+                return d1.compareTo(d2);
+            }
+        });
+        fireContentsChanged(this, 0, pictures.size() - 1);
+    }
 
 	public void sortSubAlbums() {
 		if (children != null) {
@@ -931,5 +971,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	transient protected EventListenerList listenerList = new EventListenerList();
+
 }
 

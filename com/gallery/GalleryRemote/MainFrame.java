@@ -53,7 +53,6 @@ import java.applet.Applet;
  *
  * @author jackodog
  * @author paour
- * @created August 16, 2002
  */
 public class MainFrame extends JFrame
 		implements ActionListener, ItemListener, ListSelectionListener,
@@ -112,6 +111,9 @@ public class MainFrame extends JFrame
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
 	JButton jSortButton = new JButton();
+    JPopupMenu jSortPopup = new JPopupMenu();
+    JMenuItem jSortFilename = new JMenuItem();
+    JMenuItem jSortExifCreation = new JMenuItem();
 	JButton jNewAlbumButton = new JButton();
 
 	JMenu jMenuFile = new JMenu();
@@ -202,12 +204,6 @@ public class MainFrame extends JFrame
 		}*/
 	}
 
-
-	/**
-	 * Initialize the graphical components
-	 *
-	 * @throws Exception Description of Exception
-	 */
 	public void startup() {
 		try {
 			jbInit();
@@ -693,12 +689,18 @@ public class MainFrame extends JFrame
 	/**
 	 * Sort the files alphabetically
 	 */
-	public void sortPictures() {
+	public void sortPicturesFilename() {
 		getCurrentAlbum().sortPicturesAlphabetically();
 
 		// We've been modified, we are now dirty.
 		setDirtyFlag(true);
 	}
+    
+    public void sortPicturesExifCreation() {
+        getCurrentAlbum().sortPicturesCreated();
+        
+        setDirtyFlag(true);
+    }
 
 
 	/**
@@ -923,7 +925,9 @@ public class MainFrame extends JFrame
 		jSortButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
 		jSortButton.setActionCommand("Sort");
 		jSortButton.setToolTipText(GRI18n.getString(MODULE, "sortBtnTip"));
-		jGalleryCombo.setActionCommand("Url");
+        jSortButton.setIcon(UIManager.getIcon("MenuItem.arrowIcon"));
+        jSortButton.setHorizontalTextPosition(SwingConstants.LEADING);
+        jGalleryCombo.setActionCommand("Url");
 		jGalleryCombo.setToolTipText(GRI18n.getString(MODULE, "gllryCombo"));
 
 		jMenuFile.setText(GRI18n.getString(MODULE, "menuFile"));
@@ -1088,6 +1092,14 @@ public class MainFrame extends JFrame
 		}
 
 		setJMenuBar(jMenuBar1);
+
+        jSortFilename.setText(GRI18n.getString(MODULE, "sort.filename"));
+        jSortFilename.setActionCommand("SortFilename");
+        jSortExifCreation.setText(GRI18n.getString(MODULE, "sort.exifcreation"));
+        jSortExifCreation.setActionCommand("SortExifCreation");
+
+        jSortPopup.add(jSortFilename);
+        jSortPopup.add(jSortExifCreation);
 	}//}}}
 
 	private void setupKeyboardHandling(JComponent c) {
@@ -1116,6 +1128,9 @@ public class MainFrame extends JFrame
 		jMenuItemCut.addActionListener(this);
 		jMenuItemCopy.addActionListener(this);
 		jMenuItemPaste.addActionListener(this);
+
+        jSortFilename.addActionListener(this);
+        jSortExifCreation.addActionListener(this);
 
 		jCheckBoxMenuThumbnails.addItemListener(this);
 		jCheckBoxMenuPreview.addItemListener(this);
@@ -1214,11 +1229,12 @@ public class MainFrame extends JFrame
 		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 		//Log.log(Log.TRACE, MODULE, "        event " + e );
 
-		String MRUFileName = null;
+        // todo: save
+		/*String MRUFileName = null;
 		if (command.startsWith("File.MRU.")) {
 			MRUFileName = command.substring("File.MRU.".length());
 			command = "File.Open";
-		}
+		}*/
 
 		if (command.equals("File.Quit")) {
 			thisWindowClosing(null);
@@ -1296,8 +1312,12 @@ public class MainFrame extends JFrame
 			browseAddPictures();
 		} else if (command.equals("Upload")) {
 			uploadPictures();
-		} else if (command.equals("Sort")) {
-			sortPictures();
+        } else if (command.equals("Sort")) {
+            jSortPopup.show(jSortButton, 0, jSortButton.getHeight());
+        } else if (command.equals("SortFilename")) {
+            sortPicturesFilename();
+        } else if (command.equals("SortExifCreation")) {
+            sortPicturesExifCreation();
 		} else if (command.equals("NewGallery")) {
 			showPreferencesDialog(URLPanel.class.getName());
 		} else {

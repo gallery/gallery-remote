@@ -68,6 +68,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	transient double fileSize = 0;
 	transient int indexCache = -1;
 	transient Dimension dimension = null;
+	transient ExifData exif = null;
 
 	/**
 	 * Constructor for the Picture object
@@ -140,29 +141,13 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			}
 
 			setCaption(filename);
-		} else if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT)) {
-			setCaption(ImageUtils.getMetadataCaptionString(source.getPath()));
+		} else if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT)
+				&& getExifData() != null && getExifData().getCaption() != null) {
+			setCaption(getExifData().getCaption());
 		}
 
 		fileSize = 0;
 	}
-
-
-	/**
-	 * Sets the caption attribute of the Picture object
-	 * 
-	 * @param caption The new caption value
-	 */
-
-
-	/**
-	 * Sets the album this Picture is inside of
-	 * 
-	 * @param album The new album value
-	 */
-	/*public void setAlbum(Album album) {
-		this.album = album;
-	}*/
 
 
 	/**
@@ -569,6 +554,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		}
 
 		return dimension;
+	}
+
+	public ExifData getExifData() {
+		if (exif == null && ImageUtils.isExifAvailable()) {
+			exif = ImageUtils.getExifData(source.getPath());
+		}
+
+		return exif;
 	}
 }
 

@@ -22,6 +22,7 @@ package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.model.Picture;
+import com.gallery.GalleryRemote.model.ExifData;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
@@ -41,9 +42,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 
 import HTTPClient.TransferListener;
@@ -978,27 +977,55 @@ public class ImageUtils {
 	}
 
 
-	public static String getMetadataCaptionString(String filename) {
+	public static ExifData getExifData(String filename) {
 		try {
 			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
-			Method m = c.getMethod("getMetadataCaptionString", new Class[]{String.class});
-			return (String) m.invoke(null, new Object[]{filename});
+			Method m = c.getMethod("getExifData", new Class[]{String.class});
+			return (ExifData) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
 			return null;
 		}
 	}
 
-	public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
-		try {
-			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
-			Method m = c.getMethod("getExifTargetOrientation", new Class[]{String.class});
-			return (AngleFlip) m.invoke(null, new Object[]{filename});
-		} catch (Throwable e) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
-			return null;
+    /*public static ImageUtils.AngleFlip getExifTargetOrientation(String filename) {
+        try {
+            Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+            Method m = c.getMethod("getExifTargetOrientation", new Class[]{String.class});
+            return (AngleFlip) m.invoke(null, new Object[]{filename});
+        } catch (Throwable e) {
+            Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
+            return null;
+        }
+    }
+
+    public static Date getExifDateCreated(String filename) {
+        try {
+            Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+            Method m = c.getMethod("getExifDateCreated", new Class[]{String.class});
+            return (Date) m.invoke(null, new Object[]{filename});
+        } catch (Throwable e) {
+            Log.log(Log.LEVEL_TRACE, MODULE, "Exif library is not installed.");
+            return null;
+        }
+    }*/
+
+    static Boolean exifAvailable = null;
+    public static boolean isExifAvailable() {
+        if (exifAvailable == null) {
+            try {
+                Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+                Method m = c.getMethod("getExifData", new Class[]{String.class});
+                exifAvailable = Boolean.TRUE;
+            } catch (Throwable e) {
+                Log.log(Log.LEVEL_ERROR, MODULE, "Exif library is not installed.");
+				//Log.logException(Log.LEVEL_ERROR, MODULE, e);
+                exifAvailable = Boolean.FALSE;
+            }
 		}
-	}
+
+		return exifAvailable.booleanValue();
+    }
 
 	/* ********* Utilities ********** */
 	public static List expandDirectories(List filesAndFolders)

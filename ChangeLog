@@ -1,3 +1,10 @@
+2004-09-08  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b4)
+
+	* Redesigned the EXIF manipulation to make it more easily
+	  extensible and faster.
+	* Added the ability to sort pictures in an album by
+	  EXIF creation date (based on a patch by Seth Ladd).
+
 2004-09-07  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b3)
 
 	* Removed File menu on mac: it's empty...
