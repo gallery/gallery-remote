@@ -44,9 +44,6 @@ public class GeneralPanel extends PreferencePanel {
 		return icon;
 	}
 
-	public void buildUI() {
-	}
-
 	public void readProperties(GalleryProperties props) {
 		showThumbnails.setSelected(props.getBooleanProperty("showThumbnails"));
 		thumbnailWidth.setText("" + (int) props.getDimensionProperty("thumbnailSize").getWidth());
@@ -69,23 +66,18 @@ public class GeneralPanel extends PreferencePanel {
 			Log.log(Log.ERROR, MODULE, "Thumbnail size should be integer numbers");
 		}
 
-		savePasswords.setSelected(props.getBooleanProperty("savePasswords"));
-		logLevel.setSelectedIndex(props.getIntProperty("logLevel"));
+		props.setBooleanProperty("savePasswords", savePasswords.isSelected());
+		props.setIntProperty("logLevel", logLevel.getSelectedIndex());
 
-		updateCheck.setSelected(props.getBooleanProperty("updateCheck"));
-		updateCheckBeta.setSelected(props.getBooleanProperty("updateCheckBeta"));
+		props.setBooleanProperty("updateCheck", updateCheck.isSelected());
+		props.setBooleanProperty("updateCheckBeta", updateCheckBeta.isSelected());
 	}
 
-	public GeneralPanel() {
-		try {
-			jbInit();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
+	public void buildUI() {
+		jbInit();
 	}
 
-	private void jbInit() throws Exception {
+	private void jbInit() {
 		this.setLayout(gridBagLayout1);
 		jLabel1.setText("Thumbnail size");
 		jPanel1.setLayout(gridBagLayout4);
