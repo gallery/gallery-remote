@@ -1,5 +1,7 @@
 package com.gallery.GalleryRemote.util;
 
+import com.gallery.GalleryRemote.GalleryRemote;
+
 import java.awt.*;
 
 /**
@@ -40,6 +42,12 @@ public class DialogUtil {
 
 	public static void maxSize(Window window) {
 		Rectangle sr = window.getGraphicsConfiguration().getBounds();
+		if (GalleryRemote.IS_MAC_OS_X) {
+			// leave room for the menu bar
+			sr.y += 22;
+			sr.height -= 22;
+		}
+
 		window.setBounds(sr);
 	}
 

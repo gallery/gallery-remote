@@ -44,25 +44,33 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		ignoreIMFailure = true;
 	}
 
-	public void show() {
+	public void showSlideshow() {
 		try {
-			// Java 1.4 only
-			/*GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+			if (GalleryRemote.IS_MAC_OS_X) {
+				// on the Mac, using a maximized window doesn't take care of the menu bar
 
-			if (! gd.isFullScreenSupported()) {
-			throw new NoSuchMethodError();
+				// Java 1.4 only
+				GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+
+				if (! gd.isFullScreenSupported()) {
+					throw new NoSuchMethodError();
+				}
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Switching to full-screen mode");
+				DialogUtil.maxSize(this);
+				setVisible(true);
+
+				// unfortunately, this doesn't work on Mac 1.4.2...
+				// gd.setFullScreenWindow(this);
+			} else {
+				DialogUtil.maxSize(this);
+				//setBounds(600, 100, 500, 500);
+				setVisible(true);
 			}
-
-			Log.log(Log.LEVEL_TRACE, MODULE, "Switching to full-screen mode");
-			gd.setFullScreenWindow(this);*/
-
-			DialogUtil.maxSize(this);
-			//setBounds(600, 100, 500, 500);
-			super.show();
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
-			super.show();
+			setVisible(true);
 		}
 
 		// todo: this is a hack to prevent painting problems (the status bar paints

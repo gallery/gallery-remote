@@ -102,7 +102,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 			slideshowFrame = new SlideshowFrame();
 		}
 
-		slideshowFrame.setVisible(true);
+		slideshowFrame.showSlideshow();
 		slideshowFrame.start(getCurrentAlbum().getPicturesList());
 
 		// null slideshowFrame so that next time the user clicks the button

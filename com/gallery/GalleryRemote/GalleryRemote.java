@@ -175,7 +175,7 @@ public abstract class GalleryRemote {
 		System.setProperty("apple.awt.brushMetalLook", "true");
 
 		// todo: this should not remain this way
-		System.setProperty("apple.awt.fakefullscreen", "true");
+		//System.setProperty("apple.awt.fakefullscreen", "true");
 	}
 
 	public void createProperties() {

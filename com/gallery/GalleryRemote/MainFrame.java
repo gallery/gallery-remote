@@ -772,7 +772,7 @@ public class MainFrame extends JFrame
 
 	public void slideshow() {
 		SlideshowFrame sf = new SlideshowFrame();
-		sf.setVisible(true);
+		sf.showSlideshow();
 		sf.start(getCurrentAlbum().getPicturesList());
 	}
 
