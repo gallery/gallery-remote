@@ -313,9 +313,9 @@ public class MainFrame extends javax.swing.JFrame
 					&& currentGallery.getUsername() != null
 					&& currentGallery.hasComm()
 					&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
-					jLoginButton.setText(grRes.getString("Log_out"));
+					jLoginButton.setText(grRes.getString(MODULE, "Log_out"));
 				} else {
-					jLoginButton.setText(grRes.getString("Log_in"));
+					jLoginButton.setText(grRes.getString(MODULE, "Log_in"));
 				}
 
 				// if the selected album is uploading, disable everything
@@ -352,7 +352,7 @@ public class MainFrame extends javax.swing.JFrame
 				if ( getCurrentAlbum() == null) {
 					jPictureInspector.setPictures( null );
 
-					jStatusBar.setStatus(grRes.getString("notLogged") );
+					jStatusBar.setStatus(grRes.getString(MODULE, "notLogged") );
 				} else if ( getCurrentAlbum().sizePictures() > 0 ) {
 					jPictureInspector.setPictures( jPicturesList.getSelectedValues() );
 
@@ -363,7 +363,7 @@ public class MainFrame extends javax.swing.JFrame
                                         new Integer((int)(getCurrentAlbum().getPictureFileSize() / 1024))};
 
 					if ( sel == -1 ) {
-						jStatusBar.setStatus(grRes.getString("statusBarNoSel", params ));
+						jStatusBar.setStatus(grRes.getString(MODULE, "statusBarNoSel", params ));
 					} else {
 						jStatusBar.setStatus("Selected " + selN + ((selN == 1)?" picture / ":" pictures / ")
 						+ NumberFormat.getInstance().format(
@@ -692,8 +692,8 @@ public class MainFrame extends javax.swing.JFrame
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		this.getContentPane().setLayout( new GridBagLayout() );
 		jPanel1.setLayout( new GridBagLayout() );
-		jLabel1.setText( grRes.getString("Gallery_URL") );
-		jLabel7.setText( grRes.getString("Select_Album") );
+		jLabel1.setText( grRes.getString(MODULE, "Gallery_URL") );
+		jLabel7.setText( grRes.getString(MODULE, "Select_Album") );
 		jLoginButton.setText( "Log in" );
 		jLoginButton.setToolTipText("Connect or disconnect from the selected Gallery. " +
 				"You can be connected to more than one Gallery simultaneously.");
