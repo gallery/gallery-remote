@@ -161,7 +161,7 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jPnLoginUrl.setText(gallery.getPnLoginUrlString());
 	}
 
-	public void readUIState() throws MalformedURLException {
+	public void readUIState() {
 		gallery.setUsername(jUsername.getText());
 		gallery.setPassword(jPassword.getText());
 		gallery.setType(jType.getSelectedIndex());
@@ -176,13 +176,9 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		Log.log(Log.INFO, MODULE, "Command selected " + cmd);
 
 		if (cmd.equals("OK")) {
-			try {
-				readUIState();
-				isOK = true;
-				setVisible(false);
-			} catch (MalformedURLException mue) {
-				JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
-			}
+			readUIState();
+			isOK = true;
+			setVisible(false);
 		} else if (cmd.equals("Cancel")) {
 			setVisible(false);
 		} else if (cmd.equals("comboBoxChanged")) {
