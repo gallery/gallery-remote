@@ -56,6 +56,7 @@ public class MainFrame extends javax.swing.JFrame
 	private ArrayList mAlbumList;
 	private boolean mInProgress = false;
 	private javax.swing.Timer mTimer;
+	private boolean progressOn = false;
 
 	public final static String DEFAULT_IMAGE = "default.gif";
 
@@ -226,13 +227,64 @@ public class MainFrame extends javax.swing.JFrame
 	}
 
 
-	private void setStatus( String message ) {
-		status.setText( message );
+	public void setStatus( String message ) {
+		if (! progressOn) {
+			// prevent progress message from being overriden
+			status.setText( message );
+		} else {
+			Log.log(Log.ERROR, MODULE, "Trying to override progress with status");
+			Log.logStack(Log.ERROR, MODULE);
+		}
 	}
 
 
-	private void setProgress( int value ) {
-		progress.setValue( value );
+	public void startProgress( int min, int max, String message) {
+		progressOn = true;
+		
+		progress.setMinimum(min);
+		progress.setValue(min);
+		progress.setMaximum(max);
+		//progress.setStringPainted( true );
+		
+		status.setText(message + "...");
+	}
+	
+	public void updateProgressValue( int value ) {
+		if (progressOn) {
+			progress.setValue( value );
+		} else {
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn");
+			Log.logStack(Log.TRACE, MODULE);
+		}
+	}
+	
+	public void updateProgressValue( int value, int maxValue ) {
+		if (progressOn) {
+			progress.setValue( value );
+			progress.setMaximum( maxValue );
+		} else {
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressValue when not progressOn");
+			Log.logStack(Log.TRACE, MODULE);
+		}
+	}
+	
+	public void updateProgressStatus( String message ) {
+		if (progressOn) {
+			status.setText( message );
+		} else {
+			Log.log(Log.TRACE, MODULE, "Trying to use updateProgressStatus when not progressOn");
+			Log.logStack(Log.TRACE, MODULE);
+		}
+	}
+	
+	public void stopProgress( String message )
+	{
+		progressOn = false;
+		
+		//progress.setStringPainted( false );
+		progress.setValue(progress.getMinimum());
+		
+		status.setText(message);
 	}
 
 
@@ -298,21 +350,19 @@ public class MainFrame extends javax.swing.JFrame
 
 		mInProgress = true;
 		updateUI();
-
-		progress.setMaximum( mAlbum.sizePictures() );
-		progress.setStringPainted( true );
+		
+		startProgress(0, mAlbum.sizePictures(), "Uploading pictures");
 
 		mTimer = new javax.swing.Timer( ONE_SECOND,
 			new ActionListener()
 			{
 				public void actionPerformed( ActionEvent evt ) {
-					setProgress( mGalleryComm.getUploadedCount() );
-					setStatus( mGalleryComm.getStatus() );
+					updateProgressValue( mGalleryComm.getUploadedCount() );
+					updateProgressStatus( mGalleryComm.getStatus() );
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
-						setProgress( progress.getMinimum() );
-						progress.setStringPainted( false );
+						stopProgress( "Upload finished" );
 						mAlbum.clearPictures();
 						mInProgress = false;
 						picturesList.enable();
@@ -339,6 +389,8 @@ public class MainFrame extends javax.swing.JFrame
 
 		mInProgress = true;
 		updateUI();
+		
+		startProgress(0, 0, "Fetching albums");
 
 		mTimer = new javax.swing.Timer( ONE_SECOND,
 			new ActionListener()
@@ -348,6 +400,8 @@ public class MainFrame extends javax.swing.JFrame
 					if ( mGalleryComm.done() ) {
 						mTimer.stop();
 
+						stopProgress("Fetch finished");
+						
 						mAlbumList = mGalleryComm.getAlbumList();
 						mInProgress = false;
 						updateAlbumCombo();
@@ -513,13 +567,11 @@ public class MainFrame extends javax.swing.JFrame
 		browse.setActionCommand( "Browse" );
 		url.setNextFocusableComponent( username );
 		url.setEditable( true );
-		progress.setMaximumSize( new Dimension( 32767, 18 ) );
 		progress.setMinimumSize( new Dimension( 10, 18 ) );
 		progress.setPreferredSize( new Dimension( 150, 18 ) );
 		progress.setStringPainted( false );
 		gridLayout1.setHgap( 5 );
 		status.setBorder( BorderFactory.createBevelBorder( BevelBorder.LOWERED, Color.white, SystemColor.control, SystemColor.control, Color.gray ) );
-		status.setMaximumSize( new Dimension( 32767, 18 ) );
 		status.setMinimumSize( new Dimension( 100, 18 ) );
 		status.setPreferredSize( new Dimension( 38, 18 ) );
 		jPanel4.setLayout( gridBagLayout3 );
