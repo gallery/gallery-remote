@@ -78,6 +78,7 @@ public class MainFrame extends javax.swing.JFrame
 	JLabel jLabel7 = new JLabel();
 	JComboBox album = new JComboBox();
 	JButton fetch = new JButton();
+	JButton newAlbum = new JButton();
 	JSplitPane inspectorDivider = new JSplitPane();
 	PictureInspector pictureInspector = new PictureInspector();
 	JPanel jPanel3 = new JPanel();
@@ -240,6 +241,7 @@ public class MainFrame extends javax.swing.JFrame
 				pictureInspector.setEnabled( enabled );
 				picturesList.setEnabled( enabled );
 				album.setEnabled( enabled );
+				newAlbum.setEnabled( enabled && currentGallery.getComm().hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
 				
 				// change image displayed
 				int sel = picturesList.getSelectedIndex();
@@ -267,7 +269,7 @@ public class MainFrame extends javax.swing.JFrame
 				if ( mAlbum == null) {
 					pictureInspector.setPictures( (Object[]) null );
 					
-					setStatus( "Select a Gallery URL and click Fetch Albums..." );
+					setStatus( "Select a Gallery URL and click Log in..." );
 				} else if ( mAlbum.sizePictures() > 0 ) {
 					pictureInspector.setPictures( picturesList.getSelectedValues() );
 					
@@ -539,6 +541,10 @@ public class MainFrame extends javax.swing.JFrame
 		
 		currentGallery.fetchAlbums( this );
 	}
+	
+	public void newAlbum() {
+		NewAlbumDialog d = new NewAlbumDialog(this, currentGallery, mAlbum);
+	}
 
 
 	/**
@@ -678,9 +684,12 @@ public class MainFrame extends javax.swing.JFrame
 		jLabel2.setText( "Username" );
 		jLabel3.setText( "Password" );
 		jLabel7.setText( "Select Album" );
-		fetch.setText( "Fetch Albums" );
-		fetch.setNextFocusableComponent( album );
+		fetch.setText( "Log in" );
+		fetch.setNextFocusableComponent( newAlbum );
 		fetch.setActionCommand( "Fetch" );
+		newAlbum.setText( "New Album" );
+		newAlbum.setNextFocusableComponent( album );
+		newAlbum.setActionCommand( "NewAlbum" );
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		jPanel3.setLayout( gridLayout1 );
 		upload.setAlignmentX( (float) 2.0 );
@@ -739,7 +748,9 @@ public class MainFrame extends javax.swing.JFrame
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets( 0, 0, 0, 5 ), 0, 0 ) );
 		jPanel1.add( album, new GridBagConstraints( 1, 3, 2, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
-		jPanel1.add( fetch,   new GridBagConstraints(2, 1, 1, 2, 0.0, 0.0
+		jPanel1.add( fetch,   new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0) );
+		jPanel1.add( newAlbum,   new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0) );
 		this.getContentPane().add( inspectorDivider, new GridBagConstraints( 0, 1, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets( 0, 2, 2, 2 ), 0, 0 ) );
@@ -773,6 +784,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	private void jbInitEvents() {
 		fetch.addActionListener( this );
+		newAlbum.addActionListener( this );
 		upload.addActionListener( this );
 		browse.addActionListener( this );
 		newGallery.addActionListener( this );
@@ -833,6 +845,8 @@ public class MainFrame extends javax.swing.JFrame
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
 			fetchAlbums();
+		} else if ( command.equals( "NewAlbum" ) ) {
+			newAlbum();
 		} else if ( command.equals( "Browse" ) ) {
 			browseAddPictures();
 		} else if ( command.equals( "Upload" ) ) {
