@@ -40,7 +40,7 @@ import java.util.Iterator;
 
 /**
  * Bean inspector for Pictures
- * 
+ *
  * @author paour
  * @created August 16, 2002
  */
@@ -247,7 +247,7 @@ public class PictureInspector extends JPanel
 	// Event handling
 	/**
 	 * Menu and button handling
-	 * 
+	 *
 	 * @param e Action event
 	 */
 	public void actionPerformed(ActionEvent e) {
@@ -255,11 +255,17 @@ public class PictureInspector extends JPanel
 		Log.log(Log.LEVEL_INFO, MODULE, "Command selected " + command);
 
 		if (command.equals("Delete")) {
-			CoreUtils.deleteSelectedPictures();
+            // We must call the MainFrame to delete pictures
+            // so that it can know that the document is now dirty.
+			mf.deleteSelectedPictures();
 		} else if (command.equals("Up")) {
-			CoreUtils.movePicturesUp();
+            // We must call the MainFrame to move pictures
+            // so that it can know that the document is now dirty.
+			mf.movePicturesUp();
 		} else if (command.equals("Down")) {
-			CoreUtils.movePicturesDown();
+            // We must call the MainFrame to move pictures
+            // so that it can know that the document is now dirty.
+			mf.movePicturesDown();
 		} else if (command.equals("Left")) {
 			for (int i = 0; i < pictures.length; i++) {
 				((Picture) pictures[i]).rotateLeft();
@@ -335,7 +341,7 @@ public class PictureInspector extends JPanel
 
 	/**
 	 * Sets the mainFrame attribute of the PictureInspector object
-	 * 
+	 *
 	 * @param mf The new mainFrame value
 	 */
 	public void setMainFrame(MainFrame mf) {
@@ -345,7 +351,7 @@ public class PictureInspector extends JPanel
 
 	/**
 	 * Sets the picture attribute of the PictureInspector object
-	 * 
+	 *
 	 * @param p The new picture value
 	 */
 	public void setPictures(Object[] pictures) {
