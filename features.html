@@ -63,20 +63,11 @@ th {
   <tr valign="top"> 
     <td>Main UI</td>
     <td>P1</td>
-    <td>80%</td>
+    <td>90%</td>
     <td>paour</td>
     <td>The main UI needs to be rewritten using Layouts, in order to allow more 
       flexibility.</td>
     <td>&nbsp;</td>
-  </tr>
-  <tr valign="top"> 
-    <td>Upload file names</td>
-    <td>P1</td>
-    <td>0%</td>
-    <td>tim</td>
-    <td>File names need to be uploaded along with files, so the server has the 
-      option of preserving the file name.</td>
-    <td>Needs protocol upgrade?</td>
   </tr>
   <tr valign="top"> 
     <td>Preferences</td>
@@ -123,14 +114,14 @@ th {
   <tr valign="top"> 
     <td>Reorder album</td>
     <td>P2</td>
-    <td>0%</td>
+    <td>90%</td>
     <td>dolan</td>
     <td><p>Drag-and-drop (intra-list) reordering of album, whether before uploading, 
         or an existing album.</p>
       <p>Also, provide visual clues when an external drag is dropped on the list, 
         and allow drop to happen at any point in the list (right now, drops always 
         append pictures to the end of the list.</p></td>
-    <td>Tim has some code for this.</td>
+    <td>&nbsp;</td>
   </tr>
   <tr valign="top"> 
     <td>Upload Album order</td>
@@ -153,7 +144,7 @@ th {
     <td>Pre-upload resize</td>
     <td>P2</td>
     <td>0%</td>
-    <td>&nbsp;</td>
+    <td>paour</td>
     <td>Pictures can be resized on the client, thus minimizing the bandwidth necessary 
       for the upload.</td>
     <td>Default Java resizing quality is not great, and not very flexible. We 
@@ -199,7 +190,7 @@ th {
     <td>Allow setting up and using a proxy to access to Gallery.</td>
     <td>&nbsp;</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>SSL support</td>
     <td>P3</td>
     <td>0%</td>
@@ -265,7 +256,7 @@ th {
       revving the protocol frequently.</td>
     <td>&nbsp;</td>
   </tr>
-  <tr valign="top">
+  <tr valign="top"> 
     <td>IIS support</td>
     <td>P1</td>
     <td>0%</td>
@@ -273,18 +264,6 @@ th {
     <td>IIS seems to send a slightly different acknowledgement to GR, so login 
       fails. </td>
     <td>Bug <a href="https://sourceforge.net/tracker/?func=detail&aid=602606&group_id=7130&atid=107130">602606</a></td>
-  </tr>
-  <tr valign="top"> 
-    <td>Honor Filename retention</td>
-    <td>P1</td>
-    <td>0%</td>
-    <td>tim</td>
-    <td>The server needs to allow retaining filenames of uploaded files (if that 
-      is the server setting).</td>
-    <td><p>Probably needs GR to upload the file name along with the file.</p>
-      <p>Posts 3 and 4 of <a href="http://gallery.menalto.com/modules.php?op=modload&name=phpBB_14&file=index&action=viewtopic&topic=12&4">this 
-        thread</a> in the forums may contain a solution. We need something easier 
-        to configure.</p></td>
   </tr>
   <tr valign="top"> 
     <td>Album download</td>
@@ -309,8 +288,12 @@ th {
     <td>P2</td>
     <td>0%</td>
     <td>tim</td>
-    <td>Expose an interface to allow uploading captions for a given picture.</td>
-    <td>&nbsp;</td>
+    <td><p>Expose an interface to allow uploading captions for a given picture.</p>
+      <p>Right now there is a hack that allows using the filename for the caption: 
+        posts 3 and 4 of <a href="http://gallery.menalto.com/modules.php?op=modload&name=phpBB_14&file=index&action=viewtopic&topic=12&4">this 
+        thread</a> in the forums describe the hack.</p>
+      <p>We need to also allow the user to type in a caption.</p></td>
+    <td><p>&nbsp;</p></td>
   </tr>
   <tr valign="top"> 
     <td>Double byte support</td>
@@ -328,6 +311,17 @@ th {
     <td>Expose and interface to allow creating albums remotely.</td>
     <td>Does this mean we also need to handle album security setting, or just 
       that we only use the default settings?</td>
+  </tr>
+  <tr valign="top"> 
+    <td>Honor Filename retention</td>
+    <td>P4</td>
+    <td>0%</td>
+    <td>&nbsp;</td>
+    <td><p>The server needs to allow not retaining filenames of uploaded files 
+        (if that is the server setting).</p>
+      <p>Right now, all uploaded images use their original filename instead of 
+        an automatically generated filename.</p></td>
+    <td><p>&nbsp;</p></td>
   </tr>
   <tr valign="top"> 
     <td>SOAP protocol</td>
