@@ -60,6 +60,11 @@ public class GalleryRemote {
         catch ( Exception e ) {
 			Log.logException(Log.CRITICAL, "Startup", e);
         }
+		
+		Update update = new Update();
+		if ( update.check() ) {
+			update.showNotice();
+		}
     }
     
     public static void logEnvironment() {
