@@ -52,7 +52,8 @@ public class ImageUtils {
 	static boolean useJpegtran = false;
 	static String jpegtranPath = null;
 	static File tmpDir = null;
-	
+	static int jpegQuality = 75;
+
 	public static final int THUMB = 0;
 	public static final int PREVIEW = 1;
 	public static final int UPLOAD = 2;
@@ -83,26 +84,19 @@ public class ImageUtils {
 		if (useIM) {
 			try {
 				StringBuffer cmdline = new StringBuffer(imPath);
-				cmdline.append(" -size ");
-				
-				cmdline.append(d.width);
-				cmdline.append("x");
-				cmdline.append(d.height);
-				
+
+				cmdline.append(" -size ").append(d.width).append("x").append(d.height);
+
 				if (filterName[usage] != null && filterName[usage].length() > 0) {
-					cmdline.append(" -filter ");
-					cmdline.append(filterName[usage]);
+					cmdline.append(" -filter ").append(filterName[usage]);
 				}
 				
-				cmdline.append(" \"");
-				cmdline.append(filename);
-				
-				cmdline.append("\" -resize ");
-				cmdline.append(d.width);
-				cmdline.append("x");
-				cmdline.append(d.height);
+				cmdline.append(" \"").append(filename).append("\"");
+
+				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append("\" ");
+
 				cmdline.append(" +profile \"*\" ");
-				
+
 				File temp = File.createTempFile("thumb", "." + format[usage], tmpDir);
 				toDelete.add(temp);
 				
@@ -171,6 +165,8 @@ public class ImageUtils {
 				cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append(">\" ");
 
 				//cmdline.append("-gravity SouthEast -draw \"image Over 200,200 0,0 G:\\Projects\\Dev\\gallery_remote10\\2ni.png\" ");
+
+				cmdline.append(" -quality ").append(jpegQuality);
 
 				r = File.createTempFile("res"
 					, "." + GalleryFileFilter.getExtension(filename), tmpDir);
@@ -346,6 +342,8 @@ public class ImageUtils {
 				format[THUMB] = p.getProperty("imThumbnailResizeFormat", "gif");
 				format[PREVIEW] = p.getProperty("imPreviewResizeFormat", "jpg");
 				format[UPLOAD] = null;
+
+				jpegQuality = p.getIntProperty("jpegQuality", jpegQuality);
 			}
 		} catch (Exception e) {
 			Log.logException(Log.CRITICAL, MODULE, e);
@@ -402,12 +400,12 @@ public class ImageUtils {
 		if (targetRatio > sourceRatio)
 		{
 			result.height = target.height;
-			result.width = (int) source.width * target.height / source.height;
+			result.width = source.width * target.height / source.height;
 		}
 		else
 		{
 			result.width = target.width;
-			result.height = (int) source.height * target.width / source.width;
+			result.height = source.height * target.width / source.width;
 		}
 
 		return result;
