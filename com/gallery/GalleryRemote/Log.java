@@ -128,6 +128,18 @@ public class Log extends Thread
 		}
 	}
 	
+	public static void logException(int level, String module, Throwable t)
+	{
+		if ( level <= maxLevel ) {
+			log(level, module, t.toString());
+			
+			CharArrayWriter caw = new CharArrayWriter();
+			t.printStackTrace(new PrintWriter(caw));
+			
+			log(level, module, caw.toString());
+		}
+	}
+	
 	public static String getShortClassName(Class c)
 	{
 		String name = c.getName();
