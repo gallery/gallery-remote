@@ -74,7 +74,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		getContentPane().add(jSlidePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		getContentPane().add(new JLabel(GRI18n.getString(MODULE, "Disabled")), new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 3, 0, 3), 0, 0));
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
 		getContentPane().add(jStart, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
 		getContentPane().add(jStatusBar, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0

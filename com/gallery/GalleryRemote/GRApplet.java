@@ -127,25 +127,46 @@ public class GRApplet extends JApplet {
 		if (urlFull != null) {
 			// the server specified a full URL, we're probably in embedded mode
 			// and we have to recreate the URL
+
+			URL documentBase = getDocumentBase();
+
+			// if urlFull is indeed a full URL, use it
 			try {
-				URL documentBase = getDocumentBase();
+				URL urlFullU = new URL(urlFull);
 
-				String path = documentBase.getPath();
-				int i = path.lastIndexOf("/");
-				if (i != -1) {
-					path = path.substring(0, i);
+				if (urlFullU.getHost().equals(documentBase.getHost())
+						&& urlFullU.getPort() == documentBase.getPort()) {
+					info.gallery.setType(Gallery.TYPE_APPLET);
+					info.gallery.setApUrlString(urlFull);
+
+					Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
+				} else {
+					Log.log(Log.LEVEL_TRACE, MODULE, "urlFull doesn't match documentBase for important data");
+
+					throw new MalformedURLException();
 				}
-
-				urlFull = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
-						path + "/" + urlFull).toString();
-
-				info.gallery.setType(Gallery.TYPE_APPLET);
-				info.gallery.setApUrlString(urlFull);
-
-				Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
 			} catch (MalformedURLException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				urlFull = null;
+				Log.log(Log.LEVEL_TRACE, MODULE, "urlFull is not a valid URL: recomposing it from documentBase");
+
+				try {
+
+					String path = documentBase.getPath();
+					int i = path.lastIndexOf("/");
+					if (i != -1) {
+						path = path.substring(0, i);
+					}
+
+					urlFull = new URL(documentBase.getProtocol(), documentBase.getHost(), documentBase.getPort(),
+							path + "/" + urlFull).toString();
+
+					info.gallery.setType(Gallery.TYPE_APPLET);
+					info.gallery.setApUrlString(urlFull);
+
+					Log.log(Log.LEVEL_TRACE, MODULE, "Full URL: " + urlFull);
+				} catch (MalformedURLException ee) {
+					Log.logException(Log.LEVEL_ERROR, MODULE, ee);
+					urlFull = null;
+				}
 			}
 		}
 
