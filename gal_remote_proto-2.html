@@ -45,6 +45,7 @@ img { border-width: 0px; }
       <li><a href="#fetch-albums"><samp>fetch-albums</samp> command</a></li>
       <li><a href="#add-item"><samp>add-item</samp> command</a></li>
       <li><a href="#album-properties"><samp>album-properties</samp> command</a></li>
+      <li><a href="#new-album"><samp>new-album</samp> command</a></li>
     </ol>
   </li>
   <li>Appendix A: <a href="#appendix_a">Response Status Codes</a></li>
@@ -166,9 +167,9 @@ server was able to complete the command in the client's request, the value of th
           <samp>uname=</samp><em>gallery-user-name</em><samp><br>
           password=</samp><em>cleartext-password</em><br>
         </p>
-        where <em>gallery-user-name</em> is a valid gallery user name and 
+        <p>where <em>gallery-user-name</em> is a valid gallery user name and 
         <em>cleartext-password</em> is the corresponding password.
-        <p>
+
         </p>
       </li>
       <li> 
@@ -319,7 +320,56 @@ server was able to complete the command in the client's request, the value of th
       </li>
     </ul>
   </li>
-</ol>
+  <li> 
+    <h3><a name="new-album" id="new-album"><samp>new-album</samp></a> command [since 2.0]</h3>
+    <p>
+    	This command creates a new album on the server.
+    </p>
+    <ul>
+      <li> 
+        <h4>Context</h4>
+        <p>
+        	A request with the <samp>login</samp> command must be made before the 
+          	<samp>album-properties</samp> command is used.
+        </p>
+      </li>
+      <li> 
+        <h4>Form Data</h4>
+        <p>
+        	<samp>cmd=album-properties<br>
+			protocol_version=2.0<br>
+			set_albumName=</samp><em>parent-album-name</em> or empty to create at top level<br>
+			<samp>newAlbumName=</samp><em>album-name</em><br>
+			<samp>newAlbumTitle=</samp><em>album-title</em><br>
+			<samp>newAlbumDesc=</samp><em>album-description</em>
+		</p>
+        <p>where <em>parent-album-name</em> is the name of the gallery that the new album should be created
+        under;<br>
+        <em>album-name</em> is the new album's desired name;<br>
+        <em>album-title</em> is the new album's desired title;<br>
+        <em>album-description</em> is the new album's desired description.
+        </p><p>
+        If <em>parent-album-name</em> is empty, the album is created at the top level.
+        </p>
+      </li>
+      <li> 
+        <h4>Results</h4>
+        <p>
+	        <samp>#__GR2PROTO__</samp><br>
+	        <samp>status=</samp><em>result-code</em><br>
+	        <samp>status_text=</samp><em>explanatory-text</em><br>
+	    </p>
+        <p>
+        	If the <em>result-code</em> is equal to GR_STAT_SUCCESS, the request succeeded.
+        </p>
+        <p>
+        	If the <em>result-code</em> is equal to GR_STAT_NO_CREATE_ALBUM_PERMISSION, the
+        	logged-in user doesn't have permission to create an album in the specified location.
+        </p>
+      </li>
+    </ul>
+  </li>
+ </ol>
 
 <hr>
 
@@ -349,6 +399,7 @@ server was able to complete the command in the client's request, the value of th
 <tr><td>GR_STAT_NO_ADD_PERMISSION</td><td>401</td><td>The user does not have permission to add an item to the gallery.</td></tr>
 <tr><td>GR_STAT_NO_FILENAME</td><td>402</td><td>No filename was specified.</td></tr>
 <tr><td>GR_STAT_UPLOAD_PHOTO_FAIL</td><td>403</td><td>The file was received, but could not be processed or added to the album.</td></tr>
+<tr><td>GR_STAT_NO_CREATE_ALBUM_PERMISSION</td><td>501</td><td>A new album could not be created because the user does not have permission to do so.</td></tr>
 
 </tbody>
 </table>
