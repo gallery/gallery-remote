@@ -1,9 +1,10 @@
 2002-09-20  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
 	
-	* The preferences file is now called .GalleryRemote.properties and resides in 
-          the home directory. This should fix problems with preferences not being save
+	* The preferences file is now called GalleryRemote.properties and resides in GalleryRemote
+          in the home directory. This should fix problems with preferences not being save
           but it means users will have to either copy the preferences file over themselves
           or recreate their preferences.
+	* Fixed bug 612281: redirects needed two clicks.
 
 2002-09-17  Pierre-Luc Paour <gallery@paour.com> (1.0-b5)
 	
