@@ -850,7 +850,7 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void itemStateChanged( ItemEvent e ) {
 		Object item = e.getItemSelectable();
-		Log.log(Log.INFO, MODULE, "Item selected " + item);
+		//Log.log(Log.TRACE, MODULE, "Item selected " + item);
 
 		if ( item == jCheckBoxMenuThumbnails ) {
 			setShowThumbnails( e.getStateChange() == ItemEvent.SELECTED );
@@ -873,7 +873,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  ListSelection event
 	 */
 	public void valueChanged( ListSelectionEvent e ) {
-		Log.log(Log.TRACE, MODULE, "List selection changed: " + e);
+		//Log.log(Log.TRACE, MODULE, "List selection changed: " + e);
 
 		int sel = picturesList.getSelectedIndex();
 
