@@ -1,10 +1,11 @@
 package com.gallery.GalleryRemote.prefs;
 
-import com.gallery.GalleryRemote.GalleryProperties;
 import com.gallery.GalleryRemote.Log;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import javax.swing.border.*;
 
 /**
@@ -12,20 +13,20 @@ import javax.swing.border.*;
  * User: paour
  * Date: May 8, 2003
  */
-public class ProxyPanel extends PreferencePanel {
+public class ProxyPanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "ProxyPa";
 
 	JLabel icon = new JLabel("Proxy");
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
-	JCheckBox jProxy = new JCheckBox();
+	JCheckBox jUseProxy = new JCheckBox();
 	JLabel jLabel1 = new JLabel();
 	JLabel jLabel2 = new JLabel();
 	JLabel jLabel3 = new JLabel();
 	JLabel jLabel4 = new JLabel();
-	JTextField jURL = new JTextField();
-	JTextField jTextField2 = new JTextField();
-	JTextField jUsername = new JTextField();
-	JTextField jPassword = new JTextField();
+	JTextField jProxyHost = new JTextField();
+	JTextField jProxyPort = new JTextField();
+	JTextField jProxyUsername = new JTextField();
+	JTextField jProxyPassword = new JTextField();
 	JPanel jPanel1 = new JPanel();
 
 	public JLabel getIcon() {
@@ -33,9 +34,45 @@ public class ProxyPanel extends PreferencePanel {
 	}
 
 	public void readProperties(GalleryProperties props) {
+		jUseProxy.setSelected(props.getBooleanProperty(USE_PROXY));
+
+		jProxyHost.setText(props.getProperty(PROXY_HOST));
+		jProxyPort.setText(props.getProperty(PROXY_PORT));
+		jProxyUsername.setText(props.getProperty(PROXY_USERNAME));
+		jProxyPassword.setText(props.getBase64Property(PROXY_PASSWORD));
+
+		resetUIState();
 	}
 
 	public void writeProperties(GalleryProperties props) {
+		props.setBooleanProperty(USE_PROXY, jUseProxy.isSelected());
+
+		props.setProperty(PROXY_HOST, jProxyHost.getText());
+		props.setProperty(PROXY_PORT, jProxyPort.getText());
+		props.setProperty(PROXY_USERNAME, jProxyUsername.getText());
+		props.setBase64Property(PROXY_PASSWORD, jProxyPassword.getText());
+	}
+
+	public void resetUIState() {
+		if (jUseProxy.isSelected()) {
+			jProxyHost.setEnabled(true);
+			jProxyPort.setEnabled(true);
+			jProxyUsername.setEnabled(true);
+			jProxyPassword.setEnabled(true);
+			jProxyHost.setBackground(UIManager.getColor("TextField.background"));
+			jProxyPort.setBackground(UIManager.getColor("TextField.background"));
+			jProxyUsername.setBackground(UIManager.getColor("TextField.background"));
+			jProxyPassword.setBackground(UIManager.getColor("TextField.background"));
+		} else {
+			jProxyHost.setEnabled(false);
+			jProxyPort.setEnabled(false);
+			jProxyUsername.setEnabled(false);
+			jProxyPassword.setEnabled(false);
+			jProxyHost.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			jProxyPort.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			jProxyUsername.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			jProxyPassword.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+		}
 	}
 
 	public void buildUI() {
@@ -43,17 +80,17 @@ public class ProxyPanel extends PreferencePanel {
 	}
 	
 	private void jbInit() {
-		jProxy.setText("Use proxy");
+		jUseProxy.setText("Use proxy");
 		this.setLayout(gridBagLayout1);
 		jLabel1.setText("Proxy URL");
 		jLabel2.setText("Proxy port");
 		jLabel3.setText("Username");
 		jLabel4.setText("Password");
-		jURL.setText("");
-		jTextField2.setText("");
-		jUsername.setText("");
-		jPassword.setText("");
-		this.add(jProxy,   new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
+		jProxyHost.setText("");
+		jProxyPort.setText("");
+		jProxyUsername.setText("");
+		jProxyPassword.setText("");
+		this.add(jUseProxy,   new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jLabel1,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 5, 5), 0, 0));
@@ -63,16 +100,22 @@ public class ProxyPanel extends PreferencePanel {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 5, 5), 0, 0));
 		this.add(jLabel4,      new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 20, 5, 5), 0, 0));
-		this.add(jURL,    new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
+		this.add(jProxyHost,    new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		this.add(jTextField2,    new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
+		this.add(jProxyPort,    new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		this.add(jUsername,    new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+		this.add(jProxyUsername,    new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
-		this.add(jPassword,    new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
+		this.add(jProxyPassword,    new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 0), 0, 0));
 		this.add(jPanel1,   new GridBagConstraints(0, 5, 2, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
+		jUseProxy.addActionListener(this);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		resetUIState();
 	}
 }
 
