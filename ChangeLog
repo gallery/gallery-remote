@@ -1,3 +1,20 @@
+2003-06-25  Pierre-Luc Paour <gallery@paour.com> (1.1-b8)
+
+	* Implemented a new way to communicate with the server for getting
+	  the list of albums, which is much more efficient because only
+	  writable albums and their parents are sent, and because the server
+	  does less work. This should fix one of the causes for socket exceptions
+	  because listing the albums takes less time.
+	* Since this new format is also hierarchical, this also paves the way for
+	  an album tree component rather than a flat list (no implementation yet).
+	* Fixed preview frame popping up before main frame.
+
+2003-06-17  Pierre-Luc Paour <gallery@paour.com> (1.1-b7)
+
+	* Fixed rotation combined with flipping, fixed losing EXIF.
+	* Picture added using the Browse button now appended to the
+	  list instead of prepending them.
+
 2003-06-16  Pierre-Luc Paour <gallery@paour.com> (1.1-b6)
 
 	* Implemented rotate-before-upload based on jpegtran.
@@ -49,6 +66,18 @@
 2003-05-08  Pierre-Luc Paour <gallery@paour.com> (1.1-b1)
 
 	* Added first embryo of a preferences dialog.
+
+2003-06-18  Pierre-Luc Paour <gallery@paour.com> (1.0.1)
+
+	* No changes from RC1.
+	* Non-Win32 builds get ImageMagick directory with instructions
+	  on how to set it up.
+
+2003-05-28  Pierre-Luc Paour <gallery@paour.com> (1.0.1-RC1)
+
+	* No changes from b6.
+	* No longer building 'run' batch scripts: running GR is now only
+	  with the native InstallAnywhere launcher or ant.
 
 2003-05-25  Pierre-Luc Paour <gallery@paour.com> (1.0.1-b6)
 
