@@ -26,11 +26,10 @@ import java.io.*;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
+import java.awt.geom.*;
+import java.awt.event.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.*;
 
 import com.gallery.GalleryRemote.model.*;
 
@@ -47,7 +46,9 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     MainFrame mDaddy = null;
     DragSource dragSource;
     DropTarget dropTarget;
-    int dropInd;
+    Point p;
+    boolean isDrag;
+    
     /**
      * constructor - initializes the DropTarget and DragSource.
      */
@@ -80,9 +81,9 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     public void dragEnter( DropTargetDragEvent dropTargetDragEvent ) {
         Log.log(Log.TRACE, "DROPLIST","dragEnter - dtde");
         dropTargetDragEvent.acceptDrag( DnDConstants.ACTION_COPY_OR_MOVE );
+        isDrag = true;
+        repaint();
     }
-    
-    
     
     /**
      *  Description of the Method
@@ -92,6 +93,7 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      */
     public void dragExit( DropTargetEvent dropTargetEvent ) {
         Log.log(Log.TRACE, "DROPLIST","dragExit - dtde");
+        isDrag = false;
     }
     
     
@@ -101,7 +103,11 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
      *@param  dropTargetDragEvent  Description of Parameter
      *@since
      */
-    public void dragOver( DropTargetDragEvent dropTargetDragEvent ) { }
+    public void dragOver( DropTargetDragEvent dropTargetDragEvent ) {
+        //Log.log(Log.TRACE, "DROPLIST","dragOver - dtde");
+        p = dropTargetDragEvent.getLocation();
+        
+    }
     
     
     /**
@@ -119,6 +125,7 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
     
     public void dragEnter(DragSourceDragEvent dragSourceDragEvent) {
         Log.log(Log.TRACE, "DROPLIST","dragEnter - dsde");
+        
     }
     
     public void dragExit(DragSourceEvent dragSourceEvent) {
@@ -130,17 +137,20 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
         //Object selected = getSelectedValue();
         int ind = this.getSelectedIndex();
         if ( ind != -1 ){
-            Picture p = (Picture) this.getModel().getElementAt(ind);
+            Picture pic = (Picture) this.getModel().getElementAt(ind);
             // as the name suggests, starts the dragging
             
-            dragSource.startDrag(event, DragSource.DefaultMoveDrop, p, this);
+            dragSource.startDrag(event, DragSource.DefaultMoveDrop, pic, this);
             mDaddy.deleteSelectedPictures();
+            
         } else {
             Log.log(Log.TRACE, "DROPLIST", "nothing was selected");
         }
     }
     
     public void dragOver(DragSourceDragEvent dragSourceDragEvent) {
+        //Log.log(Log.TRACE, "DROPLIST","dragOver - dsde");
+        repaint();
     }
     
     public void dropActionChanged(DragSourceDragEvent dragSourceDragEvent) {
@@ -179,15 +189,15 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
                 
                 //thanks John Zukowski
                 Point dropLocation = dropTargetDropEvent.getLocation();
-                //adjust for height of image (fixed for time being, needs to be dynamic according to thumnail)
-                dropLocation.setLocation(dropLocation.getX(), dropLocation.getY() - 100);   //doesn't work :(
+                //adjust for height of image (fixed for time being, needs to be dynamic according to thumbnail)
+                Log.log(Log.TRACE, MODULE,"drop location X: " + dropLocation.getX() + "  Y: " + dropLocation.getY());
+                double lineY = dropLocation.getY();
+                dropLocation.setLocation(dropLocation.getX(),lineY - 1.0 );
+                Log.log(Log.TRACE, MODULE,"adjusted location X: " + dropLocation.getX() + "  Y: " + dropLocation.getY());
                 int listIndex = this.locationToIndex(dropLocation);
-                Log.log(Log.TRACE, "DROPLIST", "location:" + dropLocation.y);
                 //add below selected, otherwise add to end
                 if (listIndex == -1){
                     listIndex = this.getModel().getSize();
-                } else {
-                    listIndex++;
                 }
                 
                 Log.log(Log.TRACE, "DROPLIST", "Adding new image(s) to list at index:" + listIndex);
@@ -272,6 +282,33 @@ implements DropTargetListener, DragSourceListener, DragGestureListener {
         return ret;
     }
     
+    final static BasicStroke stroke = new BasicStroke(1.0f);
     
-}
+    
+    public void paintComponent( Graphics g ){
+        super.paintComponent(g);
+        Log.log(Log.TRACE, MODULE, "painting component -- isDrag: " + isDrag);
+        
+        if (this.getModel().getSize() > 0 && isDrag){
+            //Log.log(Log.TRACE, MODULE, "adding line");
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setStroke( stroke );
+            //Log.log(Log.TRACE, MODULE, "p:" + p);
+            //get index of drop spot
+            int curEl = this.locationToIndex(p);
+            //Log.log(Log.TRACE, MODULE, "curEl:" + curEl);
+            double lineY = 0.0;
+            if (curEl == -1){
+                curEl = this.getModel().getSize();
+            }
+            lineY = (double) curEl * this.getFixedCellHeight();
 
+            //start x, y   end x, y
+            Line2D line = new Line2D.Double(10.0, lineY, this.getVisibleRect().getWidth() - 10.0, lineY);
+            //make the line red
+            g2.setColor(new Color(255,0,0));
+            g2.draw(line);
+        }
+    }
+}
