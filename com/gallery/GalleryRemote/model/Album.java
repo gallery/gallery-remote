@@ -417,6 +417,16 @@ public class Album extends Picture implements ListModel
 		return ret.toString();
 	}
 	
+	public boolean equals(Object o) {
+		return (o != null
+			&& o instanceof Album
+			&& ((Album) o).getGallery() == getGallery()
+			&& getName() != null
+			&& ((Album) o).getName() != null
+			&& ((Album) o).getName().equals(getName()));
+	}
+		
+	
 	public void setListSelectionModel(ListSelectionModel listSelectionModel) {
 		this.listSelectionModel = listSelectionModel;
 	}
@@ -539,6 +549,16 @@ public class Album extends Picture implements ListModel
 	 */
 	Vector getPicturesVector() {
 		return pictures;
+	}
+	
+	void setPicturesVector(Vector pictures) {
+		this.pictures = pictures;
+		
+		for (Enumeration e = pictures.elements(); e.hasMoreElements(); ) {
+			((Picture) e.nextElement()).setAlbum(this);
+		}
+		
+		notifyListeners();
 	}
 	
 	public static final String INDENT_QUANTUM = "     ";

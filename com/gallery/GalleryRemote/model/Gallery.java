@@ -78,8 +78,8 @@ public class Gallery implements ComboBoxModel
 	}
 	
 	public void fetchAlbums( StatusUpdate su ) {
-		albumList = null;
-		/* TEMPORARY */ // getComm().logOut();
+		//albumList = null;
+
 		getComm().fetchAlbums( su, true );
 	}
 	
@@ -175,9 +175,28 @@ public class Gallery implements ComboBoxModel
 		if ( albumList == null ) {
 			throw new IllegalArgumentException( "Must supply non-null album list." );
 		}
+		
+		ArrayList oldList = this.albumList;
 		this.albumList = albumList;
 		if ( albumList.size() > 0 ) {
 			selectedAlbum = (Album) this.albumList.get(0);
+		}
+		if (oldList != null) {
+		Log.log(Log.TRACE, MODULE, "oldList " + oldList.toString());
+			for (Iterator i = oldList.iterator(); i.hasNext(); ) {
+				Album a = (Album) i.next();
+				
+				Log.log(Log.TRACE, MODULE, a.toString());
+				if (! a.getPicturesVector().isEmpty()) {
+					Log.log(Log.TRACE, MODULE, "Album " + a + " had pictures");
+					int j = albumList.indexOf(a);
+					
+					if (j != -1) {
+						Album newAlbum = (Album) albumList.get(j);
+						newAlbum.setPicturesVector(a.getPicturesVector());
+					}
+				}
+			}
 		}
 		
 		notifyListeners();
@@ -258,6 +277,11 @@ public class Gallery implements ComboBoxModel
 	 */
 	public ArrayList getAlbumList() {
 		return albumList;
+	}
+	
+	public void clearAlbumList() {
+		albumList.clear();
+		notifyListeners();
 	}
 	
 	public ArrayList getAllPictures() {
