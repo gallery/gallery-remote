@@ -29,7 +29,7 @@ import javax.swing.*;
 import com.gallery.GalleryRemote.model.*;
 
 public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities {
-	private static final String MODULE = "GalleryCom";
+	private static final String MODULE = "GalComm1";
 	
 	private static final String PROTOCAL_VERSION = "1";
 	private static final String SCRIPT_NAME = "gallery_remote.php";
@@ -186,7 +186,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 			Iterator iter = pictures.iterator();
 			while (iter.hasNext() && allGood && !interrupt) {
 				Picture p = (Picture) iter.next();
-				
+
 				su.updateProgressStatus(pId, "Uploading " + p.toString()
 					+ " (" + (uploadedCount + 1) + "/" + pictures.size() + ")");
 				
@@ -208,7 +208,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 
 		boolean uploadPicture(Picture p) {
 			try	{
-				URL url =g.getUrl();
+				URL url = g.getUrl();
 				String urlPath = url.getFile() + SCRIPT_NAME;
 				Log.log(Log.TRACE, MODULE, "Url: " + url + SCRIPT_NAME);
 			
@@ -308,7 +308,7 @@ public class GalleryComm1 extends GalleryComm implements GalleryCommCapabilities
 								a.setTitle( URLDecoder.decode(colT.nextToken()) );
 								
 								a.setGallery( g );
-
+								
 								mAlbumList.add(a);
 							}
 						}
