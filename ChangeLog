@@ -1,13 +1,16 @@
-2002-09-20  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
+2002-09-22  Pierre-Luc Paour <gallery@paour.com> (1.0-b6)
 	
+	* Added multi-album upload! Add pictures to different albums and click Upload
+		Albums.
+	* Almost complete rewrite of GalleryComm. Maybe it will be more robust, maybe
+		more broken.
 	* The preferences file is now called GalleryRemote.properties and resides in GalleryRemote
-          in the home directory. This should fix problems with preferences not being save
-          but it means users will have to either copy the preferences file over themselves
-          or recreate their preferences.
+		in the home directory. This should fix problems with preferences not being saved
+		but it means users will have to either copy the preferences file over themselves
+		or recreate their preferences.
+	* The file input dialog now accepts more types of media.
 	* Fixed bug 612281: redirects needed two clicks.
 	* Fixed bug 521237: non-unique album titles would confuse the Albums combo-box.
-		  The changes implemented for this fix open the way for multiple album uploads. Yay!
-		  I'll add this shortly.
 
 2002-09-17  Pierre-Luc Paour <gallery@paour.com> (1.0-b5)
 	
