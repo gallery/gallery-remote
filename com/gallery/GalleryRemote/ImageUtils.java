@@ -57,18 +57,7 @@ public class ImageUtils {
 		ImageIcon r = null;
 		long start = System.currentTimeMillis();
 		
-		if (! useIM) {
-			r = new ImageIcon( filename );
-		
-			Image scaled = null;
-			Dimension newD = getSizeKeepRatio(
-				new Dimension( r.getIconWidth(), r.getIconHeight() ),
-				d );
-			scaled = r.getImage().getScaledInstance( newD.width, newD.height, Image.SCALE_FAST );
-	
-			r.getImage().flush();
-			r.setImage( scaled );
-		} else {
+		if (useIM) {
 			try {
 				StringBuffer cmdline = new StringBuffer(imPath);
 				cmdline.append(" -size ");
@@ -100,14 +89,32 @@ public class ImageUtils {
 			
 				Process p = Runtime.getRuntime().exec(cmdline.toString());
 				p.waitFor();
-				Log.log(Log.TRACE, MODULE, "Retuned with value " + p.exitValue());
-
-				r = new ImageIcon(temp.getPath());
+				Log.log(Log.TRACE, MODULE, "Returned with value " + p.exitValue());
+				
+				if (p.exitValue() != 0) {
+					Log.log(Log.CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+					useIM = false;
+				} else {
+					r = new ImageIcon(temp.getPath());
+				}
 			} catch (IOException e1) {
 				Log.logException(Log.ERROR, MODULE, e1);
 			} catch (InterruptedException e2) {
 				Log.logException(Log.ERROR, MODULE, e2);
 			}
+		}
+
+		if ( ! useIM && r == null ) {
+			r = new ImageIcon( filename );
+		
+			Image scaled = null;
+			Dimension newD = getSizeKeepRatio(
+				new Dimension( r.getIconWidth(), r.getIconHeight() ),
+				d );
+			scaled = r.getImage().getScaledInstance( newD.width, newD.height, Image.SCALE_FAST );
+	
+			r.getImage().flush();
+			r.setImage( scaled );
 		}
 
 		long time = System.currentTimeMillis() - start;
