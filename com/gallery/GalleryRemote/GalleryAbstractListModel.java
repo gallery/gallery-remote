@@ -40,6 +40,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      * @param l the <code>ListDataListener</code> to be added
      */  
     public void addListDataListener(ListDataListener l) {
+		if (listenerList == null) listenerList = new EventListenerList();
 	listenerList.add(ListDataListener.class, l);
     }
 
@@ -51,6 +52,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      * @param l the <code>ListDataListener</code> to be removed
      */  
     public void removeListDataListener(ListDataListener l) {
+		if (listenerList == null) listenerList = new EventListenerList();
 	listenerList.remove(ListDataListener.class, l);
     }
 
@@ -69,6 +71,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      * @since 1.4
      */
     public ListDataListener[] getListDataListeners() {
+		if (listenerList == null) listenerList = new EventListenerList();
         return (ListDataListener[])listenerList.getListeners(
                 ListDataListener.class);
     }
@@ -90,6 +93,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      */
     protected void fireContentsChanged(Object source, int index0, int index1)
     {
+		if (listenerList == null) listenerList = new EventListenerList();
 	Object[] listeners = listenerList.getListenerList();
 	ListDataEvent e = null;
 
@@ -120,6 +124,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      */
     protected void fireIntervalAdded(Object source, int index0, int index1)
     {
+		if (listenerList == null) listenerList = new EventListenerList();
 	Object[] listeners = listenerList.getListenerList();
 	ListDataEvent e = null;
 
@@ -150,6 +155,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      */
     protected void fireIntervalRemoved(Object source, int index0, int index1)
     {
+		if (listenerList == null) listenerList = new EventListenerList();
 	Object[] listeners = listenerList.getListenerList();
 	ListDataEvent e = null;
 
@@ -199,6 +205,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
      * @since 1.3
      */
     public EventListener[] getListeners(Class listenerType) { 
+		if (listenerList == null) listenerList = new EventListenerList();
 	return listenerList.getListeners(listenerType); 
     }
 }
