@@ -237,14 +237,15 @@ public class MainFrame extends javax.swing.JFrame
 		fetch.setEnabled( !mInProgress );
 		gallery.setEnabled( !mInProgress );
 		newGallery.setEnabled( !mInProgress );
-		album.setEnabled( !mInProgress );
 		username.setEnabled( !mInProgress );
 		password.setEnabled( !mInProgress );
 		
 		// if the selected album is uploading, disable everything
-		browse.setEnabled( ! mInProgress && mAlbum != null);
-		pictureInspector.setEnabled( ! mInProgress && mAlbum != null);
-		picturesList.setEnabled( ! mInProgress && mAlbum != null);
+		boolean enabled = ! mInProgress && mAlbum != null && album.getModel().getSize() >= 1;
+		browse.setEnabled( enabled );
+		pictureInspector.setEnabled( enabled );
+		picturesList.setEnabled( enabled );
+		album.setEnabled( enabled );
 		
 		if ( mAlbum == null) {
 			pictureInspector.setPictures( (Object[]) null );
@@ -292,6 +293,7 @@ public class MainFrame extends javax.swing.JFrame
 		}
 		
 		updateAlbumCombo();
+		resetUIState();
 	}
 
 
