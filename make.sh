@@ -20,13 +20,13 @@ make_clean()
 make_jar()
 {
 	make_all;
-	jar cvf GalleryRemote.jar com HTTPClient;
+	jar cvf GalleryRemote.jar com HTTPClient remoteAbout.gif;
 }
 
 make_clean_jar()
 {
 	make_all;
-	jar cvf GalleryRemote.jar com/gallery/GalleryRemote/*.class com/gallery/GalleryRemote/model/*.class HTTPClient/*.class;
+	jar cvf GalleryRemote.jar com/gallery/GalleryRemote/*.class com/gallery/GalleryRemote/model/*.class HTTPClient/*.class remoteAbout.gif;
 }
 
 make_zip()
