@@ -26,8 +26,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -86,9 +85,6 @@ public class Album extends Picture implements ListModel, Serializable
 	 */ 
 	transient long pictureFileSize = -1;
 	
-	// ListModel
-	transient Vector listeners = null;
-
 
 	/* -------------------------------------------------------------------------
 	 * PUBLIC CLASS METHODS
@@ -245,8 +241,9 @@ public class Album extends Picture implements ListModel, Serializable
 
 		pictures.remove( n );
 
-		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, n, n );
-		notifyListeners(lde);
+		//ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, n, n );
+		fireIntervalRemoved(this, n, n);
+		//notifyListeners(lde);
 	}
 
 	public void removePicture( Picture p ) {
@@ -273,8 +270,9 @@ public class Album extends Picture implements ListModel, Serializable
 			if (indices[i] < min) min = indices[i];
 		}
 
-		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, min, max );
-		notifyListeners(lde);
+		//ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, min, max );
+		//notifyListeners(lde);
+		fireIntervalRemoved(this, min, max);
 	}
 
 	/**
@@ -408,7 +406,6 @@ public class Album extends Picture implements ListModel, Serializable
 	}
 	
 	public String toString() {
-		
 		StringBuffer ret = new StringBuffer();
 		ret.append( indentHelper("") );
 		ret.append( title );
@@ -463,28 +460,6 @@ public class Album extends Picture implements ListModel, Serializable
 	 */
 	public Object getElementAt( int index ) {
 		return pictures.elementAt( index );
-	}
-
-	/**
-	 *  Adds a feature to the ListDataListener attribute of the Album object
-	 *
-	 *@param  ldl  The feature to be added to the ListDataListener attribute
-	 */
-	public void addListDataListener( ListDataListener ldl ) {
-		if (listeners == null) listeners = new Vector(1);
-
-		listeners.addElement( ldl );
-	}
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  ldl  Description of Parameter
-	 */
-	public void removeListDataListener( ListDataListener ldl ) {
-		if (listeners != null) {
-			listeners.removeElement( ldl );
-		}
 	}
 
 	/**
@@ -585,22 +560,7 @@ public class Album extends Picture implements ListModel, Serializable
 	}
 	
 	void notifyListeners() {
-		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.CONTENTS_CHANGED, 0, pictures.size() );
-		
-		notifyListeners(lde);
-	}
-	
-	void notifyListeners(ListDataEvent lde) {
-		if (listeners != null) {
-			pictureFileSize = -1;
-
-			Log.log(Log.TRACE, MODULE, "Firing ListDataEvent=" + lde.toString());
-			Enumeration e = listeners.elements();
-			while ( e.hasMoreElements() ) {
-				ListDataListener ldl = (ListDataListener) e.nextElement();
-				ldl.contentsChanged( lde );
-			}
-		}
+		fireContentsChanged( this, 0, pictures.size() );
 	}
 }
 

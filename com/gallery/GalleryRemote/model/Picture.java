@@ -28,7 +28,11 @@ import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.GalleryAbstractListModel;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
 
 /**
  *  Picture model
@@ -36,7 +40,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
  *@author     paour
  *@created    11 août 2002
  */
-public class Picture implements Serializable, PreferenceNames {
+public class Picture extends GalleryAbstractListModel implements Serializable, PreferenceNames {
 	public static final String MODULE="Picture";
 
     File source = null;
@@ -46,6 +50,8 @@ public class Picture implements Serializable, PreferenceNames {
 
 	transient double fileSize = 0;
 	transient String escapedCaption = null;
+
+	transient protected EventListenerList listenerList = new EventListenerList();
 
     /**
      *  Constructor for the Picture object
@@ -229,6 +235,15 @@ public class Picture implements Serializable, PreferenceNames {
 	
 	public String toString() {
 		return source.getName();
+	}
+
+	// Hacks to allow Album to inherit from Picture and AbstractListModel
+	public int getSize() {
+		return 0;
+	}
+
+	public Object getElementAt(int index) {
+		return null;
 	}
 }
 
