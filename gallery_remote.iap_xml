@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This script was automatically generated using Zero G's InstallAnywhere 6.1 Enterprise, Build 2325
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Tue Jul 20 18:29:49 PDT 2004 -->
-<InstallAnywhere_Deployment_Project increments="3902">
+     DATE:   Thu Aug 26 09:18:59 PDT 2004 -->
+<InstallAnywhere_Deployment_Project increments="3922">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
 		<versionID major="6" minor="1" revision="-1"/>
@@ -10,9 +10,9 @@
 		<scriptID>12,42,11,90,81,52,54,53,54,68,86,83,81,54,80,74</scriptID>
 		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,51,46,49,95,48,56,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,83,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,-16,-45,82,-128,80,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,2,14,97,111,13,0,0,0</authorizationID>
+		<authorizationID>1,0,0,-16,-109,-29,-128,-48,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,1,12,100,107,14,0,0,0</authorizationID>
 	</essentialScriptInfo>
-	<installationObjects uniqueObjects="199">
+	<installationObjects uniqueObjects="200">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
 			<property name="wizardME">
 				<object class="com.zerog.ia.installer.actions.MakeExecutable" objectID="e14b435a989f">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="f2d24be3994d">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="af64a402bd49">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -1635,7 +1635,7 @@ If the commands above do not work, you should download and install these package
 				<object class="java.util.Properties">
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[July 20, 2004 6:29:49 PM PDT]]></string>
+						<string><![CDATA[August 26, 2004 9:18:59 AM PDT]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
@@ -1901,7 +1901,7 @@ If the commands above do not work, you should download and install these package
 						<int>4</int>
 					</property>
 					<property name="productVersionRevision">
-						<int>0</int>
+						<int>1</int>
 					</property>
 					<property name="productVersionSubRevision">
 						<int>0</int>
@@ -3427,7 +3427,7 @@ it will search for ones in this list]]></string>
 														</object>
 													</method>
 													<method name="addElement">
-														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="f2d24ca0998c">
+														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="af64a4bdbd88">
 															<property name="propertyValue">
 																<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 															</property>
@@ -3806,6 +3806,38 @@ and any path to a file to read from that file]]></string>
 										</object>
 										<object refID="b97792e9a8d9"/>
 										<object refID="ed69f3f58330"/>
+										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="ad46e39e832e">
+											<property name="unixPermissions">
+												<string><![CDATA[775]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\lib]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[lib]]></string>
+											</property>
+											<property name="removeRecursively">
+												<boolean>false</boolean>
+											</property>
+											<property name="totalSize">
+												<long>1</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<visualChildren>
+												<object refID="83eedd7f84b0"/>
+											</visualChildren>
+										</object>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc669333">
 											<property name="unixPermissions">
 												<string><![CDATA[775]]></string>
@@ -3833,6 +3865,35 @@ and any path to a file to read from that file]]></string>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="af653e7cbdab">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[G:\Dev\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>-1</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
 											</property>
 										</object>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc65932f">
@@ -3877,38 +3938,7 @@ and any path to a file to read from that file]]></string>
 												<object refID="a66afc659337"/>
 												<object refID="a66afc669337"/>
 												<object refID="b9742fe8a8d4"/>
-											</visualChildren>
-										</object>
-										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="ad46e39e832e">
-											<property name="unixPermissions">
-												<string><![CDATA[775]]></string>
-											</property>
-											<property name="sourceName">
-												<string><![CDATA[]]></string>
-											</property>
-											<property name="overrideUnixPermissions">
-												<boolean>false</boolean>
-											</property>
-											<property name="sourcePath">
-												<string><![CDATA[$IA_PROJECT_DIR$\lib]]></string>
-											</property>
-											<property name="shouldUninstall">
-												<boolean>true</boolean>
-											</property>
-											<property name="destinationName">
-												<string><![CDATA[lib]]></string>
-											</property>
-											<property name="removeRecursively">
-												<boolean>false</boolean>
-											</property>
-											<property name="totalSize">
-												<long>1</long>
-											</property>
-											<property name="macBinary">
-												<boolean>false</boolean>
-											</property>
-											<visualChildren>
-												<object refID="83eedd7f84b0"/>
+												<object refID="af653e7cbdab"/>
 											</visualChildren>
 										</object>
 									</installChildren>
