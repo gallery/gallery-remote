@@ -130,7 +130,7 @@ public class PropertiesFile extends GalleryProperties
 			try {
 				read();
 			} catch ( FileNotFoundException e ) {
-				e.printStackTrace();
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}
 	}
@@ -188,7 +188,7 @@ public class PropertiesFile extends GalleryProperties
 				fileOut = new FileOutputStream( mFilename );
 				store( fileOut, null );
 			} catch ( IOException e ) {
-				e.printStackTrace();
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			} finally {
 				try {
 					fileOut.close();

@@ -93,20 +93,15 @@ public class PictureInspector extends JPanel
 	 *  Constructor for the PictureInspector object
 	 */
 	public PictureInspector() {
-		try {
-			jbInit();
-			jbInitEvents();
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
+		jbInit();
+		jbInitEvents();
 
 		emptyIconHeight = (int) jIcon.getPreferredSize().getHeight();
 		Log.log(Log.LEVEL_TRACE, MODULE, "emptyIconHeight: " + emptyIconHeight);
 	}
 
 
-	private void jbInit()
-			throws Exception {
+	private void jbInit() {
 		setLayout( gridBagLayout4 );
 		jLabel5.setText(grRes.getString(MODULE, "Path") );
 		jLabel6.setText(grRes.getString(MODULE, "Album") );

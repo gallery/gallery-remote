@@ -95,11 +95,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 		this.gallery = gallery;
 		this.defaultAlbum = defaultAlbum;
 
-		try {
-			jbInit();
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
+		jbInit();
 
 		pack();
 		DialogUtil.center(this, owner);
@@ -108,8 +104,7 @@ public class NewAlbumDialog extends javax.swing.JDialog
 	}
 
 
-	private void jbInit()
-		throws Exception {
+	private void jbInit() {
 		this.getContentPane().setLayout( gridBagLayout1 );
 		this.setModal( true );
 		this.setTitle( grRes.getString(MODULE, "title") );

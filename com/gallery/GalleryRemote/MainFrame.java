@@ -585,7 +585,7 @@ public class MainFrame extends javax.swing.JFrame
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 				jAlbumCombo.setSelectedItem(getCurrentGallery().getAlbumByName(newAlbumName));
 			}
@@ -793,7 +793,7 @@ public class MainFrame extends javax.swing.JFrame
 			AboutBox ab = new AboutBox(this);
 			ab.setVisible( true );
 		} catch ( Exception err ) {
-			err.printStackTrace();
+			Log.logException(Log.LEVEL_ERROR, MODULE, err);
 		}
 	}
 
