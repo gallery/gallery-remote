@@ -1,3 +1,14 @@
+2003-06-26  Pierre-Luc Paour <gallery@paour.com> (1.1-b10)
+
+	* Added ability for QuickConfig to handle gallery URLs (you need
+	  to use url.99, or any other set of parameters as long as the
+	  parameter ends in .99. This can be used to very easily add a
+	  Gallery URL to GR, especially useful for CMS.
+	* If username and/or password are not set, GalleryComm2 asks for
+	  them. This is necessary for when passwords are not saved.
+	* An empty Gallery object is no longer created when none have been
+	  declared.
+
 2003-06-26  Pierre-Luc Paour <gallery@paour.com> (1.1-b9)
 
 	* Implemented extra fields in UI and protocol.
