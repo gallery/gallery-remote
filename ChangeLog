@@ -1,6 +1,8 @@
 2002-09-02  Pierre-Luc Paour <gallery@paour.com> (1.0-b3)
 	
-	* Added multi-selection support to the PcitureInspector. Fixed buttons.
+	* Added multi-selection support to the PictureInspector. Fixed buttons.
+	* Switched to an Ant-based build system
+	* Fixed inspector state when deleting pictures
 
 2002-09-01  Pierre-Luc Paour <gallery@paour.com> (1.0-b2)
 	
