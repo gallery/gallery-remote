@@ -122,14 +122,19 @@ public class MainFrame extends javax.swing.JFrame
 		int i = -1;
 		String url;
 		while ( ( url = p.getProperty( "url." + (++i) ) ) != null ) {
-			String username = p.getProperty( "username." + i );
-			String password = p.getBase64Property( "password." + i );
-
-			Log.log(Log.INFO, MODULE, "loaded saved URL: " + url + " (" + username + "/******)" );
-
-			Gallery g = new Gallery(url, username, password);
-
-			galleries.addElement(g);
+			try {
+				String username = p.getProperty( "username." + i );
+				String password = p.getBase64Property( "password." + i );
+	
+				Log.log(Log.INFO, MODULE, "loaded saved URL: " + url + " (" + username + "/******)" );
+	
+				Gallery g = new Gallery(url, username, password);
+	
+				galleries.addElement(g);
+			} catch (Exception e) {
+				Log.log(Log.ERROR, MODULE, "Error trying to load profile");
+				Log.logException(Log.ERROR, MODULE, e);
+			}
 		}
 		
 		if ( galleries.getSize() == 0 ) {

@@ -224,6 +224,7 @@ public class GalleryProperties extends Properties {
 	 */
 	public Dimension getDimensionProperty( String name ) {
 		String value = getProperty( name );
+		if (value == null) return null;
 
 		StringTokenizer st;
 		if ( value != null && ( st = new StringTokenizer( value, "," ) ).countTokens() == 2 ) {
@@ -255,6 +256,7 @@ public class GalleryProperties extends Properties {
 	 */
 	public Rectangle getRectangleProperty( String name ) {
 		String value = getProperty( name );
+		if (value == null) return null;
 
 		StringTokenizer st;
 		if ( value != null && ( st = new StringTokenizer( value, "," ) ).countTokens() == 4 ) {
@@ -332,6 +334,8 @@ public class GalleryProperties extends Properties {
 	 */
 	public String getBase64Property( String name ) {
 		String base64S = getProperty( name );
+		if (base64S == null) return null;
+		
 		try {
 			return Base64.decode( base64S );
 		} catch ( Error e ) {
@@ -352,6 +356,24 @@ public class GalleryProperties extends Properties {
 	
 
 	/**
+	 *  Gets the date Property attribute of the PropertiesFile object
+	 *
+	 *@param  name  Description of Parameter
+	 *@return       The date Property value
+	 */
+	public Date getDateProperty( String name ) {
+		String dateS = getProperty( name );
+		if (dateS == null) return null;
+		
+		try {
+			return dateFormat.parse( dateS );
+		} catch ( ParseException e ) {
+			throw new NumberFormatException( "Parameter " + name + " is missing or malformed (should be a Date value (yyyy/mm/dd))" );
+		}
+	}
+
+
+	/**
 	 *  Set a property as a Date value
 	 *
 	 *@param  name   Name of the property
@@ -362,22 +384,6 @@ public class GalleryProperties extends Properties {
 	}
 	
 	
-	/**
-	 *  Gets the date Property attribute of the PropertiesFile object
-	 *
-	 *@param  name  Description of Parameter
-	 *@return       The date Property value
-	 */
-	public Date getDateProperty( String name ) {
-		String dateS = getProperty( name );
-		try {
-			return dateFormat.parse( dateS );
-		} catch ( ParseException e ) {
-			throw new NumberFormatException( "Parameter " + name + " is missing or malformed (should be a Date value (yyyy/mm/dd))" );
-		}
-	}
-
-
 	public String getProperty( String name, String defaultValue ) {
 		String tmp = getProperty( name );
 		
