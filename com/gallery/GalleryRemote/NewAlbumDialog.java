@@ -106,7 +106,7 @@ public class NewAlbumDialog extends JDialog
 			jAlbum.setSelectedItem(defaultAlbum);
 		}
 
-		jCancel.setText(GRI18n.getString("Common", "cancel"));
+		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.setActionCommand("Cancel");
 		jDescription.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray));
 		jDescription.setLineWrap(true);

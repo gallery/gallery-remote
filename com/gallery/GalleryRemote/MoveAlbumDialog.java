@@ -101,7 +101,7 @@ public class MoveAlbumDialog extends JDialog
 		jAlbum = new JComboBox(albums);
 		jAlbum.setFont(UIManager.getFont("Label.font"));
 
-		jCancel.setText(GRI18n.getString("Common", "cancel"));
+		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.setActionCommand("Cancel");
 		jOk.setText(GRI18n.getString("Common", "OK"));
 		jOk.setActionCommand("OK");

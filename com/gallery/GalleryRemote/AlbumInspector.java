@@ -241,9 +241,13 @@ public class AlbumInspector extends JPanel
 		} else if (source == jApply) {
 			// todo
 		} else if (source == jMove) {
-			//MoveAlbumDialog mad = new MoveAlbumDialog(mf, album.getGallery(), album);
-			//album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), mad.getNewParent());
-			album.moveAlbumTo(null, null);
+			MoveAlbumDialog mad = new MoveAlbumDialog(mf, album.getGallery(), album);
+			album.moveAlbumTo(GalleryRemote._().getCore().getMainStatusUpdate(), mad.getNewParent());
+
+			// todo: this is too drastic...
+			album.getGallery().reload();
+
+			//album.moveAlbumTo(null, null);
 		} else if (source == jSlideshow) {
 			mf.slideshow();
 		} else {

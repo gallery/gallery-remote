@@ -21,6 +21,7 @@
 package com.gallery.GalleryRemote.model;
 
 import com.gallery.GalleryRemote.*;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
@@ -1070,7 +1071,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 			throw new IllegalStateException("Root album already exists");
 		}
 
-		setRoot(new Album(this));
+		Album album = new Album(this);
+		album.setTitle(GRI18n.getString("Common", "rootAlbmTitle"));
+		setRoot(album);
 
 		return (Album) getRoot();
 	}

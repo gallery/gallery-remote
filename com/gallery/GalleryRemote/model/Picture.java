@@ -60,12 +60,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	Dimension sizeResized = null;
 	URL urlThumbnail = null;
 	Dimension sizeThumbnail = null;
+	Rectangle cropTo = null;
 
 	Album albumOnServer = null;
 	int indexOnServer = -1;
 
 	transient double fileSize = 0;
 	transient int indexCache = -1;
+	transient Dimension dimension = null;
 
 	/**
 	 * Constructor for the Picture object
@@ -183,9 +185,22 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	 * @return The source value
 	 */
 	public File getUploadSource() {
+		boolean useLossyCrop = false;
 		File picture = getSource();
 		Album album = getParentAlbum();
 
+		// crop
+		if (cropTo != null) {
+			try {
+				picture = ImageUtils.losslessCrop(picture.getPath(), cropTo);
+			} catch (UnsupportedOperationException e) {
+				Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to losslessly crop the image, will try lossy");
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				useLossyCrop = true;
+			}
+		}
+
+		// resize
 		if (album.getResize()) {
 			Dimension d = album.getResizeDimension();
 
@@ -205,16 +220,19 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 				}
 			}
 
-			if (d != null) {
+			if (d != null || useLossyCrop) {
 				try {
-					picture = ImageUtils.resize(picture.getPath(), d);
+					picture = ImageUtils.resize(picture.getPath(), d, useLossyCrop?cropTo:null);
 				} catch (UnsupportedOperationException e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 			}
+		} else if (useLossyCrop) {
+			picture = ImageUtils.resize(picture.getPath(), null, useLossyCrop?cropTo:null);
 		}
 
+		// rotate
 		if (angle != 0 || flipped) {
 			try {
 				picture = ImageUtils.rotate(picture.getPath(), angle, flipped, true);
@@ -521,6 +539,23 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
+	}
+
+	public Rectangle getCropTo() {
+		return cropTo;
+	}
+
+	public void setCropTo(Rectangle cropTo) {
+		Log.log(Log.LEVEL_TRACE, MODULE, "setCropTo " + cropTo);
+		this.cropTo = cropTo;
+	}
+
+	public Dimension getDimension() {
+		if (dimension == null) {
+			dimension = ImageUtils.getPictureDimension(this);
+		}
+
+		return dimension;
 	}
 }
 

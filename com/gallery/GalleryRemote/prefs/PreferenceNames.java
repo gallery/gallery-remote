@@ -67,9 +67,11 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_RECURSIVE = "slideshowRecursive";
 	public static final String SLIDESHOW_NOSTRETCH = "slideshowNoStretch";
 	public static final String SLIDESHOW_COLOR = "slideshowColor";
+	public static final String SLIDESHOW_PRELOADALL = "slideshowPreloadAll";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
 	public static final String SUPPRESS_WARNING_JPEGTRAN = "suppressWarningJpegtran";
+	public static final String SUPPRESS_WARNING_JPEGTRAN_CROP = "suppressWarningJpegtranCrop";
 	public static final String SUPPRESS_WARNING_CORRUPTED = "suppressWarningCorrupted";
 }

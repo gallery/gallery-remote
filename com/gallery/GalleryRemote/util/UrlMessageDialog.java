@@ -38,7 +38,7 @@ public class UrlMessageDialog extends JDialog {
 		
 		jURL.setUrl(url);
 		jDontShow.setText(GRI18n.getString(MODULE, "warningDontShow"));
-		jOk.setText(GRI18n.getString(MODULE, "warningOK"));
+		jOk.setText(GRI18n.getString("Common", "OK"));
 		jOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setVisible(false);

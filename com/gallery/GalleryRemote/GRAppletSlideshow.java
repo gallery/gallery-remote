@@ -54,7 +54,6 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 		ImageUtils.deferredTasks();
 
 		album = new Album(gallery);
-		//album.setSuppressEvents(true);
 		album.setName(info.albumName);
 		album.addListDataListener(this);
 

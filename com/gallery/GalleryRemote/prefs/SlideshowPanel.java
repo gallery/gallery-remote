@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ColorWellButton;
+import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.GalleryRemoteCore;
 import com.gallery.GalleryRemote.MainFrame;
@@ -26,7 +27,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	public JPanel spacerPanel = new JPanel();
 	JLabel delay = new JLabel();
 	JTextField jDelay = new JTextField();
-	JLabel delayHelp = new JLabel();
+	JLabel help = new JLabel();
 	JLabel progress = new JLabel();
 	JLabel caption = new JLabel();
 	JLabel extra = new JLabel();
@@ -40,6 +41,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JCheckBox jLowRez = new JCheckBox();
 	JCheckBox jRandom = new JCheckBox();
 	JCheckBox jNoStretch = new JCheckBox();
+	JCheckBox jPreloadAll = new JCheckBox();
 	JPanel spacerPanel1 = new JPanel();
 	ColorWellButton jBackgroundColor = new ColorWellButton(Color.red);
 
@@ -56,6 +58,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jLowRez.setSelected(props.getBooleanProperty(SLIDESHOW_LOWREZ));
 		jRandom.setSelected(props.getBooleanProperty(SLIDESHOW_RANDOM));
 		jNoStretch.setSelected(props.getBooleanProperty(SLIDESHOW_NOSTRETCH));
+		jPreloadAll.setSelected(props.getBooleanProperty(SLIDESHOW_PRELOADALL));
 		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
 		Color color = props.getColorProperty(SLIDESHOW_COLOR);
 		jOverride.setSelected(color != null);
@@ -68,11 +71,15 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jLowRez.setEnabled(! props.isOverridden(SLIDESHOW_LOWREZ));
 		jRandom.setEnabled(! props.isOverridden(SLIDESHOW_RANDOM));
 		jNoStretch.setEnabled(! props.isOverridden(SLIDESHOW_NOSTRETCH));
+		jPreloadAll.setEnabled(! props.isOverridden(SLIDESHOW_PRELOADALL));
 		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
+		jOverride.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
+		jBackgroundColor.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
 	}
 
 	public void writeProperties(PropertiesFile props) {
 		if (jNoStretch.isSelected() != props.getBooleanProperty(SLIDESHOW_NOSTRETCH)) {
+			ImageUtils.purgeTemp();
 			GalleryRemote._().getCore().flushMemory();
 		}
 
@@ -84,6 +91,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		props.setBooleanProperty(SLIDESHOW_LOWREZ, jLowRez.isSelected());
 		props.setBooleanProperty(SLIDESHOW_RANDOM, jRandom.isSelected());
 		props.setBooleanProperty(SLIDESHOW_NOSTRETCH, jNoStretch.isSelected());
+		props.setBooleanProperty(SLIDESHOW_PRELOADALL, jPreloadAll.isSelected());
 		props.setIntProperty(SLIDESHOW_DELAY, Integer.parseInt(jDelay.getText()));
 
 		if (jOverride.isSelected()) {
@@ -92,7 +100,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 			props.remove(SLIDESHOW_COLOR);
 		}
 		GalleryRemoteCore core = GalleryRemote._().getCore();
-		if (core instanceof MainFrame) {
+		if (!GalleryRemote._().isAppletMode()) {
 			((MainFrame) core).previewFrame.repaint();
 		}
 	}
@@ -137,11 +145,13 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		delay.setText(GRI18n.getString(MODULE, "delay"));
 		delay.setLabelFor(jDelay);
 		delay.setToolTipText(GRI18n.getString(MODULE, "delayHelp"));
-		delayHelp.setText(GRI18n.getString(MODULE, "delayDesc"));
+		help.setText(GRI18n.getString(MODULE, "delayDesc"));
 		jRandom.setText(GRI18n.getString(MODULE, "random"));
 		jRandom.setToolTipText(GRI18n.getString(MODULE, "randomHelp"));
 		jNoStretch.setText(GRI18n.getString(MODULE, "noStretch"));
 		jNoStretch.setToolTipText(GRI18n.getString(MODULE, "noStretchHelp"));
+		jPreloadAll.setText(GRI18n.getString(MODULE, "preloadAll"));
+		jPreloadAll.setToolTipText(GRI18n.getString(MODULE, "preloadAllHelp"));
 
 		progress.setText(GRI18n.getString(MODULE, "progress"));
 		progress.setLabelFor(jProgress);
@@ -166,22 +176,19 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(apperancePanel,     new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		this.add(spacerPanel,    new GridBagConstraints(0, 3, 1, 1, 1.0, 1.0
+		this.add(help,   new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		this.add(spacerPanel,    new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		progressionPanel.add(delay,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		progressionPanel.add(jDelay,   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-		progressionPanel.add(delayHelp,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 10, 0, 0), 0, 0));
-		//JPanel jRandomNoStretch = new JPanel();
-		//jRandomNoStretch.add(jRandom);
-		//jRandomNoStretch.add(jNoStretch);
 		progressionPanel.add(jRandom,   new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-		//progressionPanel.add(jNoStretch,   new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0
-		//		,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		progressionPanel.add(jPreloadAll,   new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		apperancePanel.add(jLowRez,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -191,8 +198,6 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		apperancePanel.add(jBackgroundColor,  new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
-		//apperancePanel.add(spacerPanel1,      new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
-		//		,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		locationPanel.add(progress,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));

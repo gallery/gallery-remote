@@ -3,6 +3,7 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
@@ -16,6 +17,8 @@ import java.awt.event.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
+import java.io.File;
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,10 +36,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	boolean shutdown = false;
 	long pictureShownTime = 0;
 
-	//JLabel jCaption = new JLabel();
-	//JLabel jProgress = new JLabel();
-	//JLabel jExtra = new JLabel();
-	//JLabel jURL = new JLabel();
 	String caption = null;
 	String progress = null;
 	String extra = null;
@@ -57,9 +56,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 	long controllerUntil = 0;
 	Thread controllerThread = null;
-
-	public static ImageIcon iForward = new ImageIcon(GalleryRemote.class.getResource("/forward.png"));
-
 
 	public SlideshowFrame() {
 		setUndecorated(true);
@@ -186,68 +182,9 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		setContentPane(cp);
 
 		PropertiesFile pf = GalleryRemote._().properties;
-		/*jCaption.setUI((LabelUI) OutlineLabelUI.createUI(jCaption));
-		jProgress.setUI((LabelUI) OutlineLabelUI.createUI(jProgress));
-		jExtra.setUI((LabelUI) OutlineLabelUI.createUI(jExtra));
-		jURL.setUI((LabelUI) OutlineLabelUI.createUI(jURL));
-
-		jCaption.setForeground(Color.white);
-		jProgress.setForeground(Color.white);
-		jExtra.setForeground(Color.white);
-		jURL.setForeground(Color.white);
-
-		jCaption.setFont(jCaption.getFont().deriveFont(Font.BOLD));
-		jProgress.setFont(jCaption.getFont().deriveFont(Font.BOLD));
-		jExtra.setFont(jCaption.getFont().deriveFont(Font.BOLD));
-		jURL.setFont(jCaption.getFont().deriveFont(Font.BOLD));
-
-		cp.setLayout(new GridBagLayout());
-
-		cp.add(new JLabel(), new GridBagConstraints(0, 10, 1, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		cp.add(new JLabel(), new GridBagConstraints(1, 10, 1, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		cp.add(new JLabel(), new GridBagConstraints(2, 20, 1, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-
-		addComponent(cp, jProgress, 1, pf.getIntProperty(SLIDESHOW_PROGRESS));
-		addComponent(cp, jCaption, 2, pf.getIntProperty(SLIDESHOW_CAPTION));
-		addComponent(cp, jExtra, 3, pf.getIntProperty(SLIDESHOW_EXTRA));
-		addComponent(cp, jURL, 4, pf.getIntProperty(SLIDESHOW_URL));*/
 
 		sleepTime = pf.getIntProperty(SLIDESHOW_DELAY) * 1000;
 	}
-
-	/*private void addComponent(PreviewFrame.ImageContentPane cp, JLabel c, int mod, int value) {
-		if (value == 0) {
-			return;
-		}
-
-		int col;
-		int cons;
-		switch (value % 10) {
-			case 2:
-			default:
-				col = 0;
-				cons = GridBagConstraints.WEST;
-				break;
-
-			case 0:
-				col = 1;
-				cons = GridBagConstraints.CENTER;
-				break;
-
-			case 4:
-				col = 2;
-				cons = GridBagConstraints.EAST;
-				break;
-		}
-
-		cp.add(c, new GridBagConstraints(col, ((int) ((value - 10) / 10)) * 10 + mod, 1, 1, 0.0, 0.0
-				, cons, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-
-		c.setHorizontalAlignment(value % 10);
-	}*/
 
 	public void start(ArrayList pictures) {
 		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_RANDOM)) {
@@ -258,6 +195,21 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		new Thread(this).start();
+
+		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_PRELOADALL)) {
+			new Thread() {
+				public void run() {
+					for (Iterator it = SlideshowFrame.this.pictures.iterator(); it.hasNext();) {
+						if (shutdown) {
+							break;
+						}
+						
+						Picture picture = (Picture) it.next();
+						ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+					}
+				}
+			}.start();
+		}
 	}
 
 	public void run() {
@@ -399,19 +351,12 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 
 		if (picture != null) {
 			// todo: captions are not printed outline because they are HTML and that's a fucking mess
-			//jCaption.setText("<HTML>" + picture.getCaption() + "</HTML>");
-			//jCaption.setText(picture.getCaption());
 			caption = picture.getCaption();
 			updateProgress(picture, STATE_NONE);
 			extra = picture.getExtraFieldsString();
-			//if (extraFields != null) {
-				//jExtra.setText(extraFields);
-			//}
 			if (picture.isOnline()) {
-				//jURL.setText(picture.safeGetUrlFull().toString());
 				url = picture.safeGetUrlFull().toString();
 			} else {
-				//jURL.setText(picture.getSource().toString());
 				url = picture.getSource().toString();
 			}
 		}
@@ -437,9 +382,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		if (picture == null) {
 			return;
 		}
-		//StringBuffer sb = new StringBuffer();
 
-		//sb.append(pictures.indexOf(picture) + 1).append("/").append(pictures.size());
 		Object[] params = new Object[] {picture.getName(),
 										new Integer(pictures.indexOf(picture) + 1),
 										new Integer(pictures.size())};
@@ -487,91 +430,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		return true;
 	}
 
-	//public static class OutlineLabelUI extends BasicLabelUI {
-	//	protected static OutlineLabelUI labelUI = new OutlineLabelUI();
-		/*private static Rectangle paintIconR = new Rectangle();
-		private static Rectangle paintTextR = new Rectangle();
-		private static Rectangle paintViewR = new Rectangle();
-		private static Insets paintViewInsets = new Insets(0, 0, 0, 0);*/
-
-	//	public static ComponentUI createUI(JComponent c) {
-	//		return labelUI;
-	//	}
-
-	//	protected void paintEnabledText(JLabel l, Graphics g, String s, int textX, int textY) {
-	//		g.setColor(Color.darkGray);
-	//		g.drawString(s,textX + 1, textY + 1);
-	//		g.drawString(s,textX - 1, textY + 1);
-	//		g.drawString(s,textX + 1, textY - 1);
-	//		g.drawString(s,textX - 1, textY - 1);
-	//		g.setColor(l.getForeground());
-	//		g.drawString(s, textX, textY);
-	//	}
-
-		// todo: captions are not printed outline because they are HTML and that's a fucking mess
-		/*public void paint(Graphics g, JComponent c) {
-			JLabel label = (JLabel)c;
-			String text = label.getText();
-			Icon icon = (label.isEnabled()) ? label.getIcon() : label.getDisabledIcon();
-
-			if ((icon == null) && (text == null)) {
-				return;
-			}
-
-			FontMetrics fm = g.getFontMetrics();
-			Insets insets = c.getInsets(paintViewInsets);
-
-			paintViewR.x = insets.left;
-			paintViewR.y = insets.top;
-			paintViewR.width = c.getWidth() - (insets.left + insets.right);
-			paintViewR.height = c.getHeight() - (insets.top + insets.bottom);
-
-			paintIconR.x = paintIconR.y = paintIconR.width = paintIconR.height = 0;
-			paintTextR.x = paintTextR.y = paintTextR.width = paintTextR.height = 0;
-
-			String clippedText =
-					layoutCL(label, fm, text, icon, paintViewR, paintIconR, paintTextR);
-
-			if (icon != null) {
-				icon.paintIcon(c, g, paintIconR.x, paintIconR.y);
-			}
-
-			if (text != null) {
-				View v = (View) c.getClientProperty(BasicHTML.propertyKey);
-				if (v != null) {
-					Color color = label.getForeground();
-
-					label.setForeground(Color.darkGray);
-					label.setText(label.getText() + " ");
-					paintTextR.x -= 1;
-					v.paint(g, paintTextR);
-					paintTextR.y -= 1;
-					v.paint(g, paintTextR);
-					paintTextR.x += 2;
-					v.paint(g, paintTextR);
-					paintTextR.y += 2;
-					v.paint(g, paintTextR);
-
-					label.setForeground(Color.white);
-					label.setText(label.getText() + " ");
-					paintTextR.x -= 1;
-					paintTextR.y -= 1;
-					v.paint(g, paintTextR);
-				} else {
-					int textX = paintTextR.x;
-					int textY = paintTextR.y + fm.getAscent();
-
-					if (label.isEnabled()) {
-						paintEnabledText(label, g, clippedText, textX, textY);
-					}
-					else {
-						paintDisabledText(label, g, clippedText, textX, textY);
-					}
-				}
-			}
-		}*/
-	//}
-
 	public void updateFeedback(int feedback) {
 		if (feedback != FEEDBACK_NONE) {
 			controllerUntil = System.currentTimeMillis()
@@ -615,6 +473,10 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 	}
 
 	public class FeedbackGlassPane extends JComponent {
+		Color background = new Color(100, 100, 100, 150);
+		Color normal = new Color(180, 180, 180, 180);
+		Color hilight = new Color(255, 255, 255, 180);
+
 		public void paint(Graphics g) {
 			if (feedback != FEEDBACK_NONE || controllerUntil > System.currentTimeMillis()) {
 				paintController(g);
@@ -624,10 +486,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		private void paintController(Graphics g) {
-			Color background = new Color(100, 100, 100, 150);
-			Color normal = new Color(180, 180, 180, 180);
-			Color hilight = new Color(255, 255, 255, 180);
-
 			Dimension d = getSize();
 			int width = 475;
 			int height = 150;
@@ -691,7 +549,7 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 		}
 
 		public void paintInfo(Graphics g, String text, int position) {
-			if (position == 0) return;
+			if (position == 0 || text == null || text.length() == 0) return;
 
 			Dimension d = getSize();
 			g.setFont(getFont());
@@ -734,22 +592,6 @@ public class SlideshowFrame extends PreviewFrame implements Runnable, Preference
 			y += bounds.getHeight();
 
 			paintOutline(g, text, x, y);
-		}
-
-		public final Color darkGray  = new Color(64, 64, 64, 128);
-		protected void paintOutline(Graphics g, String s, int textX, int textY) {
-			g.setColor(darkGray);
-			g.drawString(s, textX + 1, textY + 1);
-			g.drawString(s, textX, textY + 1);
-			g.drawString(s, textX - 1, textY + 1);
-			g.drawString(s, textX + 1, textY);
-			g.drawString(s, textX, textY);
-			g.drawString(s, textX - 1, textY);
-			g.drawString(s, textX + 1, textY - 1);
-			g.drawString(s, textX, textY - 1);
-			g.drawString(s, textX - 1, textY - 1);
-			g.setColor(Color.white);
-			g.drawString(s, textX, textY);
 		}
 
 		private void drawText(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {

@@ -70,6 +70,7 @@ public class ImageUtils {
 	static boolean imIgnoreErrorCode = false;
 
 	public static boolean useJpegtran = false;
+	public static boolean useJpegtranCrop = false;
 	static String jpegtranPath = null;
 	static boolean jpegtranIgnoreErrorCode = false;
 
@@ -92,6 +93,7 @@ public class ImageUtils {
 
 	public static boolean deferredStopUsingIM = false;
 	public static boolean deferredStopUsingJpegtran = false;
+	public static boolean deferredStopUsingJpegtranCrop = false;
 
 	public static ImageIcon load(String filename, Dimension d, int usage) {
 		return load(filename, d, usage, false);
@@ -110,13 +112,8 @@ public class ImageUtils {
 		}
 
 		if (useIM) {
-			//StringBuffer cmdline = new StringBuffer(imPath);
 			ArrayList cmd = new ArrayList();
 			cmd.add(imPath);
-
-			//cmdline.append(" -size ").append(d.width).append("x").append(d.height);
-			//cmd.add("-size");
-			//cmd.add(d.width + "x" + d.height);
 
 			if (filterName[usage] != null && filterName[usage].length() > 0) {
 				//cmdline.append(" -filter ").append(filterName[usage]);
@@ -124,10 +121,8 @@ public class ImageUtils {
 				cmd.add(filterName[usage]);
 			}
 
-			//cmdline.append(" \"").append(filename).append("\"");
 			cmd.add(filename);
 
-			//cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append("\"");
 			cmd.add("-resize");
 			if (GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SLIDESHOW_NOSTRETCH)) {
 				cmd.add(d.width + "x" + d.height + ">");
@@ -135,7 +130,6 @@ public class ImageUtils {
 				cmd.add(d.width + "x" + d.height);
 			}
 
-			//cmdline.append(" +profile \"*\" ");
 			cmd.add("+profile");
 			cmd.add("*");
 
@@ -144,10 +138,8 @@ public class ImageUtils {
 			if (!temp.exists()) {
 				toDelete.add(temp);
 
-				//cmdline.append("\"" +temp.getPath() + "\"");
 				cmd.add(temp.getPath());
 
-				//int exitValue = exec(cmdline.toString());
 				int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
 				if ((exitValue != 0 && !imIgnoreErrorCode && !ignoreFailure) || ! temp.exists()) {
@@ -239,46 +231,45 @@ public class ImageUtils {
 	}
 
 	public static File resize(String filename, Dimension d) {
+		return resize(filename, d, null);
+	}
+
+	public static File resize(String filename, Dimension d, Rectangle cropTo) {
 		File r = null;
 		long start = System.currentTimeMillis();
 
-		if (!GalleryFileFilter.canManipulateJpeg(filename)) {
+		if (!GalleryFileFilter.canManipulate(filename)) {
 			return new File(filename);
 		}
 
 		if (useIM) {
-			//StringBuffer cmdline = new StringBuffer(imPath);
 			ArrayList cmd = new ArrayList();
 			cmd.add(imPath);
 
-			//cmdline.append(" -size ").append(d.width).append("x").append(d.height);
-			//cmd.add("-size");
-			//cmd.add(d.width + "x" + d.height);
-
 			if (filterName[UPLOAD] != null && filterName[UPLOAD].length() > 0) {
-				//cmdline.append(" -filter ").append(filterName[UPLOAD]);
 				cmd.add("-filter");
 				cmd.add(filterName[UPLOAD]);
 			}
 
-			//cmdline.append(" \"").append(filename).append("\"");
 			cmd.add(filename);
 
-			//cmdline.append(" -resize \"").append(d.width).append("x").append(d.height).append(">\"");
-			cmd.add("-resize");
-			cmd.add(d.width + "x" + d.height + ">");
+			if (cropTo != null) {
+				cmd.add("-crop");
+				cmd.add(cropTo.width + "x" + cropTo.height + "+" + cropTo.x + "+" + cropTo.y);
+			}
 
-			//cmdline.append("-gravity SouthEast -draw \"image Over 200,200 0,0 G:\\Projects\\Dev\\gallery_remote10\\2ni.png\" ");
+			if (d != null) {
+				cmd.add("-resize");
+				cmd.add(d.width + "x" + d.height + ">");
+			}
 
-			//cmdline.append(" -quality ").append(jpegQuality);
 			cmd.add("-quality");
 			cmd.add("" + jpegQuality);
 
 			r = deterministicTempFile("res"
-					, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + d);
+					, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + d + cropTo);
 			toDelete.add(r);
 
-			//cmdline.append(" \"").append(r.getPath()).append("\"");
 			cmd.add(r.getPath());
 
 			int exitValue = exec((String[]) cmd.toArray(new String[0]));
@@ -435,12 +426,12 @@ public class ImageUtils {
 				}
 
 				if (flip) {
-					r = jpegtranExec(filename, "-flip", "horizontal");
+					r = jpegtranExec(filename, "-flip", "horizontal", false);
 					filename = r.getPath();
 				}
 
 				if (angle != 0) {
-					r = jpegtranExec(filename, "-rotate", "" + (angle * 90));
+					r = jpegtranExec(filename, "-rotate", "" + (angle * 90), false);
 				}
 
 				/*if (resetExifOrientation) {
@@ -463,42 +454,77 @@ public class ImageUtils {
 		return r;
 	}
 
-	private static File jpegtranExec(String filename, String arg1, String arg2) throws IOException {
+	public static File losslessCrop(String filename, Rectangle cropTo) {
+		File r = null;
+
+		if (!GalleryFileFilter.canManipulateJpeg(filename)) {
+			throw new UnsupportedOperationException("jpegtran doesn't support cropping anything but jpeg");
+		}
+
+		if (useJpegtran) {
+			File orig = null;
+			File dest = null;
+			try {
+				if (GalleryRemote.IS_MAC_OS_X) {
+					orig = new File(filename);
+					dest = deterministicTempFile("tmp"
+							, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + cropTo);
+
+					orig.renameTo(dest);
+					filename = dest.getPath();
+				}
+
+				r = jpegtranExec(filename, "-crop", cropTo.width + "x" + cropTo.height + "+" +
+						cropTo.x + "+" + cropTo.y, true);
+			} catch (IOException e1) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
+			} finally {
+				if (orig != null && dest != null) {
+					dest.renameTo(orig);
+				}
+			}
+		}
+
+		if (!useJpegtran && r == null) {
+			throw new UnsupportedOperationException("jpegtran with CROP PATCH must be installed for this operation");
+		}
+
+		return r;
+	}
+
+	private static File jpegtranExec(String filename, String arg1, String arg2, boolean crop) throws IOException {
 		File r;
-		//StringBuffer cmdline = new StringBuffer(jpegtranPath);
 		ArrayList cmd = new ArrayList();
 		cmd.add(jpegtranPath);
 
-		//cmdline.append(" -copy all");
 		cmd.add("-copy");
 		cmd.add("all");
 		//cmd.add("-debug");
 
-		//cmdline.append(command);
-		//cmd.add(command);
 		cmd.add(arg1);
 		cmd.add(arg2);
 
-		r = deterministicTempFile("rot"
+		r = deterministicTempFile(crop?"crop":"rot"
 				, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + arg1 + arg2);
 		toDelete.add(r);
 
-		//cmdline.append(" -outfile \"").append(r.getPath()).append("\"");
-		//cmdline.append(" -outfile ").append(r.getPath());
 		cmd.add("-outfile");
 		cmd.add(r.getPath());
 
-		//cmdline.append(" \"").append(filename).append("\"");
 		cmd.add(filename);
 
-		//int exitValue = exec(cmdline.toString());
 		int exitValue = exec((String[]) cmd.toArray(new String[0]));
 
 		if ((exitValue != 0 && !jpegtranIgnoreErrorCode) || ! r.exists()) {
 			if (exitValue != -1 || ! r.exists()) {
 				// don't kill jpegtran if it's just an InterruptedException
-				Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
-				stopUsingJpegtran();
+				if (crop) {
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran doesn't seem to be working for cropping. Disabling");
+					stopUsingJpegtranCrop();
+				} else {
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran doesn't seem to be working. Disabling");
+					stopUsingJpegtran();
+				}
 			}
 			r = null;
 		}
@@ -544,6 +570,30 @@ public class ImageUtils {
 		}
 
 		return thumb;
+	}
+
+	public static AffineTransform createTransform(Rectangle container,
+												  Rectangle contentResized,
+												  Dimension content,
+												  int angle, boolean flipped) {
+		double scale = Math.sqrt(1.0F * content.width * content.height / contentResized.width / contentResized.height);
+
+		AffineTransform transform = new AffineTransform();
+		transform.translate(content.width / 2, content.height / 2);
+
+		if (flipped) {
+			transform.scale(-scale, scale);
+		} else {
+			transform.scale(scale, scale);
+		}
+
+		if (angle != 0) {
+			transform.rotate(-angle * Math.PI / 2);
+		}
+
+		transform.translate(-container.width / 2, -container.height / 2);
+
+		return transform;
 	}
 
 	public static LocalInfo getLocalFilenameForPicture(Picture p, boolean full) {
@@ -597,8 +647,11 @@ public class ImageUtils {
 	}
 
 	public static File download(Picture p, Dimension d, StatusUpdate su, CancellableTransferListener tl) {
+		if (!p.isOnline()) {
+			return p.getSource();
+		}
+		
 		URL pictureUrl = null;
-		//Dimension pictureDimension = null;
 		File f;
 		String filename;
 		LocalInfo fullInfo = getLocalFilenameForPicture(p, true);
@@ -705,6 +758,34 @@ public class ImageUtils {
 		return f;
 	}
 
+	public static Dimension getPictureDimension(Picture p) {
+		if (p.isOnline()) {
+			// can't find out size without downloading
+			return null;
+		}
+
+		ImageInputStream iis = null;
+		try {
+			iis = ImageIO.createImageInputStream(p.getSource());
+
+			Iterator iter = ImageIO.getImageReaders(iis);
+			if (!iter.hasNext()) {
+				return null;
+			}
+
+			ImageReader reader = (ImageReader)iter.next();
+			reader.setInput(iis, true, false);
+			Dimension d = new Dimension(reader.getWidth(0), reader.getHeight(0));
+
+			iis.close();
+			reader.dispose();
+			return d;
+		} catch (IOException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		}
+	}
+
 	static {
 		tmpDir = new File(System.getProperty("java.io.tmpdir"), "thumbs");
 
@@ -791,6 +872,7 @@ public class ImageUtils {
 			p.copyProperties(GalleryRemote._().properties);
 
 			useJpegtran = p.getBooleanProperty("jp.enabled");
+			useJpegtran = p.getBooleanProperty("jp.crop.enabled");
 			Log.log(Log.LEVEL_INFO, MODULE, "useJpegtran: " + useJpegtran);
 			if (useJpegtran) {
 				jpegtranPath = p.getProperty("jp.path");
@@ -829,15 +911,17 @@ public class ImageUtils {
 
 		Dimension result = new Dimension();
 
-		float sourceRatio = (float) source.width / source.height;
-		float targetRatio = (float) target.width / target.height;
+		float sourceRatio = Math.abs((float) source.width / source.height);
+		float targetRatio = Math.abs((float) target.width / target.height);
 
-		if (targetRatio > sourceRatio) {
+		if (Math.abs(targetRatio) > Math.abs(sourceRatio)) {
 			result.height = target.height;
-			result.width = source.width * target.height / source.height;
+			result.width = (int) (target.height * sourceRatio *
+					(target.height * target.width > 0?1:-1));
 		} else {
 			result.width = target.width;
-			result.height = source.height * target.width / source.width;
+			result.height = (int) (target.width / sourceRatio *
+					(target.height * target.width > 0?1:-1));
 		}
 
 		return result;
@@ -1013,6 +1097,12 @@ public class ImageUtils {
 
 			stopUsingJpegtran();
 		}
+
+		if (deferredStopUsingJpegtranCrop) {
+			deferredStopUsingJpegtranCrop = false;
+
+			stopUsingJpegtranCrop();
+		}
 	}
 
 	static void stopUsingIM() {
@@ -1053,6 +1143,27 @@ public class ImageUtils {
 				}
 			} else {
 				deferredStopUsingJpegtran = true;
+			}
+		}
+	}
+
+	static void stopUsingJpegtranCrop() {
+		useJpegtranCrop = false;
+
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN_CROP)) {
+			if (GalleryRemote._().getMainFrame() != null
+					&& GalleryRemote._().getMainFrame().isVisible()) {
+				UrlMessageDialog md = new UrlMessageDialog(
+						GRI18n.getString(MODULE, "warningTextJpegtranCrop"),
+						GRI18n.getString(MODULE, "warningUrlJpegtranCrop"),
+						GRI18n.getString(MODULE, "warningUrlTextJpegtranCrop")
+				);
+
+				if (md.dontShow()) {
+					GalleryRemote._().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN_CROP, true);
+				}
+			} else {
+				deferredStopUsingJpegtranCrop = true;
 			}
 		}
 	}
