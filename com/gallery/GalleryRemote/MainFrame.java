@@ -49,6 +49,7 @@ import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.prefs.PreferencesDialog;
+import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import JSX.ObjOut;
 import JSX.ObjIn;
 
@@ -211,14 +212,14 @@ public class MainFrame extends javax.swing.JFrame
 
 				String url = g.getStUrlString();
 				if ( url != null) {
-					p.setProperty( "url." + i, url );
+					p.setProperty( URL + i, url );
 
 					if (g.getUsername() != null) {
-						p.setProperty( "username." + i, g.getUsername() );
+						p.setProperty( USERNAME + i, g.getUsername() );
 					}
 
-					if (p.getBooleanProperty("savePasswords") && g.getPassword() != null) {
-						p.setBase64Property( "password." + i, g.getPassword() );
+					if (p.getBooleanProperty(SAVE_PASSWORDS) && g.getPassword() != null) {
+						p.setBase64Property( PASSWORD + i, g.getPassword() );
 					}
 				}
 			}*/
@@ -586,6 +587,10 @@ public class MainFrame extends javax.swing.JFrame
 		currentGallery.fetchAlbums( this );
 
 		updateAlbumCombo();
+
+		if (album.getModel().getSize() > 0) {
+			album.setSelectedIndex(0);
+		}
 	}
 
 	public void newAlbum() {
@@ -915,18 +920,21 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
 		} else if ( command.equals( "Fetch" ) ) {
-		    // login may have failed and caused getComm to be null.
-			if ((currentGallery.getComm(this)) != null &&
-			    currentGallery.getComm(this).isLoggedIn()) {
+			if (currentGallery.hasComm() && currentGallery.getComm(this).isLoggedIn()) {
+				// we're currently logged in: log out
 				currentGallery.getComm(this).logOut();
 				if (mAlbum != null) {
 					mAlbum.clearPictures();
 				}
 				mAlbum = null;
 
+				album.setModel(new Gallery(this));
 				resetUIState();
 			} else {
-				// the first part of this "if" may have tried to reconnect and failed
+		    	// login may have failed and caused getComm to be null.
+				currentGallery.getComm(this);
+
+				// may have tried to connect and failed
 				if (!GalleryComm.wasAuthFailure()) {
 					fetchAlbums();
 				}
@@ -958,7 +966,6 @@ public class MainFrame extends javax.swing.JFrame
 					try {
 						currentGallery.setStUrlString((String) selectedGallery);
 					} catch ( MalformedURLException mue ) {
-
 						JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
