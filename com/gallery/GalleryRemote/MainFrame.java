@@ -31,6 +31,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.Collections;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -70,7 +71,7 @@ public class MainFrame extends javax.swing.JFrame
 
 	boolean dontReselect = false;
 
-	private DefaultComboBoxModel galleries = null;
+	public DefaultComboBoxModel galleries = null;
 	private Gallery currentGallery = null;
 	private Album mAlbum = null;
 	private boolean mInProgress = false;
@@ -130,26 +131,23 @@ public class MainFrame extends javax.swing.JFrame
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 
 		galleries = new DefaultComboBoxModel();
-		int i = -1;
-		String url;
-		while ( ( url = p.getProperty( "url." + (++i) ) ) != null ) {
+		int i = 0;
+		while ( true ) {
 			try {
-				String username = p.getProperty( "username." + i );
-				String password = p.getBase64Property( "password." + i );
-
-				Log.log(Log.INFO, MODULE, "loaded saved URL: " + url + " (" + username + "/******)" );
-
-				Gallery g = new Gallery( new URL( url ), username, password, /* TEMPORARY */this);
-
+				Gallery g = Gallery.readFromProperties(p, i++, this);
+				if (g == null) {
+					break;
+				}
 				galleries.addElement(g);
 			} catch (Exception e) {
-				Log.log(Log.ERROR, MODULE, "Error trying to load profile");
+				Log.log(Log.ERROR, MODULE, "Error trying to load Gallery profile " + i);
 				Log.logException(Log.ERROR, MODULE, e);
 			}
 		}
 
 		if ( galleries.getSize() == 0 ) {
-			galleries.addElement( new Gallery() );
+			Gallery g = new Gallery(this);
+			galleries.addElement( g );
 		}
 
 		setIconImage(GalleryRemote.iconImage);
@@ -208,10 +206,10 @@ public class MainFrame extends javax.swing.JFrame
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
 		try {
 			PropertiesFile p = GalleryRemote.getInstance().properties;
-			for (int i = 0; i < galleries.getSize(); i++) {
+			/*for (int i = 0; i < galleries.getSize(); i++) {
 				Gallery g = (Gallery) galleries.getElementAt(i);
 
-				String url = g.getUrlString();
+				String url = g.getStUrlString();
 				if ( url != null) {
 					p.setProperty( "url." + i, url );
 
@@ -223,7 +221,7 @@ public class MainFrame extends javax.swing.JFrame
 						p.setBase64Property( "password." + i, g.getPassword() );
 					}
 				}
-			}
+			}*/
 
 			p.setMainBounds( getBounds() );
 			p.setPreviewBounds( previewFrame.getBounds() );
@@ -645,7 +643,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if ( show ) {
 			if ( mAlbum != null ) {
-				thumbnailCache.preloadThumbnailFiles( mAlbum.getPictures() );
+				thumbnailCache.preloadThumbnailPictures( mAlbum.getPictures() );
 			}
 
 			picturesList.setFixedCellHeight( GalleryRemote.getInstance().properties.getThumbnailSize().height + 4 );
@@ -765,7 +763,7 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuItemSave.setText( "Save..." );
 		jMenuItemSave.setActionCommand( "File.Save" );
 		jMenuItemPrefs.setText( "Preferences..." );
-		jMenuItemPrefs.setActionCommand( "File.Prefs" );
+		jMenuItemPrefs.setActionCommand( "Options.Prefs" );
 		jMenuItemOpen.setText( "Open..." );
 		jMenuItemOpen.setActionCommand( "File.Open" );
 		jMenuHelp.setText( "Help" );
@@ -832,8 +830,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		jMenuFile.add( jMenuItemOpen );
 		jMenuFile.add( jMenuItemSave );
-		jMenuFile.addSeparator();
-		jMenuFile.add( jMenuItemPrefs );
+
 		jMenuFile.addSeparator();
 		jMenuFile.add( jMenuItemQuit );
 
@@ -842,6 +839,8 @@ public class MainFrame extends javax.swing.JFrame
 		jMenuOptions.add( jCheckBoxMenuThumbnails );
 		jMenuOptions.add( jCheckBoxMenuPreview );
 		jMenuOptions.add( jCheckBoxMenuPath );
+		jMenuOptions.addSeparator();
+		jMenuOptions.add( jMenuItemPrefs );
 	}//}}}
 
 
@@ -911,7 +910,7 @@ public class MainFrame extends javax.swing.JFrame
 			saveState();
 		} else if ( command.equals( "File.Open" ) ) {
 			openState();
-		} else if ( command.equals( "File.Prefs" ) ) {
+		} else if ( command.equals( "Options.Prefs" ) ) {
 			showPreferencesDialog();
 		} else if ( command.equals( "Help.About" ) ) {
 			showAboutBox();
@@ -939,28 +938,33 @@ public class MainFrame extends javax.swing.JFrame
 		} else if ( command.equals( "Upload" ) ) {
 			uploadPictures();
 		} else if ( command.equals( "NewGallery" ) ) {
-			Gallery g = new Gallery(null, null, null, this);
+			Gallery g = new Gallery(this);
 			galleries.addElement( g );
+			g.setPrefsIndex(galleries.getIndexOf(g));
 			gallery.setSelectedItem( g );
 			updateGalleryParams();
 		} else if ( command.equals( "Url" ) ||
 			command.equals( "comboBoxEdited" ) ) {
 			//Log.log(Log.TRACE, MODULE, "modifiers: " + e.getModifiers());
 			//Log.log(Log.TRACE, MODULE, "paramString: " + e.paramString());
-			Log.log(Log.TRACE, MODULE, "selected: " + gallery.getSelectedItem().toString()
-				+ " (" + gallery.getSelectedIndex() + ")");
 
-			if (gallery.getSelectedItem() instanceof String) {
-				// text of a url edited
-				try {
-					currentGallery.setUrlString((String) gallery.getSelectedItem());
-				} catch ( MalformedURLException mue ) {
+			Object selectedGallery = gallery.getSelectedItem();
+			if (selectedGallery != null) {
+				Log.log(Log.TRACE, MODULE, "selected: " + selectedGallery.toString()
+					+ " (" + gallery.getSelectedIndex() + ")");
 
-					JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
+				if (selectedGallery instanceof String) {
+					// text of a url edited
+					try {
+						currentGallery.setStUrlString((String) selectedGallery);
+					} catch ( MalformedURLException mue ) {
+
+						JOptionPane.showMessageDialog(this, "Malformed URL", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					// new url chosen in the popup
+					updateGalleryParams();
 				}
-			} else {
-				// new url chosen in the popup
-				updateGalleryParams();
 			}
 		} else if ( command.equals( "Album" ) ) {
 			updatePicturesList( (Album) ( (JComboBox) e.getSource() ).getSelectedItem());
@@ -975,11 +979,21 @@ public class MainFrame extends javax.swing.JFrame
 
 	public void readPreferences(PropertiesFile op) {
 		PropertiesFile p = GalleryRemote.getInstance().properties;
+		p.write();
 
 		jCheckBoxMenuThumbnails.setSelected( p.getShowThumbnails() );
 		jCheckBoxMenuPreview.setSelected( p.getShowPreview() );
 		jCheckBoxMenuPath.setSelected( p.getShowPath() );
-		setShowThumbnails( p.getShowThumbnails() );
+
+		Object g = galleries.getSelectedItem();
+		if (g != null) {
+			Gallery selectedGallery = (Gallery) g;
+			username.setText(selectedGallery.getUsername());
+			password.setText(selectedGallery.getPassword());
+		} else {
+			username.setText("");
+			password.setText("");
+		}
 
 		previewFrame.setVisible( p.getShowPreview() );
 
@@ -988,6 +1002,8 @@ public class MainFrame extends javax.swing.JFrame
 		if (!op.getThumbnailSize().equals(p.getThumbnailSize())) {
 			thumbnailCache.reload();
 		}
+
+		Log.setMaxLevel();
 	}
 
 	static FileFilter galleryFileFilter = new FileFilter() {
@@ -1054,6 +1070,7 @@ public class MainFrame extends javax.swing.JFrame
 				galleries = new DefaultComboBoxModel();
 				for (int i = 0; i < galleryArray.length; i++) {
 					galleries.addElement(galleryArray[i]);
+					thumbnailCache.preloadThumbnailPictures(Collections.enumeration(galleryArray[i].getAllPictures()));
 				}
 				gallery.setModel( galleries );
 				updateGalleryParams();
@@ -1069,6 +1086,22 @@ public class MainFrame extends javax.swing.JFrame
 		} catch (NoClassDefFoundError e) {
 			Log.log(Log.ERROR, MODULE, "JSX not installed, can't read state...");
 		}
+	}
+
+	public void removeGallery(Gallery g) {
+		Log.log(Log.INFO, MODULE, "Deleting Gallery " + g);
+		galleries.removeElement(g);
+
+		//g.removeFromProperties(GalleryRemote.getInstance().properties);
+
+		// tell all the galleries they've been moved...
+		for (int i = 0; i < galleries.getSize(); i++) {
+			Gallery gg = (Gallery) galleries.getElementAt(i);
+			gg.setPrefsIndex(i);
+			gg.writeToProperties(GalleryRemote.getInstance().properties);
+		}
+
+		Gallery.removeFromProperties(GalleryRemote.getInstance().properties, galleries.getSize());
 	}
 
 
@@ -1108,7 +1141,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if ( sel != -1 ) {
 			String filename = ( mAlbum.getPicture( sel ).getSource() ).getPath();
-			thumbnailCache.preloadThumbnailFirst( filename );
+			thumbnailCache.preloadThumbnailFilenameFirst( filename );
 		}
 
 		resetUIState();
