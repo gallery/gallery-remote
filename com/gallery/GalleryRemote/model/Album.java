@@ -310,7 +310,22 @@ public class Album extends Picture implements ListModel
 	 *@param  name  The new name value
 	 */
 	public void setName( String name ) {
-		this.name = name;
+		this.name = removeOffendingChars(name);
+	}
+	
+	static final String offendingChars = "\\/*?\"\'&\\u|.+# ";
+	static String removeOffendingChars(String in) {
+		StringBuffer out = new StringBuffer();
+		
+		int l = in.length();
+		for (int i = 0; i < l; i++) {
+			char c = in.charAt(i);
+			if (offendingChars.indexOf(c) != -1) {
+				out.append(c);
+			}
+		}
+		
+		return out.toString();
 	}
 
 	/**
