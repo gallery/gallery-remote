@@ -173,8 +173,7 @@ public class DroppableList extends JList
 			try {
 				java.util.List fileList = (java.util.List) ps.getTransferData( DataFlavor.javaFileListFlavor );
 				if ( !ps.isEmpty() ) {
-					Picture p = (Picture) ps.get( 0 );
-					mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ), p.getListIndex() );
+					mDaddy.addPictures( (File[]) fileList.toArray( new File[0] ) );
 				}
 				//kill dragEvent
 				//need to figure out why MainFrame becomes dropTarget for internal drops??!!
@@ -249,9 +248,8 @@ public class DroppableList extends JList
 						tr.getTransferData( DataFlavor.javaFileListFlavor );
 
 				/* recursively add contents of directories */
-				java.util.List allFilesList = null;
 				try {
-					allFilesList = expandDirectories( fileList );
+					fileList = expandDirectories( fileList );
 				} catch ( IOException ioe ) {
 					Log.log( Log.ERROR, MODULE, "i/o exception listing dirs in a drop" );
 					Log.logStack( Log.ERROR, MODULE );
@@ -363,7 +361,6 @@ public class DroppableList extends JList
 			int selIndex = selIndices[i];
 			if ( selIndex != -1 ) {
 				Picture p = (Picture) this.getModel().getElementAt( selIndex );
-				p.setListIndex( selIndex );
 				ps.add( p );
 			}
 		}
@@ -448,6 +445,5 @@ public class DroppableList extends JList
 
 		return ret;
 	}
-
 }
 
