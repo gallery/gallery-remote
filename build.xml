@@ -9,6 +9,8 @@
 	<property name="img" location="img"/>
 	<property name="dist"  location="dist"/>
 	<property name="install"  location="gallery_remote_Build_Output/Web_Installers/InstData"/>
+	<property name="docbase"  location="../gallery_docs"/>
+	<property name="docdist"  location="${docbase}/dist/grpackage"/>
 
 	<taskdef name="jarbundler"
 		classpath="${lib}/jarbundler-0.1.jar"
@@ -116,17 +118,25 @@
 		<!-- Delete the ${build} and ${dist} directory trees -->
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
+		<delete dir="${docdist}"/>
 	</target>
 
-	<target name="installer" depends="jar"
+	<target name="installer" depends="jar, docs"
 		description="Build the installer" >
 		<exec executable="build">
 			<arg file="gallery_remote.iap_xml" />
 		</exec>
 	</target>
 
-	<target name="installer_macosx" depends="jar, img_jar"
-		description="Build a MacOSX executable" >
+	<target name="docs" description="Build documentation">
+		<exec executable="bash" dir="${docbase}">
+			<arg value="${docbase}/gen" />
+			<arg value="grpackage" />
+		</exec>
+	</target>
+
+	<target name="installer_macosx" depends="jar, img_jar, docs"
+		description="Build a MacOSX executable">
 
 		<delete dir="Gallery Remote.app" />
 
@@ -145,6 +155,21 @@
 			liveresize="true"
 			growboxintrudes="false"
 			screenmenu="true"/>
+
+		<tar destfile="GalleryRemote.MacOSX.NoVM.tgz" compression="gzip">
+			<tarfileset dir="." prefix="Gallery Remote">
+				<include name="Gallery Remote.app/**" />
+			</tarfileset>
+			<tarfileset dir="imagemagick" fullpath="Gallery Remote/imagemagick/im.properties">
+				<include name="im.properties.preinstalled" />
+			</tarfileset>
+			<tarfileset dir="jpegtran" fullpath="Gallery Remote/jpegtran/jpegtran.properties">
+				<include name="jpegtran.preinstalled" />
+			</tarfileset>
+			<tarfileset dir="${docdist}" prefix="Gallery Remote/Documentation">
+				<include name="*" />
+			</tarfileset>
+		</tar>
 	</target>
 
 	<target name="upload" depends="installer"
@@ -170,4 +195,5 @@
 		<postchangelog />
 	</target>
 </project>
+
 
