@@ -66,7 +66,7 @@ public class MainFrame extends javax.swing.JFrame
 	public static final String MODULE = "MainFrame";
 	public static final String FILE_TYPE = ".grg";
 
-	PreviewFrame previewFrame = new PreviewFrame();
+	PreviewFrame previewFrame = null;
 
 	public DefaultComboBoxModel galleries = null;
 	//private Gallery currentGallery = null;
@@ -186,13 +186,21 @@ public class MainFrame extends javax.swing.JFrame
 
 		jPictureInspector.setMainFrame( this );
 
-		previewFrame.initComponents();
 
 		setGalleries(galleries);
 
 		jInspectorDivider.setDividerLocation( GalleryRemote.getInstance().properties.getIntProperty( "inspectorDividerLocation" ) );
 
 		setVisible( true );
+
+		previewFrame = new PreviewFrame();
+		previewFrame.initComponents();
+		previewFrame.addWindowListener(
+			new java.awt.event.WindowAdapter()	{
+				public void windowClosing( java.awt.event.WindowEvent e ) {
+					jCheckBoxMenuPreview.setState( false );
+				}
+			} );
 
 		if ( GalleryRemote.getInstance().properties.getShowPreview() ) {
 			previewFrame.setVisible( true );
@@ -209,8 +217,6 @@ public class MainFrame extends javax.swing.JFrame
 		jGalleryCombo.setModel( galleries );
 		galleries.addListDataListener(this);
 		updateGalleryParams();
-
-		//resetUIState();
 	}
 
 
@@ -873,13 +879,6 @@ public class MainFrame extends javax.swing.JFrame
 			{
 				public void windowClosing( java.awt.event.WindowEvent e ) {
 					thisWindowClosing( e );
-				}
-			} );
-		previewFrame.addWindowListener(
-			new java.awt.event.WindowAdapter()
-			{
-				public void windowClosing( java.awt.event.WindowEvent e ) {
-					jCheckBoxMenuPreview.setState( false );
 				}
 			} );
 		jPicturesList.addKeyListener(
