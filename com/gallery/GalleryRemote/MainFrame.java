@@ -21,9 +21,6 @@
 package com.gallery.GalleryRemote;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -257,12 +254,13 @@ public class MainFrame extends javax.swing.JFrame
 				&& !inProgress
 				&& jAlbumCombo.getSelectedIndex() >= 0 );
 
+				Gallery currentGallery = getCurrentGallery();
+
 				// during comm, don't change Gallery or do any other comm
-				jLoginButton.setEnabled( !inProgress );
+				jLoginButton.setEnabled( !inProgress && currentGallery != null);
 				jGalleryCombo.setEnabled( !inProgress );
 				jNewGalleryButton.setEnabled( !inProgress );
 
-				Gallery currentGallery = getCurrentGallery();
 				if (currentGallery != null
 					&& currentGallery.getUsername() != null
 					&& currentGallery.hasComm()
@@ -280,8 +278,6 @@ public class MainFrame extends javax.swing.JFrame
 				jAlbumCombo.setEnabled( enabled );
 				jNewAlbumButton.setEnabled( !inProgress && currentGallery != null && currentGallery.hasComm()
 					&& currentGallery.getComm(MainFrame.this).hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM));
-
-				jLoginButton.setEnabled(currentGallery != null);
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
