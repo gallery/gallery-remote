@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.net.URL;
 import java.net.SocketException;
-import java.net.URLDecoder;
 import java.util.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -38,7 +37,6 @@ import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
@@ -778,7 +776,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			// load and validate the response
 			Properties p = requestResponse( form_data );
 			if ( p.getProperty( "status" ).equals(GR_STAT_SUCCESS) ) {
-				ArrayList mAlbumList = new ArrayList();
+				ArrayList albums = new ArrayList();
 
 				// parse and store the data
 				int albumCount = Integer.parseInt( p.getProperty( "album_count" ) );
@@ -809,7 +807,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					a.setTitle( HTMLEscaper.unescape( p.getProperty(titleKey) ) );
 					a.setExtraFieldsString( HTMLEscaper.unescape(p.getProperty(infoExtraFieldKey)));
 
-					mAlbumList.add( a );
+					albums.add( a );
 
 					// map album names to parent albums
 					name2album.put( name, a );
@@ -822,6 +820,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						a.setParentAlbum(null);
 					}
 				}
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Created " + albums.size() + " albums");
 
 				// link albums to parents
 				Iterator it = name2parentName.keySet().iterator();
@@ -836,12 +836,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					}
 				}
 
+				Log.log(Log.LEVEL_TRACE, MODULE, "Linked " + name2parentName.size() + " albums to their parents");
+
 				// reorder
-				//Collections.reverse(mAlbumList);
+				//Collections.reverse(albums);
 				ArrayList orderedAlbums = new ArrayList();
 				int depth = 0;
-				while (!mAlbumList.isEmpty()) {
-					it = mAlbumList.iterator();
+				while (!albums.isEmpty()) {
+					it = albums.iterator();
 					while (it.hasNext()) {
 						Album a = (Album) it.next();
 
@@ -860,6 +862,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 					depth++;
 				}
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Ordered " + orderedAlbums.size() + " albums");
 
 				status(su, StatusUpdate.LEVEL_BACKGROUND, GRI18n.getString(MODULE, "ftchdAlbms"));
 
@@ -883,7 +887,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 		
 		void runTask() {
-            Object [] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "getAlbmInfo"));
 			
 			try {
@@ -1011,7 +1014,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		void runTask() {
-            Object [] params = {g.toString()};
 			status(su, StatusUpdate.LEVEL_GENERIC,
 					GRI18n.getString(MODULE, "fetchAlbImages",
 							new String[] {a.getName()}));

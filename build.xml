@@ -67,8 +67,9 @@
 			<fileset dir="${build}" />
 			<fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
 			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Main-Class" value="com.gallery.GalleryRemote.GalleryRemote"/>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.gallery.GalleryRemote.GalleryRemote" />
+				<attribute name="Class-Path" value="lib/metadata-extractor-2.1.jar lib/JSX1.0.7.4.jar img/" />
 			</manifest>
 		</jar>
 	</target>

@@ -21,14 +21,7 @@
 package com.gallery.GalleryRemote;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -721,6 +714,10 @@ public class MainFrame extends javax.swing.JFrame
 		NewAlbumDialog dialog = new NewAlbumDialog(this, getCurrentGallery(), getCurrentAlbum());
 		final String newAlbumName = dialog.getNewAlbumName();
 
+		if (newAlbumName == null) {
+			return;
+		}
+
 		Log.log(Log.LEVEL_TRACE, MODULE, "Album '" + newAlbumName + "' created.");
 		// there is probably a better way... this is needed to give the UI time to catch up
 		// and load the combo up with the reloaded album list
@@ -866,6 +863,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if (i < jPicturesList.getModel().getSize() - 1) {
 			jPicturesList.setSelectedIndex(i + 1);
+			jPicturesList.ensureIndexIsVisible(i + 1);
 		}
 	}
 
@@ -874,6 +872,7 @@ public class MainFrame extends javax.swing.JFrame
 
 		if (i > 0) {
 			jPicturesList.setSelectedIndex(i - 1);
+			jPicturesList.ensureIndexIsVisible(i - 1);
 		}
 	}
 
@@ -1106,6 +1105,8 @@ public class MainFrame extends javax.swing.JFrame
 		jPictureScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),GRI18n.getString(MODULE, "pictures")));
 		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(),GRI18n.getString(MODULE, "albums")));
+		setupKeyboardHandling(jPictureScroll);
+		setupKeyboardHandling(jAlbumScroll);
 
 		this.getContentPane().add( jTopPanel, new GridBagConstraints( 0, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets( 2, 2, 2, 2 ), 0, 0 ) );
@@ -1176,6 +1177,10 @@ public class MainFrame extends javax.swing.JFrame
 		}
 	}//}}}
 
+	private void setupKeyboardHandling(JComponent c) {
+		// todo: only suppress UP, DOWN, LEFT and RIGHT
+		c.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+	}
 
 	private void jbInitEvents() {
 		jLoginButton.addActionListener( this );
@@ -1792,6 +1797,12 @@ public class MainFrame extends javax.swing.JFrame
 					break;
 				case KeyEvent.VK_RIGHT:
 					movePicturesDown();
+					break;
+				case KeyEvent.VK_UP:
+					selectPrevPicture();
+					break;
+				case KeyEvent.VK_DOWN:
+					selectNextPicture();
 					break;
 			}
 		}

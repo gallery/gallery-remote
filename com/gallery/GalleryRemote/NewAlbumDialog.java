@@ -205,7 +205,11 @@ public class NewAlbumDialog extends javax.swing.JDialog
 			}
 			
 			newAlbumName = gallery.newAlbum(a, ((MainFrame) this.getOwner()).jStatusBar);
-			
+
+			if (newAlbumName == null) {
+				newAlbumName = jName.getText();
+			}
+
 			setVisible(false);
 		}
 	}
