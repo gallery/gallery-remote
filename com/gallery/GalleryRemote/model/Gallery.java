@@ -65,6 +65,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient private Boolean ambiguousUrl;
 	transient private boolean blockWrites = false;
 	transient public boolean cookieLogin = false;
+	transient public int galleryVersion = 1;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
 	public static final int TYPE_STANDALONE = 0;
@@ -850,6 +851,11 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 			} else {
 				flatAlbumList = null;
 			}
+
+			// G2 root is a normal album, don't add a fake root...
+			if (galleryVersion == 2) {
+				flatAlbumList.remove(getRoot());
+			}
 		}
 
 		return flatAlbumList;
@@ -866,5 +872,13 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		setRoot(album);
 
 		return (Album) getRoot();
+	}
+
+	public int getGalleryVersion() {
+		return galleryVersion;
+	}
+
+	public void setGalleryVersion(int galleryVersion) {
+		this.galleryVersion = galleryVersion;
 	}
 }

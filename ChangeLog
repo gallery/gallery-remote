@@ -1,3 +1,7 @@
+2004-08-17  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b8)
+
+	* Fixed duplicate root album in New Album dialog on G2.
+
 2004-08-13  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b7)
 
 	* Fixed cookie handling in HTTPClient (fixes losing G2 sessions).

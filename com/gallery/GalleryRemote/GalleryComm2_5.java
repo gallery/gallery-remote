@@ -38,6 +38,8 @@ public class GalleryComm2_5 extends GalleryComm2 {
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
+
+		g.setGalleryVersion(2);
 	}
 
     public NVPair[] fudgeParameters(NVPair[] data) {
