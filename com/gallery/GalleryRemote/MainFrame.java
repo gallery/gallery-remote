@@ -75,6 +75,7 @@ public class MainFrame extends javax.swing.JFrame
 	ThumbnailCache thumbnailCache = new ThumbnailCache( this );
 
 	int progressId = 0;
+	boolean running = true;
 
 	GridBagLayout gridBagLayout1 = new GridBagLayout();
 	JPanel jPanel1 = new JPanel();
@@ -157,6 +158,15 @@ public class MainFrame extends javax.swing.JFrame
 		}*/
 
 		setIconImage(GalleryRemote.iconImage);
+
+		if ( System.getProperty("os.name").toLowerCase().startsWith("mac") ) {
+			// Install shutdown handler only on Mac
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				public void run() {
+					shutdown(true);
+				}
+			});
+		}
 	}
 
 
@@ -223,25 +233,45 @@ public class MainFrame extends javax.swing.JFrame
 	 *@param  e  Event
 	 */
 	void thisWindowClosing( java.awt.event.WindowEvent e ) {
-		try {
-			PropertiesFile p = GalleryRemote.getInstance().properties;
+		shutdown(false);
+	}
 
-			p.setMainBounds( getBounds() );
-			p.setPreviewBounds( previewFrame.getBounds() );
-			p.setIntProperty( "inspectorDividerLocation", jInspectorDivider.getDividerLocation() );
+	private void shutdown(boolean halt) {
+		if (running) {
+			running = false;
 
-			p.write();
+			Log.log(Log.INFO, MODULE, "Shutting down GR");
 
-			setVisible( false );
-			dispose();
+			try {
+				PropertiesFile p = GalleryRemote.getInstance().properties;
 
-			ImageUtils.purgeTemp();
-		} catch (Throwable t) {
-			Log.log(Log.ERROR, MODULE, "Error while closing: " + t);
+				p.setMainBounds( getBounds() );
+				p.setPreviewBounds( previewFrame.getBounds() );
+				p.setIntProperty( "inspectorDividerLocation", jInspectorDivider.getDividerLocation() );
+
+				p.write();
+
+				if (!halt) {
+					// in halt mode, this crashes the VM
+					setVisible( false );
+					dispose();
+				}
+
+				ImageUtils.purgeTemp();
+			} catch (Throwable t) {
+				Log.log(Log.ERROR, MODULE, "Error while closing: " + t);
+			}
+
+			Log.log(Log.INFO, MODULE, "Shutting down log");
+			Log.shutdown();
+
+			if (!halt) {
+				// no need for this in halt mode
+				Runtime.getRuntime().exit(0);
+			}/* else {
+				Runtime.getRuntime().exit(0);
+			}*/
 		}
-		Log.log(Log.INFO, MODULE, "Shutting log down");
-		Log.shutdown();
-		System.exit( 0 );
 	}
 
 
