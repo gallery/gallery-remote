@@ -193,14 +193,18 @@ public class MainFrame extends javax.swing.JFrame
 			PropertiesFile p = GalleryRemote.getInstance().properties;
 			for (int i = 0; i < galleries.getSize(); i++) {
 				Gallery g = (Gallery) galleries.getElementAt(i);
-				p.setProperty( "url." + i, g.getUrlString() );
 				
-				if (g.getUsername() != null) {
-					p.setProperty( "username." + i, g.getUsername() );
-				}
-				
-				if (p.getBooleanProperty("savePasswords") && g.getPassword() != null) {
-					p.setBase64Property( "password." + i, g.getPassword() );
+				String url = g.getUrlString();
+				if ( url != null) {
+					p.setProperty( "url." + i, url );
+					
+					if (g.getUsername() != null) {
+						p.setProperty( "username." + i, g.getUsername() );
+					}
+					
+					if (p.getBooleanProperty("savePasswords") && g.getPassword() != null) {
+						p.setBase64Property( "password." + i, g.getPassword() );
+					}
 				}
 			}
 	

@@ -235,7 +235,11 @@ public class Gallery implements ComboBoxModel
 	 *@return    The url value
 	 */
 	public String getUrlString() {
-		return url.toString();
+		if (url != null) {
+			return url.toString();
+		} else {
+			return null;
+		}
 	}
 
 
