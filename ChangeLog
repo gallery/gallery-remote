@@ -1,3 +1,9 @@
+2002-10-20  Pierre-Luc Paour <gallery@paour.com> (1.0-b11)
+	
+	* Added client UI support for creating new albums.
+	  The corresponding protocol support is not yet ready
+	  so the button will remain disabled.
+
 2002-10-19  Pierre-Luc Paour <gallery@paour.com> (1.0-b10)
 	
 	* Fixed adding a Gallery (broken in b9).
