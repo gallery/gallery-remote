@@ -36,11 +36,12 @@ public class PreviewFrame extends javax.swing.JFrame {
 	PreviewLoader previewLoader = new PreviewLoader();
 	int previewCacheSize = 10;
 
-	public void initComponents(Properties mPropertiesFile)
+	public void initComponents()
 	{
 		setTitle("Preview");
 		
-		if (mPropertiesFile.getProperty("previewx") == null || mPropertiesFile.getProperty("previewy") == null)
+		setBounds(GalleryRemote.getInstance().properties.getPreviewBounds());
+		/*if (mPropertiesFile.getProperty("previewx") == null || mPropertiesFile.getProperty("previewy") == null)
 		{
 			setLocation(new java.awt.Point(578, 0));
 		}
@@ -56,7 +57,7 @@ public class PreviewFrame extends javax.swing.JFrame {
 		else
 		{
 			setSize(new java.awt.Dimension(Integer.parseInt(mPropertiesFile.getProperty("previewwidth")), Integer.parseInt(mPropertiesFile.getProperty("previewheight"))));
-		}
+		}*/
 		
 		addComponentListener(new ComponentAdapter()
 			{
@@ -67,10 +68,8 @@ public class PreviewFrame extends javax.swing.JFrame {
 			}
 		);
 		
-		if (mPropertiesFile.getProperty("previewcachesize") != null)
-		{
-			previewCacheSize = Integer.parseInt(mPropertiesFile.getProperty("previewcachesize"));
-		}
+		previewCacheSize = GalleryRemote.getInstance().properties.getIntProperty("previewCacheSize");
+
 	}
 	
 	public void paint(Graphics g)
