@@ -91,6 +91,7 @@ public class GalleryComm {
 			mf.setInProgress(true);
 			if ( ! isLoggedIn ) {
 				if ( !login() ) {
+					mf.setInProgress(false);
 					return;
 				}
 				
@@ -146,7 +147,7 @@ public class GalleryComm {
 						status("Logged in");
 						return true;
 					} else {
-						status("Login Error: " + response);
+						error("Login Error: " + response);
 						return false;
 					}
 				}
@@ -329,7 +330,7 @@ public class GalleryComm {
 	}
 	
 	void error(String message) {
-		// TODO: use error dialog
+		JOptionPane.showMessageDialog(mf, message, "Error", JOptionPane.ERROR_MESSAGE); 
 		status(message);
 	}
 	
