@@ -1,10 +1,9 @@
 2002-10-11 Tim Miller <tim_miller@users.sourceforge.net> (1.0-b9)
 	
 	* NOTE: GR CAN BE RUN IN GR PROTO 2 MODE BY CHANGING THE 
-	  getComm() METHOD IN Gallery.java.  NO GUARANTEES ON HOW WELL
-	  PROTO 1 IS WORKING RIGHT NOW. THIS WILL ALL PAN OUT WITH THE
-	  NEXT CHECKIN -- GR WILL DYNAMICALLY BIND TO THE NEWEST SERVER
-	  PROTOCOL. FOR NOW, CAVEAT EMPTOR.
+	  protocolVersion IN THE PROPERTIES FILE.
+	  THIS WILL ALL PAN OUT WITH THE NEXT CHECKIN -- GR WILL DYNAMICALLY 
+	  BIND TO THE NEWEST SERVER PROTOCOL. FOR NOW, CAVEAT EMPTOR.
 	* Made GalleryComm and interface, moved GalleryComm implementation to
 	  GalleryComm1.java.
 	* Created GalleryComm2.java, based on GalleryComm1.java to implement
@@ -19,10 +18,14 @@
 	* Added permission support to the Album model object.
 	* Added support for Albums actually being in a tree (this is supported
 	  by proto version 2.
-	* Added comments in several files.
 	* Updated Gallery Remote proto version 2 document to describe
 	  user permission attributes (read, write, change, delete) on 
 	  Album objects.
+	* paour: Added support for resizing images based on server autoResize
+	  size (only with protocol 2)
+	* paour: now logging out when username or password field is edited
+	* paour: if setCaptionWithFilename property is enabled, captions
+	  will use the image filename by default.
 
 2002-10-03  Pierre-Luc Paour <gallery@paour.com> (1.0-b8)
 	
