@@ -55,7 +55,7 @@ import HTTPClient.Cookie;
 
 /**
  * Description of the Class
- * 
+ *
  * @author jackodog
  * @author paour
  * @created August 16, 2002
@@ -224,7 +224,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Initialize the graphical components
-	 * 
+	 *
 	 * @throws Exception Description of Exception
 	 */
 	public void initComponents()
@@ -322,7 +322,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Close the window when the close box is clicked
-	 * 
+	 *
 	 * @param e Event
 	 */
 	void thisWindowClosing(java.awt.event.WindowEvent e) {
@@ -410,7 +410,7 @@ public class MainFrame extends JFrame
 	/**
 	 * <p>This method updates the dirty flag and also causes the UI
 	 * to be updated to reflect the new state.
-	 * 
+	 *
 	 * @param newDirtyState the new state (true means the document is dirty).
 	 */
 	private void setDirtyFlag(boolean newDirtyState) {
@@ -776,7 +776,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Show/hide thumbnails
-	 * 
+	 *
 	 * @param show The new showThumbmails value
 	 */
 	public void setShowThumbnails(boolean show) {
@@ -797,7 +797,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Show/hide preview
-	 * 
+	 *
 	 * @param show The new showPreview value
 	 */
 	public void setShowPreview(boolean show) {
@@ -812,7 +812,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Get a thumbnail from the thumbnail cache
-	 * 
+	 *
 	 * @param p picture whose thumbnail is to be fetched
 	 * @return The thumbnail value
 	 */
@@ -855,7 +855,7 @@ public class MainFrame extends JFrame
 
 	public void doCut() {
 		doCopy();
-		CoreUtils.deleteSelectedPictures();
+		deleteSelectedPictures();
 
 		// We've been modified, we are now dirty.
 		setDirtyFlag(true);
@@ -1120,58 +1120,63 @@ public class MainFrame extends JFrame
 	}
 
 
-	/**
-	 * If we are dirty then ask the user if we should save the
-	 * data before doing the dangerous thing we are about to do (new, open,
-	 * etc.).  If we are not dirty this method
-	 * is a NOP.  If the user says they want to save, this method will save
-	 * to the currently open file before returning.
-	 * 
-	 * @return one of CANCEL_OPTION, OK_OPTION (from the JOptionPane
-	 *         class). On CANCEL_OPTION you should stop the current
-	 *         process. OK_OPTION means that either we are not dirty)
-	 *         or that we just saved for the user.
-	 */
-	private int saveOnPermission() {
-		if (!m_isDirty) {
-			return (JOptionPane.OK_OPTION);
-		}
+    /**
+     * If we are dirty then ask the user if we should save the data
+     * before doing the dangerous thing we are about to do (new, open,
+     * logout, etc.). If we are not dirty this method is a NOP. If the
+     * user says they want to save, this method will save to the
+     * currently open file before returning.
+     *
+     * @param promptMessageID The message ID (for GRI18n.getString) that
+     *                        we should display to prompt the user
+     *                        before we do the dangerous thing.
+     *
+     * @return one of CANCEL_OPTION, OK_OPTION (from the JOptionPane
+     *         class). On CANCEL_OPTION you should stop the current
+     *         process. OK_OPTION means that either we are not dirty)
+     *         or that we just saved for the user.
+     */
+    private int saveOnPermission(String promptMessageID) {
+        if (!m_isDirty) {
+            return (JOptionPane.OK_OPTION);
+        }
 
-		int response = JOptionPane.showConfirmDialog(
-				this,
-				GRI18n.getString(MODULE, "OK_toSaveBeforeClose"),
-				lastOpenedFile == null?GRI18n.getString(MODULE, "noTitleHeader"):lastOpenedFile.getName(),
-				JOptionPane.YES_NO_CANCEL_OPTION);
+        int response = JOptionPane.showConfirmDialog(
+                this,
+                GRI18n.getString(MODULE, promptMessageID),
+                lastOpenedFile == null ? GRI18n.getString(MODULE, "noTitleHeader")
+                                       : lastOpenedFile.getName(),
+                JOptionPane.YES_NO_CANCEL_OPTION);
 
-		if (JOptionPane.YES_OPTION == response) {
-			if (null == lastOpenedFile) {
-				saveAsState();
+        if (JOptionPane.YES_OPTION == response) {
+            if (null == lastOpenedFile) {
+                saveAsState();
 
-				// If we are still dirty, they cancelled out of save as
-				// so act as if they cancelled this dialog.
-				if (m_isDirty) {
-					return (JOptionPane.CANCEL_OPTION);
-				}
-			} else {
-				saveState();
-			}
+                // If we are still dirty, they cancelled out of save as
+                // so act as if they cancelled this dialog.
+                if (m_isDirty) {
+                    return (JOptionPane.CANCEL_OPTION);
+                }
+            } else {
+                saveState();
+            }
 
-			return (JOptionPane.OK_OPTION);
-		}
+            return (JOptionPane.OK_OPTION);
+        }
 
-		if (JOptionPane.NO_OPTION == response) {
-			// No action requested, tell the caller to go ahead
-			return (JOptionPane.OK_OPTION);
-		}
+        if (JOptionPane.NO_OPTION == response) {
+            // No action requested, tell the caller to go ahead
+            return (JOptionPane.OK_OPTION);
+        }
 
-		// User reneges, stop the action
-		return (JOptionPane.CANCEL_OPTION);
-	}
+        // User reneges, stop the action
+        return (JOptionPane.CANCEL_OPTION);
+    }
 
 	// Event handling
 	/**
 	 * Menu, button and field handling
-	 * 
+	 *
 	 * @param e Action event
 	 */
 	public void actionPerformed(ActionEvent e) {
@@ -1188,7 +1193,7 @@ public class MainFrame extends JFrame
 		if (command.equals("File.Quit")) {
 			thisWindowClosing(null);
 		} else if (command.equals("File.New")) {
-			int response = saveOnPermission();
+			int response = saveOnPermission("OK_toSaveBeforeClose");
 
 			if (JOptionPane.CANCEL_OPTION == response) {
 				return;
@@ -1207,7 +1212,7 @@ public class MainFrame extends JFrame
 		} else if (command.equals("File.SaveAs")) {
 			saveAsState();
 		} else if (command.equals("File.Close")) {
-			int response = saveOnPermission();
+			int response = saveOnPermission("OK_toSaveBeforeClose");
 
 			if (JOptionPane.CANCEL_OPTION == response) {
 				return;
@@ -1227,16 +1232,20 @@ public class MainFrame extends JFrame
 		} else if (command.equals("Fetch")) {
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 
-				// we're currently logged in: log out
-				if (JOptionPane.showConfirmDialog(
-						(JFrame) this,
-						GRI18n.getString(MODULE, "logoutQuestion", new Object[] {getCurrentGallery().toString()}),
-						"Warning",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
-					return;
-				}
+				// We're currently logged in, but we might be dirty
+                // so ask the user if it's OK to log out.
+                int response = saveOnPermission("logoutQuestion");
+
+                if (JOptionPane.CANCEL_OPTION == response) {
+                    return;
+                }
 
 				getCurrentGallery().logOut();
+
+				lastOpenedFile = null;
+
+				// We've been logged out, we are now clean.
+				setDirtyFlag(false);
 			} else {
 				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -1376,7 +1385,7 @@ public class MainFrame extends JFrame
 	 * method because we use this to temporarily backup the current state
 	 * to the default file (and we want the user to remember that they should
 	 * save the state to a "real" save file if they want to keep it).
-	 * 
+	 *
 	 * @param f the file to store the current dialog data.
 	 */
 	private void saveState(File f) {
@@ -1462,7 +1471,7 @@ public class MainFrame extends JFrame
 	/**
 	 * Save the passed mruFile and then write the properties file so that
 	 * we don't lose the changes.  Then force the MRU menu to change.
-	 * 
+	 *
 	 * @param mruFile the file to add to the MRU list
 	 */
 	private void saveMRUItem(File mruFile) {
@@ -1485,7 +1494,7 @@ public class MainFrame extends JFrame
 	 * Once a file has been loaded, this method has the side-effect of the
 	 * file being added to the MRU list (or moved to the top of that list
 	 * if it was already on it).
-	 * 
+	 *
 	 * @param fileToOpen The file to open (FQPN) or null if a File Open dialog
 	 *                   should be used.
 	 */
@@ -1516,7 +1525,7 @@ public class MainFrame extends JFrame
 		}
 
 		// Before we change galleries, ask them if they want to save.
-		int response = saveOnPermission();
+		int response = saveOnPermission("OK_toSaveBeforeClose");
 
 		if (JOptionPane.CANCEL_OPTION == response) {
 			return;
@@ -1596,7 +1605,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * CheckboxMenu handling
-	 * 
+	 *
 	 * @param e Description of Parameter
 	 */
 	public void itemStateChanged(ItemEvent e) {
@@ -1621,7 +1630,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Implementation of the ListSelectionListener
-	 * 
+	 *
 	 * @param e ListSelection event
 	 */
 	public void valueChanged(ListSelectionEvent e) {
@@ -1641,7 +1650,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Called whenever the value of the selection changes.
-	 * 
+	 *
 	 * @param e the event that characterizes the change.
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
@@ -1659,7 +1668,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Implementation of the ListDataListener
-	 * 
+	 *
 	 * @param e ListSelection event
 	 */
 	public void contentsChanged(ListDataEvent e) {
@@ -1690,7 +1699,7 @@ public class MainFrame extends JFrame
 
 	/**
 	 * Listen for key events
-	 * 
+	 *
 	 * @param e Key event
 	 */
 	public void jListKeyPressed(KeyEvent e) {
@@ -1700,13 +1709,13 @@ public class MainFrame extends JFrame
 			switch (vKey) {
 				case KeyEvent.VK_DELETE:
 				case KeyEvent.VK_BACK_SPACE:
-					CoreUtils.deleteSelectedPictures();
+					deleteSelectedPictures();
 					break;
 				case KeyEvent.VK_LEFT:
-					CoreUtils.movePicturesUp();
+					movePicturesUp();
 					break;
 				case KeyEvent.VK_RIGHT:
-					CoreUtils.movePicturesDown();
+					movePicturesDown();
 					break;
 				case KeyEvent.VK_UP:
 					CoreUtils.selectPrevPicture();
@@ -1731,11 +1740,23 @@ public class MainFrame extends JFrame
 	public Album getCurrentAlbum() {
 		Object album = jAlbumTree.getLastSelectedPathComponent();
 
-		if (album == null || !(album instanceof Album)) {
-			return null;
-		} else {
-			return (Album) album;
-		}
+        if (!(album instanceof Album)) {
+            return(null); // No second chances
+        }
+
+        // If the album is null, there is no item selected,
+        // we can fix that.
+		if (album == null) {
+            // Try to select the first album
+            jAlbumTree.setSelectionRow(0);
+            album = jAlbumTree.getLastSelectedPathComponent();
+
+            if (album == null || !(album instanceof Album)) {
+    			return null;
+            }
+        }
+
+    	return (Album) album;
 	}
 
 	private void macOSXRegistration() {
@@ -1759,6 +1780,33 @@ public class MainFrame extends JFrame
 			}
 		}
 	}
+
+    /*
+     * Delete the selected pictures (using the core utilities)
+     * and mark the document as being dirty.
+     */
+    public void deleteSelectedPictures() {
+        CoreUtils.deleteSelectedPictures();
+        setDirtyFlag(true);
+    }
+
+    /*
+     * Move the selected picture (using the core utilities)
+     * and mark the document as being dirty.
+     */
+    public void movePicturesUp() {
+        CoreUtils.movePicturesUp();
+        setDirtyFlag(true);
+    }
+
+    /*
+     * Move the selected picture (using the core utilities)
+     * and mark the document as being dirty.
+     */
+    public void movePicturesDown() {
+        CoreUtils.movePicturesDown();
+        setDirtyFlag(true);
+    }
 
 	public void flushMemory() {
 		thumbnailCache.flushMemory();
