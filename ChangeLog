@@ -1,3 +1,19 @@
+2002-07-30  Pierre-Luc Paour <gallery@paour.com> (0.4-b1)
+	
+	* Renewed development of Gallery Remote!
+	
+	* Added:
+		- preview window (enabled/disabled by showpreview property)
+		- thumbnails in the list (enabled disabled by showthumbnails property)
+		- asynchronous loading of preview and thumbnails
+		- saving of most preferences (window positions/sizes)
+		- selectable thumbnails size (thumbnailwidth, thumbnailheight
+		properties)
+		- reorderable list (buttons and left-right arrows)
+		- deletable list (button and delete/backspace)
+		- options menu (contributed by Dolan Halbrook)
+		- disabling Drag&Drop while uploading; reorganized top frame (Dolan Halbrook)
+
 2001-11-21  Chris Smith <chris@jacko.com> (0.3)
 	
 	* v0.3 ships!
