@@ -227,6 +227,21 @@ public class PreviewFrame extends javax.swing.JFrame {
 		return result;
 	}
 	
+	public static float getRatio(Dimension source, Dimension target)
+	{
+		float widthRatio = (float) target.width / source.width;
+		float heightRatio = (float) target.height / source.height;
+		
+		if (heightRatio > widthRatio)
+		{
+			return widthRatio;
+		}
+		else
+		{
+			return heightRatio;
+		}
+	}
+	
 	public class SmartHashtable extends Hashtable
 	{
 		Vector touchOrder = new Vector();
