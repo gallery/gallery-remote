@@ -24,6 +24,7 @@ package com.gallery.GalleryRemote;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.awt.*;
 
 import HTTPClient.*;
 
@@ -31,6 +32,8 @@ import com.gallery.GalleryRemote.model.Album;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+
+import javax.swing.*;
 
 /**
  *	This interface is a temporary mechanism to let us use version
@@ -197,9 +200,9 @@ public abstract class GalleryComm implements PreferenceNames {
 	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath) {
 		try {
 			HTTPResponse rsp = null;
-			
+
 			rsp = mConnection.Head(urlPath);
-			
+
 			// handle 30x redirects
 			// (and authorization failure)
 			int rspCode = rsp.getStatusCode();   // try actual communcation
@@ -208,16 +211,22 @@ public abstract class GalleryComm implements PreferenceNames {
 				// retry, the library will have fixed the URL
 				rsp = mConnection.Post(urlPath);
 			}
-			
+
 			return rspCode == 200;
 		} catch (UnknownHostException uhe) {
 			su.error("Unknown host: " + mConnection.getHost());
+		} catch (javax.net.ssl.SSLPeerUnverifiedException ssle) {
+			Log.logException(Log.ERROR, MODULE, ssle);
+
+			JOptionPane.showMessageDialog((Component) su, "The site you are trying to connect to is not signed by an authorized provider.\n" +
+					"Please refer to the following document for help:\n" +
+					"http://www.infy.com/knowledge_capital/thought-papers/usingHTTPwith_java.pdf", "Error", JOptionPane.ERROR_MESSAGE);
 		} catch (IOException ioe)	{
 			Log.logException(Log.ERROR, MODULE, ioe);
 		} catch (ModuleException me) {
 			Log.logException(Log.ERROR, MODULE, me);
 		}
-		
+
 		return false;
 	}
 }
