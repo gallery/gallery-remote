@@ -43,6 +43,8 @@ public class Gallery implements ComboBoxModel
 	String password;
 	ArrayList albumList = null;
 	Album selectedAlbum = null;
+	
+	GalleryComm comm = null;
 
 	// ListModel
 	Vector listeners = new Vector( 1 );
@@ -61,9 +63,17 @@ public class Gallery implements ComboBoxModel
 	 *@param  password  Description of Parameter
 	 */
 	public Gallery( String url, String username, String password ) {
-		this.url = url;
+		setUrl(url);
 		this.username = username;
 		this.password = password;
+	}
+	
+	public GalleryComm getComm(MainFrame mf) {
+		if (comm == null) {
+			comm = new GalleryComm(mf, this);
+		}
+		
+		return comm;
 	}
 
 
@@ -73,6 +83,15 @@ public class Gallery implements ComboBoxModel
 	 *@param  url  The new url value
 	 */
 	public void setUrl( String url ) {
+		if (!url.endsWith("/")) {
+			url += "/";
+		}
+		
+		if (!url.startsWith("http://"))
+		{
+			url = "http://" + url;
+		}
+
 		this.url = url;
 	}
 
@@ -124,7 +143,7 @@ public class Gallery implements ComboBoxModel
 		
 		this.albumList = buf;
 		if ( buf.size() > 0 ) {
-			selectedAlbum = (Album) this.albumList.get(1);
+			selectedAlbum = (Album) this.albumList.get(0);
 		}
 		
 		notifyListeners();
@@ -168,6 +187,19 @@ public class Gallery implements ComboBoxModel
 	 */
 	public ArrayList getAlbumList() {
 		return albumList;
+	}
+	
+	public ArrayList getAllPictures() {
+		ArrayList pictures = new ArrayList();
+		
+		Iterator i = albumList.iterator();
+		while (i.hasNext()) {
+			Album a = (Album) i.next();
+			
+			pictures.addAll(a.getPicturesVector());
+		}
+		
+		return pictures;
 	}
 
 

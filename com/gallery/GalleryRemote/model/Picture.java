@@ -145,5 +145,9 @@ public class Picture {
      */
     public void setListIndex(int listIndex) {
     }
+	
+	public String toString() {
+		return source.getName();
+	}
 }
 

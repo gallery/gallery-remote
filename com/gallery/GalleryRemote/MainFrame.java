@@ -53,12 +53,10 @@ public class MainFrame extends javax.swing.JFrame
 
 	boolean dontReselect = false;
 
-	private GalleryComm mGalleryComm;
+	//private GalleryComm mGalleryComm;
 	private DefaultComboBoxModel galleries = null;
-	//private DefaultComboBoxModel albums = null;
 	private Gallery currentGallery = null;
 	private Album mAlbum = null;
-	private Album mAlbumInProgress = null;
 	private boolean mInProgress = false;
 	private javax.swing.Timer mTimer;
 	private boolean progressOn = false;
@@ -110,7 +108,7 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Constructor for the MainFrame object
 	 */
 	public MainFrame() {
-		mGalleryComm = new GalleryComm();
+		//mGalleryComm = new GalleryComm();
 
 		PropertiesFile p = GalleryRemote.getInstance().properties;
 
@@ -403,6 +401,12 @@ public class MainFrame extends javax.swing.JFrame
 			Log.log(Log.TRACE, MODULE, "Wrong progressId when stopping progress");
 		}
 	}
+	
+	public void setInProgress(boolean inProgress) {
+		mInProgress = inProgress;
+		
+		resetUIState();
+	}
 
 
 	/**
@@ -469,47 +473,8 @@ public class MainFrame extends javax.swing.JFrame
 	 */
 	public void uploadPictures() {
 		Log.log(Log.INFO, MODULE, "uploadPictures starting");
-
-		mGalleryComm.setURLString( currentGallery.getUrl()  );
-		mGalleryComm.setUsername( currentGallery.getUsername() );
-		mGalleryComm.setPassword( currentGallery.getPassword() );
-
-		int index = album.getSelectedIndex();
-		//Hashtable h = (Hashtable) currentGallery.getAlbumList().get( index );
-		mGalleryComm.setAlbum( currentGallery.getSelectedAlbum().getName() );
-		mGalleryComm.uploadFiles( mAlbum.getFileList() );
-
-		mInProgress = true;
-		resetUIState();
-
-		int pId = startProgress(0, mAlbum.sizePictures(), "Uploading pictures");
-
-		mTimer = new javax.swing.Timer( ONE_SECOND,
-			new ActionListener()
-			{
-				int pId = 0;
-				public void actionPerformed( ActionEvent evt ) {
-					updateProgressValue( pId, mGalleryComm.getUploadedCount() );
-					updateProgressStatus( pId, mGalleryComm.getStatus() );
-					if ( mGalleryComm.done() ) {
-						mTimer.stop();
-
-						stopProgress( pId, "Upload finished" );
-						mAlbum.clearPictures();
-						mInProgress = false;
-						resetUIState();
-
-						Log.log(Log.INFO, MODULE, "uploadPictures finished");
-					}
-				}
-
-				public ActionListener setProgressId(int pId) {
-					this.pId = pId;
-					return this;
-				}
-			}.setProgressId(pId) );
-
-		mTimer.start();
+		
+		currentGallery.getComm(this).uploadFiles();
 	}
 
 
@@ -517,48 +482,9 @@ public class MainFrame extends javax.swing.JFrame
 	 *  Fetch Albums from server and update UI
 	 */
 	public void fetchAlbums() {
-		setStatus("Fetching albums...");
-		mGalleryComm.setURLString( currentGallery.getUrl()  );
-		mGalleryComm.setUsername( currentGallery.getUsername() );
-		mGalleryComm.setPassword( currentGallery.getPassword() );
-		mGalleryComm.fetchAlbums();
-
-		mInProgress = true;
-		resetUIState();
-
-		int pId = startProgress(0, 0, "Fetching albums");
-
-		mTimer = new javax.swing.Timer( ONE_SECOND,
-			new ActionListener()
-			{
-				int pId = 0;
-				public void actionPerformed( ActionEvent evt ) {
-					//setStatus( mGalleryComm.getStatus() );
-					if ( mGalleryComm.done() ) {
-						mTimer.stop();
-
-						stopProgress(pId, "Fetch finished");
-
-						currentGallery.setAlbumList( mGalleryComm.getAlbumList() );
-						mInProgress = false;
-						
-						if (mGalleryComm.getAlbumList() != null) {
-							updateAlbumCombo();
-							resetUIState();
-						} else {
-							resetUIState();
-							setStatus("Invalid login information");
-						}
-					}
-				}
-
-				public ActionListener setProgressId(int pId) {
-					this.pId = pId;
-					return this;
-				}
-			}.setProgressId(pId) );
-
-		mTimer.start();
+		Log.log(Log.INFO, MODULE, "fetchAlbums starting");
+		
+		currentGallery.getComm(this).fetchAlbums();
 	}
 
 
@@ -705,7 +631,7 @@ public class MainFrame extends javax.swing.JFrame
 		this.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 		jPanel3.setLayout( gridLayout1 );
 		upload.setAlignmentX( (float) 2.0 );
-		upload.setText( "Upload" );
+		upload.setText( "Upload Albums" );
 		upload.setActionCommand( "Upload" );
 		inspectorDivider.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Pictures to Upload (Drag and Drop files into this panel)" ) );
 		jPanel1.setBorder( new TitledBorder( BorderFactory.createEtchedBorder( Color.white, new Color( 148, 145, 140 ) ), "Destination Gallery" ) );
@@ -821,7 +747,6 @@ public class MainFrame extends javax.swing.JFrame
 			{
 				public void windowClosing( java.awt.event.WindowEvent e ) {
 					jCheckBoxMenuPreview.setState( false );
-					//setShowPreview( false );
 				}
 			} );
 		picturesList.addKeyListener(

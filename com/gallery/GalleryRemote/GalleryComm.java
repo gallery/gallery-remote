@@ -26,6 +26,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
+import com.gallery.GalleryRemote.model.*;
 
 public class GalleryComm {
 	private static final String MODULE = "GalleryCom";
@@ -33,7 +34,7 @@ public class GalleryComm {
 	private static final String PROTOCAL_VERSION = "1";
 	private static final String SCRIPT_NAME = "gallery_remote.php";
 
-	private String mURLString = null;
+	/*private String mURLString = null;
 	private String mUsername = null;
 	private String mPassword = null;
 	private String mAlbum = null;
@@ -44,333 +45,295 @@ public class GalleryComm {
 	private String mStatus;
 	private int mUploadedCount;
 	
-	private boolean mLoggedIn = false;
-	private boolean mDone = false;
+	private boolean mDone = false;*/
 	
-	private HTTPConnection mConnection; 
+	MainFrame mf;
+	protected boolean isLoggedIn = false;
+	protected Gallery g = null;
+	int pId = -1;
 	
-	public GalleryComm() {
+	static {
 		//-- our policy handler accepts all cookies ---
-		CookieModule.setCookiePolicyHandler(new GalleryCookiePolicyHandler());
-	}
-	
-	public void setURLString (String val) {
-		mURLString = val;
-		
-		//-- needs to have a trailing slash ---
-		if (!mURLString.endsWith("/")) {
-			mURLString = mURLString + "/";
-		}
-		
-		if (!mURLString.startsWith("http://"))
-		{
-			mURLString = "http://" + mURLString;
-		}
-		
-		mLoggedIn = false;
-	}
-	
-	public String getURLString () {
-		return mURLString;
-	}
-	
-	public void setUsername (String val) {
-		mUsername = val;
-		mLoggedIn = false;
-	}
-	
-	public String getUsername () {
-		return mUsername;
-	}
-	
-	public void setPassword (String val) {
-		mPassword = val;
-		mLoggedIn = false;
-	}
-	
-	public String getPassword () {
-		return mPassword;
-	}
-	
-	public void setAlbum (String val) {
-		mAlbum = val;
-	}
-	
-	public String getAlbum () {
-		return mAlbum;
-	}
-	
-	
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	public void uploadFiles(ArrayList fileList) {
-		mFileList = fileList;
-		final SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				return new ActualTask("upload");
+		CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
+			public boolean acceptCookie(Cookie cookie, RoRequest req, RoResponse resp) {
+				return true;
 			}
-		};
-		worker.start();
+			public boolean sendCookie(Cookie cookie, RoRequest req) {
+				return true;
+			}
+		});
+	}
+	
+	public GalleryComm(MainFrame mf, Gallery g) {
+		this.mf = mf;
+		this.g = g;
+	}
+	
+	public void uploadFiles() {
+		Thread t = new Thread(new UploadTask());
+		t.start();
 	}
 
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
 	public void fetchAlbums() {
-		final SwingWorker worker = new SwingWorker() {
-			public Object construct() {
-				return new ActualTask("fetch-albums");
-			}
-		};
-		worker.start();
+		Thread t = new Thread(new AlbumListTask());
+		t.start();
 	}
 	
 	//-------------------------------------------------------------------------
-	//-- 
+	//-- GalleryTask
 	//-------------------------------------------------------------------------	
-	class ActualTask {
-		ActualTask (String task) {
-			mDone = false;
-
-			//-- login ---
-			if (!mLoggedIn) {
-				if (!login()) {
-					mDone = true;
+	abstract class GalleryTask implements Runnable {
+		HTTPConnection mConnection;
+		
+		boolean interrupt = false;
+		
+		public void run() {
+			mf.setInProgress(true);
+			if ( ! isLoggedIn ) {
+				if ( !login() ) {
 					return;
 				}
+				
+				isLoggedIn = true;
+			} else {
+				Log.log(Log.TRACE, MODULE, "Still logged in to " + g.toString());
 			}
 			
-			if (task.equals("upload")) {
-				//-- upload each file, one at a time ---
-				boolean allGood = true;
-				mUploadedCount = 0;
-				Iterator iter = mFileList.iterator();
-				while (iter.hasNext() && allGood) {
-					File file = (File) iter.next();
-					allGood = uploadFile(file);
-					mUploadedCount++;
+			runTask();
+			mf.setInProgress(false);
+		}
+		
+		public void interrupt() {
+			interrupt = true;
+		}
+		
+		abstract void runTask();
+
+		private boolean login() {
+			status("Logging in to " + g.toString());
+			
+			try	{
+				URL url = new URL(g.getUrl());
+				String urlPath = url.getFile() + SCRIPT_NAME;
+				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+				
+				NVPair form_data[] = {
+					new NVPair("cmd", "login"),
+					new NVPair("protocal_version", PROTOCAL_VERSION),
+					new NVPair("uname", g.getUsername()),
+					new NVPair("password", g.getPassword())
+				};
+				Log.log(Log.TRACE, MODULE, "login parameters: " + Arrays.asList(form_data));
+				
+				HTTPConnection mConnection = new HTTPConnection(url);
+				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
+				
+				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+					// retry, the library will have fixed the URL
+					status("Received redirect, following...");
+					
+					rsp = mConnection.Post(urlPath, form_data);
 				}
 				
-				if (allGood) {
-					status("[Upload] Complete.");
+				if (rsp.getStatusCode() >= 300)	{
+					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
+					return false;
 				} else {
-					status("[Upload] Aborted.");
-				}
-			} else if (task.equals("fetch-albums")) {
-				requestAlbumList();
-				status("[Album Fetch] Complete.");
-			}
-	
-			mDone = true;
-		}
-	}
-		
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	private boolean login() {
-	
-		mLoggedIn = false;
-		String loginMessage;
-		status("[Login] Logging in...");
-		
-		try
-		{
-			URL url = new URL(mURLString);
-			String loginPage = url.getFile() + SCRIPT_NAME;
-			
-			NVPair form_data[] = {
-				new NVPair("cmd", "login"),
-				new NVPair("protocal_version", PROTOCAL_VERSION),
-				new NVPair("uname", mUsername),
-				new NVPair("password", mPassword)
-			};
-			Log.log(Log.TRACE, MODULE, "login parameters: uname:" + mUsername 
-				+ " password: " + mPassword + " url: " + mURLString + SCRIPT_NAME);
-			
-			mConnection = new HTTPConnection(url);
-			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
-			
-			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-				// retry, the library will have fixed the URL
-				rsp = mConnection.Post(loginPage, form_data);
-			}
-			
-			if (rsp.getStatusCode() >= 400)	{
-				loginMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
-			} else {
-				String response = new String(rsp.getData()).trim();
-				Log.log(Log.TRACE, MODULE, response);
-				
-				if (response.indexOf("SUCCESS") >= 0) {
-					mLoggedIn = true;
-					loginMessage = "Success";
-				} else {
-					loginMessage = "Login Error: " + response;
-				}
-			}
-		} catch (IOException ioe) {
-			Log.logException(Log.ERROR, MODULE, ioe);
-			loginMessage = "Error: " + ioe.toString();
-		} catch (ModuleException me) {
-			Log.logException(Log.ERROR, MODULE, me);
-			loginMessage = "Error handling request: " + me.getMessage();
-		}
-
-		status("[Login] " + loginMessage);
-		return mLoggedIn;
-	}
-
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	private boolean requestAlbumList() {
-		mLoggedIn = false;
-		String albumMessage;
-		status("[Fetch Albums] Fetching...");
-		
-		try {
-			URL url = new URL(mURLString);
-			String loginPage = url.getFile() + SCRIPT_NAME;
-			
-			NVPair form_data[] = {
-				new NVPair("cmd", "fetch-albums"),
-				new NVPair("protocal_version", PROTOCAL_VERSION),
-				new NVPair("uname", mUsername),
-				new NVPair("password", mPassword)
-			};
-			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: uname:" + mUsername 
-				+ " password: " + mPassword + " url: " + mURLString + SCRIPT_NAME);
-			
-			mConnection = new HTTPConnection(url);
-			HTTPResponse rsp = mConnection.Post(loginPage, form_data);
-			
-			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-				// retry, the library will have fixed the URL
-				rsp = mConnection.Post(loginPage, form_data);
-			}
-			
-			if (rsp.getStatusCode() >= 400)
-			{
-				albumMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
-			} else {
-				String response = new String(rsp.getData()).trim();
-				Log.log(Log.TRACE, MODULE, response);
-
-				if (response.indexOf("SUCCESS") >= 0) {
-					albumMessage = "Success";
+					String response = new String(rsp.getData()).trim();
+					Log.log(Log.TRACE, MODULE, response);
 					
-					mAlbumList = new ArrayList();
-					
-					// build the list of hashtables here...
-					StringTokenizer lineT = new StringTokenizer(response, "\n");
-					while (lineT.hasMoreTokens()) {
-						StringTokenizer colT = new StringTokenizer(lineT.nextToken(), "\t");
-						Hashtable h = new Hashtable();
-						if (colT.countTokens() == 2) {
-							h.put("name", URLDecoder.decode(colT.nextToken()));
-							h.put("title", URLDecoder.decode(colT.nextToken()));
-							mAlbumList.add(h);
-						}
+					if (response.indexOf("SUCCESS") >= 0) {
+						status("Logged in");
+						return true;
+					} else {
+						status("Login Error: " + response);
+						return false;
 					}
-				} else {
-					albumMessage = "Error: [" + response + "]";
 				}
+			} catch (IOException ioe) {
+				Log.logException(Log.ERROR, MODULE, ioe);
+				status("Error: " + ioe.toString());
+			} catch (ModuleException me) {
+				Log.logException(Log.ERROR, MODULE, me);
+				status("Error handling request: " + me.getMessage());
 			}
-		} catch (IOException ioe) {
-			Log.logException(Log.ERROR, MODULE, ioe);
-			albumMessage = "Error: " + ioe.toString();
-		} catch (ModuleException me) {
-			Log.logException(Log.ERROR, MODULE, me);
-			albumMessage = "Error handling request: " + me.getMessage();
-		} catch (Exception ee) {
-			Log.logException(Log.ERROR, MODULE, ee);
-			albumMessage = "Error: " + ee.getMessage();
+	
+			return false;
 		}
-
-		status("[Album Fetch] " + albumMessage);
-		return mLoggedIn;
 	}
-
-	//-------------------------------------------------------------------------
-	//-- 
-	//-------------------------------------------------------------------------	
-	public boolean uploadFile(File file) {
-		String filename = file.getName();
-		status("[Upload " + filename + "] Uploading...");
-		
-		String uploadMessage;
-		
-		try	{
-			URL url = new URL(mURLString);
-			String savePage = url.getFile() + SCRIPT_NAME;
-		
-			NVPair[] opts = {
-				new NVPair("set_albumName", mAlbum),
-				new NVPair("cmd", "add-item"), 
-				new NVPair("protocal_version", PROTOCAL_VERSION)
-			};
-			Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: album name:" + mAlbum 
-				+ " url: " + mURLString + SCRIPT_NAME);
-
-			NVPair[] afile = { new NVPair("userfile", file.getAbsolutePath()) };
-			NVPair[] hdrs = new NVPair[1];
-			byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
-			HTTPResponse rsp = mConnection.Post(savePage, data, hdrs);
+	
+	class UploadTask extends GalleryTask {		
+		void runTask() {
+			ArrayList pictures = g.getAllPictures();
 			
-			if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
-				// retry, the library will have fixed the URL
-				rsp = mConnection.Post(savePage, data, hdrs);
+			pId = mf.startProgress(0, pictures.size(), "Uploading pictures");
+			
+			// upload each file, one at a time
+			boolean allGood = true;
+			int uploadedCount = 0;
+			Iterator iter = pictures.iterator();
+			while (iter.hasNext() && allGood && !interrupt) {
+				Picture p = (Picture) iter.next();
+				
+				mf.updateProgressStatus(pId, "Uploading " + p.toString()
+					+ " (" + (uploadedCount + 1) + "/" + pictures.size() + ")");
+				
+				allGood = uploadPicture(p);
+				
+				mf.updateProgressValue(pId, uploadedCount++);
+				
+				p.getAlbum().removePicture(p);
 			}
 			
-			if (rsp.getStatusCode() >= 400)	{
-				uploadMessage = "HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine();
+			if (allGood) {
+				mf.stopProgress(pId, "Upload complete");
 			} else {
-				String response = new String(rsp.getData()).trim();
-				Log.log(Log.TRACE, MODULE, response);
-
-				if (response.indexOf("SUCCESS") >= 0) {
-					uploadMessage = "Success";
-				} else {
-					uploadMessage = "Upload Error: " + response;
-				}
+				mf.stopProgress(pId, "Upload failed");
 			}
+			
+			pId = -1;
 		}
-		catch (IOException ioe)	{
-			Log.logException(Log.ERROR, MODULE, ioe);
-			uploadMessage = "Error: " + ioe.toString();
-		} catch (ModuleException me) {
-			Log.logException(Log.ERROR, MODULE, me);
-			uploadMessage = "Error handling request: " + me.getMessage();
-		}		
-		
-		status("[Upload " + filename + "] " + uploadMessage);
-		
-		return (uploadMessage.equals("Success"));
+
+		boolean uploadPicture(Picture p) {
+			try	{
+				URL url = new URL(g.getUrl());
+				String urlPath = url.getFile() + SCRIPT_NAME;
+				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+			
+				NVPair[] opts = {
+					new NVPair("set_albumName", p.getAlbum().getName()),
+					new NVPair("cmd", "add-item"), 
+					new NVPair("protocal_version", PROTOCAL_VERSION)
+				};
+				Log.log(Log.TRACE, MODULE, "add-item parameters: " + Arrays.asList(opts));
+	
+				NVPair[] afile = { new NVPair("userfile", p.getSource().getAbsolutePath()) };
+				NVPair[] hdrs = new NVPair[1];
+				byte[]   data = Codecs.mpFormDataEncode(opts, afile, hdrs);
+				HTTPConnection mConnection = new HTTPConnection(url);
+				HTTPResponse rsp = mConnection.Post(urlPath, data, hdrs);
+				
+				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+					// retry, the library will have fixed the URL
+					status("Received redirect, following...");
+					
+					rsp = mConnection.Post(urlPath, data, hdrs);
+				}
+								
+				if (rsp.getStatusCode() >= 300)	{
+					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
+					return false;
+				} else {
+					String response = new String(rsp.getData()).trim();
+					Log.log(Log.TRACE, MODULE, response);
+	
+					if (response.indexOf("SUCCESS") >= 0) {
+						trace("Upload successful");
+						return true;
+					} else {
+						error("Upload Error: " + response);
+						return false;
+					}
+				}
+			} catch (IOException ioe)	{
+				Log.logException(Log.ERROR, MODULE, ioe);
+				error("Error: " + ioe.toString());
+			} catch (ModuleException me) {
+				Log.logException(Log.ERROR, MODULE, me);
+				error("Error handling request: " + me.getMessage());
+			}		
+			
+			return false;
+		}
 	}
 	
+	class AlbumListTask extends GalleryTask {
+		void runTask() {
+			status("Fetching albums from " + g.toString());
+			
+			try {
+				URL url = new URL(g.getUrl());
+				String urlPath = url.getFile() + SCRIPT_NAME;
+				Log.log(Log.TRACE, MODULE, "Url: " + url + urlPath);
+				
+				NVPair form_data[] = {
+					new NVPair("cmd", "fetch-albums"),
+					new NVPair("protocal_version", PROTOCAL_VERSION),
+					new NVPair("uname", g.getUsername()),
+					new NVPair("password", g.getPassword())
+				};
+				Log.log(Log.TRACE, MODULE, "fetchAlbums parameters: " + Arrays.asList(form_data));
+				
+				mConnection = new HTTPConnection(url);
+				HTTPResponse rsp = mConnection.Post(urlPath, form_data);
+				
+				if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
+					// retry, the library will have fixed the URL
+					status("Received redirect, following...");
+					
+					rsp = mConnection.Post(urlPath, form_data);
+				}
+				
+				if (rsp.getStatusCode() >= 300)	{
+					error("HTTP Error: "+ rsp.getStatusCode()+" "+rsp.getReasonLine());
+					return;
+				} else {
+					String response = new String(rsp.getData()).trim();
+					Log.log(Log.TRACE, MODULE, response);
+	
+					if (response.indexOf("SUCCESS") >= 0) {
+						ArrayList mAlbumList = new ArrayList();
+						
+						// build the list of hashtables here...
+						StringTokenizer lineT = new StringTokenizer(response, "\n");
+						while (lineT.hasMoreTokens()) {
+							StringTokenizer colT = new StringTokenizer(lineT.nextToken(), "\t");
+							Hashtable h = new Hashtable();
+							if (colT.countTokens() == 2) {
+								h.put("name", URLDecoder.decode(colT.nextToken()));
+								h.put("title", URLDecoder.decode(colT.nextToken()));
+								mAlbumList.add(h);
+							}
+						}
+						
+						status("Fetched albums");
+						
+						g.setAlbumList(mAlbumList);
+					} else {
+						error("Error: " + response);
+					}
+				}
+			} catch (IOException ioe) {
+				Log.logException(Log.ERROR, MODULE, ioe);
+				status("Error: " + ioe.toString());
+			} catch (ModuleException me) {
+				Log.logException(Log.ERROR, MODULE, me);
+				status("Error: " + me.toString());
+			} catch (Exception ee) {
+				Log.logException(Log.ERROR, MODULE, ee);
+				status("Error: " + ee.toString());
+			}
+		}
+	}
+
 	//-------------------------------------------------------------------------
 	//-- 
 	//-------------------------------------------------------------------------	
-	private void status(String message) {
-		mStatus = message;
+	void status(String message) {
 		Log.log(Log.INFO, MODULE, message);
+		if (pId != -1) {
+			mf.setStatus(message);
+		} else {
+			mf.updateProgressStatus(pId, message);
+		}
 	}
 	
-	public String getStatus() {
-		return mStatus;
+	void error(String message) {
+		// TODO: use error dialog
+		status(message);
 	}
 	
-	public int getUploadedCount() {
-		return mUploadedCount;
-	}		
-
-	public ArrayList getAlbumList() {
-		return mAlbumList;
-	}
-	
-	public boolean done() {
-		return mDone;
+	void trace(String message) {
+		Log.log(Log.TRACE, MODULE, message);
 	}
 }

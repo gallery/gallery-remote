@@ -79,6 +79,10 @@ public class Album extends Picture implements ListModel
 		return pictures.elements();
 	}
 
+	Vector getPicturesVector() {
+		return pictures;
+	}
+
 
 	/**
 	 *  Adds a picture to the album
@@ -164,6 +168,11 @@ public class Album extends Picture implements ListModel
 
 		ListDataEvent lde = new ListDataEvent( com.gallery.GalleryRemote.GalleryRemote.getInstance().mainFrame, ListDataEvent.INTERVAL_REMOVED, n, n );
 		notifyListeners(lde);
+	}
+
+
+	public void removePicture( Picture p ) {
+		removePicture(pictures.indexOf(p));
 	}
 
 
