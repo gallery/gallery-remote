@@ -120,7 +120,13 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void doFetchAlbums(StatusUpdate su, boolean async) {
-		getComm(su).fetchAlbums(su, async);
+		GalleryComm comm = getComm(su);
+
+		if (comm != null) {
+			comm.fetchAlbums(su, async);
+		} else {
+			// don't worry about it, an error message is displayed somewhere else.
+		}
 	}
 
 	public String doNewAlbum(Album a, StatusUpdate su) {
@@ -807,9 +813,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 				if (comm == null) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "No protocol implementation found");
-					su.error("Gallery Remote can find no protocol implementation at the URL "
-							+ stUrlString.toString() + "\nCheck with a web browser that "
-							+ stUrlString.toString() + "gallery_remote.php is a valid URL");
+					su.error(GRI18n.getString(MODULE, "galleryNotFound", new Object[] {stUrlString}));
 				}
 			}
 		}

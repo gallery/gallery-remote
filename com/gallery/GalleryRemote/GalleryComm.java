@@ -163,6 +163,7 @@ public abstract class GalleryComm implements PreferenceNames {
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
 		try {
 			GalleryProperties p = GalleryRemote._().properties;
+
 			// set proxy info
 			String proxyList = System.getProperty("javaplugin.proxy.config.list");
 
@@ -174,11 +175,11 @@ public abstract class GalleryComm implements PreferenceNames {
 			if (proxyList != null && proxyList.length() != 0) {
 				try {
 					proxyList = proxyList.toUpperCase();
-					Log.log(Log.LEVEL_TRACE, MODULE, "Plugin Proxy Config List Property:"+proxyList);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Plugin Proxy Config List Property: " + proxyList);
 					// 6.0.0 1/14/03 1.3.1_06 appears to omit HTTP portion of reported proxy list... Mod to accomodate this...
 					// Expecting proxyList of "HTTP=XXX.XXX.XXX.XXX:Port" OR "XXX.XXX.XXX.XXX:Port" & assuming HTTP...
 
-					if (proxyList.indexOf("HTTP=") > -1) {
+					if (proxyList.indexOf("HTTP=") != -1) {
 						proxyHost = proxyList.substring(proxyList.indexOf("HTTP=")+5, proxyList.indexOf(":"));
 					} else {
 						proxyHost = proxyList.substring(0, proxyList.indexOf(":"));
@@ -191,6 +192,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				catch (Exception e) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Exception during failover auto proxy detection" );
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					proxyHost = null;
 				}
 			} else if (p.getBooleanProperty(USE_PROXY)) {
 				proxyHost = p.getProperty(PROXY_HOST);
@@ -231,7 +233,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2 for " + url);
 				// Test GalleryComm2
 				String urlPath2 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME);
-				if (tryComm(su, mConnection, urlPath2)) {
+				if (tryComm(su, mConnection, urlPath2, null)) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
 					return new GalleryComm2(g);	
 				}
@@ -239,9 +241,15 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2.5 for " + url);
 				// Test GalleryComm2
 				String urlPath2_5 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2_5.SCRIPT_NAME : "/" + GalleryComm2_5.SCRIPT_NAME);
-				if (tryComm(su, mConnection, urlPath2_5)) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2.5");
-					return new GalleryComm2_5(g);
+				StringBuffer sb = new StringBuffer();
+				if (tryComm(su, mConnection, urlPath2_5, sb)) {
+					if (sb != null && sb.indexOf("ERROR_PERMISSION_DENIED") == -1) {
+						Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2.5");
+						return new GalleryComm2_5(g);
+					} else {
+						// G2 remote module is deactivated
+						su.error(GRI18n.getString(MODULE, "g2.moduleDisabled"));
+					}
 				}
 
 				/*Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 1 for " + url);
@@ -286,11 +294,15 @@ public abstract class GalleryComm implements PreferenceNames {
 		AuthorizePopup.hackPassword = null;
 	}
 
-	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath) {
+	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath, StringBuffer content) {
 		try {
 			HTTPResponse rsp = null;
 
-			rsp = mConnection.Head(urlPath);
+			if (content == null) {
+				rsp = mConnection.Head(urlPath);
+			} else {
+				rsp = mConnection.Get(urlPath);
+			}
 
 			// handle 30x redirects
 			// (and authorization failure)
@@ -298,8 +310,16 @@ public abstract class GalleryComm implements PreferenceNames {
 			lastRespCode = rspCode;
 			if (rspCode >= 300 && rspCode < 400) {
 				// retry, the library will have fixed the URL
-				rsp = mConnection.Post(urlPath);
+				if (content == null) {
+					rsp = mConnection.Head(urlPath);
+				} else {
+					rsp = mConnection.Get(urlPath);
+				}
 				rspCode = rsp.getStatusCode();
+			}
+
+			if (content != null) {
+				content.append(rsp.getText());
 			}
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "tryComm " + urlPath + ": " + rspCode);
@@ -323,6 +343,8 @@ public abstract class GalleryComm implements PreferenceNames {
 			}
 		} catch (ModuleException me) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, me);
+		} catch (ParseException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
 
 		return false;

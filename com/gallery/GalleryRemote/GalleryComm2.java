@@ -1284,7 +1284,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws GR2Exception, ModuleException, IOException {
 		// assemble the URL
 		String urlPath = galUrl.getFile();
-		Log.log(Log.LEVEL_TRACE, MODULE, "Url: " + urlPath);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Connecting to: " + urlPath);
 
 		if (data != null) {
 			su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, GRI18n.getString(MODULE, "upStart"), false);

@@ -109,6 +109,7 @@ public class Cookie implements Serializable
 	this.secure  = secure;
 
 	if (this.domain.indexOf('.') == -1)  this.domain += ".local";
+	if (!this.domain.startsWith(".")) this.domain = "." + this.domain;
     }
 
 
@@ -124,6 +125,7 @@ public class Cookie implements Serializable
 	expires = null;
 	domain  = req.getConnection().getHost();
 	if (domain.indexOf('.') == -1)  domain += ".local";
+	if (!this.domain.startsWith(".")) this.domain = "." + this.domain;
 	path    = Util.getPath(req.getRequestURI());
 	/* This does not follow netscape's spec at all, but it's the way
 	 * netscape seems to do it, and because people rely on that we
@@ -519,6 +521,7 @@ public class Cookie implements Serializable
 	HTTPConnection con = req.getConnection();
 	String eff_host = con.getHost();
 	if (eff_host.indexOf('.') == -1)  eff_host += ".local";
+	if (!eff_host.startsWith(".")) eff_host = "." + eff_host;
 
 	return ((domain.charAt(0) == '.'  &&  eff_host.endsWith(domain)  ||
 		 domain.charAt(0) != '.'  &&  eff_host.equals(domain))  &&

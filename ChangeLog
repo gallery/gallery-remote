@@ -1,3 +1,11 @@
+2004-08-24  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b13)
+
+	* Again fixed cookie parsing bugs in stupid HTTPClient library.
+	* Fixed proxy behavior when a a proxy is set in the Java Plugin
+	  but no HTTP proxy is present.
+	* Added support for G2 installations where 'remote' module is
+	  not active.
+
 2004-08-23  Pierre-Luc Paour <gallery@paour.com> (1.4.1-b12)
 
 	* Fixed basic auth dialog not working properly.
