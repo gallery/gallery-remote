@@ -270,25 +270,29 @@ public abstract class GalleryComm implements PreferenceNames {
 				// assemble the URL
 				String urlPath = url.getFile();
 
-				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2 for " + url);
-				// Test GalleryComm2
-				String urlPath2 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME);
-				if (tryComm(su, mConnection, urlPath2, null)) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
-					return new GalleryComm2(g);	
+				if (g.forceGalleryVersion == 0 || g.forceGalleryVersion == 1) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2 for " + url);
+					// Test GalleryComm2
+					String urlPath2 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2.SCRIPT_NAME : "/" + GalleryComm2.SCRIPT_NAME);
+					if (tryComm(su, mConnection, urlPath2, null)) {
+						Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2");
+						return new GalleryComm2(g);
+					}
 				}
 
-				Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2.5 for " + url);
-				// Test GalleryComm2
-				String urlPath2_5 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2_5.SCRIPT_NAME : "/" + GalleryComm2_5.SCRIPT_NAME);
-				StringBuffer sb = new StringBuffer();
-				if (tryComm(su, mConnection, urlPath2_5, sb)) {
-					if (sb != null && sb.indexOf("ERROR_PERMISSION_DENIED") == -1) {
-						Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2.5");
-						return new GalleryComm2_5(g);
-					} else {
-						// G2 remote module is deactivated
-						su.error(GRI18n.getString(MODULE, "g2.moduleDisabled"));
+				if (g.forceGalleryVersion == 0 || g.forceGalleryVersion == 2) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Trying protocol 2.5 for " + url);
+					// Test GalleryComm2
+					String urlPath2_5 = urlPath + ((urlPath.endsWith("/")) ? GalleryComm2_5.SCRIPT_NAME : "/" + GalleryComm2_5.SCRIPT_NAME);
+					StringBuffer sb = new StringBuffer();
+					if (tryComm(su, mConnection, urlPath2_5, sb)) {
+						if (sb != null && sb.indexOf("ERROR_PERMISSION_DENIED") == -1) {
+							Log.log(Log.LEVEL_TRACE, MODULE, "Server has protocol 2.5");
+							return new GalleryComm2_5(g);
+						} else {
+							// G2 remote module is deactivated
+							su.error(GRI18n.getString(MODULE, "g2.moduleDisabled"));
+						}
 					}
 				}
 

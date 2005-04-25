@@ -96,6 +96,7 @@ public class GRApplet extends JApplet {
 		String cookieDomain = getParameter("gr_cookie_domain");
 		String cookiePath = getParameter("gr_cookie_path");
 		String userAgent = getParameter("gr_user_agent");
+		String galleryVersion = getParameter("gr_gallery_version");
 		String cookie1Name = getParameter("gr_cookie1_name");
 		String cookie1Value = getParameter("gr_cookie1_value");
 
@@ -111,6 +112,7 @@ public class GRApplet extends JApplet {
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie1_name: " + cookie1Name);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_album: " + info.albumName);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_user_agent: " + userAgent);
+		Log.log(Log.LEVEL_INFO, MODULE, "gr_gallery_version: " + galleryVersion);
 
 		if (cookieDomain == null || cookieDomain.length() < 1) {
 			try {
@@ -196,6 +198,13 @@ public class GRApplet extends JApplet {
 
 		info.gallery.setUserAgent(userAgent);
 		info.gallery.cookieLogin = true;
+		if (galleryVersion != null) {
+			try {
+				info.gallery.forceGalleryVersion = Integer.parseInt(galleryVersion);
+			} catch (RuntimeException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+		}
 
 		CookieModule.discardAllCookies();
 		Cookie cookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false);

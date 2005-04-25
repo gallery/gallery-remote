@@ -58,7 +58,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String username;
 	String password;
 	String alias;
-        String userAgent = null;
+	String userAgent = null;
 	int type = TYPE_STANDALONE;
 
 	transient GalleryComm comm = null;
@@ -69,6 +69,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient private boolean blockWrites = false;
 	transient public boolean cookieLogin = false;
 	transient public int galleryVersion = 1;
+	transient public int forceGalleryVersion = 0;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
 	public static final int TYPE_STANDALONE = 0;
