@@ -628,31 +628,36 @@ public class ImageUtils {
 			d = p.getSizeResized();
 		}
 
-		String name = u.getPath();
-		String ext;
+		String uid = p.getUniqueId();
+		String ext = p.getForceExtension();
 
-		int i = name.lastIndexOf('/');
-		name = name.substring(i + 1);
+		if (uid == null || ext == null) {
+			uid = u.getPath();
 
-		i = name.lastIndexOf('.');
-		ext = name.substring(i + 1);
-		name = name.substring(0, i);
-		String filename = name + "." + ext;
+			int i = uid.lastIndexOf('/');
+			uid = uid.substring(i + 1);
 
-		return new LocalInfo(name, ext, filename,
-				deterministicTempFile("server", "." + ext, tmpDir, p.getAlbumOnServer().getName() + name + d), u, d);
+			i = uid.lastIndexOf('.');
+			ext = uid.substring(i + 1);
+			uid = uid.substring(0, i);
+		}
+
+		String filename = uid + "." + ext;
+
+		return new LocalInfo(ext, filename,
+				deterministicTempFile("server", "." + ext, tmpDir, uid + d), u, d);
 	}
 
 	static class LocalInfo {
-		String name;
+		//String name;
 		String ext;
 		String filename;
 		File file;
 		URL url;
 		Dimension size;
 
-		public LocalInfo(String name, String ext, String filename, File file, URL url, Dimension size) {
-			this.name = name;
+		public LocalInfo(String ext, String filename, File file, URL url, Dimension size) {
+			//this.name = name;
 			this.ext = ext;
 			this.filename = filename;
 			this.file = file;

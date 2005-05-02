@@ -1,3 +1,8 @@
+2005-05-02  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b16)
+
+	* Added support for slideshows of G2 albums, a prelude to
+	  adding java-based fullscreen slideshows in G2.
+
 2005-04-27  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b15)
 
 	* Added support for an arbitrary number of cookies to be passed

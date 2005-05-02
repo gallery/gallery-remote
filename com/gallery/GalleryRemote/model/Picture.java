@@ -69,6 +69,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	transient int indexCache = -1;
 	transient Dimension dimension = null;
 	transient ExifData exif = null;
+	transient String forceExtension = null;
+	transient String uniqueId = null;
 
 	/**
 	 * Constructor for the Picture object
@@ -574,6 +576,22 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		}
 
 		return exif;
+	}
+
+	public String getForceExtension() {
+		return forceExtension;
+	}
+
+	public void setForceExtension(String forceExtension) {
+		this.forceExtension = forceExtension;
+	}
+
+	public String getUniqueId() {
+		return uniqueId;
+	}
+
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
 }
 

@@ -28,15 +28,15 @@ import java.util.List;
 
 public class GalleryFileFilter extends FileFilter {
 	public static String[] ext
-			= {"gif", "jpeg", "jpg", "avi", "mpg", "mpeg", "moov", "png"};
+			= {"gif", "jpeg", "jpg", "avi", "mpg", "mpeg", "moov", "png", "jpe"};
 	public static final List validExtensions = Arrays.asList(ext);
 
 	public static String[] ext1
-			= {"gif", "jpeg", "jpg", "png"};
+			= {"gif", "jpeg", "jpg", "png", "jpe"};
 	public static final List manipulateExtensions = Arrays.asList(ext1);
 
 	public static String[] ext2
-			= {"jpg", "jpeg"};
+			= {"jpg", "jpeg", "jpe"};
 	public static final List manipulateJpegExtensions = Arrays.asList(ext2);
 
 	// Accept all directories and all gif, jpg files.

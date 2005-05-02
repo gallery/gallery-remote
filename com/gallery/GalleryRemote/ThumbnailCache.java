@@ -59,6 +59,7 @@ public class ThumbnailCache implements Runnable {
 
 			if (!thumbnails.containsKey(p)) {
 				if (p.isOnline()) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Fetching thumbnail " + p.getUrlThumbnail());
 					i = new ImageIcon(p.getUrlThumbnail());
 
 					Image scaled = null;
