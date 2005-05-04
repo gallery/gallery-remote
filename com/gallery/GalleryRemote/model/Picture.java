@@ -143,7 +143,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			}
 
 			setCaption(filename);
-		} else if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT)
+		} else if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT, false)
 				&& getExifData() != null && getExifData().getCaption() != null) {
 			setCaption(getExifData().getCaption());
 		}

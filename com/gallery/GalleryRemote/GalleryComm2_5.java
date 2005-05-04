@@ -21,10 +21,11 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
 	public static final String SCRIPT_NAME = "main.php?g2_controller=remote:GalleryRemote&g2_form[cmd]=no-op";
 
-	public static final boolean ZEND_DEBUG = true;
+	public static final boolean ZEND_DEBUG = false;
 
 	private static int[] capabilities2;
 	private static int[] capabilities3;
+	private static int[] capabilities4;
 
 	protected GalleryComm2_5(Gallery g) {
 		super(g);
@@ -35,9 +36,13 @@ public class GalleryComm2_5 extends GalleryComm2 {
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM*/, CAPA_FETCH_ALBUMS_PRUNE};
 		capabilities3 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE};
+		capabilities4 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FETCH_ALBUM_IMAGES};
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
+		Arrays.sort(capabilities4);
 
 		g.setGalleryVersion(2);
 	}
@@ -86,7 +91,9 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	}
 
 	void handleCapabilities() {
-		if (serverMinorVersion >= 3) {
+		if (serverMinorVersion >= 4) {
+			capabilities = capabilities4;
+		} else if (serverMinorVersion >= 3) {
 			capabilities = capabilities3;
 		} else {
 			capabilities = capabilities2;

@@ -161,7 +161,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			return new Dimension(Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()));
 		} else {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Parameter " + key + " is missing or malformed (should be width,height)");
+			Log.log(Log.LEVEL_ERROR, MODULE, "Parameter " + key + " = " + value + " is missing or malformed (should be width,height)");
 			return null;
 		}
 	}
@@ -201,7 +201,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 					Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()));
 		} else {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Parameter " + key + " is missing or malformed (should be red,green,blue)");
+			Log.log(Log.LEVEL_ERROR, MODULE, "Parameter " + key + " = " + value + " is missing or malformed (should be red,green,blue)");
 			return null;
 		}
 	}
@@ -385,7 +385,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			}
 		}
 
-		throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be true/yes or false/no)");
+		throw new NumberFormatException("Parameter " + key + " = " + booleanS + " is missing or malformed (should be true/yes or false/no)");
 	}
 
 	public boolean getBooleanProperty(String key, boolean defaultValue) {
@@ -406,7 +406,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		try {
 			return Integer.valueOf(intS).intValue();
 		} catch (Exception e) {
-			throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be an integer value)");
+			throw new NumberFormatException("Parameter " + key + " = " + intS + " is missing or malformed (should be an integer value)");
 		}
 	}
 
@@ -430,7 +430,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		try {
 			return Base64.decode(base64S);
 		} catch (Error e) {
-			throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be a Base64 value)");
+			throw new NumberFormatException("Parameter " + key + " = " + base64S + " is missing or malformed (should be a Base64 value)");
 		}
 	}
 
@@ -446,7 +446,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		try {
 			return dateFormat.parse(dateS);
 		} catch (ParseException e) {
-			throw new NumberFormatException("Parameter " + key + " is missing or malformed (should be a Date value (yyyy/mm/dd))");
+			throw new NumberFormatException("Parameter " + key + " = " + dateS + " is missing or malformed (should be a Date value (yyyy/mm/dd))");
 		}
 	}
 

@@ -13,6 +13,7 @@ import javax.swing.event.ListDataEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,6 +26,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 	JButton jStart;
 	SlideshowPanel jSlidePanel;
 	SlideshowFrame slideshowFrame = null;
+	AppletInfo info;
 
 	public GRAppletSlideshow() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -32,7 +34,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 
 	public void startup() {
 		galleries = new DefaultComboBoxModel();
-		AppletInfo info = getGRAppletInfo();
+		info = getGRAppletInfo();
 
 		gallery = info.gallery;
 
@@ -112,9 +114,22 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 			new Thread() {
 				public void run() {
 					slideshowFrame = new SlideshowFrame();
+					int index = 0;
+					ArrayList picturesList = album.getPicturesList();
 
-					if (album.getSize() > 0) {
-						ImageUtils.download((Picture) album.getPicturesList().get(0), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
+					if (info.slideshowFrom != null) {
+						for (int i = 0; i < picturesList.size(); i++) {
+							if (info.slideshowFrom.equals(((Picture) picturesList.get(i)).getUniqueId())) {
+								Log.log(Log.LEVEL_TRACE, MODULE, "Starting slideshow from index " + i);
+								index = i;
+								slideshowFrame.wantIndex = i;
+								break;
+							}
+						}
+					}
+
+					if (album.getSize() > index) {
+						ImageUtils.download((Picture) picturesList.get(index), getGraphicsConfiguration().getBounds().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
 					} else {
 						JOptionPane.showMessageDialog(GRAppletSlideshow.this, GRI18n.getString(MODULE, "emptyAlbum"));
 					}

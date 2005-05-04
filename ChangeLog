@@ -1,3 +1,12 @@
+2005-05-04  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b17)
+
+	* GR and the GR applets are now able to run slideshows of G2
+	  albums.
+	* Slideshows can now start from a picture other than the first.
+	  This is only available in the G2 applet right now.
+	* Added debugging for thoses cases when some preferences are
+	  missing.
+
 2005-05-02  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b16)
 
 	* Added support for slideshows of G2 albums, a prelude to

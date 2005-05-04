@@ -1126,6 +1126,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								height = p.getIntProperty("image.raw_height." + i, 0);
 								picture.setSizeFull(new Dimension(width, height));
 								picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
+
+								picture.setUniqueId(a.getName() + '_' + rawName);
+							}
+
+							String forceExtension = p.getProperty("image.forceExtension." + i);
+							if (forceExtension != null) {
+								picture.setForceExtension(forceExtension);
 							}
 
 							String resizedName = p.getProperty("image.resizedName." + i);
@@ -1154,7 +1161,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								}
 							}
 
-							picture.setHidden(p.getBooleanProperty("image.hidden." + i));
+							picture.setHidden(p.getBooleanProperty("image.hidden." + i, false));
 
 							picture.setAlbumOnServer(a);
 							picture.setIndexOnServer(i - 1);
@@ -1284,7 +1291,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws GR2Exception, ModuleException, IOException {
 		// assemble the URL
 		String urlPath = galUrl.getFile();
-		Log.log(Log.LEVEL_TRACE, MODULE, "Connecting to: " + urlPath);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Connecting to: " + galUrl);
+		Log.log(Log.LEVEL_TRACE, MODULE, "Path: " + urlPath);
 
 		if (data != null) {
 			su.startProgress(StatusUpdate.LEVEL_UPLOAD_ONE, 0, 0, GRI18n.getString(MODULE, "upStart"), false);
