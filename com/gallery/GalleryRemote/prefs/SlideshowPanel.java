@@ -6,6 +6,7 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.GalleryRemoteCore;
 import com.gallery.GalleryRemote.MainFrame;
+import com.gallery.GalleryRemote.Log;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,6 +43,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JCheckBox jRandom = new JCheckBox();
 	JCheckBox jNoStretch = new JCheckBox();
 	JCheckBox jPreloadAll = new JCheckBox();
+	JCheckBox jLoop = new JCheckBox();
 	JPanel spacerPanel1 = new JPanel();
 	ColorWellButton jBackgroundColor = new ColorWellButton(Color.red);
 
@@ -59,6 +61,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jRandom.setSelected(props.getBooleanProperty(SLIDESHOW_RANDOM));
 		jNoStretch.setSelected(props.getBooleanProperty(SLIDESHOW_NOSTRETCH));
 		jPreloadAll.setSelected(props.getBooleanProperty(SLIDESHOW_PRELOADALL));
+		jLoop.setSelected(props.getBooleanProperty(SLIDESHOW_LOOP));
 		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
 		Color color = props.getColorProperty(SLIDESHOW_COLOR);
 		jOverride.setSelected(color != null);
@@ -72,6 +75,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jRandom.setEnabled(! props.isOverridden(SLIDESHOW_RANDOM));
 		jNoStretch.setEnabled(! props.isOverridden(SLIDESHOW_NOSTRETCH));
 		jPreloadAll.setEnabled(! props.isOverridden(SLIDESHOW_PRELOADALL));
+		jLoop.setEnabled(! props.isOverridden(SLIDESHOW_LOOP));
 		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
 		jOverride.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
 		jBackgroundColor.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
@@ -92,7 +96,15 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		props.setBooleanProperty(SLIDESHOW_RANDOM, jRandom.isSelected());
 		props.setBooleanProperty(SLIDESHOW_NOSTRETCH, jNoStretch.isSelected());
 		props.setBooleanProperty(SLIDESHOW_PRELOADALL, jPreloadAll.isSelected());
-		props.setIntProperty(SLIDESHOW_DELAY, Integer.parseInt(jDelay.getText()));
+		props.setBooleanProperty(SLIDESHOW_LOOP, jLoop.isSelected());
+		int delay;
+		try {
+			delay = (int) Float.parseFloat(jDelay.getText());
+		} catch (NumberFormatException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			delay = 7;
+		}
+		props.setIntProperty(SLIDESHOW_DELAY, delay);
 
 		if (jOverride.isSelected()) {
 			props.setColorProperty(SLIDESHOW_COLOR, jBackgroundColor.getSelectedColor());
@@ -152,6 +164,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jNoStretch.setToolTipText(GRI18n.getString(MODULE, "noStretchHelp"));
 		jPreloadAll.setText(GRI18n.getString(MODULE, "preloadAll"));
 		jPreloadAll.setToolTipText(GRI18n.getString(MODULE, "preloadAllHelp"));
+		jLoop.setText(GRI18n.getString(MODULE, "loop"));
+		jLoop.setToolTipText(GRI18n.getString(MODULE, "loopHelp"));
 
 		progress.setText(GRI18n.getString(MODULE, "progress"));
 		progress.setLabelFor(jProgress);
@@ -188,6 +202,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		progressionPanel.add(jRandom,   new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		progressionPanel.add(jPreloadAll,   new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0
+				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		progressionPanel.add(jLoop,   new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		apperancePanel.add(jLowRez,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0

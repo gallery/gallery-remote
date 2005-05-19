@@ -245,8 +245,10 @@ public class SlideshowFrame extends PreviewFrame
 			try {
 				long sleep;
 
-				while ((sleep = sleepTime - (System.currentTimeMillis() - pictureShownTime)) > 0) {
-					Thread.sleep(sleep);
+				if (sleepTime > 0) {
+					while ((sleep = sleepTime - (System.currentTimeMillis() - pictureShownTime)) > 0) {
+						Thread.sleep(sleep);
+					}
 				}
 				//Log.log(Log.LEVEL_TRACE, MODULE, "sleepTime: " + sleepTime + " - " + (System.currentTimeMillis() - pictureShownTime));
 				//Thread.sleep(1000);
@@ -285,8 +287,12 @@ public class SlideshowFrame extends PreviewFrame
 			wantIndex++;
 
 			if (wantIndex >= pictures.size()) {
-				wantIndex = pictures.size() - 1;
-				return false;
+				if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_LOOP)) {
+					wantIndex = 0;
+				} else {
+					wantIndex = pictures.size() - 1;
+					return false;
+				}
 			}
 
 			// display next picture
@@ -342,8 +348,12 @@ public class SlideshowFrame extends PreviewFrame
 			wantIndex--;
 
 			if (wantIndex < 0) {
-				wantIndex = 0;
-				return false;
+				if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_LOOP)) {
+					wantIndex = pictures.size() - 1;
+				} else {
+					wantIndex = 0;
+					return false;
+				}
 			}
 
 			// display previous picture

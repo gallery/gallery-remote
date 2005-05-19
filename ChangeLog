@@ -1,3 +1,10 @@
+2005-05-19  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b19)
+
+	* Added ability for the slideshow to loop.
+	* Fixed GR barfing on non-integer sleep times for slideshow.
+	* Added support for 0 sleep-time: immediate display of next
+	  picture. Thanks to Andy Staudacher for the suggestions.
+
 2005-05-19  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b18)
 
 	* GR now sets user-agent and referer to fetch pictures, to comply

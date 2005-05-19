@@ -70,6 +70,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_NOSTRETCH = "slideshowNoStretch";
 	public static final String SLIDESHOW_COLOR = "slideshowColor";
 	public static final String SLIDESHOW_PRELOADALL = "slideshowPreloadAll";
+	public static final String SLIDESHOW_LOOP = "slideshowLoop";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
