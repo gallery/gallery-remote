@@ -712,6 +712,11 @@ public class ImageUtils {
 				long start = System.currentTimeMillis();
 
 				URLConnection conn = pictureUrl.openConnection();
+				String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
+				if (userAgent != null) {
+					conn.addRequestProperty("User-Agent", userAgent);
+				}
+				conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
 				int size = conn.getContentLength();
 
 				su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
