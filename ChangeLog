@@ -1,3 +1,10 @@
+2005-05-20  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b20)
+
+	* Added ability to force the Gallery version to avoid problems with
+	  auto-detection of G1 installations when the web server sends back
+	  a bogus 404 message. Just add to your GalleryRemote.properties a line
+	  with forceGalleryVersion.1=[1|2].
+
 2005-05-19  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b19)
 
 	* Added ability for the slideshow to loop.

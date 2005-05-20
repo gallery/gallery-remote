@@ -49,6 +49,7 @@ public interface PreferenceNames {
 	public static final String GL_GALLERY_URL = "glGalleryUrl.";
 	public static final String GL_LOGIN_URL = "glLoginUrl.";
 	public static final String ALIAS = "alias.";
+	public static final String FORCE_GALLERY_VERSION = "forceGalleryVersion.";
 
 	// Proxy panel
 	public static final String USE_PROXY = "useProxy";

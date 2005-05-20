@@ -666,6 +666,8 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		}
 		g.setAlias(p.getProperty(ALIAS + prefsIndex));
 
+		g.forceGalleryVersion = p.getIntProperty(FORCE_GALLERY_VERSION + prefsIndex, 0);
+
 		g.setPrefsIndex(prefsIndex);
 
 		g.setBlockWrites(false);
