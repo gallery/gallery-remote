@@ -19,7 +19,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	private static final String MODULE = "GalComm2_5";
 
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
-	public static final String SCRIPT_NAME = "main.php?g2_controller=remote:GalleryRemote&g2_form[cmd]=no-op";
+	public static final String SCRIPT_NAME = "main.php?g2_controller=remote.GalleryRemote&g2_form[cmd]=no-op";
 
 	public static final boolean ZEND_DEBUG = false;
 
@@ -73,7 +73,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 			}
 		}
 
-		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote:GalleryRemote");
+		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote.GalleryRemote");
 
 		if (ZEND_DEBUG) {
 			form_data_modified[form_data.length + 1] = new NVPair("start_debug", "1");
