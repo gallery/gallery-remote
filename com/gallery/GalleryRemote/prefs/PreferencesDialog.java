@@ -2,14 +2,11 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
-import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -156,9 +153,9 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 		if (cmd.equals("OK")) {
 			GalleryRemote._().properties.uncache();
 
-			Enumeration enum = panels.elements();
-			while (enum.hasMoreElements()) {
-				PreferencePanel pp = (PreferencePanel) enum.nextElement();
+			Enumeration enumeration = panels.elements();
+			while (enumeration.hasMoreElements()) {
+				PreferencePanel pp = (PreferencePanel) enumeration.nextElement();
 
 				if (pp.hasBeenRead()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Writing properties for panel " + pp.getClass());
