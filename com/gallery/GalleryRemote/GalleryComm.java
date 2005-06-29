@@ -265,6 +265,10 @@ public abstract class GalleryComm implements PreferenceNames {
 			// create a connection
 			HTTPConnection mConnection = new HTTPConnection(url);
 			addUserInfo(mConnection, url);
+			String userAgent = g.getUserAgent();
+			if (userAgent != null) {
+				mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent) });
+			}
 
 			if (g.getType() == Gallery.TYPE_STANDALONE) {
 				// assemble the URL

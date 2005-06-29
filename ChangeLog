@@ -1,3 +1,7 @@
+2005-06-29  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b21)
+
+	* Fixed downloading secured images for slideshow with G2.
+
 2005-05-20  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b20)
 
 	* Added ability to force the Gallery version to avoid problems with

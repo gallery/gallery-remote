@@ -44,6 +44,8 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
+import HTTPClient.CookieModule;
+import HTTPClient.Cookie;
 
 /**
  * Interface to common image manipulation routines
@@ -712,11 +714,17 @@ public class ImageUtils {
 				long start = System.currentTimeMillis();
 
 				URLConnection conn = pictureUrl.openConnection();
+				//conn.addRequestProperty("Connection", "Dont-keep-alive");
 				String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
 				if (userAgent != null) {
 					conn.addRequestProperty("User-Agent", userAgent);
 				}
 				conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
+				Cookie[] cookies = CookieModule.listAllCookies();
+				for (int i = 0; i < cookies.length; i++) {
+					conn.addRequestProperty("Cookie", cookies[i].toString());
+				}
+
 				int size = conn.getContentLength();
 
 				su.startProgress(StatusUpdate.LEVEL_BACKGROUND, 0, size,
@@ -1056,8 +1064,8 @@ public class ImageUtils {
 		ArrayList ret = new ArrayList();
 
 		/* File.listFiles: stupid call returns null if there's an
-		i/o exception *or* if the file is not a directory, making a mess.
-		http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
+				i/o exception *or* if the file is not a directory, making a mess.
+				http://java.sun.com/j2se/1.4/docs/api/java/io/File.html#listFiles() */
 		File[] fileArray = dir.listFiles();
 		if (fileArray == null) {
 			if (dir.isDirectory()) {

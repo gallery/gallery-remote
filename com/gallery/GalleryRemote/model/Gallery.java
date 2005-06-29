@@ -58,7 +58,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String username;
 	String password;
 	String alias;
-	String userAgent = null;
+	String userAgent = "Gallery Remote " + GalleryRemote._().properties.getProperty("version");
 	int type = TYPE_STANDALONE;
 
 	transient GalleryComm comm = null;
