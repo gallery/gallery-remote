@@ -2,11 +2,14 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
