@@ -1,3 +1,7 @@
+2005-07-30  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b22)
+
+	* Fixed setting of titles/summaries with G2.
+
 2005-06-29  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b21)
 
 	* Fixed downloading secured images for slideshow with G2.

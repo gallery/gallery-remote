@@ -44,7 +44,6 @@ import java.util.List;
  * Album model
  * 
  * @author paour
- * @created 11 août 2002
  */
 
 public class Album extends GalleryItem implements ListModel, Serializable, PreferenceNames {
@@ -94,6 +93,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	transient private boolean suppressEvents = false;
 
 	public static List extraFieldsNoShow = Arrays.asList(new String[]{"Capture date", "Upload date", "Description"});
+	public static List extraFieldsNoShowG2 = Arrays.asList(new String[]{"Capture date", "Upload date"});
 
 
 	public Album(Gallery gallery) {
@@ -104,8 +104,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	/**
 	 * Retrieves the album properties from the server.
-	 * 
-	 * @param gallery The new gallery
 	 */
 	public void fetchAlbumProperties(StatusUpdate su) {
 		if (!hasFetchedInfo && getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
@@ -302,8 +300,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	/**
 	 * Adds picturesA to the album
-	 * 
-	 * @param picturesA the picturesA
 	 */
 	public void addPictures(List picturesL) {
 		addPictures(picturesL, -1);
@@ -640,8 +636,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	/**
 	 * Description of the Method
-	 * 
-	 * @param ldl Description of Parameter
 	 */
 	/*public void setParent(Album a) {
 		// take care of a Gallery bug...
@@ -664,10 +658,16 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		if (extraFieldsString != null && extraFieldsString.length() > 0) {
 			extraFields = new ArrayList();
 			StringTokenizer st = new StringTokenizer(extraFieldsString, ",");
+			List noShow = null;
+			if (getGallery().galleryVersion == 1) {
+				noShow = extraFieldsNoShow;
+			} else {
+				noShow = extraFieldsNoShowG2;
+			}
 			while (st.hasMoreTokens()) {
 				String name = st.nextToken();
 
-				if (!extraFieldsNoShow.contains(name) && !extraFields.contains(name)) {
+				if (!noShow.contains(name) && !extraFields.contains(name)) {
 					extraFields.add(name);
 				}
 			}
