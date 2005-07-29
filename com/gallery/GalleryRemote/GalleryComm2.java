@@ -553,7 +553,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								value = HTMLEscaper.escape(value);
 							}
 
-							optsList.add(new NVPair("extrafield_" + name, value));
+							optsList.add(new NVPair("extrafield." + name, value));
 						}
 					}
 
