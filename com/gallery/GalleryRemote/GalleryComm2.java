@@ -196,10 +196,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	/**
 	 * Causes the GalleryComm instance to create a new album as a child of
 	 * the specified album (or at the root if album is null)
-	 *
-	 * @param su an instance that implements the StatusUpdate interface.
-	 * @param a  if null, create the album in the root of the gallery; otherwise
-	 *           create as a child of the given album
 	 */
 	public String newAlbum(StatusUpdate su, Album parentAlbum,
 						   String newAlbumName, String newAlbumTitle,

@@ -19,13 +19,14 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	private static final String MODULE = "GalComm2_5";
 
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
-	public static final String SCRIPT_NAME = "main.php?g2_controller=remote.GalleryRemote&g2_form[cmd]=no-op";
+	public static final String SCRIPT_NAME = "main.php?g2_controller=remote:GalleryRemote&g2_form[cmd]=no-op";
 
 	public static final boolean ZEND_DEBUG = false;
 
 	private static int[] capabilities2;
 	private static int[] capabilities3;
 	private static int[] capabilities4;
+	private static int[] capabilities6;
 
 	protected GalleryComm2_5(Gallery g) {
 		super(g);
@@ -39,10 +40,14 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		capabilities4 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FETCH_ALBUM_IMAGES};
+		capabilities6 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FETCH_ALBUM_IMAGES};
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
 		Arrays.sort(capabilities4);
+		Arrays.sort(capabilities6);
 
 		g.setGalleryVersion(2);
 	}
@@ -73,7 +78,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 			}
 		}
 
-		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote.GalleryRemote");
+		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote:GalleryRemote");
 
 		if (ZEND_DEBUG) {
 			form_data_modified[form_data.length + 1] = new NVPair("start_debug", "1");
@@ -91,7 +96,9 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	}
 
 	void handleCapabilities() {
-		if (serverMinorVersion >= 4) {
+		if (serverMinorVersion >= 6) {
+			capabilities = capabilities6;
+		} else if (serverMinorVersion >= 4) {
 			capabilities = capabilities4;
 		} else if (serverMinorVersion >= 3) {
 			capabilities = capabilities3;
