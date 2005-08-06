@@ -42,7 +42,7 @@ im.thumbnailResizeFormat=gif
 im.previewResizeFormat=jpg
 
 # jpeg quality
-im.jpegQuality=80
+im.jpegQuality=90
 
 # ignore error code sent back by the executable
 # there's a bug in the Linux Java VM that returns a failed code

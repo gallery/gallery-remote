@@ -41,6 +41,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
@@ -617,7 +619,7 @@ public class ImageUtils {
 		URL u = null;
 		Dimension d = null;
 
-		if (full == false && p.getSizeResized() == null) {
+		if (!full && p.getSizeResized() == null) {
 			// no resized version
 			return null;
 		}
@@ -854,7 +856,27 @@ public class ImageUtils {
 				imIgnoreErrorCode = p.getBooleanProperty("im.ignoreErrorCode", imIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
 
-				if (imPath.indexOf("/") == -1 && imPath.indexOf("\\") == -1) {
+				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1
+						&& System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
+					// we're on Windows with an abbreviated path: look up IM in the registry
+					StringBuffer output = new StringBuffer();
+					exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
+
+					Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+					//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+					Matcher m = pat.matcher(output.toString());
+					if (m.find()) {
+						imPath = m.group(1) + "\\" + imPath;
+
+						if (!imPath.endsWith(".exe")) {
+							imPath += ".exe";
+						}
+
+						Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+					}
+				}
+
+				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick path is not fully qualified, " +
 							"presence won't be tested until later");
 				} else if (!new File(imPath).exists()) {
@@ -915,7 +937,7 @@ public class ImageUtils {
 				jpegtranIgnoreErrorCode = p.getBooleanProperty("jp.ignoreErrorCode", jpegtranIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
 
-				if (jpegtranPath.indexOf("/") == -1 && jpegtranPath.indexOf("\\") == -1) {
+				if (jpegtranPath.indexOf('/') == -1 && jpegtranPath.indexOf('\\') == -1) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran path is not fully qualified, " +
 							"presence won't be tested until later");
 				}
@@ -1094,12 +1116,16 @@ public class ImageUtils {
 	}
 
 	public static int exec(String cmdline) {
+		return exec(cmdline, null);
+	}
+
+	public static int exec(String cmdline, StringBuffer output) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmdline);
 
 		try {
 			Process p = Runtime.getRuntime().exec(cmdline);
 
-			return pumpExec(p);
+			return pumpExec(p, output);
 		} catch (InterruptedException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return -1;
@@ -1111,12 +1137,16 @@ public class ImageUtils {
 	}
 
 	public static int exec(String[] cmd) {
+		return exec(cmd, null);
+	}
+
+	public static int exec(String[] cmd, StringBuffer output) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + Arrays.asList(cmd));
 
 		try {
 			Process p = Runtime.getRuntime().exec(cmd);
 
-			return pumpExec(p);
+			return pumpExec(p, output);
 		} catch (InterruptedException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return -1;
@@ -1127,7 +1157,7 @@ public class ImageUtils {
 		return 1;
 	}
 
-	private static int pumpExec(Process p) throws InterruptedException, IOException {
+	private static int pumpExec(Process p, StringBuffer output) throws InterruptedException, IOException {
 		DataInputStream out = new DataInputStream(new BufferedInputStream(p.getInputStream()));
 		DataInputStream err = new DataInputStream(new BufferedInputStream(p.getErrorStream()));
 
@@ -1136,6 +1166,9 @@ public class ImageUtils {
 		String line = null;
 		while ((line = out.readLine()) != null) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Out: " + line);
+			if (output != null) {
+				output.append(line).append("\n");
+			}
 		}
 
 		while ((line = err.readLine()) != null) {

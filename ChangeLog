@@ -1,3 +1,11 @@
+2005-08-06  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b24)
+
+	* GR can now find ImageMagick on its own on Windows, by looking in
+	  the registry. Using a newer version of IM can speed up image
+	  operations by a factor of 2! It is now recommended to
+	  install IM independantly of GR to get this benefit.
+	  This is all the more important for the applet.
+
 2005-07-30  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b23)
 
 	* Now using the new format for the remote controller URL in G2.
