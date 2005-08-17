@@ -48,6 +48,9 @@ public final class NVPair
     /** the value */
     private String value;
 
+	private String encoding = "8859_1";
+	private boolean defaultEncoding = true;
+
 
     // Constructors
 
@@ -58,11 +61,21 @@ public final class NVPair
      * @param name  the name
      * @param value the value
      */
-    public NVPair(String name, String value)
+    public NVPair(String name, String value, String encoding)
     {
-	this.name  = name;
-	this.value = value;
+		this.name  = name;
+	    this.value = value;
+	    if (encoding != null) {
+			this.encoding = encoding;
+			defaultEncoding = false;
+	    }
     }
+
+	public NVPair(String name, String value)
+	{
+		this.name  = name;
+		this.value = value;
+	}
 
     /**
      * Creates a copy of a given name/value pair.
@@ -71,7 +84,7 @@ public final class NVPair
      */
     public NVPair(NVPair p)
     {
-	this(p.name, p.value);
+	this(p.name, p.value, p.safeGetEncoding());
     }
 
 
@@ -105,6 +118,23 @@ public final class NVPair
      */
     public String toString()
     {
-	return getClass().getName() + "[name=" + name + ",value=" + value + "]";
+	return getClass().getName() + "[name=" + name + ",value=" + value + (!defaultEncoding?", encoding="+encoding:"") + "]";
     }
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+		defaultEncoding = false;
+	}
+
+	public boolean isDefaultEncoding() {
+		return defaultEncoding;
+	}
+
+	public String safeGetEncoding() {
+		return defaultEncoding?null:encoding;
+	}
 }

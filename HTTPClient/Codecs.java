@@ -1063,8 +1063,13 @@ public class Codecs
 	{
 	    if (opts[idx] == null)  continue;
 
-	    len += hdr_len + opts[idx].getName().length() +
-		   opts[idx].getValue().length();
+	    len += hdr_len + opts[idx].getName().length();
+		if (opts[idx].isDefaultEncoding()) {
+			len += opts[idx].getValue().length();
+		} else {
+			byte[] tmp = opts[idx].getValue().getBytes(opts[idx].getEncoding());
+			len += tmp.length;
+		}
 	}
 
 	for (int idx=0; idx<files.length; idx++)
@@ -1140,8 +1145,9 @@ public class Codecs
 		res[pos++] = (byte) '\r';
 		res[pos++] = (byte) '\n';
 
-		int vlen = opts[idx].getValue().length();
-		System.arraycopy(opts[idx].getValue().getBytes("8859_1"), 0, res, pos, vlen);
+		byte[] tmp = opts[idx].getValue().getBytes(opts[idx].getEncoding());
+		int vlen = tmp.length;
+		System.arraycopy(tmp, 0, res, pos, vlen);
 		pos += vlen;
 
 		if ((pos-start) >= boundary.length  &&

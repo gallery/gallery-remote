@@ -53,7 +53,6 @@ import HTTPClient.Cookie;
  * Interface to common image manipulation routines
  * 
  * @author paour
- * @created September 1, 2002
  */
 
 public class ImageUtils {

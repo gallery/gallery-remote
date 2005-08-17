@@ -41,6 +41,7 @@ import java.io.StringBufferInputStream;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -509,6 +510,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		boolean uploadPicture(Picture p) {
 			try {
 				boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
+				boolean utf8 = !escapeCaptions && p.getParentAlbum().getGallery().galleryVersion == 2;
+
+				if (utf8) {
+					Log.log(Log.LEVEL_INFO, MODULE, "Will upload using UTF-8 for text data");
+				}
 
 				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upPrep"));
 
@@ -525,7 +531,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("cmd", "add-item"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", p.getParentAlbum().getName()),
-					new NVPair("caption", caption),
+					new NVPair("caption", caption, utf8?"UTF-8":null),
 					new NVPair("force_filename", p.getSource().getName()),
 					null
 				};
@@ -549,7 +555,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								value = HTMLEscaper.escape(value);
 							}
 
-							optsList.add(new NVPair("extrafield." + name, value));
+							optsList.add(new NVPair("extrafield." + name, value, utf8?"UTF-8":null));
 						}
 					}
 
@@ -964,12 +970,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		void runTask() {
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "newAlbm", new Object[] { albumName, g.toString() }));
 
+			boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
+			boolean utf8 = !escapeCaptions && parentAlbum.getGallery().galleryVersion == 2;
+
 			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
 			// by Gallery. Using an empty string doesn't work, because then the HTTP parameter is not
 			// parsed, and the session album is kept the same as before (from the cookie).
 			String parentAlbumName = (parentAlbum == null) ? "hack_null_albumName" : parentAlbum.getName();
 
-			if (GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS)) {
+			if (escapeCaptions) {
 				albumTitle = HTMLEscaper.escape(albumTitle);
 				albumDesc = HTMLEscaper.escape(albumDesc);
 			}
@@ -981,8 +990,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", parentAlbumName),
 					new NVPair("newAlbumName", albumName),
-					new NVPair("newAlbumTitle", albumTitle),
-					new NVPair("newAlbumDesc", albumDesc)
+					new NVPair("newAlbumTitle", albumTitle, utf8?"UTF-8":null),
+					new NVPair("newAlbumDesc", albumDesc, utf8?"UTF-8":null)
 				};
 				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 

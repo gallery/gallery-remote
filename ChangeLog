@@ -1,3 +1,9 @@
+2005-08-18  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b25)
+
+	* GR now uploads images and creates albums with UTF-8 when
+	  connected to G2. This fixes improper behavior when using non-ASCII
+	  characters. This only happens if HTML escaping is disabled.
+
 2005-08-06  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b24)
 
 	* GR can now find ImageMagick on its own on Windows, by looking in

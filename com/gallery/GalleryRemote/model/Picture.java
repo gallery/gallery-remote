@@ -38,7 +38,6 @@ import java.util.Iterator;
  * Picture model
  * 
  * @author paour
- * @created 11 août 2002
  */
 public class Picture extends GalleryItem implements Serializable, PreferenceNames, Cloneable {
 	public static final String MODULE = "Picture";

@@ -56,7 +56,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
         NVPair[] data_modified = new NVPair[data.length];
         for (int i = 0; i < data.length; i++) {
             NVPair nvPair = data[i];
-            data_modified[i] = new NVPair("g2_" + nvPair.getName(), nvPair.getValue());
+            data_modified[i] = new NVPair("g2_" + nvPair.getName(), nvPair.getValue(), nvPair.safeGetEncoding());
         }
 
         return data_modified;
@@ -72,7 +72,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 
 		for (int i = 0; i < form_data.length; i++) {
 			if (form_data[i] != null) {
-				form_data_modified[i] = new NVPair("g2_form[" + form_data[i].getName() + "]", form_data[i].getValue());
+				form_data_modified[i] = new NVPair("g2_form[" + form_data[i].getName() + "]", form_data[i].getValue(), form_data[i].safeGetEncoding());
 			} else {
 				form_data_modified[i] = null;
 			}
