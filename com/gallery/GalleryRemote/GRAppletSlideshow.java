@@ -122,7 +122,7 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 							if (info.slideshowFrom.equals(((Picture) picturesList.get(i)).getUniqueId())) {
 								Log.log(Log.LEVEL_TRACE, MODULE, "Starting slideshow from index " + i);
 								index = i;
-								slideshowFrame.wantIndex = i;
+								slideshowFrame.wantIndex = i - 1;
 								break;
 							}
 						}

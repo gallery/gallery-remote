@@ -70,6 +70,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	transient ExifData exif = null;
 	transient String forceExtension = null;
 	transient String uniqueId = null;
+	transient String name = null;
 
 	/**
 	 * Constructor for the Picture object
@@ -475,20 +476,28 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	}
 
 	public String getName() {
-		String path = safeGetUrlFull().getPath();
+		if (name == null) {
+			String path = safeGetUrlFull().getPath();
 
-		int i = path.lastIndexOf('/');
+			int i = path.lastIndexOf('/');
 
-		if (i != -1) {
-			path = path.substring(i + 1);
+			if (i != -1) {
+				path = path.substring(i + 1);
+			}
+
+			i = path.lastIndexOf('.');
+			if (i != -1) {
+				path = path.substring(0, i);
+			}
+
+			name = path;
 		}
 
-		i = path.lastIndexOf('.');
-		if (i != -1) {
-			path = path.substring(0, i);
-		}
+		return name;
+	}
 
-		return path;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Album getAlbumOnServer() {

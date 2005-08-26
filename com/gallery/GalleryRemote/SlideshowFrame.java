@@ -101,7 +101,7 @@ public class SlideshowFrame extends PreviewFrame
 				// unfortunately, this doesn't work on Mac 1.4.2...
 				// gd.setFullScreenWindow(this);
 			} else {*/
-				DialogUtil.maxSize(this);
+				 DialogUtil.maxSize(this);
 				//setBounds(600, 100, 500, 500);
 				setVisible(true);
 			//}
@@ -110,6 +110,8 @@ public class SlideshowFrame extends PreviewFrame
 			DialogUtil.maxSize(this);
 			setVisible(true);
 		}*/
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Showing slideshow frame");
 
 		// todo: this is a hack to prevent painting problems (the status bar paints
 		// on top of the slide show)
@@ -218,8 +220,9 @@ public class SlideshowFrame extends PreviewFrame
 		new Thread(this).start();
 
 		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_PRELOADALL)) {
-			new Thread() {
+			Thread t = new Thread() {
 				public void run() {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Preload thread starting");
 					for (Iterator it = SlideshowFrame.this.pictures.iterator(); it.hasNext();) {
 						if (shutdown) {
 							break;
@@ -228,8 +231,11 @@ public class SlideshowFrame extends PreviewFrame
 						Picture picture = (Picture) it.next();
 						ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
 					}
+					Log.log(Log.LEVEL_TRACE, MODULE, "Preload thread done");
 				}
-			}.start();
+			};
+			t.setPriority(Thread.MIN_PRIORITY);
+			t.start();
 		}
 	}
 
@@ -469,6 +475,7 @@ public class SlideshowFrame extends PreviewFrame
 				break;
 		}
 
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateProgress:" + progress);
 		repaint();
 
 		hideCursor();

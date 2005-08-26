@@ -1155,6 +1155,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 							picture.setCaption(p.getProperty("image.caption." + i));
 
+							String title = p.getProperty("image.title." + i);
+							if (title != null) {
+								picture.setName(title);
+							}
+
 							if (extraFields != null) {
 								for (Iterator it = extraFields.iterator(); it.hasNext();) {
 									String name = (String) it.next();
