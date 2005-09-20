@@ -95,25 +95,24 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 
 			System.out.println("Got changes: " + changes);
 
-			// compose beta check
-			StringBuffer betaCheck = new StringBuffer();
-
-			betaCheck.append("version=").append(currentBuildS).append("\n");
-			betaCheck.append("releaseDate=").append(defaultProps.getProperty("releaseDate")).append("\n");
-			betaCheck.append("releaseUrl=http://jpmullan.com/galleryupdates/remote/gallery_remote_").append(defaultProps.getProperty("version")).append(".zip\n");
-			betaCheck.append("releaseUrlMac=http://jpmullan.com/galleryupdates/remote/GalleryRemote.").append(defaultProps.getProperty("version")).append(".MacOSX.NoVM.tgz\n");
-			betaCheck.append("releaseNotes=").append(changes);
-
-			// update Menalto
-			System.out.println("Uploading to Menalto: " + betaCheck);
+			NVPair form_data_login[] = {
+					new NVPair("edit[name]", changeProps.getProperty("username")),
+					new NVPair("edit[pass]", changeProps.getProperty("password")),
+					new NVPair("op", "Log in"),
+			};
 
 			NVPair form_data[] = {
-				new NVPair("op", "modload"),
-				new NVPair("name", "GalleryRemoteVersion"),
-				new NVPair("file", "index"),
-				new NVPair("action", "save-beta"),
-				new NVPair("newVersion", betaCheck.toString()),
+				new NVPair("submit", "Update"),
+				new NVPair("edit[releaseNum]", currentBuildS),
+				new NVPair("edit[go]", "1"),
+				new NVPair("edit[releaseDate]", defaultProps.getProperty("releaseDate")),
+				new NVPair("edit[releaseUrl]", "http://jpmullan.com/galleryupdates/remote/gallery_remote_" + defaultProps.getProperty("version") + ".zip"),
+				new NVPair("edit[releaseUrlMac]", "http://jpmullan.com/galleryupdates/remote/GalleryRemote." + defaultProps.getProperty("version") + ".MacOSX.NoVM.tgz"),
+				new NVPair("edit[releaseNotes]", changes.toString()),
 			};
+
+			// update Menalto
+			System.out.println("Uploading to Menalto: " + form_data);
 
 			// set cookie handling
 			CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
@@ -133,15 +132,25 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			String response = null;
 
 			// login
-			rsp = mConnection.Get("/user.php?uname=" + changeProps.getProperty("username") +
-					"&pass=" + changeProps.getProperty("password") + "&module=NS-User&op=login");
+			rsp = mConnection.Post("/user/login?destination=node", form_data_login);
 			response = new String(rsp.getData()).trim();
 			System.out.println("Login response: " + response);
 
 			// upload
-			rsp = mConnection.Post("/modules.php", form_data);
+			rsp = mConnection.Post("/admin/galleryremote/edit/beta/1", form_data);
 			response = new String(rsp.getData()).trim();
 			System.out.println("Upload response: " + response);
+
+			// activate
+			rsp = mConnection.Get("/admin/galleryremote/current/beta/1");
+			response = new String(rsp.getData()).trim();
+			System.out.println("Activate response: " + response);
+
+			// test
+			HTTPConnection mConnection1 = new HTTPConnection("gallery.sourceforge.net");
+			rsp = mConnection1.Get("/gallery_remote_version_check.php");
+			response = new String(rsp.getData()).trim();
+			System.out.println("Test response: " + response);
 
 			if (response.startsWith("version=" + currentBuildS)) {
 				// worked
