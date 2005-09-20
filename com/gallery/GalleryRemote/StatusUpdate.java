@@ -20,6 +20,8 @@
  */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.model.Picture;
+
 /**
  * This interface decouples the status updating methods from MainFrame.
  * 
@@ -60,4 +62,6 @@ public interface StatusUpdate {
 	public void setInProgress(boolean inProgress);
 
 	public void error(String message);
+
+	public void doneUploading(String newItemName, Picture picture);
 }

@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.model.Picture;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
@@ -206,6 +207,9 @@ public class StatusBar extends JPanel implements StatusUpdate {
 				data[currentLevel].undeterminedThread.interrupt();
 			}
 		}
+	}
+
+	public void doneUploading(String newItemName, Picture picture) {
 	}
 
 	class StatusLevelData {

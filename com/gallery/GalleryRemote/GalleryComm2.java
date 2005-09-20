@@ -41,7 +41,6 @@ import java.io.StringBufferInputStream;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -171,7 +170,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 * @param su an instance that implements the StatusUpdate interface.
 	 */
 	public void uploadFiles(StatusUpdate su, boolean async) {
-		doTask(new UploadTask(su), async);
+		UploadTask uploadTask = new UploadTask(su);
+		doTask(uploadTask, async);
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Object[] params = {p.toString(), new Integer((uploadedCount + 1)), new Integer(pictures.size())};
 				su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upStatus", params));
 
-				allGood = uploadPicture(p);
+				allGood = uploadPicture(p, p);
 
 				su.updateProgressValue(StatusUpdate.LEVEL_UPLOAD_PROGRESS, ++uploadedCount);
 
@@ -507,7 +507,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			}
 		}
 
-		boolean uploadPicture(Picture p) {
+		boolean uploadPicture(Picture p, Picture picture) {
 			try {
 				boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 				boolean utf8 = !escapeCaptions && p.getParentAlbum().getGallery().galleryVersion == 2;
@@ -573,6 +573,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				Properties props = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su, this);
 				if (props.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upSucc"));
+					String newItemName = props.getProperty("item_name");
+					if (newItemName != null) {
+						su.doneUploading(newItemName, picture);
+					}
 					return true;
 				} else {
 					Object[] params = {props.getProperty("status_text")};
@@ -1133,6 +1137,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 								picture.setFileSize(p.getIntProperty("image.raw_filesize." + i));
 
 								picture.setUniqueId(a.getName() + '_' + rawName);
+								picture.setItemId(rawName);
 							}
 
 							String forceExtension = p.getProperty("image.forceExtension." + i);

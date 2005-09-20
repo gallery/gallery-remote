@@ -20,6 +20,8 @@
  */
 package com.gallery.GalleryRemote;
 
+import com.gallery.GalleryRemote.model.Picture;
+
 /**
  * This is an event adapter for the StatusUpdateListener class.
  * 
@@ -66,5 +68,8 @@ public class StatusUpdateAdapter implements StatusUpdate {
 
 	public int getProgressMaxValue(int level) {
 		return 0;
+	}
+
+	public void doneUploading(String newItemName, Picture picture) {
 	}
 }

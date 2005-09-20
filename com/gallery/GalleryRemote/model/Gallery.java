@@ -42,7 +42,6 @@ import java.awt.*;
  * Gallery model
  * 
  * @author paour
- * @created 17 août 2002
  */
 
 public class Gallery extends DefaultTreeModel implements Serializable, PreferenceNames {
@@ -158,6 +157,14 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		//addAlbum(a);
 
 		return newAlbumName;
+	}
+
+	public void incrementViewCount(Picture p, StatusUpdate su) {
+		if (getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_INCREMENT_VIEW_COUNT)) {
+			Log.log(Log.LEVEL_INFO, MODULE, "Incrementing viewCount on " + p.toString());
+
+			getComm(su).incrementViewCount(su, p);
+		}
 	}
 
 	public void logOut() {

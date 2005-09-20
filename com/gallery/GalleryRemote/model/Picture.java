@@ -70,6 +70,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	transient ExifData exif = null;
 	transient String forceExtension = null;
 	transient String uniqueId = null;
+	transient String itemId = null;
 	transient String name = null;
 
 	/**
@@ -600,6 +601,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setUniqueId(String uniqueId) {
 		this.uniqueId = uniqueId;
+	}
+
+	public String getItemId() {
+		return itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
 	}
 }
 

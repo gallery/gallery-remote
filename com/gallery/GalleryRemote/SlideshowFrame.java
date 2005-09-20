@@ -418,6 +418,9 @@ public class SlideshowFrame extends PreviewFrame
 			extra = picture.getExtraFieldsString();
 			if (picture.isOnline()) {
 				url = picture.safeGetUrlFull().toString();
+
+				// update view count on Gallery
+				picture.getParentAlbum().getGallery().incrementViewCount(picture, GalleryRemote._().getCore().getMainStatusUpdate());
 			} else {
 				url = picture.getSource().toString();
 			}

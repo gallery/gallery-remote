@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
+import com.gallery.GalleryRemote.model.Picture;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -262,5 +263,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 
 	public boolean isShutdown() {
 		return jShutdown.isSelected();
+	}
+
+	public void doneUploading(String newItemName, Picture picture) {
 	}
 }

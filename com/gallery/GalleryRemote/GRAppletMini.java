@@ -24,6 +24,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.applet.Applet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,6 +54,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	Gallery gallery = null;
 	boolean inProgress = false;
 	boolean hasHadPictures = false;
+	Method call;
+	Object window;
 
 	public GRAppletMini() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -148,8 +153,11 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				if (! (gallery.getComm(null) instanceof GalleryComm2_5) && gallery.getType() != Gallery.TYPE_APPLET) {
 					getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
 				}
-			} catch (MalformedURLException e1) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e1);
+
+				// use Java to Javascript scripting
+				g2Feedback("doneUploading", new Object[] {});
+			} catch (MalformedURLException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 
 			hasHadPictures = false;
@@ -247,6 +255,22 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 						jListKeyPressed(e);
 					}
 				});
+
+		Class jsobject = null;
+		try {
+			jsobject = Class.forName("netscape.javascript.JSObject");
+			Method getWindow = jsobject.getMethod("getWindow", new Class[] {Applet.class});
+			call = jsobject.getMethod("call", new Class[] {String.class, Object[].class});
+			window = getWindow.invoke(null, new Object[] { this });
+		} catch (ClassNotFoundException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		} catch (IllegalAccessException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		} catch (NoSuchMethodException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		} catch (InvocationTargetException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		}
 	}
 
 	public void jListKeyPressed(KeyEvent e) {
@@ -286,7 +310,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				hasHadPictures = true;
 			}
 		} else if (source == jUpload) {
-			gallery.doUploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)));
+			g2Feedback("startingUpload", new Object[] {});
+			gallery.doUploadFiles(new UploadProgress(DialogUtil.findParentWindow(this)) {
+				public void doneUploading(String newItemName, Picture picture) {
+					g2Feedback("uploadedOne", new Object[] {newItemName, picture.toString()});
+				}
+			});
 		} else if (source == jResize) {
 			GalleryRemote._().properties.setBooleanProperty(RESIZE_BEFORE_UPLOAD, jResize.isSelected());
 		}
@@ -326,5 +355,18 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 			jCaption.setEditable(true);
 			jCaption.setBackground(UIManager.getColor("TextField.background"));
 		}
+	}
+
+	public void g2Feedback(String method, Object[] params) {
+		//if (gallery.galleryVersion == 2) {
+			try {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Invoking Javascript method '" + method + "' with " + params);
+				call.invoke(window, new Object[] {method, params});
+			} catch (IllegalAccessException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			} catch (InvocationTargetException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
+		//}
 	}
 }

@@ -1,3 +1,7 @@
+2005-09-20  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b27)
+
+	* With G2, the slideshow now increments the view count on images.
+
 2005-08-26  Pierre-Luc Paour <gallery@paour.com> (1.4.2-b26)
 
 	* Slideshows starting on a specific picture (G2 only) now start

@@ -23,6 +23,7 @@ package com.gallery.GalleryRemote;
 
 import HTTPClient.*;
 import com.gallery.GalleryRemote.model.Album;
+import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.model.Gallery;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
@@ -165,6 +166,10 @@ public abstract class GalleryComm implements PreferenceNames {
 	}
 
 	public void login(StatusUpdate su) {
+		throw new RuntimeException("This method is not available on this protocol");
+	}
+
+	public void incrementViewCount(StatusUpdate su, Picture p) {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
