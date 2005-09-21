@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This script was automatically generated using Zero G's InstallAnywhere 6.1 Enterprise, Build 2325
+<!-- This script was automatically generated using Macrovision's InstallAnywhere 7.1 Enterprise, Build 2763
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Thu Aug 26 09:18:59 PDT 2004 -->
-<InstallAnywhere_Deployment_Project increments="3922">
+     DATE:   Tue Sep 20 23:02:49 CEST 2005 -->
+<InstallAnywhere_Deployment_Project increments="4125">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
-		<versionID major="6" minor="1" revision="-1"/>
-		<editionID>54,46,49,32,69,110,116,101,114,112,114,105,115,101,32,66,117,105,108,100,32,50,51,50,53</editionID>
-		<scriptID>12,42,11,90,81,52,54,53,54,68,86,83,81,54,80,74</scriptID>
-		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,51,46,49,95,48,56,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,83,59,32,67,112,49,50,53,50</buildID>
+		<versionID major="7" minor="1" revision="-1"/>
+		<editionID>55,46,49,32,69,110,116,101,114,112,114,105,115,101,32,66,117,105,108,100,32,50,55,54,51</editionID>
+		<scriptID>12,42,11,77,81,52,52,52,55,77,80,65,80,54,84,55</scriptID>
+		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,53,46,48,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,110,107,110,111,119,110,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,-16,-109,-29,-128,-48,80,112,116,103,88,98,113,97,113,65,65,88,74,65,72,71,70,69,64,69,66,69,48,79,87,5,2,1,12,100,107,14,0,0,0</authorizationID>
+		<authorizationID>1,0,0,0,115,82,-128,0,80,112,117,98,89,98,113,97,113,65,81,86,58,65,67,66,70,65,64,69,66,69,48,63,71,5,2,5,15,104,101,6,1,0,0</authorizationID>
 	</essentialScriptInfo>
-	<installationObjects uniqueObjects="200">
+	<installationObjects uniqueObjects="216">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
 			<property name="wizardME">
 				<object class="com.zerog.ia.installer.actions.MakeExecutable" objectID="e14b435a989f">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="af64a402bd49">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="8872540e8d10">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -263,7 +263,7 @@ and any path to a file to read from that file]]></string>
 								<string><![CDATA[GalleryRemote.jar]]></string>
 							</property>
 							<property name="fileSize">
-								<long>566800</long>
+								<long>602916</long>
 							</property>
 							<property name="macBinary">
 								<boolean>false</boolean>
@@ -303,35 +303,6 @@ and any path to a file to read from that file]]></string>
 								<boolean>false</boolean>
 							</property>
 							<visualChildren>
-								<object class="com.zerog.ia.installer.actions.InstallFile" objectID="b97792e9a8d9">
-									<property name="unixPermissions">
-										<string><![CDATA[664]]></string>
-									</property>
-									<property name="sourceName">
-										<string><![CDATA[GRResources.properties]]></string>
-									</property>
-									<property name="overrideUnixPermissions">
-										<boolean>false</boolean>
-									</property>
-									<property name="sourcePath">
-										<string><![CDATA[$IA_PROJECT_DIR$\img\]]></string>
-									</property>
-									<property name="shouldUninstall">
-										<boolean>true</boolean>
-									</property>
-									<property name="destinationName">
-										<string><![CDATA[GRResources.properties]]></string>
-									</property>
-									<property name="fileSize">
-										<long>24555</long>
-									</property>
-									<property name="macBinary">
-										<boolean>false</boolean>
-									</property>
-									<property name="targetCheckKind">
-										<int>0</int>
-									</property>
-								</object>
 								<object class="com.zerog.ia.installer.actions.InstallFile" objectID="4be96185bf72">
 									<property name="unixPermissions">
 										<string><![CDATA[664]]></string>
@@ -1132,7 +1103,7 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 								<string><![CDATA[]]></string>
 							</property>
 							<property name="resourcePath">
-								<string><![CDATA[G:\Dev\gallery_docs\dist\grpackage\]]></string>
+								<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
 							</property>
 							<property name="resourceName">
 								<string><![CDATA[gallery-remote.intro.html]]></string>
@@ -1146,6 +1117,9 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 							<property name="agreeWithLicenseByDefault">
 								<boolean>false</boolean>
 							</property>
+							<property name="forceScroll">
+								<boolean>false</boolean>
+							</property>
 							<property name="openExternalLinks">
 								<boolean>true</boolean>
 							</property>
@@ -1156,6 +1130,19 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 									</property>
 								</object>
 							</property>
+							<rules logicalOperation="AND">
+								<object class="com.zerog.ia.installer.rules.CompareVariable" objectID="88d346e68e60">
+									<property name="operation">
+										<string><![CDATA[equals]]></string>
+									</property>
+									<property name="operandOne">
+										<string><![CDATA[1]]></string>
+									</property>
+									<property name="operandTwo">
+										<string><![CDATA[0]]></string>
+									</property>
+								</object>
+							</rules>
 						</object>
 					</method>
 					<method name="addElement">
@@ -1635,7 +1622,7 @@ If the commands above do not work, you should download and install these package
 				<object class="java.util.Properties">
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[August 26, 2004 9:18:59 AM PDT]]></string>
+						<string><![CDATA[September 20, 2005 11:02:49 PM CEST]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
@@ -1647,7 +1634,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.vmpack.unix.path]]></string>
-						<string><![CDATA[SunJRE142_02LinuxINTEL.vm]]></string>
+						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.platform.linux.vm]]></string>
@@ -1667,7 +1654,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.vm.version]]></string>
-						<string><![CDATA[1.3.1]]></string>
+						<string><![CDATA[1.4+]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.auto-populate.labels]]></string>
@@ -1683,7 +1670,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.build.last.date]]></string>
-						<string><![CDATA[July 9, 2004 3:18:04 PM PDT]]></string>
+						<string><![CDATA[September 20, 2005 11:02:49 PM CEST]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.installer.options.heap.size.initial]]></string>
@@ -1691,7 +1678,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.vmpack.linux.path]]></string>
-						<string><![CDATA[SunJRE142_02LinuxINTEL.vm]]></string>
+						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.authentication]]></string>
@@ -1723,7 +1710,7 @@ If the commands above do not work, you should download and install these package
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.vmpack.windows.path]]></string>
-						<string><![CDATA[SunJRE142_02iWin32.vm]]></string>
+						<string><![CDATA[SunJRE150_03iWin32.vm]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.platform.macos9.novm]]></string>
@@ -1817,6 +1804,12 @@ If the commands above do not work, you should download and install these package
 					<property name="installPanelBackgroundRGB">
 						<int>0</int>
 					</property>
+					<property name="panelBorder">
+						<boolean>true</boolean>
+					</property>
+					<property name="titleTextColorRGB">
+						<int>-16777216</int>
+					</property>
 				</object>
 			</property>
 			<property name="customInstallSet">
@@ -1898,10 +1891,10 @@ If the commands above do not work, you should download and install these package
 						<int>1</int>
 					</property>
 					<property name="productVersionMinor">
-						<int>4</int>
+						<int>5</int>
 					</property>
 					<property name="productVersionRevision">
-						<int>1</int>
+						<int>0</int>
 					</property>
 					<property name="productVersionSubRevision">
 						<int>0</int>
@@ -2094,6 +2087,22 @@ This will remove features installed by InstallAnywhere.  It will not remove file
 			<property name="inputLanguage">
 				<string><![CDATA[en]]></string>
 			</property>
+			<property name="runtimeAccessType">
+				<string><![CDATA[off]]></string>
+			</property>
+			<property name="msiData">
+				<object class="com.zerog.ia.installer.util.MsiData" objectID="88610cf58dfb">
+					<property name="newLocation">
+						<string><![CDATA[$IA_HOME$\resource\IANET\simpleProject.iax]]></string>
+					</property>
+					<property name="update">
+						<boolean>false</boolean>
+					</property>
+					<property name="buildMsi">
+						<boolean>false</boolean>
+					</property>
+				</object>
+			</property>
 			<visualChildren>
 				<object class="com.zerog.ia.installer.InstallSet" objectID="e14b385d9895">
 					<property name="imagePath">
@@ -2165,6 +2174,69 @@ This will remove features installed by InstallAnywhere.  It will not remove file
 									</property>
 									<property name="versionSubRevision">
 										<int>0</int>
+									</property>
+									<property name="dependency">
+										<object class="com.zerog.ia.installer.ComponentDependency" objectID="88610d338e2a">
+											<property name="matchesKeyFile">
+												<boolean>false</boolean>
+											</property>
+											<property name="matchingKeyFileReturnVariable">
+												<string><![CDATA[$Common_MATCHED_KEY_FILE$]]></string>
+											</property>
+											<property name="checksLowerBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="checksUpperBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="lowerBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d338e2b">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="upperBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d348e2a">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="parentComponent">
+												<object refID="e14b385d9896"/>
+											</property>
+											<property name="dependencyFailedMessage">
+												<string><![CDATA[Common dependency has failed.]]></string>
+											</property>
+											<property name="dependencyFailedMessageVariableName">
+												<string><![CDATA[$Common_DEPENDENCY_STATE_VARIABLE$]]></string>
+											</property>
+										</object>
+									</property>
+									<property name="checksDependency">
+										<boolean>false</boolean>
+									</property>
+									<property name="hasSomethingToInstall">
+										<boolean>true</boolean>
 									</property>
 								</object>
 								<object class="com.zerog.ia.installer.InstallComponent" objectID="566c3d989688">
@@ -2379,6 +2451,69 @@ and any path to a file to read from that file]]></string>
 											</property>
 										</object>
 									</property>
+									<property name="dependency">
+										<object class="com.zerog.ia.installer.ComponentDependency" objectID="88610d348e2c">
+											<property name="matchesKeyFile">
+												<boolean>false</boolean>
+											</property>
+											<property name="matchingKeyFileReturnVariable">
+												<string><![CDATA[$AG-_Application_MATCHED_KEY_FILE$]]></string>
+											</property>
+											<property name="checksLowerBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="checksUpperBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="lowerBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d348e2d">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="upperBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d338e2d">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="parentComponent">
+												<object refID="566c3d989688"/>
+											</property>
+											<property name="dependencyFailedMessage">
+												<string><![CDATA[AG- Application dependency has failed.]]></string>
+											</property>
+											<property name="dependencyFailedMessageVariableName">
+												<string><![CDATA[$AG-_Application_DEPENDENCY_STATE_VARIABLE$]]></string>
+											</property>
+										</object>
+									</property>
+									<property name="checksDependency">
+										<boolean>false</boolean>
+									</property>
+									<property name="hasSomethingToInstall">
+										<boolean>true</boolean>
+									</property>
 									<installChildren>
 										<object refID="e14b389c9899"/>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="e14b387d9899">
@@ -2428,7 +2563,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[ChangeLog]]></string>
 											</property>
 											<property name="fileSize">
-												<long>41350</long>
+												<long>51122</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2457,7 +2592,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[defaults.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>6436</long>
+												<long>6785</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2596,7 +2731,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[jpegtran.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>395</long>
+												<long>516</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2726,7 +2861,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[jpegtran.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>382</long>
+												<long>503</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2938,7 +3073,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.faq.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>8137</long>
+												<long>8140</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2967,7 +3102,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>7710</long>
+												<long>1458</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2996,7 +3131,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.intro.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>2574</long>
+												<long>2560</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3025,7 +3160,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.problems.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>6605</long>
+												<long>6952</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3054,7 +3189,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.protocol.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>46226</long>
+												<long>48947</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3083,7 +3218,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.software.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>5910</long>
+												<long>5841</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3112,7 +3247,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.using.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>10820</long>
+												<long>11296</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3170,36 +3305,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[index.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>8499</long>
-											</property>
-											<property name="macBinary">
-												<boolean>false</boolean>
-											</property>
-											<property name="targetCheckKind">
-												<int>0</int>
-											</property>
-										</object>
-										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc659337">
-											<property name="unixPermissions">
-												<string><![CDATA[664]]></string>
-											</property>
-											<property name="sourceName">
-												<string><![CDATA[preface.html]]></string>
-											</property>
-											<property name="overrideUnixPermissions">
-												<boolean>false</boolean>
-											</property>
-											<property name="sourcePath">
-												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
-											</property>
-											<property name="shouldUninstall">
-												<boolean>true</boolean>
-											</property>
-											<property name="destinationName">
-												<string><![CDATA[preface.html]]></string>
-											</property>
-											<property name="fileSize">
-												<long>1462</long>
+												<long>12579</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3427,7 +3533,7 @@ it will search for ones in this list]]></string>
 														</object>
 													</method>
 													<method name="addElement">
-														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="af64a4bdbd88">
+														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="8872548a8d59">
 															<property name="propertyValue">
 																<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 															</property>
@@ -3498,7 +3604,7 @@ and any path to a file to read from that file]]></string>
 												<boolean>false</boolean>
 											</property>
 											<property name="sourcePath">
-												<string><![CDATA[G:\Dev\gallery_docs\dist\grpackage\]]></string>
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
 											</property>
 											<property name="shouldUninstall">
 												<boolean>true</boolean>
@@ -3507,7 +3613,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[gallery-remote.i18n.html]]></string>
 											</property>
 											<property name="fileSize">
-												<long>11032</long>
+												<long>10908</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3565,7 +3671,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[jpegtran.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>378</long>
+												<long>499</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3804,8 +3910,6 @@ and any path to a file to read from that file]]></string>
 												<object refID="b97586aea8d6"/>
 											</visualChildren>
 										</object>
-										<object refID="b97792e9a8d9"/>
-										<object refID="ed69f3f58330"/>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="ad46e39e832e">
 											<property name="unixPermissions">
 												<string><![CDATA[775]]></string>
@@ -3838,6 +3942,36 @@ and any path to a file to read from that file]]></string>
 												<object refID="83eedd7f84b0"/>
 											</visualChildren>
 										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="af653e7cbdab">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>25007</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object refID="ed69f3f58330"/>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc669333">
 											<property name="unixPermissions">
 												<string><![CDATA[775]]></string>
@@ -3861,39 +3995,10 @@ and any path to a file to read from that file]]></string>
 												<boolean>false</boolean>
 											</property>
 											<property name="totalSize">
-												<long>1</long>
+												<long>16162</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
-											</property>
-										</object>
-										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="af653e7cbdab">
-											<property name="unixPermissions">
-												<string><![CDATA[664]]></string>
-											</property>
-											<property name="sourceName">
-												<string><![CDATA[gallery-remote.protocol3.html]]></string>
-											</property>
-											<property name="overrideUnixPermissions">
-												<boolean>false</boolean>
-											</property>
-											<property name="sourcePath">
-												<string><![CDATA[G:\Dev\gallery_docs\dist\grpackage\]]></string>
-											</property>
-											<property name="shouldUninstall">
-												<boolean>true</boolean>
-											</property>
-											<property name="destinationName">
-												<string><![CDATA[gallery-remote.protocol3.html]]></string>
-											</property>
-											<property name="fileSize">
-												<long>-1</long>
-											</property>
-											<property name="macBinary">
-												<boolean>false</boolean>
-											</property>
-											<property name="targetCheckKind">
-												<int>0</int>
 											</property>
 										</object>
 										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc65932f">
@@ -3927,21 +4032,113 @@ and any path to a file to read from that file]]></string>
 											<visualChildren>
 												<object refID="a66afc66932f"/>
 												<object refID="a66afc659330"/>
+												<object refID="b9742fe8a8d4"/>
 												<object refID="a66afc669330"/>
 												<object refID="a66afc659331"/>
 												<object refID="a66afc669331"/>
+												<object refID="af653e7cbdab"/>
 												<object refID="a66afc659332"/>
+												<object refID="a66afc669332"/>
 												<object refID="a66afc659333"/>
 												<object refID="a66afc669333"/>
-												<object refID="a66afc669332"/>
 												<object refID="a66afc669336"/>
-												<object refID="a66afc659337"/>
 												<object refID="a66afc669337"/>
-												<object refID="b9742fe8a8d4"/>
-												<object refID="af653e7cbdab"/>
 											</visualChildren>
 										</object>
 									</installChildren>
+								</object>
+								<object class="com.zerog.ia.installer.VMComponent" objectID="88610d738e73">
+									<property name="componentName">
+										<string><![CDATA[InstallAnywhere VM Component]]></string>
+									</property>
+									<property name="comment">
+										<string><![CDATA[<Enter Install Component comment here -- do not forget to assign this Component to desired Product Features>]]></string>
+									</property>
+									<property name="shortName">
+										<string><![CDATA[VM]]></string>
+									</property>
+									<property name="uniqueId">
+										<object class="com.zerog.registry.UUID">
+											<method name="update">
+												<string><![CDATA[88610d73-1ed8-11b2-8e75-f409c3c64c8b]]></string>
+											</method>
+										</object>
+									</property>
+									<property name="versionMajor">
+										<int>1</int>
+									</property>
+									<property name="versionMinor">
+										<int>0</int>
+									</property>
+									<property name="versionRevision">
+										<int>0</int>
+									</property>
+									<property name="versionSubRevision">
+										<int>0</int>
+									</property>
+									<property name="dependency">
+										<object class="com.zerog.ia.installer.ComponentDependency" objectID="88610d728e74">
+											<property name="matchesKeyFile">
+												<boolean>false</boolean>
+											</property>
+											<property name="matchingKeyFileReturnVariable">
+												<string><![CDATA[$InstallAnywhere_VM_Component_MATCHED_KEY_FILE$]]></string>
+											</property>
+											<property name="checksLowerBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="checksUpperBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="lowerBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d728e75">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="upperBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d738e74">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="parentComponent">
+												<object refID="88610d738e73"/>
+											</property>
+											<property name="dependencyFailedMessage">
+												<string><![CDATA[InstallAnywhere VM Component dependency has failed.]]></string>
+											</property>
+											<property name="dependencyFailedMessageVariableName">
+												<string><![CDATA[$InstallAnywhere_VM_Component_DEPENDENCY_STATE_VARIABLE$]]></string>
+											</property>
+										</object>
+									</property>
+									<property name="checksDependency">
+										<boolean>false</boolean>
+									</property>
+									<property name="hasSomethingToInstall">
+										<boolean>true</boolean>
+									</property>
 								</object>
 							</installChildren>
 						</object>
@@ -4020,6 +4217,69 @@ and any path to a file to read from that file]]></string>
 											</property>
 										</object>
 									</property>
+									<property name="dependency">
+										<object class="com.zerog.ia.installer.ComponentDependency" objectID="88610d538e56">
+											<property name="matchesKeyFile">
+												<boolean>false</boolean>
+											</property>
+											<property name="matchingKeyFileReturnVariable">
+												<string><![CDATA[$AG-_ImageMa_MATCHED_KEY_FILE$]]></string>
+											</property>
+											<property name="checksLowerBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="checksUpperBound">
+												<boolean>false</boolean>
+											</property>
+											<property name="lowerBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d538e57">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="upperBoundComponentVersion">
+												<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d548e56">
+													<property name="versionMajor">
+														<int>1</int>
+													</property>
+													<property name="versionMinor">
+														<int>0</int>
+													</property>
+													<property name="versionRevision">
+														<int>0</int>
+													</property>
+													<property name="versionSubrevision">
+														<int>0</int>
+													</property>
+												</object>
+											</property>
+											<property name="parentComponent">
+												<object refID="566cd4b896aa"/>
+											</property>
+											<property name="dependencyFailedMessage">
+												<string><![CDATA[AG- ImageMa dependency has failed.]]></string>
+											</property>
+											<property name="dependencyFailedMessageVariableName">
+												<string><![CDATA[$AG-_ImageMa_DEPENDENCY_STATE_VARIABLE$]]></string>
+											</property>
+										</object>
+									</property>
+									<property name="checksDependency">
+										<boolean>false</boolean>
+									</property>
+									<property name="hasSomethingToInstall">
+										<boolean>true</boolean>
+									</property>
 									<installChildren>
 										<object refID="566cb20d9689"/>
 										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="566cb20e968b">
@@ -4042,7 +4302,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[im.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>1048</long>
+												<long>1169</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -4456,7 +4716,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[im.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>1071</long>
+												<long>1174</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -5301,7 +5561,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[im.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>1064</long>
+												<long>1185</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -5431,6 +5691,7 @@ and any path to a file to read from that file]]></string>
 										</object>
 									</installChildren>
 								</object>
+								<object refID="88610d738e73"/>
 							</installChildren>
 						</object>
 					</installChildren>
@@ -5468,8 +5729,72 @@ and any path to a file to read from that file]]></string>
 					<property name="versionSubRevision">
 						<int>0</int>
 					</property>
+					<property name="dependency">
+						<object class="com.zerog.ia.installer.ComponentDependency" objectID="88610d738e70">
+							<property name="matchesKeyFile">
+								<boolean>false</boolean>
+							</property>
+							<property name="matchingKeyFileReturnVariable">
+								<string><![CDATA[$No_Features_Component_MATCHED_KEY_FILE$]]></string>
+							</property>
+							<property name="checksLowerBound">
+								<boolean>false</boolean>
+							</property>
+							<property name="checksUpperBound">
+								<boolean>false</boolean>
+							</property>
+							<property name="lowerBoundComponentVersion">
+								<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d738e71">
+									<property name="versionMajor">
+										<int>1</int>
+									</property>
+									<property name="versionMinor">
+										<int>0</int>
+									</property>
+									<property name="versionRevision">
+										<int>0</int>
+									</property>
+									<property name="versionSubrevision">
+										<int>0</int>
+									</property>
+								</object>
+							</property>
+							<property name="upperBoundComponentVersion">
+								<object class="com.zerog.ia.installer.util.ComponentVersion" objectID="88610d728e71">
+									<property name="versionMajor">
+										<int>1</int>
+									</property>
+									<property name="versionMinor">
+										<int>0</int>
+									</property>
+									<property name="versionRevision">
+										<int>0</int>
+									</property>
+									<property name="versionSubrevision">
+										<int>0</int>
+									</property>
+								</object>
+							</property>
+							<property name="parentComponent">
+								<object refID="566ccd3696aa"/>
+							</property>
+							<property name="dependencyFailedMessage">
+								<string><![CDATA[No Features Component dependency has failed.]]></string>
+							</property>
+							<property name="dependencyFailedMessageVariableName">
+								<string><![CDATA[$No_Features_Component_DEPENDENCY_STATE_VARIABLE$]]></string>
+							</property>
+						</object>
+					</property>
+					<property name="checksDependency">
+						<boolean>false</boolean>
+					</property>
+					<property name="hasSomethingToInstall">
+						<boolean>true</boolean>
+					</property>
 				</object>
 				<object refID="566cd4b896aa"/>
+				<object refID="88610d738e73"/>
 				<object class="com.zerog.ia.installer.GhostDirectory" objectID="e14b385d9893">
 					<property name="destinationFolder">
 						<object refID="e14a8af79883"/>

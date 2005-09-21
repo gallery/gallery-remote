@@ -11,7 +11,7 @@
  <property name="install" location="gallery_remote_Build_Output/Web_Installers/InstData"/>
  <property name="docbase" location="../gallery_docs"/>
  <property name="docdist" location="${docbase}/dist/grpackage"/>
- <property name="iafolder" location="G:\\Program Files\\InstallAnywhere 6 Enterprise"/>
+ <property name="iafolder" location="G:\\Program Files\\InstallAnywhere 7.1 Enterprise"/>
 
  <target name="init">
   <!-- Create the time stamp -->
@@ -172,7 +172,14 @@
   <taskdef name="buildinstaller" classname="com.zerog.ia.integration.ant.InstallAnywhereAntTask"
    classpath="${iafolder}/resource/build/iaant.jar"/>
 
-  <buildinstaller IAProjectFile="${basedir}/gallery_remote.iap_xml" IALocation="${iafolder}"/>
+  <buildinstaller IAProjectFile="${basedir}/gallery_remote.iap_xml" IALocation="${iafolder}"
+    BuildWindowsWithVM="true"
+    BuildWindowsWithoutVM="true"
+    BuildLinuxWithVM="true"
+    BuildLinuxWithoutVM="true"
+    BuildSolarisWithoutVM="true"
+    BuildMacOSX="true"
+    BuildPureJava="true"/>
  </target>
 
  <target name="docs" description="Build documentation">
@@ -257,7 +264,7 @@
   </tar>
  </target>
 
- <target name="upload" depends="installer"
+ <target name="upload" 
   description="Upload to SF.net">
 
   <loadproperties srcfile="defaults.properties"/>

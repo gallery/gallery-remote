@@ -42,7 +42,6 @@ import java.util.Date;
  * Update check and dialog
  *
  * @author paour
- * @created 08 septembre 2002
  */
 
 public class Update extends JFrame implements ActionListener, PreferenceNames {
