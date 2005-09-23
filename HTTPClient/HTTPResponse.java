@@ -60,10 +60,10 @@ public class HTTPResponse implements HTTPClientModuleConstants
     private int          timeout;
 
     /** the request */
-    private Request      request = null;
+    public Request      request = null;
 
     /** the current response */
-            Response     response = null;
+    public Response     response = null;
 
     /** the HttpOutputStream to synchronize on */
     private HttpOutputStream out_stream = null;

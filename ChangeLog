@@ -1,3 +1,8 @@
+2005-09-23  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b1)
+
+	* Fixed getting album list and creating albums when the names
+	  of albums contain non-ASCII characters (using UTF-8).
+
 2005-09-20  Pierre-Luc Paour <gallery@paour.com> (1.5)
 
 	* Release.

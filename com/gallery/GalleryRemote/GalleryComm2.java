@@ -977,6 +977,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 			boolean utf8 = !escapeCaptions && parentAlbum.getGallery().galleryVersion == 2;
 
+			if (utf8) {
+				Log.log(Log.LEVEL_INFO, MODULE, "Will upload using UTF-8 for text data");
+			}
+
 			// if the parent is null (top-level album), set the album name to an illegal name so it's set to null
 			// by Gallery. Using an empty string doesn't work, because then the HTTP parameter is not
 			// parsed, and the session album is kept the same as before (from the cookie).
@@ -997,12 +1001,24 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("newAlbumTitle", albumTitle, utf8?"UTF-8":null),
 					new NVPair("newAlbumDesc", albumDesc, utf8?"UTF-8":null)
 				};
-				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 
 				form_data = fudgeFormParameters(form_data);
 
-				// load and validate the response
-				Properties p = requestResponse(form_data, su, this);
+				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
+
+				Properties p = null;
+				if (utf8) {
+					// force using mime-multipart so we can use UTF-8
+					NVPair[] hdrs = new NVPair[1];
+					byte[] data = Codecs.mpFormDataEncode(form_data, new NVPair[0], hdrs);
+
+					// load and validate the response
+					p = requestResponse(hdrs, data, g.getGalleryUrl(scriptName), true, su, this);
+				} else {
+					// normal request
+					p = requestResponse(form_data, su, this);
+				}
+
 				if (p.getProperty("status").equals(GR_STAT_SUCCESS)) {
 					status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "crateAlbmOk"));
 					newAlbumName = p.getProperty("album_name");
@@ -1334,6 +1350,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			rsp = mConnection.Post(urlPath, data, form_data, new MyTransferListener(su));
 		}
 
+		//Log.log(Log.LEVEL_TRACE, MODULE, "Request body: " + new String(rsp.request.getData()));
+
 		// handle 30x redirects
 		if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 			// retry, the library will have fixed the URL
@@ -1355,7 +1373,13 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			throw new GR2Exception(GRI18n.getString(MODULE, "httpPostErr", params));
 		} else {
 			// load response
-			String response = new String(rsp.getData()).trim();
+			String response = null;
+			try {
+				response = new String(rsp.getText()).trim();
+			} catch (ParseException e) {
+				Log.log(Log.LEVEL_ERROR, MODULE, "HTTPClient failed to parse response, getting data instead of text");
+				response = new String(rsp.getData()).trim();
+			}
 			Log.log(Log.LEVEL_TRACE, MODULE, response);
 
 			if (checkResult) {
