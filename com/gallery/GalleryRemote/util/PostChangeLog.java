@@ -148,7 +148,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 
 			// test
 			HTTPConnection mConnection1 = new HTTPConnection("gallery.sourceforge.net");
-			rsp = mConnection1.Get("/gallery_remote_version_check.php");
+			rsp = mConnection1.Get("/gallery_remote_version_check_beta.php");
 			response = new String(rsp.getData()).trim();
 			System.out.println("Test response: " + response);
 
