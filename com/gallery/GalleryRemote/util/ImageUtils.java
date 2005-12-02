@@ -822,7 +822,7 @@ public class ImageUtils {
 	}
 
 	static {
-		tmpDir = new File(System.getProperty("java.io.tmpdir"), "thumbs");
+		tmpDir = new File(System.getProperty("java.io.tmpdir"), "thumbs-" + System.getProperty("user.name"));
 
 		if (!tmpDir.exists()) {
 			tmpDir.mkdirs();
@@ -844,7 +844,9 @@ public class ImageUtils {
 
 			// allow overriding from main property file
 			GalleryProperties p = new GalleryProperties(pt);
-			p.copyProperties(GalleryRemote._().properties);
+			GalleryRemote._().defaults.copyProperties(p);
+
+			p = GalleryRemote._().properties;
 
 			useIM = p.getBooleanProperty("im.enabled");
 			Log.log(Log.LEVEL_INFO, MODULE, "useIM: " + useIM);
@@ -924,7 +926,9 @@ public class ImageUtils {
 
 			// allow overriding from main property file
 			GalleryProperties p = new GalleryProperties(pt);
-			p.copyProperties(GalleryRemote._().properties);
+			GalleryRemote._().defaults.copyProperties(p);
+
+			p = GalleryRemote._().properties;
 
 			useJpegtran = p.getBooleanProperty("jp.enabled");
 			useJpegtran = p.getBooleanProperty("jp.crop.enabled");

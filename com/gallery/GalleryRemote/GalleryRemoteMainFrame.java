@@ -20,7 +20,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		super.createProperties();
 
 		if (isAppletMode()) {
-			getAppletOverrides(defaults, "GRDefault_");
+			properties = getAppletOverrides(properties, "GRDefault_");
 		}
 
 		File f = new File(System.getProperty("user.home")
@@ -39,10 +39,10 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 			}
 		}
 
-		properties = new PropertiesFile(defaults, pf.getPath());
+		properties = new PropertiesFile(properties, pf.getPath());
 
 		if (isAppletMode()) {
-			properties = getAppletOverrides(createAppletOverride(properties), "GROverride_");
+			properties = getAppletOverrides(properties, "GROverride_");
 		}
 	}
 

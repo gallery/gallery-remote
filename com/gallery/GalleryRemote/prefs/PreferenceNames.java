@@ -72,6 +72,8 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_COLOR = "slideshowColor";
 	public static final String SLIDESHOW_PRELOADALL = "slideshowPreloadAll";
 	public static final String SLIDESHOW_LOOP = "slideshowLoop";
+	public static final String SLIDESHOW_FONTNAME = "slideshowFontName";
+	public static final String SLIDESHOW_FONTSIZE = "slideshowFontSize";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";

@@ -789,7 +789,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					// map album refs to parent refs
 					String parentName = p.getProperty(parentKey);
 
-					if (parentName.equals(name)) {
+					if (parentName == null) {
+						Log.log(Log.LEVEL_ERROR, MODULE, "Gallery error: the album " + name +
+								" doesn't have a parent. You should delete it, the album database " +
+								"is corrupted because of it.");
+
+					} else if (parentName.equals(name)) {
 						Log.log(Log.LEVEL_ERROR, MODULE, "Gallery error: the album " + name +
 								" is its own parent. You should delete it, the album database " +
 								"is corrupted because of it.");

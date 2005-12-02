@@ -29,7 +29,6 @@ import java.util.*;
  * Properties file for Gallery Remote
  * 
  * @author paour
- * @created 11 août 2002
  */
 public class PropertiesFile extends GalleryProperties {
 	public static final String MODULE = "PropsFile";
@@ -79,8 +78,16 @@ public class PropertiesFile extends GalleryProperties {
 	 * Overrides default method to track dirty state
 	 */
 	public Object setProperty(String name, String value) {
-		if (readOnly && defaults!= null) {
-			defaults.setProperty(name, value);
+		// if we're read-only, see if our defaults can write
+		if (readOnly) {
+			if (defaults != null) {
+				defaults.setProperty(name, value);
+			} else {
+				Log.log(Log.LEVEL_ERROR, MODULE, "Read-only PropertyFile without a default: setProperty was attempted");
+				Log.logStack(Log.LEVEL_ERROR, MODULE);
+			}
+
+			return getProperty(name);
 		}
 
 		written = false;

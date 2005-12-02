@@ -577,8 +577,25 @@ public class SlideshowFrame extends PreviewFrame
 		Color background = new Color(100, 100, 100, 150);
 		Color normal = new Color(180, 180, 180, 180);
 		Color hilight = new Color(255, 255, 255, 180);
+		boolean firstPaint = true;
 
 		public void paint(Graphics g) {
+			if (firstPaint) {
+				firstPaint = false;
+				String fontName = GalleryRemote._().properties.getProperty(SLIDESHOW_FONTNAME);
+				int fontSize = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTSIZE, getFont().getSize());
+				Font f = null;
+				if (fontName != null) {
+					f = new Font(fontName, 0, fontSize);
+				} else if (fontSize != getFont().getSize()) {
+					f = getFont().deriveFont(fontSize + 0.0f);
+				}
+
+				if (f != null) {
+					setFont(f);
+				}
+			}
+
 			if (feedback != FEEDBACK_NONE || controllerUntil > System.currentTimeMillis()) {
 				paintController(g);
 			}
@@ -694,7 +711,7 @@ public class SlideshowFrame extends PreviewFrame
 
 			y += fm.getAscent();
 
-			paintOutline(g, text, x, y);
+			paintOutline(g, text, x, y, 1);
 		}
 
 		private void drawText(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {

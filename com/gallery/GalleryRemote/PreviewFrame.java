@@ -335,17 +335,17 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 	public void pictureStartProcessing(Picture picture) {}
 
-	public static void paintOutline(Graphics g, String s, int textX, int textY) {
+	public static void paintOutline(Graphics g, String s, int textX, int textY, int width) {
 		g.setColor(darkGray);
-		g.drawString(s, textX + 1, textY + 1);
-		g.drawString(s, textX, textY + 1);
-		g.drawString(s, textX - 1, textY + 1);
-		g.drawString(s, textX + 1, textY);
+		g.drawString(s, textX + width, textY + width);
+		g.drawString(s, textX, textY + width);
+		g.drawString(s, textX - width, textY + width);
+		g.drawString(s, textX + width, textY);
 		g.drawString(s, textX, textY);
-		g.drawString(s, textX - 1, textY);
-		g.drawString(s, textX + 1, textY - 1);
-		g.drawString(s, textX, textY - 1);
-		g.drawString(s, textX - 1, textY - 1);
+		g.drawString(s, textX - width, textY);
+		g.drawString(s, textX + width, textY - width);
+		g.drawString(s, textX, textY - width);
+		g.drawString(s, textX - width, textY - width);
 		g.setColor(Color.white);
 		g.drawString(s, textX, textY);
 	}
@@ -435,7 +435,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			}
 
 			g.setFont(g.getFont());
-			paintOutline(g, message, 5, getBounds().height - 5);
+			paintOutline(g, message, 5, getBounds().height - 5, 1);
 		}
 
 		public void updateRect() {

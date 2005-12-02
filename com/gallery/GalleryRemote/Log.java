@@ -31,7 +31,6 @@ import java.util.List;
  * Log manager
  * 
  * @author paour
- * @created August 18, 2002
  */
 public class Log implements PreferenceNames, Runnable {
 	public final static int LEVEL_CRITICAL = 0;

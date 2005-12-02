@@ -35,7 +35,6 @@ import java.util.Enumeration;
  * Main class and entry point of Gallery Remote
  * 
  * @author paour
- * @created 11 août 2002
  */
 public abstract class GalleryRemote {
 	public static final String MODULE = "GalRem";
@@ -203,11 +202,11 @@ public abstract class GalleryRemote {
 	}
 
 	public void createProperties() {
-		defaults = new PropertiesFile("defaults");
-		defaults.setReadOnly();
+		properties = defaults = new PropertiesFile("defaults");
+		properties.setReadOnly();
 	}
 
-	public PropertiesFile createAppletOverride(PropertiesFile p) {
+	/*public PropertiesFile createAppletOverride(PropertiesFile p) {
 		PropertiesFile override;
 
 		if (p == null) {
@@ -219,20 +218,23 @@ public abstract class GalleryRemote {
 		override.setReadOnly();
 
 		return override;
-	}
+	}*/
 
-	public PropertiesFile getAppletOverrides(PropertiesFile p, String prefix) {
+	public PropertiesFile getAppletOverrides(PropertiesFile defaults, String prefix) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Getting applet parameters for prefix " + prefix);
+
+		PropertiesFile p = new PropertiesFile(defaults);
 
 		for (Enumeration e = p.propertyNames(); e.hasMoreElements();) {
 			String name = (String) e.nextElement();
 			String value = applet.getParameter(prefix + name);
 
-			if (value != null) {
+			if (value != null && value.length() != 0) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Got: " + name + "= |" + value + "|");
 				p.setProperty(name, value);
 			}
 		}
+		p.setReadOnly();
 
 		return p;
 	}

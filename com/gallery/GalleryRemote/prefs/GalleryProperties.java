@@ -34,7 +34,6 @@ import java.util.*;
  * GalleryProperties: access property data with a higher level of abstraction
  * 
  * @author paour
- * @created 11 août 2002
  */
 public class GalleryProperties extends Properties implements PreferenceNames {
 	public static final String MODULE = "GalProps";
@@ -55,13 +54,30 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	public GalleryProperties() {
 	}
 
+	public String getProperty(String key) {
+		Object oval = super.get(key);
+		String sval = (oval instanceof String) ? (String)oval : null;
+		String value = ((sval == null || sval.length() == 0) && (defaults != null)) ? defaults.getProperty(key) : sval;
+
+		if (value == null || value.length() == 0) {
+			return null;
+		} else {
+			return value;
+		}
+	}
+
 	public void copyProperties(Properties source) {
 		Enumeration names = source.propertyNames();
 		while (names.hasMoreElements()) {
 			String name = (String) names.nextElement();
 			String value = source.getProperty(name);
+			String currentValue = getProperty(name);
 
-			setProperty(name, value);
+			// don't override existing property with empty one
+			if ((currentValue == null || currentValue.length() == 0)
+					|| (value != null && value.length() != 0)) {
+				super.setProperty(name, value);
+			}
 		}
 	}
 

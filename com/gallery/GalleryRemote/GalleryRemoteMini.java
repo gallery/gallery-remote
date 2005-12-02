@@ -25,7 +25,7 @@ public class GalleryRemoteMini extends GalleryRemote {
 	public void createProperties() {
 		super.createProperties();
 
-		getAppletOverrides(defaults, "GRDefault_");
+		getAppletOverrides(properties, "GRDefault_");
 
 		File f = new File(System.getProperty("user.home")
 				+ File.separator + ".GalleryRemote"
@@ -43,9 +43,9 @@ public class GalleryRemoteMini extends GalleryRemote {
 			}
 		}
 
-		properties = new PropertiesFile(defaults, pf.getPath());
+		properties = new PropertiesFile(properties, pf.getPath());
 
-		properties = getAppletOverrides(createAppletOverride(properties), "GROverride_");
+		properties = getAppletOverrides(properties, "GROverride_");
 	}
 
 	public Frame getMainFrame() {

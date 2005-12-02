@@ -35,11 +35,9 @@ import java.util.Stack;
  * the list of Pictures
  * 
  * @author paour
- * @created August 16, 2002
  */
 public class ThumbnailCache implements Runnable {
 	public static final String MODULE = "ThumbCache";
-
 
 	boolean stillRunning = false;
 	Stack toLoad = new Stack();
@@ -97,8 +95,6 @@ public class ThumbnailCache implements Runnable {
 
 	/**
 	 * Ask for the thumbnail to be loaded as soon as possible
-	 * 
-	 * @param filename path to the file
 	 */
 	public void preloadThumbnailFirst(Picture p) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "preloadThumbnailFirst " + p);
@@ -164,7 +160,6 @@ public class ThumbnailCache implements Runnable {
 	/**
 	 * Retrieves a thumbnail from the thumbnail cache
 	 * 
-	 * @param filename path to the file
 	 * @return The thumbnail object
 	 */
 	public ImageIcon getThumbnail(Picture p) {
