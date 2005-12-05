@@ -39,7 +39,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 			}
 		}
 
-		properties = new PropertiesFile(properties, pf.getPath());
+		properties = new PropertiesFile(properties, pf.getPath(), "user");
 
 		if (isAppletMode()) {
 			properties = getAppletOverrides(properties, "GROverride_");

@@ -558,6 +558,10 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public static String stripTags(String text) {
+		if (text == null) {
+			return null;
+		}
+		
 		Matcher m = stripper.matcher(text);
 		m = spacer.matcher(m.replaceAll(""));
 		return m.replaceAll(" ");

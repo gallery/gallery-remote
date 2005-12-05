@@ -585,7 +585,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 				if (GalleryRemote._().properties.getBooleanProperty(SAVE_PASSWORDS)) {
 					GalleryRemote._().properties.setBase64Property(PASSWORD + prefsIndex, password);
 				} else {
-					GalleryRemote._().properties.remove(PASSWORD + prefsIndex);
+					GalleryRemote._().properties.setProperty(PASSWORD + prefsIndex, null);
 				}
 			}
 		}
@@ -689,7 +689,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (getPassword() != null && p.getBooleanProperty(SAVE_PASSWORDS)) {
 			p.setBase64Property(PASSWORD + prefsIndex, password);
 		} else {
-			p.remove(PASSWORD + prefsIndex);
+			p.setProperty(PASSWORD + prefsIndex, null);
 		}
 		p.setProperty(TYPE + prefsIndex, types[type]);
 		if (getAlias() != null && getAlias().length() > 0) {
@@ -723,15 +723,15 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public static void removeFromProperties(PropertiesFile p, int n) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Removed from properties: " + n);
 
-		p.remove(URL + n);
-		p.remove(USERNAME + n);
-		p.remove(PASSWORD + n);
-		p.remove(TYPE + n);
-		p.remove(PN_LOGIN_URL + n);
-		p.remove(PN_GALLERY_URL + n);
-		p.remove(PHPN_LOGIN_URL + n);
-		p.remove(PHPN_GALLERY_URL + n);
-		p.remove(ALIAS + n);
+		p.setProperty(URL + n, null);
+		p.setProperty(USERNAME + n, null);
+		p.setProperty(PASSWORD + n, null);
+		p.setProperty(TYPE + n, null);
+		p.setProperty(PN_LOGIN_URL + n, null);
+		p.setProperty(PN_GALLERY_URL + n, null);
+		p.setProperty(PHPN_LOGIN_URL + n, null);
+		p.setProperty(PHPN_GALLERY_URL + n, null);
+		p.setProperty(ALIAS + n, null);
 	}
 
 	public void setPrefsIndex(int prefsIndex) {

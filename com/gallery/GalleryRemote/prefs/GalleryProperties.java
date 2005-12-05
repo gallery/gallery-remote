@@ -470,7 +470,6 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty(key, dateFormat.format(date));
 	}
 
-
 	public String getProperty(String key, String defaultValue) {
 		String tmp = getProperty(key);
 
@@ -480,7 +479,6 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			return tmp;
 		}
 	}
-
 
 	public void logProperties(int level, String module) {
 		if (module == null) {
@@ -498,8 +496,12 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 
 		for (int i = 0; i < namesArray.length; i++) {
 			String name = (String) namesArray[i];
-			Log.log(level, module, name + "= |" + getProperty(name) + "|");
+			Log.log(level, module, logPropertiesHelper(name));
 		}
+	}
+
+	public String logPropertiesHelper(String name) {
+		return name + "= |" + getProperty(name) + "|";
 	}
 
 	public void uncache() {

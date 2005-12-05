@@ -931,7 +931,7 @@ public class ImageUtils {
 			p = GalleryRemote._().properties;
 
 			useJpegtran = p.getBooleanProperty("jp.enabled");
-			useJpegtran = p.getBooleanProperty("jp.crop.enabled");
+			useJpegtranCrop = p.getBooleanProperty("jp.crop.enabled");
 			Log.log(Log.LEVEL_INFO, MODULE, "useJpegtran: " + useJpegtran);
 			if (useJpegtran) {
 				jpegtranPath = p.getProperty("jp.path");

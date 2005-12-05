@@ -202,7 +202,7 @@ public abstract class GalleryRemote {
 	}
 
 	public void createProperties() {
-		properties = defaults = new PropertiesFile("defaults");
+		properties = defaults = new PropertiesFile("defaults", "defaults");
 		properties.setReadOnly();
 	}
 
@@ -223,7 +223,7 @@ public abstract class GalleryRemote {
 	public PropertiesFile getAppletOverrides(PropertiesFile defaults, String prefix) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Getting applet parameters for prefix " + prefix);
 
-		PropertiesFile p = new PropertiesFile(defaults);
+		PropertiesFile p = new PropertiesFile(defaults, null, prefix);
 
 		for (Enumeration e = p.propertyNames(); e.hasMoreElements();) {
 			String name = (String) e.nextElement();
@@ -234,6 +234,7 @@ public abstract class GalleryRemote {
 				p.setProperty(name, value);
 			}
 		}
+
 		p.setReadOnly();
 
 		return p;

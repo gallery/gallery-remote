@@ -109,7 +109,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		if (jOverride.isSelected()) {
 			props.setColorProperty(SLIDESHOW_COLOR, jBackgroundColor.getSelectedColor());
 		} else {
-			props.remove(SLIDESHOW_COLOR);
+			props.setProperty(SLIDESHOW_COLOR, null);
 		}
 		GalleryRemoteCore core = GalleryRemote._().getCore();
 		if (!GalleryRemote._().isAppletMode()) {

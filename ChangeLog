@@ -1,3 +1,7 @@
+2005-12-05  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b3)
+
+	* Fixed bug introduced in b2 when loading settings.
+
 2005-12-02  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b2)
 
 	* Added settings to change the font and font size in slideshow.

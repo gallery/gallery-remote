@@ -38,39 +38,32 @@ public class PropertiesFile extends GalleryProperties {
 	protected String mFilename;
 	protected boolean readOnly = false;
 	protected boolean alreadyWarned = false;
+	protected String nick = null;
 
-	/**
-	 * Constructor for the PropertiesFile object
-	 * 
-	 * @param p Description of Parameter
-	 */
-	public PropertiesFile(PropertiesFile p) {
-		super(p);
-	}
-
-
-	/**
-	 * Constructor for the PropertiesFile object
-	 * 
-	 * @param name Description of Parameter
-	 */
-	public PropertiesFile(String name) {
+	public PropertiesFile(String filename) {
 		super();
 
-		setFilename(name);
+		setFilename(filename);
 	}
 
+	public PropertiesFile(String filename, String nick) {
+		super();
 
-	/**
-	 * Constructor for the PropertiesFile object
-	 * 
-	 * @param p    Description of Parameter
-	 * @param name Description of Parameter
-	 */
-	public PropertiesFile(PropertiesFile p, String name) {
+		setFilename(filename);
+		this.nick = nick;
+	}
+
+	public PropertiesFile(PropertiesFile p, String filename) {
 		super(p);
 
-		setFilename(name);
+		setFilename(filename);
+	}
+
+	public PropertiesFile(PropertiesFile p, String filename, String nick) {
+		super(p);
+
+		setFilename(filename);
+		this.nick = nick;
 	}
 
 
@@ -106,10 +99,14 @@ public class PropertiesFile extends GalleryProperties {
 	 * @param name The new filename value
 	 */
 	public synchronized void setFilename(String name) {
-		if (! name.endsWith(".lax") && ! name.endsWith(".properties")) {
-			mFilename = name + ".properties";
-		} else {
+		if (name == null) {
 			mFilename = name;
+		} else {
+			if (! name.endsWith(".lax") && ! name.endsWith(".properties")) {
+				mFilename = name + ".properties";
+			} else {
+				mFilename = name;
+			}
 		}
 	}
 
@@ -138,7 +135,7 @@ public class PropertiesFile extends GalleryProperties {
 	}
 
 	public boolean isOverridden(String name) {
-		return readOnly && get(name) != null;
+		return readOnly && get(name) != null && ((String) get(name)).length() != 0;
 	}
 
 	protected void checkRead() {
@@ -237,6 +234,24 @@ public class PropertiesFile extends GalleryProperties {
 			}
 
 			written = true;
+		}
+	}
+
+	public String logPropertiesHelper(String name) {
+		Object value = get(name);
+
+		if (value == null) {
+			if (defaults != null) {
+				if (defaults instanceof GalleryProperties) {
+					return ((GalleryProperties) defaults).logPropertiesHelper(name);
+				} else {
+					return name + "= |" + getProperty(name) + "|";
+				}
+			} else {
+				return name + "= null (this shouldn't happen)";
+			}
+		} else {
+			return name + "= |" + value.toString() + "|" + " [" + nick + "]";
 		}
 	}
 
