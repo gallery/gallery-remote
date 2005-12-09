@@ -55,11 +55,15 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	}
 
 	public String getProperty(String key) {
+		return getProperty(key, false);
+	}
+
+	public String getProperty(String key, boolean emptySignificant) {
 		Object oval = super.get(key);
 		String sval = (oval instanceof String) ? (String)oval : null;
-		String value = ((sval == null || sval.length() == 0) && (defaults != null)) ? defaults.getProperty(key) : sval;
+		String value = ((sval == null || (sval.length() == 0 && ! emptySignificant)) && (defaults != null)) ? defaults.getProperty(key) : sval;
 
-		if (value == null || value.length() == 0) {
+		if (value == null || (value.length() == 0 && ! emptySignificant)) {
 			return null;
 		} else {
 			return value;

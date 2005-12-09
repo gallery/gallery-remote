@@ -1,3 +1,15 @@
+2005-12-09  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b4)
+
+	* Fixed another bug with URL loading introduced in b2.
+	* Added IM path detection fallback for Windows systems that
+	  don't have reg.exe (all but XP Pro and Server 2003).
+	* Added 4 and 5Mpix sizes
+	* Added JPEG resize quality parameter to a Gallery profile.
+	  This can't be changed in the preferences, but can be changed
+	  in the GalleryRemote.properties preferences file by adding
+	  resizeJpegQuality.n=q, where n is the profile number and q
+	  is the quality, between 0 and 99.
+
 2005-12-05  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b3)
 
 	* Fixed bug introduced in b2 when loading settings.

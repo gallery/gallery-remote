@@ -188,6 +188,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			}
 		}
 
+		int resizeJpegQuality = album.getGallery().getResizeJpegQuality();
+
 		// resize
 		if (album.getResize()) {
 			int i = album.getResizeDimension();
@@ -205,14 +207,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 			if (i != -1 || useLossyCrop) {
 				try {
-					picture = ImageUtils.resize(picture.getPath(), new Dimension(i, i), useLossyCrop?cropTo:null);
+					picture = ImageUtils.resize(picture.getPath(), new Dimension(i, i), useLossyCrop?cropTo:null, resizeJpegQuality);
 				} catch (UnsupportedOperationException e) {
 					Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use ImageUtils to resize the image, it will be uploaded at the original size");
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
 				}
 			}
 		} else if (useLossyCrop) {
-			picture = ImageUtils.resize(picture.getPath(), null, useLossyCrop?cropTo:null);
+			picture = ImageUtils.resize(picture.getPath(), null, useLossyCrop?cropTo:null, resizeJpegQuality);
 		}
 
 		// rotate
@@ -220,7 +222,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			try {
 				picture = ImageUtils.rotate(picture.getPath(), angle, flipped, true);
 			} catch (UnsupportedOperationException e) {
-				Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use jpegtran to resize the image, it will be uploaded unrotated");
+				Log.log(Log.LEVEL_ERROR, MODULE, "Couldn't use jpegtran to rotate the image, it will be uploaded unrotated");
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
 		}

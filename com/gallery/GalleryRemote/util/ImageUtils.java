@@ -229,10 +229,10 @@ public class ImageUtils {
 	}
 
 	public static File resize(String filename, Dimension d) {
-		return resize(filename, d, null);
+		return resize(filename, d, null, -1);
 	}
 
-	public static File resize(String filename, Dimension d, Rectangle cropTo) {
+	public static File resize(String filename, Dimension d, Rectangle cropTo, int resizeJpegQuality) {
 		File r = null;
 		long start = System.currentTimeMillis();
 
@@ -262,7 +262,7 @@ public class ImageUtils {
 			}
 
 			cmd.add("-quality");
-			cmd.add("" + jpegQuality);
+			cmd.add("" + ((resizeJpegQuality == -1)?jpegQuality:resizeJpegQuality));
 
 			r = deterministicTempFile("res"
 					, "." + GalleryFileFilter.getExtension(filename), tmpDir, filename + d + cropTo);
@@ -861,19 +861,51 @@ public class ImageUtils {
 						&& System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
 					// we're on Windows with an abbreviated path: look up IM in the registry
 					StringBuffer output = new StringBuffer();
-					exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
+					int retval = exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
+retval = 1;
+					if (retval == 0) {
+						Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+						//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+						Matcher m = pat.matcher(output.toString());
+						if (m.find()) {
+							imPath = m.group(1) + "\\" + imPath;
 
-					Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-					//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-					Matcher m = pat.matcher(output.toString());
-					if (m.find()) {
-						imPath = m.group(1) + "\\" + imPath;
+							if (!imPath.endsWith(".exe")) {
+								imPath += ".exe";
+							}
 
-						if (!imPath.endsWith(".exe")) {
-							imPath += ".exe";
+							Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+						}
+					} else {
+						// most likely, we don't have reg.exe, try regedit.exe
+
+						File tempFile = File.createTempFile("gr_regdump", null);
+
+						retval = exec("regedit /E \"" + tempFile.getPath() + "\" \"HKEY_LOCAL_MACHINE\\Software\\ImageMagick\\Current\"", output);
+
+						if (retval == 0) {
+							BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), "UTF-16"));
+							String line = null;
+							Pattern pat = Pattern.compile("^\\\"BinPath\\\"=\\\"(.*)\\\"", Pattern.CASE_INSENSITIVE);
+							while ((line = br.readLine()) != null) {
+								Matcher m = pat.matcher(line.toString());
+								if (m.find()) {
+									imPath = m.group(1) + "\\" + imPath;
+
+									if (!imPath.endsWith(".exe")) {
+										imPath += ".exe";
+									}
+
+									Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+
+									break;
+								}
+							}
+
+							br.close();
 						}
 
-						Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+						tempFile.delete();
 					}
 				}
 

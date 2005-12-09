@@ -69,6 +69,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient public boolean cookieLogin = false;
 	transient public int galleryVersion = 1;
 	transient public int forceGalleryVersion = 0;
+	transient public int resizeJpegQuality = -1;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
 	public static final int TYPE_STANDALONE = 0;
@@ -631,7 +632,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public static Gallery readFromProperties(GalleryProperties p, int prefsIndex, StatusUpdate su, boolean mustHaveUsername) {
 		String url = p.getProperty(URL + prefsIndex);
-		String username = p.getProperty(USERNAME + prefsIndex);
+		String username = p.getProperty(USERNAME + prefsIndex, true);
 
 		if (mustHaveUsername && username == null) {
 			return null;
@@ -674,6 +675,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		g.setAlias(p.getProperty(ALIAS + prefsIndex));
 
 		g.forceGalleryVersion = p.getIntProperty(FORCE_GALLERY_VERSION + prefsIndex, 0);
+		g.resizeJpegQuality = p.getIntProperty(RESIZE_JPEG_QUALITY + prefsIndex, -1);
 
 		g.setPrefsIndex(prefsIndex);
 
@@ -913,6 +915,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setGalleryVersion(int galleryVersion) {
 		this.galleryVersion = galleryVersion;
+	}
+
+	public int getResizeJpegQuality() {
+		return resizeJpegQuality;
 	}
 
 	class TreeEnumeration implements Enumeration {

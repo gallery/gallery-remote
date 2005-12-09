@@ -291,6 +291,8 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		defaultSizes.add(new ResizeSize(1280, "1280 (1 MPix)"));
 		defaultSizes.add(new ResizeSize(1600, "1600 (2 MPix)"));
 		defaultSizes.add(new ResizeSize(2048, "2048 (3 MPix)"));
+		defaultSizes.add(new ResizeSize(2304, "2304 (4 MPix)"));
+		defaultSizes.add(new ResizeSize(2592, "2592 (5 MPix)"));
 	}
 }
 
