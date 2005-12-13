@@ -38,6 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -1377,10 +1378,12 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			Object[] params = {new Integer(rsp.getStatusCode()), rsp.getReasonLine()};
 			throw new GR2Exception(GRI18n.getString(MODULE, "httpPostErr", params));
 		} else {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Content-type: " + rsp.getHeader("Content-type"));
+
 			// load response
 			String response = null;
 			try {
-				response = new String(rsp.getText()).trim();
+				response = rsp.getText().trim();
 			} catch (ParseException e) {
 				Log.log(Log.LEVEL_ERROR, MODULE, "HTTPClient failed to parse response, getting data instead of text");
 				response = new String(rsp.getData()).trim();
@@ -1407,7 +1410,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				}
 
 				GalleryProperties p = new GalleryProperties();
-				p.load(new StringBufferInputStream(response));
+				p.load(response);
 
 				// catch session expiration problems
 				if (!alreadyRetried && !g.cookieLogin && g.getUsername() != null && g.getUsername().length() != 0
@@ -1489,7 +1492,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upCompSrvrProc"));
 			su.setUndetermined(StatusUpdate.LEVEL_UPLOAD_ONE, true);
 		}
-	};
+	}
 
 	/* -------------------------------------------------------------------------
 	* MAIN METHOD (test only)

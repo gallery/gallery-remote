@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
  * User: paour
  * Date: May 8, 2003
  */
-public class FilePanel extends PreferencePanel implements ActionListener, PreferenceNames {
+/*public class FilePanel extends PreferencePanel implements ActionListener, PreferenceNames {
 	public static final String MODULE = "FilePa";
 
 	JLabel icon = new JLabel(GRI18n.getString(MODULE, "icon"));
@@ -91,5 +91,5 @@ public class FilePanel extends PreferencePanel implements ActionListener, Prefer
 	public void actionPerformed(ActionEvent e) {
 		resetUIState();
 	}
-}
+}*/
 

@@ -24,8 +24,7 @@ import com.gallery.GalleryRemote.Base64;
 import com.gallery.GalleryRemote.Log;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,6 +44,11 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	protected Dimension thumbnailSize = null;
 	protected Rectangle mainBounds = null;
 	protected Rectangle previewBounds = null;
+
+	// from Properties
+	private static final String keyValueSeparators = "=: \t\r\n\f";
+	private static final String strictKeyValueSeparators = "=:";
+	private static final String whiteSpaceChars = " \t\r\n\f";
 
 
 	public GalleryProperties(Properties p) {
@@ -81,6 +85,67 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 			if ((currentValue == null || currentValue.length() == 0)
 					|| (value != null && value.length() != 0)) {
 				super.setProperty(name, value);
+			}
+		}
+	}
+
+	public void load(String data) throws IOException {
+		BufferedReader in = new BufferedReader(new StringReader(data));
+		while (true) {
+			// Get next line
+			String line = in.readLine();
+			if (line == null)
+				return;
+
+			if (line.length() > 0) {
+				// Continue lines that end in slashes if they are not comments
+				char firstChar = line.charAt(0);
+				if ((firstChar != '#') && (firstChar != '!')) {
+					// Find start of key
+					int len = line.length();
+					int keyStart;
+					for(keyStart=0; keyStart<len; keyStart++) {
+						if(whiteSpaceChars.indexOf(line.charAt(keyStart)) == -1)
+							break;
+					}
+
+					// Blank lines are ignored
+					if (keyStart == len)
+						continue;
+
+					// Find separation between key and value
+					int separatorIndex;
+					for(separatorIndex=keyStart; separatorIndex<len; separatorIndex++) {
+						char currentChar = line.charAt(separatorIndex);
+						if (currentChar == '\\')
+							separatorIndex++;
+						else if(keyValueSeparators.indexOf(currentChar) != -1)
+							break;
+					}
+
+					// Skip over whitespace after key if any
+					int valueIndex;
+					for (valueIndex=separatorIndex; valueIndex<len; valueIndex++)
+						if (whiteSpaceChars.indexOf(line.charAt(valueIndex)) == -1)
+							break;
+
+					// Skip over one non whitespace key value separators if any
+					if (valueIndex < len)
+						if (strictKeyValueSeparators.indexOf(line.charAt(valueIndex)) != -1)
+							valueIndex++;
+
+					// Skip over white space after other separators if any
+					while (valueIndex < len) {
+						if (whiteSpaceChars.indexOf(line.charAt(valueIndex)) == -1)
+							break;
+						valueIndex++;
+					}
+					String key = line.substring(keyStart, separatorIndex);
+					String value = (separatorIndex < len) ? line.substring(valueIndex, len) : "";
+
+					// Convert then store key and value
+					put(key, value);
+				}
 			}
 		}
 	}
@@ -211,6 +276,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty(key + "1", String.valueOf(i));
 	}
 
+
 	public Color getColorProperty(String key) {
 		String value = getProperty(key);
 		if (value == null) return null;
@@ -230,147 +296,6 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setProperty(key, ((int) c.getRed()) + "," + ((int) c.getGreen()) + "," + ((int) c.getBlue()));
 	}
 
-	/**
-	 * getLoadLastMRU returns whether we should automatically load the
-	 * last MRU file when GR starts. If this is true then we should try
-	 * to load getMRUItem(0).
-	 * 
-	 * @return true if we should load the last opened file.
-	 */
-	public boolean getLoadLastMRU() {
-		return (getBooleanProperty(LOAD_LAST_FILE, false));
-	}
-
-	/**
-	 * setLoadLastMRU sets the current value of LOAD_LAST_FILE to the passed
-	 * value.
-	 * 
-	 * @param loadLastMRU the new value of LOAD_LAST_FILE.
-	 */
-	public void setLoadLastMRU(boolean loadLastMRU) {
-		setBooleanProperty(LOAD_LAST_FILE, loadLastMRU);
-	}
-
-	/**
-	 * setMRUCountProperty sets the number of MRU items that we will show
-	 * in the File menu.  This change will not be seen until the file menu
-	 * is rebuilt (this happens on file save, file open, etc.).
-	 * 
-	 * @param MRUCountProperty The new MRU count property.
-	 */
-	public void setMRUCountProperty(int MRUCountProperty) {
-		setIntProperty(MRU_COUNT, MRUCountProperty);
-	}
-
-	/**
-	 * getMRUCountProperty returns the Most Recently Used count (the number
-	 * of MRU entries we should show in the menu.
-	 * 
-	 * @return the mruCount value from the properties file.
-	 */
-	public int getMRUCountProperty() {
-		return (getIntProperty(MRU_COUNT, 4));
-	}
-
-	/**
-	 * getMRUItem returns the MRU item at the passed number. These are
-	 * stored in property items that end in the number with a prefix of
-	 * MRU_BASE. If the item does not exist in the properties file we
-	 * will return null.
-	 * 
-	 * @param mruItemNumber the number of the MRU item to return
-	 * @return the string stored at item mruItemNumber.  This is a file (as a
-	 *         string) and was probably set by addMRUItem().
-	 */
-	public String getMRUItem(int mruItemNumber) {
-		return (getProperty(MRU_BASE + mruItemNumber, null));
-	}
-
-	/**
-	 * removeMRUItem removes the designated MRU item. Note that this
-	 * does not get this new value into the file, if you want this MRU
-	 * value to be permanent you will have to also force the properties
-	 * file to save.
-	 * 
-	 * @param mruItemNumber the number of the MRU item to return
-	 */
-	public void removeMRUItem(int mruItemNumber) {
-		remove(MRU_BASE + mruItemNumber);
-	}
-
-	/**
-	 * setMRUItem set the designated MRU item to the passed string. Note that this
-	 * does not get this new value into the file, if you want this MRU
-	 * value to be permanent you will have to also force the properties
-	 * file to save.
-	 * 
-	 * @param mruItemNumber the number of the MRU item to set
-	 * @param mruItem       the MRU item to set
-	 */
-	public void setMRUItem(int mruItemNumber, String mruItem) {
-		setProperty(MRU_BASE + mruItemNumber, mruItem);
-	}
-
-	/**
-	 * addMRUItem saves the passed mruItem onto the list of MRU items
-	 * stored in the properties file and causes the properties file to
-	 * be written out. If the item was already in the list, then it
-	 * simply moves the passed item to the top of the list.
-	 * <p/>
-	 * Note that this does not get this new value into the file, if you
-	 * want this MRU value to be permanent you will have to also force
-	 * the properties file to save.
-	 * 
-	 * @param mruItem The mruItem File to add.
-	 */
-	public void addMRUItem(File mruItem) {
-		// First get all of the MRU items from the current file
-		try {
-			String currentItem = mruItem.getCanonicalPath();
-			addMRUItem(currentItem);
-		} catch (IOException ioe) {
-			// Just log it as there isn't really anything else we can do just now.
-			Log.log(Log.LEVEL_ERROR, MODULE, "mruItem add attempt with an invalid File object");
-			Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
-		}
-	}
-
-	/**
-	 * addMRUItem saves the passed mruItem onto the list of MRU items
-	 * stored in the properties file and causes the properties file to
-	 * be written out. If the item was already in the list, then it
-	 * simply moves the passed item to the top of the list.
-	 * <p/>
-	 * Note that this does not get this new value into the file, if you
-	 * want this MRU value to be permanent you will have to also force
-	 * the properties file to save.
-	 * 
-	 * @param mruItem The mruItem path String to add.
-	 */
-	public void addMRUItem(String newMRUItem) {
-		// First get all of the MRU items from the current file
-		Vector mruItems = new Vector();
-		mruItems.addElement(newMRUItem);
-		for (int i = 0; i < 20; i++) {
-			String nextItem = getMRUItem(i);
-
-			// Skip any missing items and if the current item is already
-			// in the list skip it too.
-			if (null != nextItem && !nextItem.equals(newMRUItem)) {
-				mruItems.addElement(nextItem);
-			}
-		}
-
-		// First clean up the list.
-		for (int i = 1; i <= 20; i++) {
-			removeMRUItem(i);
-		}
-
-		// OK, we now have the new list, add the properties back.
-		for (int i = 1; i <= mruItems.size(); i++) {
-			setMRUItem(i, (String) mruItems.elementAt(i - 1));
-		}
-	}
 
 	public Rectangle getRectangleProperty(String key) {
 		String value = getProperty(key);

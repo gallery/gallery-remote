@@ -1,3 +1,7 @@
+2005-12-13  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b5)
+
+	* More fixes for non-latin galleries (thanks Continental).
+
 2005-12-09  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b4)
 
 	* Fixed another bug with URL loading introduced in b2.
