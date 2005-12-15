@@ -1,3 +1,7 @@
+2005-12-15  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b6)
+
+	* Fixed a bug introduced in b5 which broke the slideshow.
+
 2005-12-13  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b5)
 
 	* More fixes for non-latin galleries (thanks Continental).
