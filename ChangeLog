@@ -1,3 +1,9 @@
+2005-12-18  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b7)
+
+	* Explicitly disabling keep-alive for the GR protocol
+	  which could help alleviate sometimes-reported problem
+	  of hanging connections (thanks Valiant).
+
 2005-12-15  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b6)
 
 	* Fixed a bug introduced in b5 which broke the slideshow.
