@@ -41,9 +41,9 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 	public static final String MODULE = "PreviewFrame";
 
 	SmartHashtable imageIcons = new SmartHashtable();
-	ImageIcon currentImage = null;
-	Picture loadPicture = null;
-	Picture currentPicture = null;
+	ImageIcon imageShowNow = null;
+	Picture pictureShowWant = null;
+	Picture pictureShowNow = null;
 	PreviewLoader previewLoader = new PreviewLoader();
 	int previewCacheSize = 10;
 	boolean ignoreIMFailure = false;
@@ -82,40 +82,33 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 	public void flushMemory() {
 		imageIcons.clear();
-		if (currentPicture != null) {
-			loadPicture = null;
-			currentImage = null;
-			displayPicture(currentPicture, true);
-			currentPicture = null;
+		if (pictureShowNow != null) {
+			pictureShowWant = null;
+			imageShowNow = null;
+			displayPicture(pictureShowNow, true);
+			pictureShowNow = null;
 		}
 	}
 
 	public void displayPicture(Picture picture, boolean async) {
 		if (picture == null) {
-			loadPicture = null;
+			pictureShowWant = null;
 			imageRect = null;
 
 			pictureReady(null, null);
 		} else {
-			//String filename = picture.getSource().getPath();
-			
-			if (picture != loadPicture) {
-				//currentImageFile = filename;
-				loadPicture = picture;
+			if (picture != pictureShowWant) {
+				pictureShowWant = picture;
 
 				ImageIcon r = (ImageIcon) imageIcons.get(picture);
 				if (r != null) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
-					//currentImage = r;
-					//currentPicture = picture;
 					pictureReady(r, picture);
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
 					if (async) {
 						previewLoader.loadPreview(picture, true);
 					} else {
-						//currentImage = getSizedIconForce(picture);
-						//currentPicture = picture;
 						ImageIcon sizedIcon = getSizedIconForce(picture);
 						if (sizedIcon != null) {
 							pictureReady(sizedIcon, picture);
@@ -172,11 +165,10 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 				g.setColor(getBackground());
 			}
 			g.fillRect(0, 0, getSize().width, getSize().height);
-			//g.clearRect(0, 0, getSize().width, getSize().height);
 
-			if (currentImage != null && loadPicture != null) {
-				ImageIcon tmpImage = ImageUtils.rotateImageIcon(currentImage, loadPicture.getAngle(),
-						loadPicture.isFlipped(), this);
+			if (imageShowNow != null && pictureShowWant != null) {
+				ImageIcon tmpImage = ImageUtils.rotateImageIcon(imageShowNow, pictureShowWant.getAngle(),
+						pictureShowWant.isFlipped(), this);
 
 				imageRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
 						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
@@ -326,8 +318,8 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 	}
 
 	public void pictureReady(ImageIcon image, Picture picture) {
-		currentImage = image;
-		currentPicture = picture;
+		imageShowNow = image;
+		pictureShowNow = picture;
 		repaint();
 	}
 
@@ -370,20 +362,20 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void paint(Graphics g) {
 			oldRect = null;
 
-			if (localCurrentPicture != currentPicture) {
+			if (localCurrentPicture != pictureShowNow) {
 				cacheRect = null;
-				localCurrentPicture = currentPicture;
+				localCurrentPicture = pictureShowNow;
 			}
 
-			if (currentPicture == null || currentImage == null || currentPicture.isOnline()) {
+			if (pictureShowNow == null || imageShowNow == null || pictureShowNow.isOnline()) {
 				cacheRect = null;
 				return;
 			}
 
 			if (imageRect != null && start != null && end != null) {
-				Rectangle ct = currentPicture.getCropTo();
+				Rectangle ct = pictureShowNow.getCropTo();
 				if (ct != null) {
-					AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, currentPicture.getDimension(), currentPicture.getAngle(), currentPicture.isFlipped());
+					AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, pictureShowNow.getDimension(), pictureShowNow.getAngle(), pictureShowNow.isFlipped());
 
 					try {
 						cacheRect = getRect(t.inverseTransform(ct.getLocation(), null),
@@ -419,7 +411,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void paintInfo(Graphics g) {
 			String message = null;
 
-			Rectangle cropTo = currentPicture.getCropTo();
+			Rectangle cropTo = pictureShowNow.getCropTo();
 			if (! inDrag) {
 				if (cropTo == null) {
 					message = GRI18n.getString(MODULE, "noCrop");
@@ -454,11 +446,11 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			if (currentPicture == null) {
+			if (pictureShowNow == null) {
 				return;
 			}
 
-			currentPicture.setCropTo(null);
+			pictureShowNow.setCropTo(null);
 			cacheRect = null;
 			repaint();
 		}
@@ -468,7 +460,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void mouseExited(MouseEvent e) {}
 
 		public void mousePressed(MouseEvent e) {
-			if (currentPicture == null || imageRect == null || currentPicture.isOnline()) {
+			if (pictureShowNow == null || imageRect == null || pictureShowNow.isOnline()) {
 				return;
 			}
 
@@ -510,7 +502,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 					break;
 			}
 
-			currentPicture.setCropTo(null);
+			pictureShowNow.setCropTo(null);
 			repaint();
 		}
 
@@ -518,17 +510,17 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			inDrag = false;
 			centerMode = false;
 
-			if (currentPicture == null || oldRect == null || currentPicture.isOnline()) {
+			if (pictureShowNow == null || oldRect == null || pictureShowNow.isOnline()) {
 				return;
 			}
 
-			AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, currentPicture.getDimension(), currentPicture.getAngle(), currentPicture.isFlipped());
-			//currentPicture.setCropTo(getRect(t.transform(start, null), t.transform(end, null)));
+			AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, pictureShowNow.getDimension(), pictureShowNow.getAngle(), pictureShowNow.isFlipped());
+			//pictureShowNow.setCropTo(getRect(t.transform(start, null), t.transform(end, null)));
 
 			Rectangle tmpRect = new Rectangle();
 			tmpRect.setFrameFromDiagonal(t.transform(oldRect.getLocation(), null),
 					t.transform(new Point(oldRect.x + oldRect.width, oldRect.y + oldRect.height), null));
-			currentPicture.setCropTo(tmpRect);
+			pictureShowNow.setCropTo(tmpRect);
 
 			setCursor(Cursor.getDefaultCursor());
 
@@ -629,7 +621,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		}
 
 		public void mouseMoved(MouseEvent e) {
-			if (currentPicture == null || currentImage == null || currentPicture.isOnline() || cacheRect == null) {
+			if (pictureShowNow == null || imageShowNow == null || pictureShowNow.isOnline() || cacheRect == null) {
 				movingEdge = 0;
 				setCursor(Cursor.getDefaultCursor());
 				return;

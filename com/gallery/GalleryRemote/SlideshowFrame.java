@@ -45,6 +45,7 @@ public class SlideshowFrame extends PreviewFrame
 	String progress = null;
 	String extra = null;
 	String url = null;
+	String skipping = null;
 
 	public static final int STATE_NONE = 0;
 	public static final int STATE_DOWNLOADING = 1;
@@ -101,7 +102,7 @@ public class SlideshowFrame extends PreviewFrame
 				// unfortunately, this doesn't work on Mac 1.4.2...
 				// gd.setFullScreenWindow(this);
 			} else {*/
-				 DialogUtil.maxSize(this);
+				DialogUtil.maxSize(this);
 				//setBounds(600, 100, 500, 500);
 				setVisible(true);
 			//}
@@ -192,7 +193,7 @@ public class SlideshowFrame extends PreviewFrame
 						}
 						updateFeedback(FEEDBACK_PAUSE_PLAY);
 
-						updateProgress(currentPicture, STATE_NONE);
+						updateProgress(pictureShowNow, STATE_NONE);
 
 						break;
 				}
@@ -283,13 +284,26 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public boolean next(boolean user) {
-		if (loadPicture != null && wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
+		if (pictureShowWant != null && wantDownloaded.contains(pictureShowWant) && (pictureShowWant != userPicture || user)) {
 			// we no longer want the current picture
-			wantDownloaded.remove(loadPicture);
+			wantDownloaded.remove(pictureShowWant);
 		}
 
 		Picture picture;
+		if (userPicture != null && !user) {
+			// automatic move trying to move away from user-chosen picture
+			// add delay to prevent endless loop
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {}
+			return true;
+		}
 		synchronized(this) {
+			if (userPicture != null && !user) {
+				// don't delay in critical section
+				return true;
+			}
+
 			wantIndex++;
 
 			if (wantIndex >= pictures.size()) {
@@ -320,14 +334,6 @@ public class SlideshowFrame extends PreviewFrame
 				Log.log(Log.LEVEL_TRACE, MODULE, "User skipped again, not even loading " + picture);
 				return true;
 			}
-		} else if (userPicture != null && userPicture != picture) {
-			// automatic move trying to move away from user-chosen picture
-
-			// add delay to prevent endless loop
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {}
-			return true;
 		}
 
 		wantDownloaded.add(picture);
@@ -344,9 +350,9 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public boolean previous(boolean user) {
-		if (loadPicture != null && wantDownloaded.contains(loadPicture) && (loadPicture != userPicture || user)) {
+		if (pictureShowWant != null && wantDownloaded.contains(pictureShowWant) && (pictureShowWant != userPicture || user)) {
 			// we no longer want the current picture
-			wantDownloaded.remove(loadPicture);
+			wantDownloaded.remove(pictureShowWant);
 		}
 
 		Picture picture;
@@ -404,9 +410,9 @@ public class SlideshowFrame extends PreviewFrame
 			userPicture = null;
 		}
 
-		if (picture != loadPicture) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + loadPicture + ": ignoring");
-			updateProgress(loadPicture, STATE_NEXTREADY);
+		if (picture != pictureShowWant) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + pictureShowWant + ": ignoring");
+			updateProgress(pictureShowWant, STATE_NEXTREADY);
 			return;
 		}
 
@@ -432,13 +438,13 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public void pictureStartDownload(Picture picture) {
-		if (picture == loadPicture || picture == userPicture) {
+		if (picture == pictureShowWant || picture == userPicture) {
 			updateProgress(picture, STATE_DOWNLOADING);
 		}
 	}
 
 	public void pictureStartProcessing(Picture picture) {
-		if (picture == loadPicture || picture == userPicture) {
+		if (picture == pictureShowWant || picture == userPicture) {
 			updateProgress(picture, STATE_PROCESSING);
 		}
 	}
@@ -475,6 +481,7 @@ public class SlideshowFrame extends PreviewFrame
 
 			case STATE_SKIPPING:
 				progress = GRI18n.getString(MODULE, "skipping", params);
+				skipping = GRI18n.getString(MODULE, "skippingController", params);
 				break;
 		}
 
@@ -602,12 +609,16 @@ public class SlideshowFrame extends PreviewFrame
 
 			if (feedback != FEEDBACK_NONE || controllerUntil > System.currentTimeMillis()) {
 				paintController(g);
+			} else {
+				skipping = null;
 			}
 
 			paintInfo(g);
 		}
 
 		private void paintController(Graphics g) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "paintController");
+
 			Dimension d = getSize();
 			int width = 475;
 			int height = 150;
@@ -659,6 +670,15 @@ public class SlideshowFrame extends PreviewFrame
 			g.fillPolygon(new int[] {x, x, x + 30, x + 70, x + 100, x + 100, x + 70, x + 30},
 					new int[] {y + 55, y + 95, y + 125, y + 125, y + 95, y + 55, y + 25, y + 25}, 8);
 			drawText(g, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.escape"));
+
+			if (skipping != null) {
+				x = d.width / 2;
+				g.setFont(g.getFont().deriveFont(48.0F));
+				fm = g.getFontMetrics();
+				g.setColor(hilight);
+				Rectangle2D bounds = fm.getStringBounds(skipping, g);
+				g.drawString(skipping, (int) (x - bounds.getWidth() / 2), y + 210);
+			}
 		}
 
 		public void paintInfo(Graphics g) {
