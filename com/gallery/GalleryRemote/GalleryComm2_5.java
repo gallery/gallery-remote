@@ -31,6 +31,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	private static int[] capabilities4;
 	private static int[] capabilities6;
 	private static int[] capabilities7;
+	private static int[] capabilities8;
 
 	protected GalleryComm2_5(Gallery g) {
 		super(g);
@@ -50,12 +51,16 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		capabilities7 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT};
+		capabilities8 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS};
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
 		Arrays.sort(capabilities4);
 		Arrays.sort(capabilities6);
 		Arrays.sort(capabilities7);
+		Arrays.sort(capabilities8);
 
 		g.setGalleryVersion(2);
 	}
@@ -150,7 +155,9 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	}
 
 	void handleCapabilities() {
-		if (serverMinorVersion >= 7) {
+		if (serverMinorVersion >= 8) {
+			capabilities = capabilities8;
+		} else if (serverMinorVersion >= 7) {
 			capabilities = capabilities7;
 		} else if (serverMinorVersion >= 6) {
 			capabilities = capabilities6;
