@@ -862,7 +862,7 @@ public class ImageUtils {
 					// we're on Windows with an abbreviated path: look up IM in the registry
 					StringBuffer output = new StringBuffer();
 					int retval = exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
-retval = 1;
+					
 					if (retval == 0) {
 						Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 						//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);

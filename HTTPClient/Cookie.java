@@ -34,6 +34,8 @@ package HTTPClient;
 
 import java.io.Serializable;
 import java.net.ProtocolException;
+import java.net.URLEncoder;
+import java.net.URLDecoder;
 import java.util.Date;
 
 
@@ -281,6 +283,10 @@ public class Cookie implements Serializable
 		else end = Math.min(comma, semic);
 
 		String value = set_cookie.substring(beg, end).trim();
+
+		if (name.equalsIgnoreCase("path")) {
+			value = URLDecoder.decode(value);
+		}
 		legal &= setAttribute(curr, name, value, set_cookie);
 
 		beg = end;

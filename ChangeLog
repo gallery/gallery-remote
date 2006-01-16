@@ -1,3 +1,9 @@
+2006-01-16  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b10)
+
+	* Also look for image caption in TAG_USER_COMMENT
+	* Fixed cookie handling for cases where the path contains
+	  a URL-encoded character (such as ~). Thanks acherrington.
+
 2006-01-05  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b9)
 
 	* Japanese translation by Yosuke Suzuki.

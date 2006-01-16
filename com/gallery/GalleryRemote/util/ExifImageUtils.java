@@ -74,28 +74,28 @@ public class ExifImageUtils {
 	}
 	
 	public static String getCaption(Directory exifDirectory, Directory iptcDirectory, String filename) {
-		/* Prefer the EXIF IMAGE_DESCRIPTION tag */
+		String caption = exifDirectory.getString(ExifDirectory.TAG_IMAGE_DESCRIPTION).trim();
 
-		String exifDescription = exifDirectory.getString(ExifDirectory.TAG_IMAGE_DESCRIPTION);
-
-		if (exifDescription == null) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no EXIF DESCRIPTION tag");
-		} else {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " EXIF DESCRIPTION: " + exifDescription);
-			return exifDescription.trim();
+		if (caption != null && caption.length() != 0) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " TAG_IMAGE_DESCRIPTION: " + caption);
+			return caption.trim();
 		}
 
-		/* If there is no EXIF tag, look for the IPTC TAG_CAPTION one */
+		caption = exifDirectory.getString(ExifDirectory.TAG_USER_COMMENT).trim();
 
-		String iptcDescription = iptcDirectory.getString(IptcDirectory.TAG_CAPTION);
-
-		if (iptcDescription == null) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no IPTC DESCRIPTION tag");
-		} else {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " IPTC DESCRIPTION: " + iptcDescription);
-			return iptcDescription.trim();
+		if (caption != null && caption.length() !=0) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " TAG_USER_COMMENT: " + caption);
+			return caption.trim();
 		}
 
+		caption = iptcDirectory.getString(IptcDirectory.TAG_CAPTION).trim();
+
+		if (caption != null && caption.length() !=0) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " IPTC DESCRIPTION: " + caption);
+			return caption.trim();
+		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " has no usable EXIF or IPTC info");
 		return null;
 	}
 
