@@ -74,21 +74,21 @@ public class ExifImageUtils {
 	}
 	
 	public static String getCaption(Directory exifDirectory, Directory iptcDirectory, String filename) {
-		String caption = exifDirectory.getString(ExifDirectory.TAG_IMAGE_DESCRIPTION).trim();
+		String caption = exifDirectory.getString(ExifDirectory.TAG_IMAGE_DESCRIPTION);
 
 		if (caption != null && caption.length() != 0) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " TAG_IMAGE_DESCRIPTION: " + caption);
 			return caption.trim();
 		}
 
-		caption = exifDirectory.getString(ExifDirectory.TAG_USER_COMMENT).trim();
+		caption = exifDirectory.getString(ExifDirectory.TAG_USER_COMMENT);
 
 		if (caption != null && caption.length() !=0) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " TAG_USER_COMMENT: " + caption);
 			return caption.trim();
 		}
 
-		caption = iptcDirectory.getString(IptcDirectory.TAG_CAPTION).trim();
+		caption = iptcDirectory.getString(IptcDirectory.TAG_CAPTION);
 
 		if (caption != null && caption.length() !=0) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + filename + " IPTC DESCRIPTION: " + caption);

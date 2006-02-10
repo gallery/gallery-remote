@@ -1,3 +1,11 @@
+2006-02-10  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b11)
+
+	* Fixed EXIF handling broken in b10
+	* Allows forcing the encoding when connecting to a G1 server.
+	  Add forceProtocolEncoding.n=encoding in the GR preferences,
+	  where n is associated with your Gallery URL and encoding
+	  is the standard name of the encoding.
+
 2006-01-16  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b10)
 
 	* Also look for image caption in TAG_USER_COMMENT

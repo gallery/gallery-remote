@@ -538,7 +538,10 @@ public class HTTPResponse implements HTTPClientModuleConstants
 	if (ct == null  ||  !ct.toLowerCase().startsWith("text/"))
 	    throw new IOException("Content-Type `" + ct + "' is not a text type");
 
-	String charset = Util.getParameter("charset", ct);
+	String charset = request.getConnection().getForceCharset();
+
+	if (charset == null)
+		Util.getParameter("charset", ct);
 	if (charset == null)
 	    charset = "ISO-8859-1";
 
@@ -880,7 +883,6 @@ public class HTTPResponse implements HTTPClientModuleConstants
      * Reads the response data received. Does not return until either
      * Content-Length bytes have been read or EOF is reached.
      *
-     * @inp       the input stream from which to read the data
      * @exception IOException if any read on the input stream fails
      */
     private void readResponseData(InputStream inp)

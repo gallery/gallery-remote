@@ -1322,7 +1322,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	}
 
 	/**
-	 * POSTSs a request to the Gallery server with the given form data.  If data is
+	 * POSTs a request to the Gallery server with the given form data.  If data is
 	 * not null, a multipart MIME post is performed.
 	 */
 	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws GR2Exception, ModuleException, IOException {
@@ -1340,6 +1340,10 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		String userAgent = g.getUserAgent();
 		if (userAgent != null) {
 		    mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent) });
+		}
+
+		if (g.getForceProtocolEncoding() != null) {
+			mConnection.setForceCharset(g.getForceProtocolEncoding());
 		}
 
 		// Valiant thinks this will solve the sometines-reported problem with

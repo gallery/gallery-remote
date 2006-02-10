@@ -1055,6 +1055,7 @@ public class ImageUtils {
 			return (ExifData) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Exif library is not installed.");
+			//Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
 		}
 	}

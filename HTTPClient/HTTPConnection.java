@@ -324,6 +324,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
     /** JSSE's socket factory */
     private Object     sslFactory = null;
 
+	private String forceCharset = null;
+
 
     static
     {
@@ -3863,95 +3865,103 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 	    (getPort() != URI.defaultPort(getProtocol()) ? ":" + getPort() : "");
     }
 
+	public String getForceCharset() {
+		return forceCharset;
+	}
 
-    private class EstablishConnection extends Thread
-    {
-	String      actual_host;
-	int         actual_port;
-	IOException exception;
-	Socket      sock;
-	SocksClient Socks_client;
-	boolean     close;
-
-
-	EstablishConnection(String host, int port, SocksClient socks)
-	{
-	    super("EstablishConnection (" + host + ":" + port + ")");
-	    try { setDaemon(true); }
-	    catch (SecurityException se) { }        // Oh well...
-
-	    actual_host  = host;
-	    actual_port  = port;
-	    Socks_client = socks;
-
-	    exception = null;
-	    sock      = null;
-	    close     = false;
+	public void setForceCharset(String forceCharset) {
+		this.forceCharset = forceCharset;
 	}
 
 
-	public void run()
+	private class EstablishConnection extends Thread
 	{
-	    try
-	    {
-		if (Socks_client != null)
-		    sock = Socks_client.getSocket(actual_host, actual_port);
-		else
+		String      actual_host;
+		int         actual_port;
+		IOException exception;
+		Socket      sock;
+		SocksClient Socks_client;
+		boolean     close;
+
+
+		EstablishConnection(String host, int port, SocksClient socks)
 		{
-		    // try all A records
-		    InetAddress[] addr_list = InetAddress.getAllByName(actual_host);
-		    for (int idx=0; idx<addr_list.length; idx++)
-		    {
-			try
-			{
-			    if (LocalAddr == null)
-				sock = new Socket(addr_list[idx], actual_port);
-			    else
-				sock = new Socket(addr_list[idx], actual_port,
-						  LocalAddr, LocalPort);
-			    break;		// success
-			}
-			catch (SocketException se)
-			{
-			    if (idx == addr_list.length-1  ||  close)
-				throw se;	// we tried them all
-			}
-		    }
+		super("EstablishConnection (" + host + ":" + port + ")");
+		try { setDaemon(true); }
+		catch (SecurityException se) { }        // Oh well...
+
+		actual_host  = host;
+		actual_port  = port;
+		Socks_client = socks;
+
+		exception = null;
+		sock      = null;
+		close     = false;
 		}
-	    }
-	    catch (IOException ioe)
-	    {
-		exception = ioe;
-	    }
 
-	    if (close  &&  sock != null)
-	    {
+
+		public void run()
+		{
 		try
-		    { sock.close(); }
+		{
+			if (Socks_client != null)
+			sock = Socks_client.getSocket(actual_host, actual_port);
+			else
+			{
+			// try all A records
+			InetAddress[] addr_list = InetAddress.getAllByName(actual_host);
+			for (int idx=0; idx<addr_list.length; idx++)
+			{
+				try
+				{
+				if (LocalAddr == null)
+					sock = new Socket(addr_list[idx], actual_port);
+				else
+					sock = new Socket(addr_list[idx], actual_port,
+							LocalAddr, LocalPort);
+				break;		// success
+				}
+				catch (SocketException se)
+				{
+				if (idx == addr_list.length-1  ||  close)
+					throw se;	// we tried them all
+				}
+			}
+			}
+		}
 		catch (IOException ioe)
-		    { }
-		sock = null;
-	    }
+		{
+			exception = ioe;
+		}
+
+		if (close  &&  sock != null)
+		{
+			try
+			{ sock.close(); }
+			catch (IOException ioe)
+			{ }
+			sock = null;
+		}
+		}
+
+
+		IOException getException()
+		{
+		return exception;
+		}
+
+
+		Socket getSocket()
+		{
+		return sock;
+		}
+
+
+		void forget()
+		{
+		close = true;
+		}
 	}
-
-
-	IOException getException()
-	{
-	    return exception;
-	}
-
-
-	Socket getSocket()
-	{
-	    return sock;
-	}
-
-
-	void forget()
-	{
-	    close = true;
-	}
-    }
 
 
     /**

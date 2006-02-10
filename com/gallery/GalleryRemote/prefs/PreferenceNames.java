@@ -50,6 +50,7 @@ public interface PreferenceNames {
 	public static final String GL_LOGIN_URL = "glLoginUrl.";
 	public static final String ALIAS = "alias.";
 	public static final String FORCE_GALLERY_VERSION = "forceGalleryVersion.";
+	public static final String FORCE_PROTOCOL_ENCODING = "forceProtocolEncoding.";
 	public static final String RESIZE_JPEG_QUALITY = "resizeJpegQuality.";
 
 	// Proxy panel

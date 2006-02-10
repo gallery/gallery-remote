@@ -69,6 +69,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient public boolean cookieLogin = false;
 	transient public int galleryVersion = 1;
 	transient public int forceGalleryVersion = 0;
+	transient public String forceProtocolEncoding = null;
 	transient public int resizeJpegQuality = -1;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
@@ -675,6 +676,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		g.setAlias(p.getProperty(ALIAS + prefsIndex));
 
 		g.forceGalleryVersion = p.getIntProperty(FORCE_GALLERY_VERSION + prefsIndex, 0);
+		g.forceProtocolEncoding = p.getProperty(FORCE_PROTOCOL_ENCODING + prefsIndex);
 		g.resizeJpegQuality = p.getIntProperty(RESIZE_JPEG_QUALITY + prefsIndex, -1);
 
 		g.setPrefsIndex(prefsIndex);
@@ -919,6 +921,14 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public int getResizeJpegQuality() {
 		return resizeJpegQuality;
+	}
+
+	public String getForceProtocolEncoding() {
+		return forceProtocolEncoding;
+	}
+
+	public void setForceProtocolEncoding(String forceProtocolEncoding) {
+		this.forceProtocolEncoding = forceProtocolEncoding;
 	}
 
 	class TreeEnumeration implements Enumeration {
