@@ -541,7 +541,7 @@ public class HTTPResponse implements HTTPClientModuleConstants
 	String charset = request.getConnection().getForceCharset();
 
 	if (charset == null)
-		Util.getParameter("charset", ct);
+		charset = Util.getParameter("charset", ct);
 	if (charset == null)
 	    charset = "ISO-8859-1";
 
