@@ -2,11 +2,13 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.util.Locale;
 
 import HTTPClient.CookieModule;
 import HTTPClient.Cookie;
@@ -33,6 +35,14 @@ public class GRApplet extends JApplet {
 
 		if (hasStarted) {
 			GalleryRemote._().initializeGR();
+
+			String localeString = getParameter("gr_locale");
+			if (localeString != null && localeString.length() > 1) {
+				Locale locale = GRI18n.parseLocaleString(localeString);
+				GRI18n.setLocale(locale.getLanguage(), locale.getCountry());
+				Log.log(Log.LEVEL_INFO, MODULE, "Set locale to: " + locale);
+			}
+
 			initUI();
 
 			new Thread() {

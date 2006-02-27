@@ -6,8 +6,6 @@ com/gallery/GalleryRemote/prefs/UploadgPanel*
 com/gallery/GalleryRemote/prefs/URLPanel*
 com/gallery/GalleryRemote/prefs/*Dialog*
 
-com/gallery/GalleryRemote/resources/GRResources_*.properties
-
 com/gallery/GalleryRemote/util/MacOSXAdapter*
 com/gallery/GalleryRemote/util/NaturalOrderComparator*
 com/gallery/GalleryRemote/util/OsShutdown*

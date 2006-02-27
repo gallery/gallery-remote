@@ -205,9 +205,13 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		jResize.setToolTipText("<html>Resize pictures before uploading them for a faster upload.<br>The " +
 		"high-resolution original will not be available online.</html>");
-		jResize.setText("Resize pictures before upload");
-		captionLabel.setText("Caption:            ");
+		jResize.setText(GRI18n.getString(MODULE, "ResizeBeforeUpload"));
+		captionLabel.setText(GRI18n.getString(MODULE, "Caption") + "            ");
 		jScrollPane.getViewport().add(jPicturesList, null);
+
+		if (!GalleryRemote._().properties.getBooleanProperty(APPLET_SHOW_RESIZE, true)) {
+			jResize.setVisible(false);
+		}
 
 		jCaption.setLineWrap(true);
 		jCaption.setEditable(false);
