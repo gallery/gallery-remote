@@ -659,7 +659,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			extraFields = new ArrayList();
 			StringTokenizer st = new StringTokenizer(extraFieldsString, ",");
 			List noShow = null;
-			if (getGallery().galleryVersion == 1) {
+			if (getGallery().getGalleryVersion() == 1) {
 				noShow = extraFieldsNoShow;
 			} else {
 				noShow = extraFieldsNoShowG2;

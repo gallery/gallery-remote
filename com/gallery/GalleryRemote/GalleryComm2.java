@@ -510,8 +510,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		boolean uploadPicture(Picture p, Picture picture) {
 			try {
-				boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
-				boolean utf8 = !escapeCaptions && p.getParentAlbum().getGallery().galleryVersion == 2;
+				boolean utf8 = p.getParentAlbum().getGallery().getGalleryVersion() == 2;
+				boolean escapeCaptions = !utf8 && GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
 
 				if (utf8) {
 					Log.log(Log.LEVEL_INFO, MODULE, "Will upload using UTF-8 for text data");
@@ -981,7 +981,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "newAlbm", new Object[] { albumName, g.toString() }));
 
 			boolean escapeCaptions = GalleryRemote._().properties.getBooleanProperty(HTML_ESCAPE_CAPTIONS);
-			boolean utf8 = !escapeCaptions && parentAlbum.getGallery().galleryVersion == 2;
+			boolean utf8 = !escapeCaptions && parentAlbum.getGallery().getGalleryVersion() == 2;
 
 			if (utf8) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Will upload using UTF-8 for text data");

@@ -890,7 +890,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 			}
 
 			// G2 root is a normal album, don't add a fake root...
-			if (galleryVersion == 2 && flatAlbumList != null) {
+			if (getGalleryVersion() == 2 && flatAlbumList != null) {
 				flatAlbumList.remove(getRoot());
 			}
 		}
@@ -912,6 +912,11 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public int getGalleryVersion() {
+		if (forceGalleryVersion != 0) {
+			// override
+			return forceGalleryVersion;
+		}
+
 		return galleryVersion;
 	}
 

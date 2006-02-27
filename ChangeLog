@@ -1,3 +1,18 @@
+2006-02-27  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b14)
+
+	* GR will no longer perform HTML entities escaping when uploading
+	  to G2.
+	* Fixed DHTML during and after upload with mini applet in G2.
+
+2006-02-26  Alan Harder (1.5.1-b13)
+
+	* Localization fixes for applets:
+	  New gr_locale applet parameter for specifying locale
+	  Include resource bundles in the AppletMini jar
+	  Add GRI18n.getString for two untranslatable strings
+	* Implemented showAppletResize property (it is supposed to hide
+	  this checkbox when false, but there was no code to do this)
+
 2006-02-20  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b12)
 
 	* Fixed auto charset support broken in b11.

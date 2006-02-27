@@ -362,7 +362,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	}
 
 	public void g2Feedback(String method, Object[] params) {
-		if (gallery.galleryVersion == 2) {
+		if (gallery.getGalleryVersion() == 2) {
 			try {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Invoking Javascript method '" + method + "' with " + params);
 				call.invoke(window, new Object[] {method, params});
