@@ -191,7 +191,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		this.add(apperancePanel,     new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(help,   new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 0), 0, 0));
 		this.add(spacerPanel,    new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 

@@ -1,3 +1,7 @@
+2006-02-28  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b15)
+
+	* Better handling of variable applet size.
+
 2006-02-27  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b14)
 
 	* GR will no longer perform HTML entities escaping when uploading

@@ -59,13 +59,22 @@ public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore
 
 		jSlidePanel = new SlideshowPanel();
 
+		JPanel filler1 = new JPanel();
+		filler1.setMinimumSize(new Dimension(0, 0));
+		JPanel filler2 = new JPanel();
+		filler2.setMinimumSize(new Dimension(0, 0));
+
 		getContentPane().add(jSlidePanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 		getContentPane().add(new JLabel(GRI18n.getString(MODULE, "Disabled")), new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 5), 0, 0));
-		getContentPane().add(jStart, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
+		getContentPane().add(filler2, new GridBagConstraints(0, 2, 1, 1, 0.1, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 10, 10), 0, 0));
+		getContentPane().add(jStart, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 10, 10), 0, 0));
-		getContentPane().add(jStatusBar, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+		getContentPane().add(filler1, new GridBagConstraints(0, 4, 1, 1, 0.1, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 10, 10), 0, 0));
+		getContentPane().add(jStatusBar, new GridBagConstraints(0, 5 , 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		jSlidePanel.buildUI();
