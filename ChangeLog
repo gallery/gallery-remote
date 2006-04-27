@@ -1,3 +1,11 @@
+2006-04-27  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b16)
+
+	* Added a ScreenSaver based on GR, using SaverBeans
+	  <https://jdic.dev.java.net/documentation/incubator/screensaver/>
+	* Reorganized some of the slideshow code to allow the
+	  screensaver.
+	* Implemented word-wrapping for captions in the slideshow.
+
 2006-02-28  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b15)
 
 	* Better handling of variable applet size.
