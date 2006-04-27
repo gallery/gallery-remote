@@ -18,7 +18,7 @@ import java.net.URL;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class GalleryComm2_5 extends GalleryComm2 {
+public class    GalleryComm2_5 extends GalleryComm2 {
 	private static final String MODULE = "GalComm2";
 
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
@@ -32,6 +32,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	private static int[] capabilities6;
 	private static int[] capabilities7;
 	private static int[] capabilities8;
+	private static int[] capabilities9;
 
 	protected GalleryComm2_5(Gallery g) {
 		super(g);
@@ -54,6 +55,10 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		capabilities8 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
 								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
 								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS};
+		capabilities9 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS,
+								  CAPA_FETCH_RANDOM};
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
@@ -61,6 +66,7 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		Arrays.sort(capabilities6);
 		Arrays.sort(capabilities7);
 		Arrays.sort(capabilities8);
+		Arrays.sort(capabilities9);
 
 		g.setGalleryVersion(2);
 	}
@@ -155,7 +161,9 @@ public class GalleryComm2_5 extends GalleryComm2 {
 	}
 
 	void handleCapabilities() {
-		if (serverMinorVersion >= 8) {
+		if (serverMinorVersion >= 9) {
+			capabilities = capabilities9;
+		} else if (serverMinorVersion >= 8) {
 			capabilities = capabilities8;
 		} else if (serverMinorVersion >= 7) {
 			capabilities = capabilities7;

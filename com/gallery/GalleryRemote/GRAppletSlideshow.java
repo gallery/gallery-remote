@@ -20,8 +20,9 @@ import java.util.ArrayList;
  * User: paour
  * Date: Oct 30, 2003
  */
-public class GRAppletSlideshow extends GRAppletMini implements GalleryRemoteCore, ActionListener, ListDataListener,
-		PreferenceNames {
+public class GRAppletSlideshow
+		extends GRAppletMini
+		implements GalleryRemoteCore, ActionListener, ListDataListener, PreferenceNames {
 	public static final String MODULE = "AppletSlideshow";
 	JButton jStart;
 	SlideshowPanel jSlidePanel;

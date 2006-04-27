@@ -209,9 +209,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		return newAlbumTask.getNewAlbumName();
 	}
 
-	public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async, int maxPictures) {
+	public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async, int maxPictures, boolean random) {
 		FetchAlbumImagesTask fetchAlbumImagesTask = new FetchAlbumImagesTask(su,
-				a, recusive, maxPictures);
+				a, recusive, maxPictures, random);
 		doTask(fetchAlbumImagesTask, async);
 	}
 
@@ -1060,13 +1060,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		Album a;
 		boolean recursive = false;
 		int maxPictures = 0;
+		boolean random = false;
 
-		FetchAlbumImagesTask(StatusUpdate su, Album a, boolean recursive, int maxPictures) {
+		FetchAlbumImagesTask(StatusUpdate su, Album a, boolean recursive, int maxPictures, boolean random) {
 			super(su);
 
 			this.a = a;
 			this.recursive = recursive;
 			this.maxPictures = maxPictures;
+			this.random = random;
 		}
 
 		void runTask() {
@@ -1101,7 +1103,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("cmd", "fetch-album-images"),
 					new NVPair("protocol_version", PROTOCOL_VERSION),
 					new NVPair("set_albumName", albumName),
-					new NVPair("albums_too", recursive?"yes":"no")
+					new NVPair("albums_too", recursive?"yes":"no"),
+					new NVPair("random", random?"yes":"no"),
+					new NVPair("limit", maxPictures + "")
 				};
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +

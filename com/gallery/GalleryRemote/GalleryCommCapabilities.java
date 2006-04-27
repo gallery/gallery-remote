@@ -44,4 +44,5 @@ public interface GalleryCommCapabilities {
 	public static final int CAPA_FETCH_HONORS_HIDDEN = 13;
 	public static final int CAPA_IMAGE_MAX_SIZE = 14;
 	public static final int CAPA_INCREMENT_VIEW_COUNT = 15;
+	public static final int CAPA_FETCH_RANDOM = 16;
 }

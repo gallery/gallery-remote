@@ -480,20 +480,24 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public String getName() {
 		if (name == null) {
-			String path = safeGetUrlFull().getPath();
+			if (isOnline()) {
+				String path = safeGetUrlFull().getPath();
 
-			int i = path.lastIndexOf('/');
+				int i = path.lastIndexOf('/');
 
-			if (i != -1) {
-				path = path.substring(i + 1);
+				if (i != -1) {
+					path = path.substring(i + 1);
+				}
+
+				i = path.lastIndexOf('.');
+				if (i != -1) {
+					path = path.substring(0, i);
+				}
+
+				name = path;
+			} else {
+				name = getSource().getName();
 			}
-
-			i = path.lastIndexOf('.');
-			if (i != -1) {
-				path = path.substring(0, i);
-			}
-
-			name = path;
 		}
 
 		return name;

@@ -24,6 +24,7 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
+import com.gallery.GalleryRemote.util.ImageLoaderUtil;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
@@ -32,25 +33,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.event.*;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
-public class PreviewFrame extends JFrame implements PreferenceNames {
+public class PreviewFrame
+		extends JFrame
+		implements PreferenceNames, ImageLoaderUtil.ImageLoaderUser {
 	public static final String MODULE = "PreviewFrame";
-
-	SmartHashtable imageIcons = new SmartHashtable();
-	ImageIcon imageShowNow = null;
-	Picture pictureShowWant = null;
-	Picture pictureShowNow = null;
-	PreviewLoader previewLoader = new PreviewLoader();
-	int previewCacheSize = 10;
-	boolean ignoreIMFailure = false;
-	CancellableTransferListener listener = null;
 	Rectangle imageRect = null;
-
-	public static final Color darkGray  = new Color(64, 64, 64, 128);
+	ImageLoaderUtil loader;
 
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
@@ -61,100 +50,44 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent e) {
-				flushMemory();
+				loader.flushMemory();
 			}
 		});
-
-		previewCacheSize = GalleryRemote._().properties.getIntProperty("previewCacheSize");
 
 		CropGlassPane glass = new CropGlassPane();
 		setGlassPane(glass);
 		glass.setVisible(true);
+		loader = new ImageLoaderUtil(
+				GalleryRemote._().properties.getIntProperty("cacheSize", 10),
+				this);
 	}
 
 	public void hide() {
 		// release memory if no longer necessary
-		flushMemory();
+		loader.flushMemory();
 		super.hide();
 
-		displayPicture(null, true);
+		loader.preparePicture(null, true);
 	}
 
-	public void flushMemory() {
-		imageIcons.clear();
-		if (pictureShowNow != null) {
-			pictureShowWant = null;
-			imageShowNow = null;
-			displayPicture(pictureShowNow, true);
-			pictureShowNow = null;
-		}
+	public void pictureReady() {
+		repaint();
 	}
 
-	public void displayPicture(Picture picture, boolean async) {
-		if (picture == null) {
-			pictureShowWant = null;
-			imageRect = null;
-
-			pictureReady(null, null);
-		} else {
-			if (picture != pictureShowWant) {
-				pictureShowWant = picture;
-
-				ImageIcon r = (ImageIcon) imageIcons.get(picture);
-				if (r != null) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
-					pictureReady(r, picture);
-				} else {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
-					if (async) {
-						previewLoader.loadPreview(picture, true);
-					} else {
-						ImageIcon sizedIcon = getSizedIconForce(picture);
-						if (sizedIcon != null) {
-							pictureReady(sizedIcon, picture);
-						}
-					}
-				}
-			}
-		}
+	public boolean blockPictureReady(ImageIcon image, Picture picture) {
+		return false;
 	}
 
-	public ImageIcon getSizedIconForce(Picture picture) {
-		ImageIcon r = (ImageIcon) imageIcons.get(picture);
-
-		if (r == null) {
-			synchronized(picture) {
-				if (picture.isOnline()) {
-					pictureStartDownload(picture);
-
-					File f = ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), listener);
-
-					pictureStartProcessing(picture);
-
-					if (f != null) {
-						r = ImageUtils.load(
-								f.getPath(),
-								getRootPane().getSize(),
-								ImageUtils.PREVIEW, ignoreIMFailure);
-					} else {
-						return null;
-					}
-				} else {
-					pictureStartProcessing(picture);
-
-					r = ImageUtils.load(
-							picture.getSource().getPath(),
-							getRootPane().getSize(),
-							ImageUtils.PREVIEW, ignoreIMFailure);
-				}
-
-				Log.log(Log.LEVEL_TRACE, MODULE, "Adding to cache: " + picture);
-				imageIcons.put(picture, r);
-			}
-		}
-
-		return r;
+	public Dimension getImageSize() {
+		return getSize();
 	}
+
+	public void nullRect() {
+		imageRect = null;
+	}
+
+	public void pictureStartDownload(Picture picture) {}
+	public void pictureStartProcessing(Picture picture) {}
 
 	class ImageContentPane extends JPanel {
 		public void paintComponent(Graphics g) {
@@ -166,9 +99,9 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			}
 			g.fillRect(0, 0, getSize().width, getSize().height);
 
-			if (imageShowNow != null && pictureShowWant != null) {
-				ImageIcon tmpImage = ImageUtils.rotateImageIcon(imageShowNow, pictureShowWant.getAngle(),
-						pictureShowWant.isFlipped(), this);
+			if (loader.imageShowNow != null && loader.pictureShowWant != null) {
+				ImageIcon tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+						loader.pictureShowWant.isFlipped(), this);
 
 				imageRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
 						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
@@ -176,170 +109,6 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 				tmpImage.paintIcon(getContentPane(), g, imageRect.x, imageRect.y	);
 			}
 		}
-	}
-
-	class PreviewLoader implements Runnable {
-		Picture picture;
-		boolean stillRunning = false;
-		boolean notify = false;
-
-		public void run() {
-			Log.log(Log.LEVEL_TRACE, MODULE, "Starting " + picture);
-			Picture tmpPicture = null;
-			ImageIcon tmpImage = null;
-			while (picture != null) {
-				synchronized (picture) {
-					tmpPicture = picture;
-					picture = null;
-				}
-
-				tmpImage = getSizedIconForce(tmpPicture);
-
-				if (tmpImage == null) {
-					notify = false;
-				}
-			}
-			stillRunning = false;
-
-			if (notify) {
-				pictureReady(tmpImage, tmpPicture);
-				notify = false;
-			}
-			
-			Log.log(Log.LEVEL_TRACE, MODULE, "Ending");
-		}
-
-		public void loadPreview(Picture picture, boolean notify) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "loadPreview " + picture);
-
-			this.picture = picture;
-
-			if (notify) {
-				this.notify = true;
-			}
-
-			if (!stillRunning) {
-				stillRunning = true;
-				Log.log(Log.LEVEL_TRACE, MODULE, "Calling Start");
-				new Thread(this).start();
-			}
-		}
-	}
-
-
-	public class SmartHashtable extends HashMap {
-		ArrayList touchOrder = new ArrayList();
-
-		public Object put(Object key, Object value) {
-			touch(key);
-			super.put(key, value);
-
-			//Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-			/*if (Runtime.getRuntime().freeMemory() < 2000000)
-			{
-				Log.log(Log.TRACE, MODULE, "Not enough free ram, shrinking...");
-				shrink();
-				Runtime.getRuntime().gc();
-			}
-			else */if (previewCacheSize > 0 && touchOrder.size() > previewCacheSize) {
-				shrink();
-			}
-			//Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-
-			return value;
-		}
-
-		public Object get(Object key) {
-			return get(key, true);
-		}
-
-		public Object get(Object key, boolean touch) {
-			Object result = super.get(key);
-
-			if (result != null && touch) {
-				touch(key);
-			}
-
-			return result;
-		}
-
-		public void clear() {
-			//Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-
-			// flush images before clearing hastables for quicker deletion
-			Iterator it = values().iterator();
-			while (it.hasNext()) {
-				ImageIcon i = (ImageIcon) it.next();
-				if (i != null) {
-					i.getImage().flush();
-				}
-			}
-
-			super.clear();
-			touchOrder.clear();
-
-			Runtime.getRuntime().gc();
-
-			//Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
-		}
-
-		public void touch(Object key) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "touch " + key);
-			int i = touchOrder.indexOf(key);
-
-			if (i != -1) {
-				touchOrder.remove(i);
-			}
-
-			touchOrder.add(key);
-		}
-
-		public void shrink() {
-			if (touchOrder.size() == 0) {
-				Log.log(Log.LEVEL_ERROR, MODULE, "Empty SmartHashtable");
-				//throw new OutOfMemoryError();
-				return;
-			}
-
-			Object key = touchOrder.get(0);
-			touchOrder.remove(0);
-
-			ImageIcon i = (ImageIcon) get(key, false);
-			if (i != null) {
-				i.getImage().flush();
-			}
-
-			remove(key);
-
-			Runtime.getRuntime().gc();
-
-			Log.log(Log.LEVEL_TRACE, MODULE, "Shrunk " + key);
-		}
-	}
-
-	public void pictureReady(ImageIcon image, Picture picture) {
-		imageShowNow = image;
-		pictureShowNow = picture;
-		repaint();
-	}
-
-	public void pictureStartDownload(Picture picture) {}
-
-	public void pictureStartProcessing(Picture picture) {}
-
-	public static void paintOutline(Graphics g, String s, int textX, int textY, int width) {
-		g.setColor(darkGray);
-		g.drawString(s, textX + width, textY + width);
-		g.drawString(s, textX, textY + width);
-		g.drawString(s, textX - width, textY + width);
-		g.drawString(s, textX + width, textY);
-		g.drawString(s, textX, textY);
-		g.drawString(s, textX - width, textY);
-		g.drawString(s, textX + width, textY - width);
-		g.drawString(s, textX, textY - width);
-		g.drawString(s, textX - width, textY - width);
-		g.setColor(Color.white);
-		g.drawString(s, textX, textY);
 	}
 
 	class CropGlassPane extends JComponent implements MouseListener, MouseMotionListener {
@@ -362,20 +131,25 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void paint(Graphics g) {
 			oldRect = null;
 
-			if (localCurrentPicture != pictureShowNow) {
+			if (localCurrentPicture != loader.pictureShowNow) {
 				cacheRect = null;
-				localCurrentPicture = pictureShowNow;
+				localCurrentPicture = loader.pictureShowNow;
 			}
 
-			if (pictureShowNow == null || imageShowNow == null || pictureShowNow.isOnline()) {
+			if (loader.pictureShowNow == null || loader.imageShowNow == null || loader.pictureShowNow.isOnline()) {
 				cacheRect = null;
 				return;
 			}
 
 			if (imageRect != null && start != null && end != null) {
-				Rectangle ct = pictureShowNow.getCropTo();
+				Rectangle ct = loader.pictureShowNow.getCropTo();
 				if (ct != null) {
-					AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, pictureShowNow.getDimension(), pictureShowNow.getAngle(), pictureShowNow.isFlipped());
+					AffineTransform t = ImageUtils.createTransform(
+							getBounds(),
+							imageRect,
+							loader.pictureShowNow.getDimension(),
+							loader.pictureShowNow.getAngle(),
+							loader.pictureShowNow.isFlipped());
 
 					try {
 						cacheRect = getRect(t.inverseTransform(ct.getLocation(), null),
@@ -411,7 +185,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void paintInfo(Graphics g) {
 			String message = null;
 
-			Rectangle cropTo = pictureShowNow.getCropTo();
+			Rectangle cropTo = loader.pictureShowNow.getCropTo();
 			if (! inDrag) {
 				if (cropTo == null) {
 					message = GRI18n.getString(MODULE, "noCrop");
@@ -427,7 +201,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			}
 
 			g.setFont(g.getFont());
-			paintOutline(g, message, 5, getBounds().height - 5, 1);
+			ImageLoaderUtil.paintOutline(g, message, 5, getBounds().height - 5, 1);
 		}
 
 		public void updateRect() {
@@ -446,11 +220,11 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		}
 
 		public void mouseClicked(MouseEvent e) {
-			if (pictureShowNow == null) {
+			if (loader.pictureShowNow == null) {
 				return;
 			}
 
-			pictureShowNow.setCropTo(null);
+			loader.pictureShowNow.setCropTo(null);
 			cacheRect = null;
 			repaint();
 		}
@@ -460,7 +234,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		public void mouseExited(MouseEvent e) {}
 
 		public void mousePressed(MouseEvent e) {
-			if (pictureShowNow == null || imageRect == null || pictureShowNow.isOnline()) {
+			if (loader.pictureShowNow == null || imageRect == null || loader.pictureShowNow.isOnline()) {
 				return;
 			}
 
@@ -502,7 +276,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 					break;
 			}
 
-			pictureShowNow.setCropTo(null);
+			loader.pictureShowNow.setCropTo(null);
 			repaint();
 		}
 
@@ -510,17 +284,22 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 			inDrag = false;
 			centerMode = false;
 
-			if (pictureShowNow == null || oldRect == null || pictureShowNow.isOnline()) {
+			if (loader.pictureShowNow == null || oldRect == null || loader.pictureShowNow.isOnline()) {
 				return;
 			}
 
-			AffineTransform t = ImageUtils.createTransform(getBounds(), imageRect, pictureShowNow.getDimension(), pictureShowNow.getAngle(), pictureShowNow.isFlipped());
+			AffineTransform t = ImageUtils.createTransform(
+					getBounds(),
+					imageRect,
+					loader.pictureShowNow.getDimension(),
+					loader.pictureShowNow.getAngle(),
+					loader.pictureShowNow.isFlipped());
 			//pictureShowNow.setCropTo(getRect(t.transform(start, null), t.transform(end, null)));
 
 			Rectangle tmpRect = new Rectangle();
 			tmpRect.setFrameFromDiagonal(t.transform(oldRect.getLocation(), null),
 					t.transform(new Point(oldRect.x + oldRect.width, oldRect.y + oldRect.height), null));
-			pictureShowNow.setCropTo(tmpRect);
+			loader.pictureShowNow.setCropTo(tmpRect);
 
 			setCursor(Cursor.getDefaultCursor());
 
@@ -621,7 +400,7 @@ public class PreviewFrame extends JFrame implements PreferenceNames {
 		}
 
 		public void mouseMoved(MouseEvent e) {
-			if (pictureShowNow == null || imageShowNow == null || pictureShowNow.isOnline() || cacheRect == null) {
+			if (loader.pictureShowNow == null || loader.imageShowNow == null || loader.pictureShowNow.isOnline() || cacheRect == null) {
 				movingEdge = 0;
 				setCursor(Cursor.getDefaultCursor());
 				return;

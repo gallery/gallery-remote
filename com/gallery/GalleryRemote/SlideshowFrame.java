@@ -1,10 +1,7 @@
 package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.model.Picture;
-import com.gallery.GalleryRemote.util.DialogUtil;
-import com.gallery.GalleryRemote.util.GRI18n;
-import com.gallery.GalleryRemote.util.ImageUtils;
-import com.gallery.GalleryRemote.util.HTMLEscaper;
+import com.gallery.GalleryRemote.util.*;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
@@ -17,14 +14,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
-/**
- * Created by IntelliJ IDEA.
- * User: paour
- * Date: Dec 9, 2003
- */
 public class SlideshowFrame extends PreviewFrame
 		implements Runnable, PreferenceNames, CancellableTransferListener, MouseMotionListener {
 	public static final String MODULE = "SlideFrame";
@@ -66,17 +56,12 @@ public class SlideshowFrame extends PreviewFrame
 	Thread controllerThread = null;
 
 	public static Cursor transparentCursor = null;
-	public static Pattern stripper = Pattern.compile("<[^<>]*>");
-	public static Pattern spacer = Pattern.compile("[\r\n]");
 
 	public SlideshowFrame() {
 		setUndecorated(true);
 		setResizable(false);
 
 		initComponents();
-		listener = this;
-
-		ignoreIMFailure = true;
 
 		FeedbackGlassPane glass = new FeedbackGlassPane();
 		setGlassPane(glass);
@@ -146,7 +131,6 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public void initComponents() {
-		previewCacheSize = 3;
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(java.awt.event.MouseEvent mouseEvent) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Got click");
@@ -193,7 +177,7 @@ public class SlideshowFrame extends PreviewFrame
 						}
 						updateFeedback(FEEDBACK_PAUSE_PLAY);
 
-						updateProgress(pictureShowNow, STATE_NONE);
+						updateProgress(loader.pictureShowNow, STATE_NONE);
 
 						break;
 				}
@@ -208,6 +192,9 @@ public class SlideshowFrame extends PreviewFrame
 		PropertiesFile pf = GalleryRemote._().properties;
 
 		sleepTime = pf.getIntProperty(SLIDESHOW_DELAY) * 1000;
+
+		loader = new ImageLoaderUtil(3, this);
+		loader.setTransferListener(this);
 	}
 
 	public void start(ArrayList pictures) {
@@ -284,9 +271,9 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public boolean next(boolean user) {
-		if (pictureShowWant != null && wantDownloaded.contains(pictureShowWant) && (pictureShowWant != userPicture || user)) {
+		if (loader.pictureShowWant != null && wantDownloaded.contains(loader.pictureShowWant) && (loader.pictureShowWant != userPicture || user)) {
 			// we no longer want the current picture
-			wantDownloaded.remove(pictureShowWant);
+			wantDownloaded.remove(loader.pictureShowWant);
 		}
 
 		Picture picture;
@@ -338,21 +325,21 @@ public class SlideshowFrame extends PreviewFrame
 
 		wantDownloaded.add(picture);
 		updateProgress(picture, STATE_NONE);
-		displayPicture(picture, false);
+		loader.preparePicture(picture, false);
 
 		// and cache the one after it
-		if (wantIndex + 1< pictures.size() && (imageIcons.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
+		if (wantIndex + 1< pictures.size() && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
 			wantDownloaded.add(picture);
-			previewLoader.loadPreview(picture, true);
+			loader.imageLoader.loadPicture(picture, true);
 		}
 
 		return true;
 	}
 
 	public boolean previous(boolean user) {
-		if (pictureShowWant != null && wantDownloaded.contains(pictureShowWant) && (pictureShowWant != userPicture || user)) {
+		if (loader.pictureShowWant != null && wantDownloaded.contains(loader.pictureShowWant) && (loader.pictureShowWant != userPicture || user)) {
 			// we no longer want the current picture
-			wantDownloaded.remove(pictureShowWant);
+			wantDownloaded.remove(loader.pictureShowWant);
 		}
 
 		Picture picture;
@@ -392,35 +379,33 @@ public class SlideshowFrame extends PreviewFrame
 
 		wantDownloaded.add(picture);
 		updateProgress(picture, STATE_NONE);
-		displayPicture(picture, false);
+		loader.preparePicture(picture, false);
 
 		// and cache the one after it
-		if (wantIndex - 1 > 0 && (imageIcons.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
+		if (wantIndex - 1 > 0 && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
 			wantDownloaded.add(picture);
-			previewLoader.loadPreview(picture, true);
+			loader.imageLoader.loadPicture(picture, true);
 		}
 
 		return true;
 	}
 
-	public void pictureReady(ImageIcon image, Picture picture) {
+	public boolean blockPictureReady(ImageIcon image, Picture picture) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + picture + " ready");
 
 		if (picture == userPicture) {
 			userPicture = null;
 		}
 
-		if (picture != pictureShowWant) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + pictureShowWant + ": ignoring");
-			updateProgress(pictureShowWant, STATE_NEXTREADY);
-			return;
+		if (picture != loader.pictureShowWant) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + loader.pictureShowWant + ": ignoring");
+			updateProgress(loader.pictureShowWant, STATE_NEXTREADY);
+			return true;
 		}
 
 		if (picture != null) {
-			// todo: captions are not printed outline because they are HTML and that's a fucking mess
-			caption = HTMLEscaper.unescape(stripTags(picture.getCaption()));
+			caption = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(picture.getCaption()));
 			Log.log(Log.LEVEL_TRACE, MODULE, caption);
-			updateProgress(picture, STATE_NONE);
 			extra = picture.getExtraFieldsString();
 			if (picture.isOnline()) {
 				url = picture.safeGetUrlFull().toString();
@@ -430,21 +415,22 @@ public class SlideshowFrame extends PreviewFrame
 			} else {
 				url = picture.getSource().toString();
 			}
+			updateProgress(picture, STATE_NONE);
 		}
 
 		pictureShownTime = System.currentTimeMillis();
 
-		super.pictureReady(image, picture);
+		return false;
 	}
 
 	public void pictureStartDownload(Picture picture) {
-		if (picture == pictureShowWant || picture == userPicture) {
+		if (picture == loader.pictureShowWant || picture == userPicture) {
 			updateProgress(picture, STATE_DOWNLOADING);
 		}
 	}
 
 	public void pictureStartProcessing(Picture picture) {
-		if (picture == pictureShowWant || picture == userPicture) {
+		if (picture == loader.pictureShowWant || picture == userPicture) {
 			updateProgress(picture, STATE_PROCESSING);
 		}
 	}
@@ -459,7 +445,7 @@ public class SlideshowFrame extends PreviewFrame
 										new Integer(pictures.size())};
 
 		switch (state) {
- 			case STATE_NONE:
+			 case STATE_NONE:
 				if (! running) {
 					progress = GRI18n.getString(MODULE, "paused", params);
 				} else {
@@ -495,16 +481,16 @@ public class SlideshowFrame extends PreviewFrame
 		if (! wantDownloaded.contains(p) || shutdown) {
 			return false;
 		}
-
 		Graphics g = getGraphics();
 
 		if (transferred == overall) {
-			g.setColor(getContentPane().getBackground());
+			g.setColor(GalleryRemote._().properties.getColorProperty(PreferenceNames.SLIDESHOW_COLOR));
 		} else {
 			g.setColor(Color.yellow);
 		}
 
-		g.drawLine(0, 0, getWidth() * transferred / overall, 0);
+		float r = ((float) transferred) / overall;
+		g.drawLine(0, 0, (int) (getWidth() * r), 0);
 
 		return true;
 	}
@@ -564,16 +550,6 @@ public class SlideshowFrame extends PreviewFrame
 		setCursor(transparentCursor);
 	}
 
-	public static String stripTags(String text) {
-		if (text == null) {
-			return null;
-		}
-		
-		Matcher m = stripper.matcher(text);
-		m = spacer.matcher(m.replaceAll(""));
-		return m.replaceAll(" ");
-	}
-
 	public void showCursor() {
 		setCursor(Cursor.getDefaultCursor());
 	}
@@ -593,18 +569,7 @@ public class SlideshowFrame extends PreviewFrame
 		public void paint(Graphics g) {
 			if (firstPaint) {
 				firstPaint = false;
-				String fontName = GalleryRemote._().properties.getProperty(SLIDESHOW_FONTNAME);
-				int fontSize = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTSIZE, getFont().getSize());
-				Font f = null;
-				if (fontName != null) {
-					f = new Font(fontName, 0, fontSize);
-				} else if (fontSize != getFont().getSize()) {
-					f = getFont().deriveFont(fontSize + 0.0f);
-				}
-
-				if (f != null) {
-					setFont(f);
-				}
+				ImageLoaderUtil.setSlideshowFont(this);
 			}
 
 			if (feedback != FEEDBACK_NONE || controllerUntil > System.currentTimeMillis()) {
@@ -697,8 +662,6 @@ public class SlideshowFrame extends PreviewFrame
 
 			Dimension d = getSize();
 			g.setFont(getFont());
-			FontMetrics fm = g.getFontMetrics(getFont());
-			Rectangle2D bounds = fm.getStringBounds(text, g);
 			int x;
 			int y;
 			int inset = 5;
@@ -710,11 +673,11 @@ public class SlideshowFrame extends PreviewFrame
 					break;
 
 				case 0:
-					x = (int) ((d.width - bounds.getWidth()) / 2);
+					x = d.width / 2;
 					break;
 
 				case 4:
-					x = (int) (d.width - bounds.getWidth() - inset);
+					x = d.width - inset;
 					break;
 			}
 
@@ -725,17 +688,15 @@ public class SlideshowFrame extends PreviewFrame
 					break;
 
 				case 2:
-					y = (int) ((d.height -bounds.getHeight()) / 2);
+					y = d.height / 2;
 					break;
 
 				case 3:
-					y = (int) (d.height - bounds.getHeight() - inset);
+					y = d.height - inset;
 					break;
 			}
 
-			y += fm.getAscent();
-
-			paintOutline(g, text, x, y, 1);
+			ImageLoaderUtil.paintAlignedOutline(g, text, x, y, 1, position, d.width);
 		}
 
 		private void drawText(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {

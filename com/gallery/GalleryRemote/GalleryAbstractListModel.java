@@ -34,7 +34,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
 
 
 	/**
-	 * Adds a listener to the list that's notified each time a change
+	 * Adds a transferListener to the list that's notified each time a change
 	 * to the data model occurs.
 	 * 
 	 * @param l the <code>ListDataListener</code> to be added
@@ -46,7 +46,7 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
 
 
 	/**
-	 * Removes a listener from the list that's notified each time a
+	 * Removes a transferListener from the list that's notified each time a
 	 * change to the data model occurs.
 	 * 
 	 * @param l the <code>ListDataListener</code> to be removed
@@ -212,9 +212,9 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
 	 */
 
 	/**
-	 * Adds a listener for the TreeModelEvent posted after the tree changes.
+	 * Adds a transferListener for the TreeModelEvent posted after the tree changes.
 	 * 
-	 * @param l the listener to add
+	 * @param l the transferListener to add
 	 * @see #removeTreeModelListener
 	 */
 	public void addTreeModelListener(TreeModelListener l) {
@@ -222,9 +222,9 @@ public abstract class GalleryAbstractListModel implements ListModel, Serializabl
 	}
 
 	/**
-	 * Removes a listener previously added with <B>addTreeModelListener()</B>.
+	 * Removes a transferListener previously added with <B>addTreeModelListener()</B>.
 	 * 
-	 * @param l the listener to remove
+	 * @param l the transferListener to remove
 	 * @see #addTreeModelListener
 	 */
 	public void removeTreeModelListener(TreeModelListener l) {

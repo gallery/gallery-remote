@@ -45,7 +45,6 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Vector;
 import java.util.Iterator;
 import java.applet.Applet;
 
@@ -480,9 +479,9 @@ public class MainFrame extends JFrame
 
 				if (GalleryRemote._().properties.getShowPreview() && previewFrame != null) {
 					if (sel != -1) {
-						previewFrame.displayPicture(currentAlbum.getPicture(sel), true);
+						previewFrame.loader.preparePicture(currentAlbum.getPicture(sel), true);
 					} else {
-						previewFrame.displayPicture(null, true);
+						previewFrame.loader.preparePicture(null, true);
 					}
 
 					if (!previewFrame.isVisible()) {
@@ -828,7 +827,7 @@ public class MainFrame extends JFrame
 		GalleryRemote._().properties.setShowPreview(show);
 		if (show) {
 			previewFrame.show();
-			previewFrame.displayPicture((Picture) jPicturesList.getSelectedValue(), true);
+			previewFrame.loader.preparePicture((Picture) jPicturesList.getSelectedValue(), true);
 		} else {
 			previewFrame.hide();
 		}
@@ -1891,7 +1890,7 @@ public class MainFrame extends JFrame
 
 	public void flushMemory() {
 		thumbnailCache.flushMemory();
-		previewFrame.flushMemory();
+		previewFrame.loader.flushMemory();
 
 		for (int i = 0; i < galleries.getSize(); i++) {
 			Gallery g = (Gallery) galleries.getElementAt(i);

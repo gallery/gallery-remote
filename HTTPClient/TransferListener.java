@@ -1,7 +1,7 @@
 package HTTPClient;
 
 /**
- * Simple listener to provide feedback to the user interface about
+ * Simple transferListener to provide feedback to the user interface about
  * the ongoing http transfer
  * @author Markus Cozowicz (mc@austrian-mint.at)
  **/

@@ -29,6 +29,7 @@
    <classpath>
     <pathelement location="lib/AppleJavaExtensions.jar"/>
     <pathelement location="lib/metadata-extractor-2.1.jar"/>
+    <pathelement location="lib/saverbeans-api.jar"/>
    </classpath>
   </javac>
 
@@ -296,4 +297,166 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
 
  <target name="nightly" depends="zip, installer_macosx, applet_zip"
   description="Run all the tasks for a nightly build" />
+
+
+ <!-- SaverBeans screensaver -->
+  <target name="sbproperties">
+    <property file="build.properties" />
+    <property file="${user.home}/build.properties" />
+
+    <property name="sbbuild" value="build/sb" />
+
+      <property name="screensaver" value="Gallery" />
+      <property name="screensavershort" value="gallery" />
+    <property name="screensaver.class"
+        value="com.gallery.GalleryRemote.GRScreenSaver" />
+
+    <!-- Values for the Windows installer -->
+    <property name="productName" value="Gallery Remote Screensaver" />
+    <property name="productVersion" value="0.2" />
+    <property name="productPublisher" value="The Gallery project" />
+    <property name="productWebSite"
+        value="http://gallery.sf.net/" />
+  </target>
+
+  <target name="sbcheck-nsis" description="Check if NSIS is present">
+    <fail unless="nsis.path">
+      Property nsis.path not found.  Please copy
+      build.properties.sample to build.properties and
+      follow the instructions in that file.
+    </fail>
+    <available file="${nsis.path}" property="nsis.present" />
+    <fail unless="nsis.present">
+      Property nsis.path is invalid.  Please set
+      it to the installation path of NSIS.
+    </fail>
+  </target>
+
+  <target name="sbdefine" description="Define custom tasks">
+    <taskdef name="foreachscreensaver"
+      classname="org.jdesktop.jdic.screensaver.autogen.ForEachScreensaver"
+      classpath="lib/saverbeans-ant.jar" />
+    <taskdef name="makewin32installscript"
+      classname="org.jdesktop.jdic.screensaver.autogen.NsiGeneratorTask"
+      classpath="lib/saverbeans-ant.jar" />
+  </target>
+
+  <target name="sbinit" depends="sbproperties,sbdefine" />
+
+  <target name="sbcompile" depends="sbinit,compile" description="Compile the screensaver">
+      <copy file="imagemagick/im.properties.applet" tofile="${img}/im.properties" />
+      <copy file="jpegtran/jpegtran.properties.applet" tofile="${img}/jpegtran.properties" />
+
+      <jar destfile="GalleryRemoteScreenSaver.jar" index="true" >
+       <fileset dir="${build}" excludesfile="ScreenSaverExcludes.txt" />
+       <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
+       <fileset dir="${img}" includes="default.gif,im.properties,jpegtran.properties" />
+       <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+       </manifest>
+      </jar>
+
+      <delete file="${img}/im.properties" />
+      <delete file="${img}/jpegtran.properties" />
+
+    <!-- Generate Makefile and Unix source distribution for each -->
+    <mkdir dir="${sbbuild}/unix" />
+    <foreachscreensaver confDir="${src}/sbconf" outDir="${sbbuild}/unix"
+                        os="unix" />
+    <!-- Generate Windows .scr and binary distribution for each -->
+    <mkdir dir="${sbbuild}/win32" />
+    <foreachscreensaver confDir="${src}/sbconf" outDir="${sbbuild}/win32"
+                        os="win32" />
+  </target>
+
+  <!-- Create screensaver distribution -->
+  <target name="sbdist" depends="sbcompile">
+    <!-- Create distribution for win32: -->
+    <mkdir dir="${dist}/${screensavershort}-win32" />
+    <copy todir="${dist}/${screensavershort}-win32">
+      <fileset dir="lib">
+        <include name="saverbeans-api.jar" />
+      </fileset>
+      <fileset dir=".">
+        <include name="GalleryRemoteScreenSaver.jar" />
+      </fileset>
+      <fileset dir="${sbbuild}/win32">
+        <include name="${screensaver}.scr" />
+      </fileset>
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
+      </fileset>
+      <!--fileset dir="${src}/doc/win32">
+        <include name="README.txt" />
+      </fileset-->
+    </copy>
+    <zip destfile="${dist}/${screensavershort}-win32.zip" basedir="${dist}"
+         includes="${screensavershort}-win32/**" />
+
+    <!-- Create distribution for Unix: -->
+    <mkdir dir="${dist}/${screensavershort}-unix" />
+    <copy todir="${dist}/${screensavershort}-unix">
+      <fileset dir="lib">
+        <include name="saverbeans-api.jar" />
+      </fileset>
+      <fileset dir=".">
+        <include name="GalleryRemoteScreenSaver.jar" />
+      </fileset>
+      <fileset dir="${src}/sbconf">
+        <include name="*.xml" />
+      </fileset>
+      <fileset dir="${sbbuild}/unix" />
+      <fileset dir="${basedir}">
+        <include name="COPYING" />
+      </fileset>
+      <!--fileset dir="${src}/doc/unix">
+        <include name="README.txt" />
+      </fileset-->
+    </copy>
+    <zip destfile="${dist}/${screensavershort}-unix.zip" basedir="${dist}"
+         includes="${screensavershort}-unix/**" />
+  </target>
+
+  <target name="sbwin32-installer" depends="sbinit,sbcheck-nsis,sbdist">
+    <mkdir dir="${sbbuild}/win32-installer" />
+    <makewin32installscript
+        productName="${productName}"
+        productVersion="${productVersion}"
+        productPublisher="${productPublisher}"
+        productWebSite="${productWebSite}"
+        licenseFile="${basedir}/COPYING"
+        outputFilename="${screensavershort}-setup.exe"
+        saverbeansSdkPath="lib"
+        outFile="${sbbuild}/win32-installer/${screensavershort}.nsi"
+        jarDir="${sbbuild}/jar"
+        scrDir="${sbbuild}/win32"
+    >
+        <fileset dir="${src}/conf" includes="*.xml" />
+    </makewin32installscript>
+    <!-- Launch makensis on script to create the installer -->
+    <exec executable="${nsis.path}/makensis.exe" failonerror="true">
+      <arg line="${sbbuild}/win32-installer/${screensavershort}.nsi" />
+    </exec>
+    <echo message="Screensaver Installer generated to: ${sbbuild}/win32-installer/${screensavershort}-setup.exe" />
+  </target>
+
+  <!--
+    - Compile and debug screensaver in a JFrame.
+    - Can optionally attach to process using your Java IDE.  Change
+    - to suspend=y if you need to debug before the first frame.
+    - Use the port number that the JVM gives you.
+    -->
+  <target name="sbdebug" depends="sbcompile">
+    <java classname="org.jdesktop.jdic.screensaver.ScreensaverFrame"
+          fork="true">
+      <classpath>
+        <pathelement location="GalleryRemoteScreenSaver.jar" />
+        <pathelement location="lib/saverbeans-api.jar" />
+      </classpath>
+      <!--jvmarg value="-Xdebug" />
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005" /-->
+      <arg value="${screensaver.class}" />
+      <arg line="${debug.params}" />
+    </java>
+  </target>
 </project>

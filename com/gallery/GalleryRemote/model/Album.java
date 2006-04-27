@@ -122,6 +122,10 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	public void fetchAlbumImages(StatusUpdate su, boolean recursive, int maxPictures) {
+		fetchAlbumImages(su, recursive, maxPictures, false);
+	}
+
+	public void fetchAlbumImages(StatusUpdate su, boolean recursive, int maxPictures, boolean random) {
 		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
@@ -131,7 +135,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			try {
 				removeRemotePictures();
 
-				gallery.getComm(su).fetchAlbumImages(su, this, recursive, true, maxPictures);
+				gallery.getComm(su).fetchAlbumImages(su, this, recursive, true, maxPictures, random);
 			} catch (RuntimeException e) {
 				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-fetch-images");
 				Log.logException(Log.LEVEL_INFO, MODULE, e);

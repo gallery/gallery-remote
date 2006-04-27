@@ -157,7 +157,7 @@ public abstract class GalleryComm implements PreferenceNames {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
-    public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async, int maxPictures) {
+    public void fetchAlbumImages(StatusUpdate su, Album a, boolean recusive, boolean async, int maxPictures, boolean random) {
         throw new RuntimeException("This method is not available on this protocol");
     }
 

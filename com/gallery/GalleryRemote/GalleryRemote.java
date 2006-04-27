@@ -106,6 +106,7 @@ public abstract class GalleryRemote {
 			Log.logException(Log.LEVEL_CRITICAL, "Startup", e);
 			Log.shutdown();
 			System.err.println("Exception during startup: " + e);
+			e.printStackTrace();
 		}
 	}
 

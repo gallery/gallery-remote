@@ -207,4 +207,5 @@ public class CoreUtils {
 
 			return this;
 		}
-	}}
+	}
+}
