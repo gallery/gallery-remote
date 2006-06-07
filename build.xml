@@ -3,15 +3,21 @@
 		A part of the Gallery project
  </description>
  <!-- set global properties for this build -->
+ <property file="build.properties" />
+
  <property name="src" location="."/>
  <property name="build" location="build"/>
  <property name="lib" location="lib"/>
  <property name="img" location="img"/>
  <property name="dist" location="dist"/>
  <property name="install" location="gallery_remote_Build_Output/Web_Installers/InstData"/>
- <property name="docbase" location="../gallery_docs"/>
  <property name="docdist" location="${docbase}/dist/grpackage"/>
- <property name="iafolder" location="G:\\Program Files\\InstallAnywhere 7.1 Enterprise"/>
+
+ <!-- define the following properties in build.properties:
+   iafolder: the folder where the InstallAnywhere executable is located
+   nsis.path: the folder where NSIS (the Nullsoft Installer System) is located
+   docbase: the Gallery docs CVS directory (obsolete)
+   debug.params: optional debug parameters for the screensaver debug -->
 
  <target name="init">
   <!-- Create the time stamp -->
@@ -223,7 +229,7 @@
 
   <delete dir="Gallery Remote.app"/>
 
-  <loadproperties srcfile="defaults.properties"/>
+  <property file="defaults.properties"/>
 
   <taskdef name="jarbundler"
    classpath="${lib}/jarbundler.jar"
@@ -301,22 +307,22 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
 
  <!-- SaverBeans screensaver -->
   <target name="sbproperties">
-    <property file="build.properties" />
-    <property file="${user.home}/build.properties" />
+    <property file="defaults.properties"/>
 
     <property name="sbbuild" value="build/sb" />
 
-      <property name="screensaver" value="Gallery" />
-      <property name="screensavershort" value="gallery" />
+    <property name="screensaver" value="Gallery" />
+    <property name="screensaverez" value="Gallery" />
+    <property name="screensavershort" value="gallery" />
+    <property name="screensavershortfull" value="gallery_screensaver" />
     <property name="screensaver.class"
         value="com.gallery.GalleryRemote.GRScreenSaver" />
 
     <!-- Values for the Windows installer -->
     <property name="productName" value="Gallery Remote Screensaver" />
-    <property name="productVersion" value="0.2" />
+    <property name="productVersion" value="${version}" />
     <property name="productPublisher" value="The Gallery project" />
-    <property name="productWebSite"
-        value="http://gallery.sf.net/" />
+    <property name="productWebSite" value="http://gallery.sf.net/" />
   </target>
 
   <target name="sbcheck-nsis" description="Check if NSIS is present">
@@ -381,7 +387,7 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
         <include name="GalleryRemoteScreenSaver.jar" />
       </fileset>
       <fileset dir="${sbbuild}/win32">
-        <include name="${screensaver}.scr" />
+        <include name="*.scr" />
       </fileset>
       <fileset dir="${basedir}">
         <include name="COPYING" />
@@ -394,8 +400,8 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
          includes="${screensavershort}-win32/**" />
 
     <!-- Create distribution for Unix: -->
-    <mkdir dir="${dist}/${screensavershort}-unix" />
-    <copy todir="${dist}/${screensavershort}-unix">
+    <mkdir dir="${dist}/${screensavershortfull}.${version}.Unix" />
+    <copy todir="${dist}/${screensavershortfull}.${version}.Unix">
       <fileset dir="lib">
         <include name="saverbeans-api.jar" />
       </fileset>
@@ -413,8 +419,8 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
         <include name="README.txt" />
       </fileset-->
     </copy>
-    <zip destfile="${dist}/${screensavershort}-unix.zip" basedir="${dist}"
-         includes="${screensavershort}-unix/**" />
+    <zip destfile="${dist}/${screensavershortfull}.${version}.Unix.zip" basedir="${dist}"
+         includes="${screensavershortfull}.${version}.Unix/**" />
   </target>
 
   <target name="sbwin32-installer" depends="sbinit,sbcheck-nsis,sbdist">
@@ -424,20 +430,19 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
         productVersion="${productVersion}"
         productPublisher="${productPublisher}"
         productWebSite="${productWebSite}"
-        licenseFile="${basedir}/COPYING"
-        outputFilename="${screensavershort}-setup.exe"
+        licenseFile="${basedir}/LICENSE"
+        outputFilename="${screensavershortfull}.${version}.exe"
         saverbeansSdkPath="lib"
-        outFile="${sbbuild}/win32-installer/${screensavershort}.nsi"
-        jarDir="${sbbuild}/jar"
+        outFile="${dist}/${screensavershort}.nsi"
+        jarDir="${basedir}"
         scrDir="${sbbuild}/win32"
     >
-        <fileset dir="${src}/conf" includes="*.xml" />
+        <fileset dir="${src}/sbconf" includes="*.xml" />
     </makewin32installscript>
     <!-- Launch makensis on script to create the installer -->
     <exec executable="${nsis.path}/makensis.exe" failonerror="true">
-      <arg line="${sbbuild}/win32-installer/${screensavershort}.nsi" />
+      <arg line="${dist}/${screensavershort}.nsi" />
     </exec>
-    <echo message="Screensaver Installer generated to: ${sbbuild}/win32-installer/${screensavershort}-setup.exe" />
   </target>
 
   <!--

@@ -14,9 +14,8 @@ import javax.swing.event.ListDataListener;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Arrays;
-import java.util.ArrayList;
+import java.util.*;
+import java.net.URL;
 
 import org.jdesktop.jdic.screensaver.ScreensaverContext;
 import org.jdesktop.jdic.screensaver.ScreensaverSettings;
@@ -92,33 +91,50 @@ public class GalleryRemoteScreenSaver
 
 	public void startup() {
 		ScreensaverSettings settings = context.getSettings();
-		settings.loadSettings("Gallery");
+		//settings.loadSettings("Gallery");
+		Log.log(Log.LEVEL_TRACE, MODULE, "Screensaver settings: " + settings.getProperties().toString());
+
+		Properties p = settings.getProperties();
 
 		galleries = new DefaultComboBoxModel();
 
 		gallery = new Gallery(GalleryRemote._().getCore().getMainStatusUpdate());
-		String url = settings.getProperty("url");
+		String curl = settings.getProperty("curl");
 
+		if (curl != null) {
+			try {
+				p.load(new URL(curl).openStream());
+			} catch (IOException e) {
+				Log.log(Log.LEVEL_CRITICAL, MODULE, "Error trying to get configuration file: " + curl);
+				Log.logException(Log.LEVEL_CRITICAL, MODULE, e);
+			}
+
+			Log.log(Log.LEVEL_TRACE, MODULE, "Fetched settings: " + settings.getProperties().toString());
+		}
+
+		String url = p.getProperty("url");
 		if (url != null) {
 			gallery.setStUrlString(url);
-			if (settings.getProperty("username") == null) {
+			if (p.getProperty("username") == null || p.getProperty("username").trim().length() == 0) {
 				gallery.cookieLogin = true;
 			} else {
-				gallery.setUsername(settings.getProperty("username"));
-				gallery.setPassword(settings.getProperty("password"));
+				gallery.setUsername(p.getProperty("username"));
+				gallery.setPassword(p.getProperty("password"));
 			}
 			gallery.setType(Gallery.TYPE_STANDALONE);
 
-			properties.setBooleanProperty(SLIDESHOW_RECURSIVE, settings.getProperty("recursive") != null);
-			properties.setBooleanProperty(SLIDESHOW_LOWREZ, settings.getProperty("hires") == null);
-			properties.setBooleanProperty(SLIDESHOW_NOSTRETCH, settings.getProperty("stretch") == null);
-			delay = Integer.parseInt(settings.getProperty("delay")) * 1000;
+			properties.setBooleanProperty(SLIDESHOW_RECURSIVE, p.getProperty("recursive") != null);
+			properties.setBooleanProperty(SLIDESHOW_LOWREZ, p.getProperty("hires") == null);
+			properties.setBooleanProperty(SLIDESHOW_NOSTRETCH, p.getProperty("stretch") == null);
+			delay = Integer.parseInt(p.getProperty("delay")) * 1000;
+			String albums = p.getProperty("album");
+			String[] albumsA = albums.split(",");
 
 			galleries.addElement(gallery);
 			ImageUtils.deferredTasks();
 
 			album = new Album(gallery);
-			album.setName(settings.getProperty("album"));
+			album.setName(albumsA[new Random().nextInt(albumsA.length)]);
 			album.addListDataListener(this);
 
 			album.fetchAlbumImages(statusUpdate,

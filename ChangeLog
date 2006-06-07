@@ -1,3 +1,10 @@
+2006-06-07  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b17)
+
+	* Added the ability for the screensaver to get its config
+	  data from a URL.
+	* Tweaked SaverBeans to make the settings interface more
+	  Windows-like.
+
 2006-04-27  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b16)
 
 	* Added a ScreenSaver based on GR, using SaverBeans

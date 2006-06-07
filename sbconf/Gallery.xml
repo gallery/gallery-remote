@@ -50,7 +50,7 @@ USA
           _high-label="Faster" low="60" high="1" default="10" />
 
     <_description>
-Display a slideshow of one of your Gallery albums.
+Display a slideshow based on a Gallery web site.
 
 Specify the URL to your Gallery as:
 
@@ -58,7 +58,9 @@ Specify the URL to your Gallery as:
 
 You don't have to enter a username and password if you only want to show publicly available pictures.
 
-If the Gallery is a G2, provide as the name of the album the album ID.
+If the album is on a Gallery 2 server, provide as the name of the album the album ID. You can provide
+one album, a comma-separated list of albums, or no album at all (in which case the entire Gallery will
+be used).
     </_description>
 
 </screensaver>

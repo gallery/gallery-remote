@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+Copyright (c) 2004-2005 Sun Microsystems, Inc. All rights reserved. Use is
+subject to license terms.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Lesser GNU General Public License as
+published by the Free Software Foundation; either version 2 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
+USA
+-->
+
+<!--
+  - xscreensaver-style configuration file for Gallery screensaver.
+  -
+  - https://jdic.dev.java.net/documentation/incubator/screensaver/xscreensaver-config.txt
+  -->
+<screensaver name="GalleryEz" _label="Gallery Slideshow Easy">
+
+    <command arg="-root"/>
+
+    <command arg="-jar GalleryRemoteScreenSaver.jar"/>
+
+    <command arg="-class com.gallery.GalleryRemote.GRScreenSaver"/>
+    <!--command arg="-Xms80m"/>
+    <command arg="-Xmx80m"/-->
+
+    <file id="jdkhome" _label="Java Home (blank=auto)" arg="-jdkhome %" />
+
+    <string id="url" _label="Configuration URL" arg="-curl %"/>
+
+    <boolean id="hires" _label="Download higher resolution pictures (slower)" arg-set="-hires" />
+    <boolean id="stretch" _label="Stretch small pictures to full screen" arg-set="-stretch" />
+
+    <number id="delay" type="slider" arg="-delay %" _label="Slideshow speed" _low-label="Slow"
+          _high-label="Faster" low="60" high="1" default="10" />
+
+    <_description>
+Display a slideshow based on a Gallery web site (easy version).
+
+This is the "easy" version of the Gallery Slideshow; the only parameter you need to configure
+is the Configuration URL, which the person who asked you to download and install this screen saver
+must have provided. If that's not the case, or you want to use a version where you can
+pick the albums that should be displayed in the slideshow, you should use the non-EZ version of
+the Gallery screensaver.
+    </_description>
+
+</screensaver>
