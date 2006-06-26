@@ -45,9 +45,9 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 		// parse the ChangeLog
 		try {
 			Pattern header = Pattern.compile("([0-9\\-])\\s*(.*)\\s*<(.*)> \\((.*)\\)");
-			String date = null;
-			String author = null;
-			String email = null;
+			//String date = null;
+			//String author = null;
+			//String email = null;
 			String version = null;
 			StringBuffer changes = new StringBuffer();
 
@@ -93,22 +93,29 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 				}
 			}
 
+			StringBuffer note = new StringBuffer();
+			note.append("version=").append(currentBuildS).append('\n');
+			note.append("releaseDate=").append(defaultProps.getProperty("releaseDate")).append('\n');
+			note.append("releaseUrl=").append("http://jpmullan.com/galleryupdates/remote/gallery_remote_")
+				.append(defaultProps.getProperty("version")).append(".zip").append('\n');
+			note.append("releaseUrlMac=").append("http://jpmullan.com/galleryupdates/remote/GalleryRemote.")
+				.append(defaultProps.getProperty("version")).append(".MacOSX.NoVM.tgz").append('\n');
+			note.append("releaseNotes=").append(changes.toString());
+
 			System.out.println("Got changes: " + changes);
 
 			NVPair form_data_login[] = {
-					new NVPair("edit[name]", changeProps.getProperty("username")),
-					new NVPair("edit[pass]", changeProps.getProperty("password")),
-					new NVPair("op", "Log in"),
+				new NVPair("edit[name]", changeProps.getProperty("username")),
+				new NVPair("edit[pass]", changeProps.getProperty("password")),
+				new NVPair("edit[form_id]", "user_login"),
+				new NVPair("op", "Log in"),
 			};
 
 			NVPair form_data[] = {
-				new NVPair("submit", "Update"),
-				new NVPair("edit[releaseNum]", currentBuildS),
-				new NVPair("edit[go]", "1"),
-				new NVPair("edit[releaseDate]", defaultProps.getProperty("releaseDate")),
-				new NVPair("edit[releaseUrl]", "http://jpmullan.com/galleryupdates/remote/gallery_remote_" + defaultProps.getProperty("version") + ".zip"),
-				new NVPair("edit[releaseUrlMac]", "http://jpmullan.com/galleryupdates/remote/GalleryRemote." + defaultProps.getProperty("version") + ".MacOSX.NoVM.tgz"),
-				new NVPair("edit[releaseNotes]", changes.toString()),
+				new NVPair("edit[url]", "galleryremote/beta"),
+				new NVPair("edit[note]", note.toString()),
+				new NVPair("edit[form_id]", "gmc_versioncheck_form"),
+				new NVPair("op", "Update")
 			};
 
 			// update Menalto
@@ -132,19 +139,19 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			String response = null;
 
 			// login
-			rsp = mConnection.Post("/user/login?destination=node", form_data_login);
+			rsp = mConnection.Post("/user", form_data_login);
 			response = new String(rsp.getData()).trim();
 			System.out.println("Login response: " + response);
 
 			// upload
-			rsp = mConnection.Post("/admin/galleryremote/edit/beta/1", form_data);
+			rsp = mConnection.Post("/admin/gmc_versioncheck/save/5", form_data);
 			response = new String(rsp.getData()).trim();
 			System.out.println("Upload response: " + response);
 
 			// activate
-			rsp = mConnection.Get("/admin/galleryremote/current/beta/1");
-			response = new String(rsp.getData()).trim();
-			System.out.println("Activate response: " + response);
+			//rsp = mConnection.Get("/admin/galleryremote/current/beta/1");
+			//response = new String(rsp.getData()).trim();
+			//System.out.println("Activate response: " + response);
 
 			// test
 			HTTPConnection mConnection1 = new HTTPConnection("gallery.sourceforge.net");
