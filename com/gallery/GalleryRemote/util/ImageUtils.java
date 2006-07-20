@@ -736,6 +736,7 @@ public class ImageUtils {
 				long start = System.currentTimeMillis();
 
 				URLConnection conn = pictureUrl.openConnection();
+				conn.setDefaultUseCaches(false);
 				//conn.addRequestProperty("Connection", "Dont-keep-alive");
 				String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
 				if (userAgent != null) {
