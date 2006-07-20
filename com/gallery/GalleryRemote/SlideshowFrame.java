@@ -68,6 +68,12 @@ public class SlideshowFrame extends PreviewFrame
 		glass.setVisible(true);
 	}
 
+	public void initTransitionDuration() {
+		super.initTransitionDuration();
+		transitionDuration = enableTransitions?
+				GalleryRemote._().properties.getIntProperty(SLIDESHOW_TRANSITION_DURATION, 3000):0;
+	}
+
 	public void showSlideshow() {
 		//try {
 			/*if (GalleryRemote.IS_MAC_OS_X) {
@@ -88,7 +94,7 @@ public class SlideshowFrame extends PreviewFrame
 				// gd.setFullScreenWindow(this);
 			} else {*/
 				DialogUtil.maxSize(this);
-				//setBounds(600, 100, 500, 500);
+				//setBounds(600, 100, 1000, 1000);
 				setVisible(true);
 			//}
 		/*} catch (Throwable e) {
@@ -325,12 +331,12 @@ public class SlideshowFrame extends PreviewFrame
 
 		wantDownloaded.add(picture);
 		updateProgress(picture, STATE_NONE);
-		loader.preparePicture(picture, false);
+		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
 		if (wantIndex + 1< pictures.size() && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
 			wantDownloaded.add(picture);
-			loader.imageLoader.loadPicture(picture, true);
+			loader.imageLoader.loadPicture(picture, false);
 		}
 
 		return true;
@@ -379,12 +385,12 @@ public class SlideshowFrame extends PreviewFrame
 
 		wantDownloaded.add(picture);
 		updateProgress(picture, STATE_NONE);
-		loader.preparePicture(picture, false);
+		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
 		if (wantIndex - 1 > 0 && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
 			wantDownloaded.add(picture);
-			loader.imageLoader.loadPicture(picture, true);
+			loader.imageLoader.loadPicture(picture, false);
 		}
 
 		return true;
@@ -471,7 +477,7 @@ public class SlideshowFrame extends PreviewFrame
 				break;
 		}
 
-		Log.log(Log.LEVEL_TRACE, MODULE, "updateProgress:" + progress);
+		Log.log(Log.LEVEL_TRACE, MODULE, "updateProgress: " + progress);
 		repaint();
 
 		hideCursor();
@@ -582,7 +588,7 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		private void paintController(Graphics g) {
-			Log.log(Log.LEVEL_TRACE, MODULE, "paintController");
+			//Log.log(Log.LEVEL_TRACE, MODULE, "paintController");
 
 			Dimension d = getSize();
 			int width = 475;

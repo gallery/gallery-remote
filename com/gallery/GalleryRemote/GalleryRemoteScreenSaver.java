@@ -157,7 +157,7 @@ public class GalleryRemoteScreenSaver
 		Picture p = (Picture) picturesList.get((int) Math.floor(Math.random() * picturesList.size()));
 		picturesList.remove(p);
 
-		loader.preparePicture(p, true);
+		loader.preparePicture(p, true, true);
 	}
 
 	public void shutdown() {

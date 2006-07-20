@@ -76,6 +76,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_LOOP = "slideshowLoop";
 	public static final String SLIDESHOW_FONTNAME = "slideshowFontName";
 	public static final String SLIDESHOW_FONTSIZE = "slideshowFontSize";
+	public static final String SLIDESHOW_TRANSITION_DURATION = "slideshowTransitionDuration";
 
 	// Other
 	public static final String SUPPRESS_WARNING_IM = "suppressWarningIM";
@@ -87,6 +88,8 @@ public interface PreferenceNames {
 	public static final String FONT_OVERRIDE_NAME = "fontOverrideName";
 	public static final String FONT_OVERRIDE_STYLE = "fontOverrideStyle";
 	public static final String FONT_OVERRIDE_SIZE = "fontOverrideSize";
+	public static final String PREVIEW_TRANSITION_DURATION = "previewTransitionDuration";
+	public static final String UNACCELERATED_TRANSITION = "unacceleratedTransition";
 
 	// Applet
 	public static final String APPLET_SHOW_RESIZE = "appletShowResize";

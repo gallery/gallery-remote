@@ -41,6 +41,28 @@ public class PreviewFrame
 	Rectangle imageRect = null;
 	ImageLoaderUtil loader;
 
+	ImageIcon previousImage = null;
+	Rectangle previousRect = null;
+	ImageIcon tmpImage = null;
+	ImageIcon tmpImageSrc = null;
+	Timer timer = null;
+
+	float transparency = 1f;
+
+	int transitionDuration = -1;
+	boolean enableTransitions;
+
+	public void initTransitionDuration() {
+		boolean accelerated = ((Graphics2D) getGraphics()).getDeviceConfiguration().getImageCapabilities().isAccelerated();
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Is graphics accelerated: " + accelerated);
+
+		enableTransitions = accelerated
+				|| GalleryRemote._().properties.getBooleanProperty(UNACCELERATED_TRANSITION, false);
+		transitionDuration = enableTransitions?
+				GalleryRemote._().properties.getIntProperty(PREVIEW_TRANSITION_DURATION, 1000):0;
+	}
+
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
 		setIconImage(GalleryRemote._().getMainFrame().getIconImage());
@@ -67,11 +89,20 @@ public class PreviewFrame
 		loader.flushMemory();
 		super.hide();
 
-		loader.preparePicture(null, true);
+		loader.preparePicture(null, false, false);
 	}
 
 	public void pictureReady() {
-		repaint();
+		if (transitionDuration == -1) {
+			// initialize transition duration now that we have a Graphics context
+			initTransitionDuration();
+		}
+		if (transitionDuration == 0) {
+			repaint();
+		} else {
+			transparency = 0f;
+			repaint();
+		}
 	}
 
 	public boolean blockPictureReady(ImageIcon image, Picture picture) {
@@ -91,22 +122,70 @@ public class PreviewFrame
 
 	class ImageContentPane extends JPanel {
 		public void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
 			Color c = GalleryRemote._().properties.getColorProperty(SLIDESHOW_COLOR);
 			if (c != null) {
 				g.setColor(c);
 			} else {
 				g.setColor(getBackground());
 			}
+
 			g.fillRect(0, 0, getSize().width, getSize().height);
 
 			if (loader.imageShowNow != null && loader.pictureShowWant != null) {
-				ImageIcon tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
-						loader.pictureShowWant.isFlipped(), this);
+				if (loader.imageShowNow != tmpImageSrc) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "New image: " + loader.imageShowNow + " - " + tmpImageSrc);
 
-				imageRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
-						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
-						tmpImage.getIconWidth(), tmpImage.getIconHeight());
-				tmpImage.paintIcon(getContentPane(), g, imageRect.x, imageRect.y	);
+					previousImage = tmpImage;
+					previousRect = imageRect;
+
+					tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+							loader.pictureShowWant.isFlipped(), this);
+
+					imageRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
+							getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
+							tmpImage.getIconWidth(), tmpImage.getIconHeight());
+
+					tmpImageSrc = loader.imageShowNow;
+
+					if (timer != null && timer.isRunning()) {
+						timer.stop();
+					}
+
+					timer = new Timer(1000/60, new ActionListener() {
+						long start = System.currentTimeMillis();
+
+						public void actionPerformed(ActionEvent e) {
+							long now = System.currentTimeMillis();
+							if (now - start > transitionDuration) {
+								((Timer) e.getSource()).stop();
+								transparency = 1;
+							} else {
+								transparency = ((float) (now - start)) / transitionDuration;
+							}
+
+							repaint();
+						}
+					});
+					timer.start();
+				}
+
+				//tmpImage.paintIcon(getContentPane(), g, imageRect.x, imageRect.y);
+
+				//g.fillRect(getLocation().x, getLocation().y, getWidth(), (getHeight() - tmpImage.getIconHeight()) / 2);
+				//g.fillRect(getLocation().x, getLocation().y + (getHeight() + tmpImage.getIconHeight()) / 2, getWidth(), (getHeight() - tmpImage.getIconHeight()) / 2);
+
+				Composite composite = g2.getComposite();
+
+				if (transparency != 1 && previousImage != null) {
+					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - transparency));
+					g2.drawImage(previousImage.getImage(), previousRect.x, previousRect.y, getContentPane());
+				}
+
+				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
+				g2.drawImage(tmpImage.getImage(), imageRect.x, imageRect.y, getContentPane());
+
+				g2.setComposite(composite);
 			}
 		}
 	}

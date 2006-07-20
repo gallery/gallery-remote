@@ -200,6 +200,15 @@ public abstract class GalleryRemote {
 
 		// todo: this should not remain this way
 		//System.setProperty("apple.awt.fakefullscreen", "true");
+
+		try {
+			if (Float.parseFloat(System.getProperty("java.specification.version")) >= 1.6) {
+				System.setProperty("sun.java2d.opengl", "true");
+			}
+		} catch (RuntimeException e) {
+			Log.log(Log.LEVEL_ERROR, "Couldn't get property java.specification.version: " +
+					System.getProperty("java.specification.version"));
+		}
 	}
 
 	public void createProperties() {

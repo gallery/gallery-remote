@@ -47,7 +47,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 		if (pictureShowNow != null) {
 			pictureShowWant = null;
 			imageShowNow = null;
-			preparePicture(pictureShowNow, true);
+			preparePicture(pictureShowNow, true, true);
 			pictureShowNow = null;
 		}
 	}
@@ -61,12 +61,14 @@ public class ImageLoaderUtil implements PreferenceNames {
 		}
 	}
 
-	public void preparePicture(Picture picture, boolean async) {
+	public void preparePicture(Picture picture, boolean async, boolean notify) {
 		if (picture == null) {
 			pictureShowWant = null;
 			imageLoaderUser.nullRect();
 
-			pictureReady(null, null);
+			if (notify) {
+				pictureReady(null, null);
+			}
 		} else {
 			if (picture != pictureShowWant) {
 				pictureShowWant = picture;
@@ -74,7 +76,9 @@ public class ImageLoaderUtil implements PreferenceNames {
 				ImageIcon r = (ImageIcon) imageIcons.get(picture);
 				if (r != null) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
-					pictureReady(r, picture);
+					if (notify) {
+						pictureReady(r, picture);
+					}
 				} else {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache miss: " + picture);
 					if (async) {
@@ -82,7 +86,9 @@ public class ImageLoaderUtil implements PreferenceNames {
 					} else {
 						ImageIcon sizedIcon = getSizedIconForce(picture);
 						if (sizedIcon != null) {
-							pictureReady(sizedIcon, picture);
+							if (notify) {
+								pictureReady(sizedIcon, picture);
+							}
 						}
 					}
 				}
@@ -274,6 +280,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 					notify = false;
 				}
 			}
+
 			stillRunning = false;
 
 			if (notify) {

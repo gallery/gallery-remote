@@ -572,6 +572,29 @@ public class ImageUtils {
 
 			Graphics2D g = (Graphics2D) vImg.getGraphics();
 
+			AffineTransform transform = getRotationTransform(width, height, angle, flipped);
+
+			g.drawImage(thumb.getImage(), transform, c);
+
+			thumb = new ImageIcon(vImg);
+		}
+
+		return thumb;
+	}
+
+	public static AffineTransform getRotationTransform(int width, int height, int angle, boolean flipped) {
+		if (angle != 0 || flipped) {
+			int width1;
+			int height1;
+
+			if (angle % 2 == 0) {
+				width1 = width;
+				height1 = height;
+			} else {
+				width1 = height;
+				height1 = width;
+			}
+
 			AffineTransform transform = AffineTransform.getTranslateInstance(width / 2, height / 2);
 			if (angle != 0) {
 				transform.rotate(angle * Math.PI / 2);
@@ -582,12 +605,10 @@ public class ImageUtils {
 			transform.translate(-width1 / 2 - (angle == 3 ? width - width1 : 0) + (flipped ? width - width1 : 0) * (angle == 1 ? -1 : 1),
 					-height1 / 2 - (angle == 1 ? height - height1 : 0));
 
-			g.drawImage(thumb.getImage(), transform, c);
-
-			thumb = new ImageIcon(vImg);
+			return transform;
 		}
 
-		return thumb;
+		return null;
 	}
 
 	public static AffineTransform createTransform(Rectangle container,

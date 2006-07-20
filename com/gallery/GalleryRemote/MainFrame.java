@@ -479,9 +479,9 @@ public class MainFrame extends JFrame
 
 				if (GalleryRemote._().properties.getShowPreview() && previewFrame != null) {
 					if (sel != -1) {
-						previewFrame.loader.preparePicture(currentAlbum.getPicture(sel), true);
+						previewFrame.loader.preparePicture(currentAlbum.getPicture(sel), true, true);
 					} else {
-						previewFrame.loader.preparePicture(null, true);
+						previewFrame.loader.preparePicture(null, true, true);
 					}
 
 					if (!previewFrame.isVisible()) {
@@ -827,7 +827,7 @@ public class MainFrame extends JFrame
 		GalleryRemote._().properties.setShowPreview(show);
 		if (show) {
 			previewFrame.show();
-			previewFrame.loader.preparePicture((Picture) jPicturesList.getSelectedValue(), true);
+			previewFrame.loader.preparePicture((Picture) jPicturesList.getSelectedValue(), true, true);
 		} else {
 			previewFrame.hide();
 		}

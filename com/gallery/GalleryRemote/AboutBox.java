@@ -35,7 +35,6 @@ import java.util.StringTokenizer;
  * Gallery Remote About Box
  * 
  * @author paour
- * @created August 18, 2002
  */
 public class AboutBox extends JDialog {
 	public static final String MODULE = "About";
@@ -97,7 +96,6 @@ public class AboutBox extends JDialog {
 	 * AboutPanel: scrolling panel of credits for About boxes
 	 * 
 	 * @author paour
-	 * @created August 16, 2002
 	 */
 	public class AboutPanel extends JComponent {
 		ImageIcon image;
@@ -201,7 +199,6 @@ public class AboutBox extends JDialog {
 		 * Animation thread
 		 * 
 		 * @author paour
-		 * @created August 16, 2002
 		 */
 		class AnimationThread extends Thread {
 			private boolean running = true;
@@ -227,20 +224,19 @@ public class AboutBox extends JDialog {
 			public void run() {
 				FontMetrics fm = getFontMetrics(getFont());
 				int max = (text.size() * fm.getHeight());
+				long start = System.currentTimeMillis();
 
 				while (running) {
-					long start = System.currentTimeMillis();
-
-					scrollPosition += 2;
+					scrollPosition = initialPosition + (int) ((System.currentTimeMillis() - start) / 40);
 
 					if (scrollPosition > max) {
 						scrollPosition = initialPosition;
+						start = System.currentTimeMillis();
 					}
 
 					try {
-						Thread.sleep(100);
-					} catch (Exception e) {
-					}
+						Thread.sleep(100/60);
+					} catch (Exception e) {	}
 
 					repaint(getWidth() / 2 - maxWidth,
 							TOP, maxWidth * 2,

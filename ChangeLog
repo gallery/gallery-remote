@@ -1,3 +1,11 @@
+2006-07-20  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b18)
+
+	* Added smooth transition effects in slideshow. For this to
+	  be enabled, the slideshowTransitionDuration property needs
+	  to be set to a number of milliseconds for the transition.
+	  Also, it works much better on Java 1.6 beta, because the new
+	  version enables OpenGL for Java 2D operations.
+
 2006-06-07  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b17)
 
 	* Added the ability for the screensaver to get its config
