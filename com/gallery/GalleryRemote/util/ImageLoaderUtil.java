@@ -102,7 +102,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 		if (r == null) {
 			synchronized(picture) {
 				if (picture.isOnline()) {
-					imageLoaderUser.pictureStartDownload(picture);
+					imageLoaderUser.pictureStartDownloading(picture);
 
 					File f = ImageUtils.download(
 							picture,
@@ -144,6 +144,71 @@ public class ImageLoaderUtil implements PreferenceNames {
 			int thickness,
 			int position,
 			int wrapWidth) {
+		paintAlignedOutline(g, s, textX, textY, thickness, position, wrapWidth, wrap((Graphics2D) g, s, wrapWidth), false);
+	}
+
+	public static Point paintAlignedOutline(
+			Graphics g,
+			String s,
+			int textX, int textY,
+			int thickness,
+			int position,
+			int wrapWidth,
+			WrapInfo wrapInfo,
+			boolean paintOrigin) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D bounds = fm.getStringBounds(s, g);
+
+		Point p = new Point();
+
+		switch (position / 10) {
+			case 1:
+			default:
+				p.y = textY;
+				break;
+
+			case 2:
+				p.y = textY - wrapInfo.height / 2;
+				break;
+
+			case 3:
+				p.y = textY - wrapInfo.height;
+				break;
+		}
+
+		for (int i = 0; i < wrapInfo.lines.length; i++) {
+			Rectangle2D bounds1 = fm.getStringBounds(wrapInfo.lines[i], g);
+			switch (position % 10) {
+				case 2:
+				default:
+					p.x = textX;
+					break;
+
+				case 0:
+					p.x = textX - (int) bounds1.getWidth() / 2;
+					break;
+
+				case 4:
+					p.x = textX - (int) bounds1.getWidth();
+					break;
+			}
+
+			if (paintOrigin) {
+				paintOutline(g, wrapInfo.lines[i], thickness, fm.getAscent() + thickness, thickness);
+			} else {
+				paintOutline(g, wrapInfo.lines[i], p.x, p.y + fm.getAscent(), thickness);
+			}
+		}
+
+		return p;
+	}
+
+	public static WrapInfo wrap(
+			Graphics2D g,
+			String s,
+			int wrapWidth) {
+		WrapInfo wrapInfo = new WrapInfo();
+
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D bounds = fm.getStringBounds(s, g);
 
@@ -153,10 +218,10 @@ public class ImageLoaderUtil implements PreferenceNames {
 
 		for (int i = 0; i < ss.length; i++) {
 			int linebreak = ss[i].length() - 1;
-			while (linebreak != -1 && fm.getStringBounds(ss[i].substring(0, linebreak), g).getWidth() > wrapWidth) {
+			while (linebreak != -1 &&
+					fm.getStringBounds(ss[i].substring(0, linebreak), g).getWidth() > wrapWidth) {
 				linebreak = ss[i].lastIndexOf(' ', linebreak - 1);
 			}
-
 			if (linebreak != -1 && linebreak != ss[i].length() - 1) {
 				lines.add(ss[i].substring(0, linebreak));
 				ss[i] = ss[i].substring(linebreak + 1);
@@ -164,51 +229,32 @@ public class ImageLoaderUtil implements PreferenceNames {
 			} else {
 				lines.add(ss[i]);
 			}
-		}
 
-		ss = (String[]) lines.toArray(new String[lines.size()]);
-
-		int x;
-		int y;
-
-		int height = (int) bounds.getHeight() * ss.length;
-		switch (position / 10) {
-			case 1:
-			default:
-				y = textY;
-				break;
-
-			case 2:
-				y = textY - height / 2;
-				break;
-
-			case 3:
-				y = textY - height;
-				break;
-		}
-
-		y += fm.getAscent();
-
-		for (int i = 0; i < ss.length; i++) {
-			Rectangle2D bounds1 = fm.getStringBounds(ss[i], g);
-			switch (position % 10) {
-				case 2:
-				default:
-					x = textX;
-					break;
-
-				case 0:
-					x = textX - (int) bounds1.getWidth() / 2;
-					break;
-
-				case 4:
-					x = textX - (int) bounds1.getWidth();
-					break;
+			int width = (int) fm.getStringBounds((String) lines.get(lines.size() - 1), g).getWidth();
+			if (width > wrapInfo.width) {
+				wrapInfo.width = width;
 			}
+		}
 
-			paintOutline(g, ss[i], x, y, thickness);
+		wrapInfo.lines = (String[]) lines.toArray(new String[lines.size()]);
+		wrapInfo.height = (int) bounds.getHeight() * ss.length;
 
-			y += bounds.getHeight();
+		return wrapInfo;
+	}
+
+	public static class WrapInfo {
+		public String[] lines;
+		public int width;
+		public int height;
+
+		public String toString() {
+			final StringBuffer sb = new StringBuffer();
+			sb.append("WrapInfo");
+			sb.append("{lines=").append(lines == null ? "null" : Arrays.asList(lines).toString());
+			sb.append(", width=").append(width);
+			sb.append(", height=").append(height);
+			sb.append('}');
+			return sb.toString();
 		}
 	}
 
@@ -403,7 +449,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 		public boolean blockPictureReady(ImageIcon image, Picture picture);
 		public Dimension getImageSize();
 		public void nullRect();
-		public void pictureStartDownload(Picture picture);
+		public void pictureStartDownloading(Picture picture);
 		public void pictureStartProcessing(Picture picture);
 	}
 }

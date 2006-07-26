@@ -23,9 +23,7 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Log manager
@@ -57,6 +55,7 @@ public class Log implements PreferenceNames, Runnable {
 
 	List logLines = Collections.synchronizedList(new LinkedList());
 	boolean running = false;
+	List moduleList = null;
 
 	private Log() {}
 
@@ -66,6 +65,10 @@ public class Log implements PreferenceNames, Runnable {
 				module = emptyModule;
 			} else {
 				module = (module + emptyModule).substring(0, moduleLength);
+			}
+
+			if (singleton.moduleList != null && !singleton.moduleList.contains(module)) {
+				return;
 			}
 
 			String time = emptyTime + (System.currentTimeMillis() - startTime);
@@ -122,7 +125,7 @@ public class Log implements PreferenceNames, Runnable {
 	public static void logException(int level, String module, Throwable t) {
 		if (level <= maxLevel || !started) {
 			//log(level, module, t.toString());
-			
+
 			CharArrayWriter caw = new CharArrayWriter();
 			t.printStackTrace(new PrintWriter(caw));
 
@@ -208,6 +211,13 @@ public class Log implements PreferenceNames, Runnable {
 		}
 
 		Log.toSysOut = toSysOut;
+
+		try {
+		String modules = System.getenv("GR_LOG_MODULES");
+		if (modules != null) {
+			singleton.moduleList = Arrays.asList(modules.split(","));
+		}
+		} catch (Throwable e) {}
 
 		singleton.loggerThread = new Thread(singleton);
 		singleton.loggerThread.setPriority(threadPriority);

@@ -8,6 +8,7 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.MemoryImageSource;
+import java.awt.image.BufferedImage;
 import java.awt.geom.Rectangle2D;
 import java.awt.event.*;
 import java.util.List;
@@ -22,6 +23,7 @@ public class SlideshowFrame extends PreviewFrame
 	List pictures = null;
 	List wantDownloaded = Collections.synchronizedList(new ArrayList());
 	Picture userPicture = null;
+	SlideshowPane slideshowPane;
 
 	int wantIndex = -1;
 
@@ -37,11 +39,13 @@ public class SlideshowFrame extends PreviewFrame
 	String url = null;
 	String skipping = null;
 
-	public static final int STATE_NONE = 0;
+	public static final int STATE_NO_CHANGE = 0;
+	public static final int STATE_PREPARING = 0;
 	public static final int STATE_DOWNLOADING = 1;
 	public static final int STATE_PROCESSING = 2;
 	public static final int STATE_NEXTREADY = 3;
 	public static final int STATE_SKIPPING = 4;
+	public static final int STATE_SHOWING = 5;
 
 	public static final int FEEDBACK_NONE = 0;
 	public static final int FEEDBACK_HELP = 1;
@@ -49,29 +53,26 @@ public class SlideshowFrame extends PreviewFrame
 	public static final int FEEDBACK_NEXT = 4;
 	public static final int FEEDBACK_PAUSE_PLAY = 8;
 
-	public int feedback = FEEDBACK_NONE;
+	public int dataTransferred = 0;
+	public int dataOverall = 0;
 
-	long controllerUntil = 0;
+	public int feedback = FEEDBACK_NONE;
+	public int state = STATE_PREPARING;
+
+	long feedbackUntil = 0;
 	long dontShowUntil = 0;
-	Thread controllerThread = null;
+	Thread feedbackThread = null;
 
 	public static Cursor transparentCursor = null;
+
+	int transitionDuration = -1;
+	boolean enableTransitions;
 
 	public SlideshowFrame() {
 		setUndecorated(true);
 		setResizable(false);
 
 		initComponents();
-
-		FeedbackGlassPane glass = new FeedbackGlassPane();
-		setGlassPane(glass);
-		glass.setVisible(true);
-	}
-
-	public void initTransitionDuration() {
-		super.initTransitionDuration();
-		transitionDuration = enableTransitions?
-				GalleryRemote._().properties.getIntProperty(SLIDESHOW_TRANSITION_DURATION, 3000):0;
 	}
 
 	public void showSlideshow() {
@@ -124,8 +125,8 @@ public class SlideshowFrame extends PreviewFrame
 
 		showCursor();
 
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		gd.setFullScreenWindow(null);
+		//GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		//gd.setFullScreenWindow(null);
 		super.hide();
 
 		if (GalleryRemote._() != null) {
@@ -183,7 +184,7 @@ public class SlideshowFrame extends PreviewFrame
 						}
 						updateFeedback(FEEDBACK_PAUSE_PLAY);
 
-						updateProgress(loader.pictureShowNow, STATE_NONE);
+						updateProgress(loader.pictureShowNow, STATE_SHOWING);
 
 						break;
 				}
@@ -192,14 +193,14 @@ public class SlideshowFrame extends PreviewFrame
 
 		addMouseMotionListener(this);
 
-		PreviewFrame.ImageContentPane cp = new PreviewFrame.ImageContentPane();
-		setContentPane(cp);
+		slideshowPane = new SlideshowPane();
+		setContentPane(slideshowPane);
 
 		PropertiesFile pf = GalleryRemote._().properties;
 
 		sleepTime = pf.getIntProperty(SLIDESHOW_DELAY) * 1000;
 
-		loader = new ImageLoaderUtil(3, this);
+		loader = new ImageLoaderUtil(5, this);
 		loader.setTransferListener(this);
 	}
 
@@ -223,6 +224,7 @@ public class SlideshowFrame extends PreviewFrame
 						}
 
 						Picture picture = (Picture) it.next();
+						Log.log(Log.LEVEL_TRACE, MODULE, "Preloading " + picture);
 						ImageUtils.download(picture, getRootPane().getSize(), GalleryRemote._().getCore().getMainStatusUpdate(), null);
 					}
 					Log.log(Log.LEVEL_TRACE, MODULE, "Preload thread done");
@@ -277,7 +279,9 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public boolean next(boolean user) {
-		if (loader.pictureShowWant != null && wantDownloaded.contains(loader.pictureShowWant) && (loader.pictureShowWant != userPicture || user)) {
+		if (loader.pictureShowWant != null
+				&& wantDownloaded.contains(loader.pictureShowWant)
+				&& (loader.pictureShowWant != userPicture || user)) {
 			// we no longer want the current picture
 			wantDownloaded.remove(loader.pictureShowWant);
 		}
@@ -330,7 +334,7 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		wantDownloaded.add(picture);
-		updateProgress(picture, STATE_NONE);
+		updateProgress(picture, STATE_PREPARING);
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
@@ -384,7 +388,7 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		wantDownloaded.add(picture);
-		updateProgress(picture, STATE_NONE);
+		updateProgress(picture, STATE_PREPARING);
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
@@ -397,7 +401,7 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public boolean blockPictureReady(ImageIcon image, Picture picture) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "Picture " + picture + " ready");
+		Log.log(Log.LEVEL_TRACE, MODULE, "blockPictureReady: " + picture + " - pictureShowWant: " + loader.pictureShowWant);
 
 		if (picture == userPicture) {
 			userPicture = null;
@@ -410,9 +414,14 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		if (picture != null) {
-			caption = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(picture.getCaption()));
-			Log.log(Log.LEVEL_TRACE, MODULE, caption);
-			extra = picture.getExtraFieldsString();
+			if (picture.getCaption() != null) {
+				caption = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(picture.getCaption())).trim();
+			} else {
+				caption = null;
+			}
+
+			extra = picture.getExtraFieldsString().trim();
+
 			if (picture.isOnline()) {
 				url = picture.safeGetUrlFull().toString();
 
@@ -421,7 +430,8 @@ public class SlideshowFrame extends PreviewFrame
 			} else {
 				url = picture.getSource().toString();
 			}
-			updateProgress(picture, STATE_NONE);
+
+			updateProgress(picture, STATE_SHOWING);
 		}
 
 		pictureShownTime = System.currentTimeMillis();
@@ -429,7 +439,7 @@ public class SlideshowFrame extends PreviewFrame
 		return false;
 	}
 
-	public void pictureStartDownload(Picture picture) {
+	public void pictureStartDownloading(Picture picture) {
 		if (picture == loader.pictureShowWant || picture == userPicture) {
 			updateProgress(picture, STATE_DOWNLOADING);
 		}
@@ -451,12 +461,16 @@ public class SlideshowFrame extends PreviewFrame
 										new Integer(pictures.size())};
 
 		switch (state) {
-			 case STATE_NONE:
+			 case STATE_SHOWING:
 				if (! running) {
 					progress = GRI18n.getString(MODULE, "paused", params);
 				} else {
 					progress = GRI18n.getString(MODULE, "showing", params);
 				}
+				break;
+
+			case STATE_PREPARING:
+				progress = GRI18n.getString(MODULE, "preparing", params);
 				break;
 
 			case STATE_DOWNLOADING:
@@ -487,38 +501,37 @@ public class SlideshowFrame extends PreviewFrame
 		if (! wantDownloaded.contains(p) || shutdown) {
 			return false;
 		}
-		Graphics g = getGraphics();
+
+		dataTransferred = transferred;
+		dataOverall = overall;
 
 		if (transferred == overall) {
-			g.setColor(GalleryRemote._().properties.getColorProperty(PreferenceNames.SLIDESHOW_COLOR));
+			repaint();
 		} else {
-			g.setColor(Color.yellow);
+			slideshowPane.paintProgress((Graphics2D) slideshowPane.getGraphics());
 		}
-
-		float r = ((float) transferred) / overall;
-		g.drawLine(0, 0, (int) (getWidth() * r), 0);
 
 		return true;
 	}
 
 	public void updateFeedback(int feedback) {
 		if (feedback != FEEDBACK_NONE) {
-			controllerUntil = System.currentTimeMillis()
+			feedbackUntil = System.currentTimeMillis()
 					+ (feedback == FEEDBACK_HELP?6000: 1500);
 
 			synchronized(this) {
-				if (controllerThread == null) {
-					controllerThread = new Thread() {
+				if (feedbackThread == null) {
+					feedbackThread = new Thread() {
 						public void run() {
 							boolean running = true;
 
 							while (running) {
 								try {
-									Thread.sleep(controllerUntil - System.currentTimeMillis());
+									Thread.sleep(feedbackUntil - System.currentTimeMillis());
 									synchronized(this) {
-										if (System.currentTimeMillis() >= controllerUntil) {
+										if (System.currentTimeMillis() >= feedbackUntil) {
 											running = false;
-											controllerThread = null;
+											feedbackThread = null;
 											SlideshowFrame.this.feedback = FEEDBACK_NONE;
 											repaint();
 										}
@@ -527,7 +540,7 @@ public class SlideshowFrame extends PreviewFrame
 							}
 						}
 					};
-					controllerThread.start();
+					feedbackThread.start();
 				}
 			}
 		}
@@ -566,146 +579,323 @@ public class SlideshowFrame extends PreviewFrame
 		showCursor();
 	}
 
-	public class FeedbackGlassPane extends JComponent {
+	public void initTransitionDuration() {
+		boolean accelerated = ((Graphics2D) getGraphics()).getDeviceConfiguration().getImageCapabilities().isAccelerated();
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Is graphics accelerated: " + accelerated);
+
+		enableTransitions = accelerated
+				|| GalleryRemote._().properties.getBooleanProperty(UNACCELERATED_TRANSITION, false);
+		transitionDuration = enableTransitions?
+				GalleryRemote._().properties.getIntProperty(SLIDESHOW_TRANSITION_DURATION, 3000):0;
+
+		if (transitionDuration == 0) {
+			enableTransitions = false;
+		}
+	}
+
+	class SlideshowPane extends JPanel implements ActionListener {
 		Color background = new Color(100, 100, 100, 150);
 		Color normal = new Color(180, 180, 180, 180);
 		Color hilight = new Color(255, 255, 255, 180);
 		boolean firstPaint = true;
 
-		public void paint(Graphics g) {
+		BufferedImage feedbackCache = null;
+		int cachedFeedback = 0;
+		Point feedbackLocation = new Point();
+		int feedbackWidth = 535;
+		int feedbackHeight = 220;
+
+		BufferedImage[] infoCache = new BufferedImage[4];
+		String[] cachedInfo = new String[4];
+		Point[] infoLocation = new Point[4];
+		BufferedImage[] previousInfoCache = new BufferedImage[4];
+		Point[] previousInfoLocation = new Point[4];
+
+		ImageIcon currentImage = null;
+		ImageIcon currentImageSrc = null;
+		ImageIcon previousImage = null;
+		Rectangle previousRect = null;
+
+		Timer timer = new Timer(1000/60, this);
+		long transitionStart = System.currentTimeMillis() - 5000;
+		float imageAlpha = 0;
+
+		public void actionPerformed(ActionEvent e) {
+			long now = System.currentTimeMillis();
+
+			if (now - transitionStart > transitionDuration) {
+				timer.stop();
+				imageAlpha = 1;
+
+				// flush previous, no longer needed
+				previousImage = null;
+				for (int id = 0; id < previousInfoCache.length; id++) {
+					if (previousInfoCache[id] != null) {
+						previousInfoCache[id].flush();
+					}
+					previousInfoCache[id] = null;
+				}
+			} else {
+				imageAlpha = ((float) (now - transitionStart)) / transitionDuration;
+			}
+
+			repaint();
+		}
+
+		public void paintComponent(Graphics g) {
+			Graphics2D g2 = (Graphics2D) g;
+
 			if (firstPaint) {
 				firstPaint = false;
 				ImageLoaderUtil.setSlideshowFont(this);
+				initTransitionDuration();
 			}
 
-			if (feedback != FEEDBACK_NONE || controllerUntil > System.currentTimeMillis()) {
-				paintController(g);
-			} else {
+			if (feedback == FEEDBACK_NONE && feedbackUntil <= System.currentTimeMillis()) {
 				skipping = null;
 			}
 
-			paintInfo(g);
+			paintPicture(g2);
+			paintInfo(g2);
+			paintFeedback(g2);
+			paintSkipping(g2);
+			paintProgress(g2);
 		}
 
-		private void paintController(Graphics g) {
-			//Log.log(Log.LEVEL_TRACE, MODULE, "paintController");
-
-			Dimension d = getSize();
-			int width = 475;
-			int height = 150;
-			int x = d.width / 2 - width / 2;
-			int y = d.height / 3 * 2 - height / 2;
-			g.setFont(g.getFont().deriveFont(18.0F));
-			FontMetrics fm = g.getFontMetrics();
-
-			// background
-			g.setColor(background);
-			g.fillRoundRect(x - 30, y - 20, width + 60, height + ((feedback & FEEDBACK_HELP) == FEEDBACK_HELP?70:40), 30, 30);
-			g.setColor(normal);
-			g.drawRoundRect(x - 30, y - 20, width + 60, height + ((feedback & FEEDBACK_HELP) == FEEDBACK_HELP?70:40), 30, 30);
-
-			// left arrow
-			g.setColor((feedback & FEEDBACK_PREV) == FEEDBACK_PREV?hilight:normal);
-			g.fillPolygon(new int[] {x + 100, x + 100, x + 50, x + 50, x, x + 50, x + 50},
-					new int[] {y + 60, y + 90, y + 90, y + 125, y + 75, y + 25, y + 60}, 7);
-			drawText(g, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.left"));
-			drawText(g, hilight, fm, x + 107, y + 180, GRI18n.getString(MODULE, "controller.mousewheel"));
-
-			x += 115;
-
-			// right arrow
-			g.setColor((feedback & FEEDBACK_NEXT) == FEEDBACK_NEXT?hilight:normal);
-			g.fillPolygon(new int[] {x, x, x + 50, x + 50, x + 100, x + 50, x + 50},
-					new int[] {y + 60, y + 90, y + 90, y + 125, y + 75, y + 25, y + 60}, 7);
-			drawText(g, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.right"));
-
-			x += 130;
-
-			// play/pause
-			g.setColor((feedback & FEEDBACK_PAUSE_PLAY) == FEEDBACK_PAUSE_PLAY?hilight:normal);
-			if (running) {
-				g.fillPolygon(new int[] {x, x, x + 100},
-						new int[] {y + 10, y + 140, y + 75}, 3);
+		public void paintPicture(Graphics2D g) {
+			Color c = GalleryRemote._().properties.getColorProperty(SLIDESHOW_COLOR);
+			if (c != null) {
+				g.setColor(c);
 			} else {
-				g.fillPolygon(new int[] {x, x, x + 30, x + 30},
-						new int[] {y + 10, y + 140, y + 140, y + 10}, 4);
-				g.fillPolygon(new int[] {x + 70, x + 70, x + 100, x + 100},
-						new int[] {y + 10, y + 140, y + 140, y + 10}, 4);
+				g.setColor(getBackground());
 			}
-			drawText(g, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.space"));
 
-			x += 130;
+			g.fillRect(0, 0, getSize().width, getSize().height);
 
-			// stop
-			g.setColor(normal);
-			g.fillPolygon(new int[] {x, x, x + 30, x + 70, x + 100, x + 100, x + 70, x + 30},
-					new int[] {y + 55, y + 95, y + 125, y + 125, y + 95, y + 55, y + 25, y + 25}, 8);
-			drawText(g, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.escape"));
+			if (loader.imageShowNow != null && loader.pictureShowWant != null) {
+				if (loader.imageShowNow != currentImageSrc) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "New image: " + loader.imageShowNow + " - " + currentImageSrc);
 
-			if (skipping != null) {
-				x = d.width / 2;
-				g.setFont(g.getFont().deriveFont(48.0F));
-				fm = g.getFontMetrics();
-				g.setColor(hilight);
-				Rectangle2D bounds = fm.getStringBounds(skipping, g);
-				g.drawString(skipping, (int) (x - bounds.getWidth() / 2), y + 210);
+					previousImage = currentImage;
+					previousRect = currentRect;
+
+					currentImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+							loader.pictureShowWant.isFlipped(), this);
+
+					currentRect = new Rectangle(getLocation().x + (getWidth() - currentImage.getIconWidth()) / 2,
+							getLocation().y + (getHeight() - currentImage.getIconHeight()) / 2,
+							currentImage.getIconWidth(), currentImage.getIconHeight());
+
+					currentImageSrc = loader.imageShowNow;
+
+					if (enableTransitions) {
+						imageAlpha = 0;
+						transitionStart = System.currentTimeMillis();
+						if (! timer.isRunning()) {
+							timer.start();
+						}
+					}
+				}
+
+				Composite composite = g.getComposite();
+
+				if (imageAlpha != 1 && previousImage != null) {
+					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - imageAlpha));
+					g.drawImage(previousImage.getImage(), previousRect.x, previousRect.y, getContentPane());
+				}
+
+				if (imageAlpha != 0) {
+					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, imageAlpha));
+					g.drawImage(currentImage.getImage(), currentRect.x, currentRect.y, getContentPane());
+				}
+
+				g.setComposite(composite);
 			}
 		}
 
-		public void paintInfo(Graphics g) {
+		public void paintInfo(Graphics2D g) {
 			PropertiesFile pf = GalleryRemote._().properties;
 
-			paintInfo(g, caption, pf.getIntProperty(SLIDESHOW_CAPTION));
-			paintInfo(g, progress, pf.getIntProperty(SLIDESHOW_PROGRESS));
-			paintInfo(g, extra, pf.getIntProperty(SLIDESHOW_EXTRA));
-			paintInfo(g, url, pf.getIntProperty(SLIDESHOW_URL));
+			paintInfo(g, 0, caption, pf.getIntProperty(SLIDESHOW_CAPTION), true);
+			paintInfo(g, 1, progress, pf.getIntProperty(SLIDESHOW_PROGRESS), false);
+			paintInfo(g, 2, extra, pf.getIntProperty(SLIDESHOW_EXTRA), true);
+			paintInfo(g, 3, url, pf.getIntProperty(SLIDESHOW_URL), true);
 		}
 
-		public void paintInfo(Graphics g, String text, int position) {
-			if (position == 0 || text == null || text.length() == 0) return;
-
-			text = text.trim();
-
-			Dimension d = getSize();
-			g.setFont(getFont());
-			int x;
-			int y;
-			int inset = 5;
-
-			switch (position % 10) {
-				case 2:
-				default:
-					x = inset;
-					break;
-
-				case 0:
-					x = d.width / 2;
-					break;
-
-				case 4:
-					x = d.width - inset;
-					break;
+		public void paintFeedback(Graphics2D g) {
+			if (feedback == FEEDBACK_NONE) {
+				return;
 			}
 
-			switch (position / 10) {
-				case 1:
-				default:
-					y = inset;
-					break;
+			if (feedbackCache == null || cachedFeedback != feedback) {
+				cachedFeedback = feedback;
 
-				case 2:
-					y = d.height / 2;
-					break;
+				Dimension d = getSize();
+				feedbackLocation.x = d.width / 2 - feedbackWidth / 2;
+				feedbackLocation.y = d.height / 3 * 2 - feedbackHeight / 2;
+				int x = 30;
+				int y = 20;
 
-				case 3:
-					y = d.height - inset;
-					break;
+				if (feedbackCache != null) {
+					feedbackCache.flush();
+				}
+				feedbackCache = new BufferedImage(
+						feedbackWidth + 60,
+						feedbackHeight + 70,
+						BufferedImage.TYPE_INT_ARGB);
+				Graphics2D gc = (Graphics2D) feedbackCache.getGraphics();
+
+				gc.setFont(g.getFont().deriveFont(18.0F));
+				FontMetrics fm = gc.getFontMetrics();
+
+				// background
+				gc.setColor(background);
+				gc.fillRoundRect(0, 0, feedbackWidth,
+						feedbackHeight + ((feedback & FEEDBACK_HELP) == FEEDBACK_HELP?0:-30),
+						30, 30);
+				gc.setColor(normal);
+				gc.drawRoundRect(0, 0, feedbackWidth,
+						feedbackHeight + ((feedback & FEEDBACK_HELP) == FEEDBACK_HELP?0:-30),
+						30, 30);
+
+				// left arrow
+				gc.setColor((feedback & FEEDBACK_PREV) == FEEDBACK_PREV?hilight:normal);
+				gc.fillPolygon(new int[] {x + 100, x + 100, x + 50, x + 50, x, x + 50, x + 50},
+						new int[] {y + 60, y + 90, y + 90, y + 125, y + 75, y + 25, y + 60}, 7);
+				drawHelp(gc, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.left"));
+				drawHelp(gc, hilight, fm, x + 107, y + 180, GRI18n.getString(MODULE, "controller.mousewheel"));
+
+				x += 115;
+
+				// right arrow
+				gc.setColor((feedback & FEEDBACK_NEXT) == FEEDBACK_NEXT?hilight:normal);
+				gc.fillPolygon(new int[] {x, x, x + 50, x + 50, x + 100, x + 50, x + 50},
+						new int[] {y + 60, y + 90, y + 90, y + 125, y + 75, y + 25, y + 60}, 7);
+				drawHelp(gc, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.right"));
+
+				x += 130;
+
+				// play/pause
+				gc.setColor((feedback & FEEDBACK_PAUSE_PLAY) == FEEDBACK_PAUSE_PLAY?hilight:normal);
+				if (running) {
+					gc.fillPolygon(new int[] {x, x, x + 100},
+							new int[] {y + 10, y + 140, y + 75}, 3);
+				} else {
+					gc.fillPolygon(new int[] {x, x, x + 30, x + 30},
+							new int[] {y + 10, y + 140, y + 140, y + 10}, 4);
+					gc.fillPolygon(new int[] {x + 70, x + 70, x + 100, x + 100},
+							new int[] {y + 10, y + 140, y + 140, y + 10}, 4);
+				}
+				drawHelp(gc, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.space"));
+
+				x += 130;
+
+				// stop
+				gc.setColor(normal);
+				gc.fillPolygon(new int[] {x, x, x + 30, x + 70, x + 100, x + 100, x + 70, x + 30},
+						new int[] {y + 55, y + 95, y + 125, y + 125, y + 95, y + 55, y + 25, y + 25}, 8);
+				drawHelp(gc, hilight, fm, x + 50, y + 160, GRI18n.getString(MODULE, "controller.escape"));
 			}
 
-			ImageLoaderUtil.paintAlignedOutline(g, text, x, y, 1, position, d.width);
+			g.drawImage(feedbackCache, feedbackLocation.x, feedbackLocation.y, this);
 		}
 
-		private void drawText(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {
+		public void paintSkipping(Graphics2D g) {
+			if (skipping != null) {
+				Dimension d = getSize();
+				int x = d.width / 2;
+				int y = d.height / 3 * 2 - feedbackHeight / 2;
+
+				g.setFont(getFont().deriveFont(48.0F));
+				FontMetrics fm = g.getFontMetrics();
+				g.setColor(hilight);
+				Rectangle2D bounds = fm.getStringBounds(skipping, g);
+				g.drawString(skipping, (int) (x - bounds.getWidth() / 2),
+						y + ((feedback & FEEDBACK_HELP) == FEEDBACK_HELP?270:240));
+			}
+		}
+
+		public void paintProgress(Graphics2D g) {
+			if (dataTransferred < dataOverall) {
+				g.setColor(Color.yellow);
+
+				float r = ((float) dataTransferred) / dataOverall;
+				g.drawLine(0, 0, (int) (getWidth() * r), 0);
+			}
+		}
+
+		public void paintInfo(Graphics2D g, int id, String text, int position, boolean transition) {
+			if (position == 0) return;
+			if (text == null) text = "";
+
+			if (!text.equals(cachedInfo[id])) {
+				previousInfoCache[id] = infoCache[id];
+				previousInfoLocation[id] = infoLocation[id];
+
+				cachedInfo[id] = text;
+
+				Dimension d = getSize();
+				g.setFont(getFont());
+				int x;
+				int y;
+				int inset = 5;
+
+				switch (position % 10) {
+					case 2:
+					default:
+						x = inset;
+						break;
+
+					case 0:
+						x = d.width / 2;
+						break;
+
+					case 4:
+						x = d.width - inset;
+						break;
+				}
+
+				switch (position / 10) {
+					case 1:
+					default:
+						y = inset;
+						break;
+
+					case 2:
+						y = d.height / 2;
+						break;
+
+					case 3:
+						y = d.height - inset;
+						break;
+				}
+
+				ImageLoaderUtil.WrapInfo wrapInfo = ImageLoaderUtil.wrap(g, text, d.width);
+
+				infoCache[id] = new BufferedImage(wrapInfo.width + 2, wrapInfo.height + 2, BufferedImage.TYPE_INT_ARGB);
+
+				Graphics2D g2 = (Graphics2D) infoCache[id].getGraphics();
+				g2.setFont(g.getFont());
+				infoLocation[id] = ImageLoaderUtil.paintAlignedOutline(
+						g2,	text, x, y, 1, position, d.width, wrapInfo, true);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Cached info " + id + " - " + text);
+			}
+
+			Composite composite = g.getComposite();
+
+			if (transition && imageAlpha != 1 && previousInfoCache[id] != null) {
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - imageAlpha));
+				g.drawImage(previousInfoCache[id], previousInfoLocation[id].x, previousInfoLocation[id].y, this);
+			}
+
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transition?imageAlpha:1));
+			g.drawImage(infoCache[id], infoLocation[id].x, infoLocation[id].y, this);
+
+			g.setComposite(composite);
+		}
+
+		private void drawHelp(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {
 			if ((feedback & FEEDBACK_HELP) != FEEDBACK_HELP) return;
 
 			g.setColor(hilight);

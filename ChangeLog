@@ -1,3 +1,18 @@
+2006-07-26  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b19)
+
+	* Rewrote most of the slideshow, adding double-buffering
+	  and transitions for all versions of Java, without
+	  flickering. Also finally cleaned up all threading
+	  problems.
+	* Removed support for transitions for previews.
+	* Fixed error where clicking on the blue link
+	  for the GR FAQ in applets would fail.
+	* Added a framework for testing the slideshow code more
+	  conveniently.
+	* Added support for filtering the log: the GR_LOG_MODULES
+	  environment varible can be set to a comma-delimited list
+	  of modules; only those modules will appear in the log.
+
 2006-07-20  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b18)
 
 	* Added smooth transition effects in slideshow. For this to

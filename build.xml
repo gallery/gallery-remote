@@ -464,4 +464,15 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
       <arg line="${debug.params}" />
     </java>
   </target>
+
+  <target name="slideshowtest" depends="compile">
+    <java classname="com.gallery.GalleryRemote.DummyAppletContext" fork="true">
+      <classpath>
+        <pathelement location="lib/metadata-extractor-2.1.jar"/>
+        <pathelement path="${build}"/>
+        <pathelement path="img"/>
+      </classpath>
+      <arg line="com.gallery.GalleryRemote.GRAppletSlideshow -width 300 -height 450 gr_url http://www.paour.com/gallery2/ gr_gallery_version 2 gr_album 100401" />
+    </java>
+  </target>
 </project>

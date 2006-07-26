@@ -10,7 +10,6 @@ com/gallery/GalleryRemote/util/MacOSXAdapter*
 com/gallery/GalleryRemote/util/NaturalOrderComparator*
 com/gallery/GalleryRemote/util/OsShutdown*
 com/gallery/GalleryRemote/util/PostChangeLog*
-edu/stanford/ejalbert/BrowserLauncher*
 
 com/gallery/GalleryRemote/AboutBox*
 com/gallery/GalleryRemote/*Inspector*

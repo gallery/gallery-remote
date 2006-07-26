@@ -30,7 +30,7 @@ public class GRApplet extends JApplet {
 	}
 
 	public void start() {
-		System.out.println("Applet start");
+		System.out.println("Applet transitionStart");
 		initGalleryRemote();
 
 		if (hasStarted) {
@@ -77,7 +77,7 @@ public class GRApplet extends JApplet {
 
 	public void stop() {
 		System.out.println("Applet stop");
-		// don't shutdown the applet if it didn't start...
+		// don't shutdown the applet if it didn't transitionStart...
 		if (hasStarted && GalleryRemote._() != null) {
 			GalleryRemote._().getCore().shutdown();
 		}
@@ -108,8 +108,6 @@ public class GRApplet extends JApplet {
 		String userAgent = getParameter("gr_user_agent");
 		String galleryVersion = getParameter("gr_gallery_version");
 		String slideshowFrom = getParameter("gr_slideshow_start_from");
-		//String cookie1Name = getParameter("gr_cookie1_name");
-		//String cookie1Value = getParameter("gr_cookie1_value");
 
 		info.albumName = getParameter("gr_album");
 
@@ -120,7 +118,6 @@ public class GRApplet extends JApplet {
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_name: " + cookieName);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_domain: " + cookieDomain);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie_path: " + cookiePath);
-		//Log.log(Log.LEVEL_INFO, MODULE, "gr_cookie1_name: " + cookie1Name);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_album: " + info.albumName);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_user_agent: " + userAgent);
 		Log.log(Log.LEVEL_INFO, MODULE, "gr_gallery_version: " + galleryVersion);
@@ -220,9 +217,11 @@ public class GRApplet extends JApplet {
 		info.slideshowFrom = slideshowFrom;
 
 		CookieModule.discardAllCookies();
-		Cookie cookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false);
-		Log.log(Log.LEVEL_TRACE, MODULE, "Adding cookie: " + cookie);
-		CookieModule.addCookie(cookie);
+		if (cookieName != null) {
+			Cookie cookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Adding cookie: " + cookie);
+			CookieModule.addCookie(cookie);
+		}
 
 		int cookieNum = 1;
 		String name = null;

@@ -784,7 +784,7 @@ public class MainFrame extends JFrame
 				//	}
 				//});
 		//	}
-		//}.start();
+		//}.transitionStart();
 
 		// We've been modified, we are now dirty.
 		setDirtyFlag(true);
@@ -1662,7 +1662,7 @@ public class MainFrame extends JFrame
 					getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
-		}.start();
+		}.transitionStart();
 	}*/
 
 	public void removeGallery(Gallery g) {

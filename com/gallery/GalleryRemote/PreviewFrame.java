@@ -38,30 +38,8 @@ public class PreviewFrame
 		extends JFrame
 		implements PreferenceNames, ImageLoaderUtil.ImageLoaderUser {
 	public static final String MODULE = "PreviewFrame";
-	Rectangle imageRect = null;
+	Rectangle currentRect = null;
 	ImageLoaderUtil loader;
-
-	ImageIcon previousImage = null;
-	Rectangle previousRect = null;
-	ImageIcon tmpImage = null;
-	ImageIcon tmpImageSrc = null;
-	Timer timer = null;
-
-	float transparency = 1f;
-
-	int transitionDuration = -1;
-	boolean enableTransitions;
-
-	public void initTransitionDuration() {
-		boolean accelerated = ((Graphics2D) getGraphics()).getDeviceConfiguration().getImageCapabilities().isAccelerated();
-
-		Log.log(Log.LEVEL_TRACE, MODULE, "Is graphics accelerated: " + accelerated);
-
-		enableTransitions = accelerated
-				|| GalleryRemote._().properties.getBooleanProperty(UNACCELERATED_TRANSITION, false);
-		transitionDuration = enableTransitions?
-				GalleryRemote._().properties.getIntProperty(PREVIEW_TRANSITION_DURATION, 1000):0;
-	}
 
 	public void initComponents() {
 		setTitle(GRI18n.getString(MODULE, "title"));
@@ -93,16 +71,7 @@ public class PreviewFrame
 	}
 
 	public void pictureReady() {
-		if (transitionDuration == -1) {
-			// initialize transition duration now that we have a Graphics context
-			initTransitionDuration();
-		}
-		if (transitionDuration == 0) {
-			repaint();
-		} else {
-			transparency = 0f;
-			repaint();
-		}
+		repaint();
 	}
 
 	public boolean blockPictureReady(ImageIcon image, Picture picture) {
@@ -114,10 +83,10 @@ public class PreviewFrame
 	}
 
 	public void nullRect() {
-		imageRect = null;
+		currentRect = null;
 	}
 
-	public void pictureStartDownload(Picture picture) {}
+	public void pictureStartDownloading(Picture picture) {}
 	public void pictureStartProcessing(Picture picture) {}
 
 	class ImageContentPane extends JPanel {
@@ -133,59 +102,16 @@ public class PreviewFrame
 			g.fillRect(0, 0, getSize().width, getSize().height);
 
 			if (loader.imageShowNow != null && loader.pictureShowWant != null) {
-				if (loader.imageShowNow != tmpImageSrc) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "New image: " + loader.imageShowNow + " - " + tmpImageSrc);
+				Log.log(Log.LEVEL_TRACE, MODULE, "New image: " + loader.imageShowNow);
 
-					previousImage = tmpImage;
-					previousRect = imageRect;
+				ImageIcon tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+						loader.pictureShowWant.isFlipped(), this);
 
-					tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
-							loader.pictureShowWant.isFlipped(), this);
+				currentRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
+						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
+						tmpImage.getIconWidth(), tmpImage.getIconHeight());
 
-					imageRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
-							getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
-							tmpImage.getIconWidth(), tmpImage.getIconHeight());
-
-					tmpImageSrc = loader.imageShowNow;
-
-					if (timer != null && timer.isRunning()) {
-						timer.stop();
-					}
-
-					timer = new Timer(1000/60, new ActionListener() {
-						long start = System.currentTimeMillis();
-
-						public void actionPerformed(ActionEvent e) {
-							long now = System.currentTimeMillis();
-							if (now - start > transitionDuration) {
-								((Timer) e.getSource()).stop();
-								transparency = 1;
-							} else {
-								transparency = ((float) (now - start)) / transitionDuration;
-							}
-
-							repaint();
-						}
-					});
-					timer.start();
-				}
-
-				//tmpImage.paintIcon(getContentPane(), g, imageRect.x, imageRect.y);
-
-				//g.fillRect(getLocation().x, getLocation().y, getWidth(), (getHeight() - tmpImage.getIconHeight()) / 2);
-				//g.fillRect(getLocation().x, getLocation().y + (getHeight() + tmpImage.getIconHeight()) / 2, getWidth(), (getHeight() - tmpImage.getIconHeight()) / 2);
-
-				Composite composite = g2.getComposite();
-
-				if (transparency != 1 && previousImage != null) {
-					g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - transparency));
-					g2.drawImage(previousImage.getImage(), previousRect.x, previousRect.y, getContentPane());
-				}
-
-				g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transparency));
-				g2.drawImage(tmpImage.getImage(), imageRect.x, imageRect.y, getContentPane());
-
-				g2.setComposite(composite);
+				g2.drawImage(tmpImage.getImage(), currentRect.x, currentRect.y, getContentPane());
 			}
 		}
 	}
@@ -220,12 +146,12 @@ public class PreviewFrame
 				return;
 			}
 
-			if (imageRect != null && start != null && end != null) {
+			if (currentRect != null && start != null && end != null) {
 				Rectangle ct = loader.pictureShowNow.getCropTo();
 				if (ct != null) {
 					AffineTransform t = ImageUtils.createTransform(
 							getBounds(),
-							imageRect,
+							currentRect,
 							loader.pictureShowNow.getDimension(),
 							loader.pictureShowNow.getAngle(),
 							loader.pictureShowNow.isFlipped());
@@ -235,7 +161,7 @@ public class PreviewFrame
 								t.inverseTransform(new Point(ct.x + ct.width, ct.y + ct.height), null));
 
 						g.setColor(background);
-						g.setClip(imageRect);
+						g.setClip(currentRect);
 						g.fillRect(0, 0, cacheRect.x, getHeight());
 						g.fillRect(cacheRect.x, 0, getWidth() - cacheRect.x, cacheRect.y);
 						g.fillRect(cacheRect.x, cacheRect.y + cacheRect.height, getWidth() - cacheRect.x, getHeight() - cacheRect.y - cacheRect.height);
@@ -313,7 +239,7 @@ public class PreviewFrame
 		public void mouseExited(MouseEvent e) {}
 
 		public void mousePressed(MouseEvent e) {
-			if (loader.pictureShowNow == null || imageRect == null || loader.pictureShowNow.isOnline()) {
+			if (loader.pictureShowNow == null || currentRect == null || loader.pictureShowNow.isOnline()) {
 				return;
 			}
 
@@ -345,7 +271,7 @@ public class PreviewFrame
 					break;
 
 				case 5:
-					// moving: just remember start for offset
+					// moving: just remember transitionStart for offset
 					moveCropStart = validate(e.getPoint());
 					break;
 
@@ -369,11 +295,11 @@ public class PreviewFrame
 
 			AffineTransform t = ImageUtils.createTransform(
 					getBounds(),
-					imageRect,
+					currentRect,
 					loader.pictureShowNow.getDimension(),
 					loader.pictureShowNow.getAngle(),
 					loader.pictureShowNow.isFlipped());
-			//pictureShowNow.setCropTo(getRect(t.transform(start, null), t.transform(end, null)));
+			//pictureShowNow.setCropTo(getRect(t.transform(transitionStart, null), t.transform(end, null)));
 
 			Rectangle tmpRect = new Rectangle();
 			tmpRect.setFrameFromDiagonal(t.transform(oldRect.getLocation(), null),
@@ -386,7 +312,7 @@ public class PreviewFrame
 		}
 
 		public void mouseDragged(MouseEvent e) {
-			if (imageRect == null) {
+			if (currentRect == null) {
 				return;
 			}
 
@@ -454,14 +380,14 @@ public class PreviewFrame
 
 				// reverse rectangle
 				Dimension target;
-				int sameOrientation = (Math.abs(dx) - Math.abs(dy)) * (imageRect.width - imageRect.height);
+				int sameOrientation = (Math.abs(dx) - Math.abs(dy)) * (currentRect.width - currentRect.height);
 				if (sameOrientation > 0) {
 					target = new Dimension(dx, dy);
 				} else {
 					target = new Dimension(dy, dx);
 				}
 
-				Dimension d = ImageUtils.getSizeKeepRatio(imageRect.getSize(),
+				Dimension d = ImageUtils.getSizeKeepRatio(currentRect.getSize(),
 						target, false);
 
 				if (sameOrientation > 0) {
@@ -544,20 +470,20 @@ public class PreviewFrame
 			double px = p.getX();
 			double py = p.getY();
 
-			if (px < imageRect.x) {
-				px = imageRect.x;
+			if (px < currentRect.x) {
+				px = currentRect.x;
 			}
 
-			if (py < imageRect.y) {
-				py = imageRect.y;
+			if (py < currentRect.y) {
+				py = currentRect.y;
 			}
 
-			if (px > imageRect.x + imageRect.width - 1) {
-				px = imageRect.x + imageRect.width - 1;
+			if (px > currentRect.x + currentRect.width - 1) {
+				px = currentRect.x + currentRect.width - 1;
 			}
 
-			if (py > imageRect.y + imageRect.height - 1) {
-				py = imageRect.y + imageRect.height - 1;
+			if (py > currentRect.y + currentRect.height - 1) {
+				py = currentRect.y + currentRect.height - 1;
 			}
 
 			return new Point2D.Double(px, py);
