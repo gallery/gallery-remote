@@ -46,7 +46,7 @@ import java.util.*;
 
 /**
  * The GalleryComm2 class implements the client side of the Gallery remote
- * protocol <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/gallery/gallery/gallery_remote.php?rev=HEAD&content-type=text/vnd.viewcvs-text">
+ * protocol <a href="http://svn.sourceforge.net/viewvc/gallery/trunk/gallery/gallery_remote.php?view=markup">
  * version 2</a>.
  * 
  * @author jackodog
