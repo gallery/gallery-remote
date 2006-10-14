@@ -336,7 +336,8 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 
 	try		// JDK 1.1 naming
 	{
-	    String host = System.getProperty("http.proxyHost");
+		XTrustProvider.install();
+		String host = System.getProperty("http.proxyHost");
 	    if (host == null)
 		throw new Exception();		// try JDK 1.0.x naming
 	    int port = Integer.getInteger("http.proxyPort", -1).intValue();
