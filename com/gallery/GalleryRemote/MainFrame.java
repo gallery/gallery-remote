@@ -151,6 +151,8 @@ public class MainFrame extends JFrame
 	AlbumInspector jAlbumInspector = new AlbumInspector();
 	JScrollPane jPictureScroll = new JScrollPane();
 
+	public Frame activating = null;
+
 	public static Image iconImage = new ImageIcon(GalleryRemote.class.getResource("/rar_icon_16.gif")).getImage();
 
 	public static final String CARD_PICTURE = "picture";
@@ -1157,6 +1159,27 @@ public class MainFrame extends JFrame
 					public void windowClosing(java.awt.event.WindowEvent e) {
 						thisWindowClosing(e);
 					}
+
+					public void windowActivated(java.awt.event.WindowEvent e) {
+						if (activating == MainFrame.this) {
+							activating = null;
+							return;
+						}
+
+						if (activating == null && previewFrame != null && previewFrame.isVisible()) {
+							/*WindowListener mfWindowListener = getWindowListeners()[0];
+							WindowListener pWindowListener = previewFrame.getWindowListeners()[0];
+							removeWindowListener(mfWindowListener);
+							previewFrame.removeWindowListener(pWindowListener);*/
+
+							activating = MainFrame.this;
+							previewFrame.toFront();
+							toFront();
+
+							/*previewFrame.addWindowListener(pWindowListener);
+							addWindowListener(mfWindowListener);*/
+						}
+					}
 				});
 		jPicturesList.addKeyListener(
 				new KeyAdapter() {
@@ -2002,7 +2025,7 @@ public class MainFrame extends JFrame
 			if (name != null) {
 				name = name.trim();
 			}
-			
+
 			setText(name);
 			setToolTipText(name);
 

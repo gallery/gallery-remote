@@ -54,6 +54,31 @@ public class PreviewFrame
 			}
 		});
 
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowActivated(java.awt.event.WindowEvent e) {
+				MainFrame mainFrame = (MainFrame) GalleryRemote._().getMainFrame();
+
+				if (mainFrame.activating == PreviewFrame.this) {
+					mainFrame.activating = null;
+					return;
+				}
+
+				if (mainFrame.activating == null && mainFrame.isVisible()) {
+					/*WindowListener mfWindowListener = mainFrame.getWindowListeners()[0];
+					WindowListener pWindowListener = getWindowListeners()[0];
+					removeWindowListener(pWindowListener);
+					mainFrame.removeWindowListener(mfWindowListener);*/
+
+					mainFrame.activating = PreviewFrame.this;
+					mainFrame.toFront();
+					toFront();
+
+					/*addWindowListener(pWindowListener);
+					mainFrame.addWindowListener(mfWindowListener);*/
+				}
+			}
+		});
+
 		CropGlassPane glass = new CropGlassPane();
 		setGlassPane(glass);
 		glass.setVisible(true);
