@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
  * Date: Oct 8, 2003
  */
 public class PostChangeLog extends org.apache.tools.ant.Task {
+	public static final String baseUrl = "http://www.gallery2.hu/download/GalleryRemote/";
+
 	public void execute() throws BuildException {
 		PropertiesFile changeProps = new PropertiesFile("postchangelog");
 		PropertiesFile defaultProps = new PropertiesFile("defaults");
@@ -96,9 +98,9 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			StringBuffer note = new StringBuffer();
 			note.append("version=").append(currentBuildS).append('\n');
 			note.append("releaseDate=").append(defaultProps.getProperty("releaseDate")).append('\n');
-			note.append("releaseUrl=").append("http://jpmullan.com/galleryupdates/remote/gallery_remote_")
+			note.append("releaseUrl=").append(baseUrl).append("gallery_remote_")
 				.append(defaultProps.getProperty("version")).append(".zip").append('\n');
-			note.append("releaseUrlMac=").append("http://jpmullan.com/galleryupdates/remote/GalleryRemote.")
+			note.append("releaseUrlMac=").append(baseUrl).append("GalleryRemote.")
 				.append(defaultProps.getProperty("version")).append(".MacOSX.NoVM.tgz").append('\n');
 			note.append("releaseNotes=").append(changes.toString());
 
