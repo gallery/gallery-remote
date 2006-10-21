@@ -1,3 +1,10 @@
+2006-10-21  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b22)
+
+	* Added warning dialog when quitting if some pictures haven't
+	  been uploaded.
+	* Added guidelines during crop (can be disabled by setting
+	  previewDrawThirds=false in the user's properties).
+
 2006-10-20  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b21)
 
 	* The preview window is now tied to the main window: when

@@ -195,6 +195,18 @@ public class PreviewFrame
 						g.setColor(Color.black);
 						g.drawRect(cacheRect.x,  cacheRect.y, cacheRect.width, cacheRect.height);
 
+						if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
+							g.setColor(background);
+							g.drawLine(cacheRect.x + cacheRect.width / 3, cacheRect.y,
+									cacheRect.x + cacheRect.width / 3, cacheRect.y + cacheRect.height);
+							g.drawLine(cacheRect.x + cacheRect.width *2 / 3, cacheRect.y,
+									cacheRect.x + cacheRect.width * 2 / 3, cacheRect.y + cacheRect.height);
+							g.drawLine(cacheRect.x, cacheRect.y + cacheRect.height / 3,
+									cacheRect.x + cacheRect.width, cacheRect.y  + cacheRect.height / 3);
+							g.drawLine(cacheRect.x, cacheRect.y + cacheRect.height * 2 / 3,
+									cacheRect.x + cacheRect.width, cacheRect.y  + cacheRect.height * 2 / 3);
+						}
+
 						g.setClip(null);
 					} catch (NoninvertibleTransformException e) {
 						Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -240,12 +252,34 @@ public class PreviewFrame
 			if (oldRect != null) {
 				g.setXORMode(Color.cyan);
 				g.drawRect(oldRect.x, oldRect.y, oldRect.width, oldRect.height);
+
+				if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
+					g.drawLine(oldRect.x + oldRect.width / 3, oldRect.y,
+							oldRect.x + oldRect.width / 3, oldRect.y + oldRect.height);
+					g.drawLine(oldRect.x + oldRect.width *2 / 3, oldRect.y,
+							oldRect.x + oldRect.width * 2 / 3, oldRect.y + oldRect.height);
+					g.drawLine(oldRect.x, oldRect.y + oldRect.height / 3,
+							oldRect.x + oldRect.width, oldRect.y  + oldRect.height / 3);
+					g.drawLine(oldRect.x, oldRect.y + oldRect.height * 2 / 3,
+							oldRect.x + oldRect.width, oldRect.y  + oldRect.height * 2 / 3);
+				}
 			}
 
 			if (inDrag) {
 				g.setXORMode(Color.cyan);
 				oldRect = getRect(start, end);
 				g.drawRect(oldRect.x, oldRect.y, oldRect.width, oldRect.height);
+
+				if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
+					g.drawLine(oldRect.x + oldRect.width / 3, oldRect.y,
+							oldRect.x + oldRect.width / 3, oldRect.y + oldRect.height);
+					g.drawLine(oldRect.x + oldRect.width *2 / 3, oldRect.y,
+							oldRect.x + oldRect.width * 2 / 3, oldRect.y + oldRect.height);
+					g.drawLine(oldRect.x, oldRect.y + oldRect.height / 3,
+							oldRect.x + oldRect.width, oldRect.y  + oldRect.height / 3);
+					g.drawLine(oldRect.x, oldRect.y + oldRect.height * 2 / 3,
+							oldRect.x + oldRect.width, oldRect.y  + oldRect.height * 2 / 3);
+				}
 			}
 		}
 

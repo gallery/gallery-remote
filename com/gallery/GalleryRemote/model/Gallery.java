@@ -71,6 +71,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	transient public int forceGalleryVersion = 0;
 	transient public String forceProtocolEncoding = null;
 	transient public int resizeJpegQuality = -1;
+	transient public boolean dirty = false;
 
 	public static String types[] = new String[]{STANDALONE, POSTNUKE, PHPNUKE, GEEKLOG};
 	public static final int TYPE_STANDALONE = 0;
@@ -934,6 +935,14 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setForceProtocolEncoding(String forceProtocolEncoding) {
 		this.forceProtocolEncoding = forceProtocolEncoding;
+	}
+
+	public boolean isDirty() {
+		return dirty;
+	}
+
+	public void setDirty(boolean dirty) {
+		this.dirty = dirty;
 	}
 
 	class TreeEnumeration implements Enumeration {

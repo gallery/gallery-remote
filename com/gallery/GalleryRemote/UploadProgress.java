@@ -163,8 +163,8 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 					jCancel.setActionCommand("OK");
 				} else {
 					setVisible(false);
+					dispose();
 				}
-				//dispose();
 			}
 		}
 	}
@@ -236,14 +236,7 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	}
 
 	boolean checkLevel(int level) {
-		if (level == LEVEL_UPLOAD_ONE || level == LEVEL_UPLOAD_PROGRESS) {
-			return true;
-		} else {
-			//Log.log(Log.LEVEL_TRACE, MODULE, "Bad level");
-			//Log.logStack(Log.LEVEL_TRACE, MODULE);
-
-			return false;
-		}
+		return level == LEVEL_UPLOAD_ONE || level == LEVEL_UPLOAD_PROGRESS;
 	}
 
 	public void actionPerformed(ActionEvent e) {

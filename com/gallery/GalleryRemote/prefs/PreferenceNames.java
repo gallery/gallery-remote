@@ -90,6 +90,7 @@ public interface PreferenceNames {
 	public static final String FONT_OVERRIDE_SIZE = "fontOverrideSize";
 	public static final String PREVIEW_TRANSITION_DURATION = "previewTransitionDuration";
 	public static final String UNACCELERATED_TRANSITION = "unacceleratedTransition";
+	public static final String PREVIEW_DRAW_THIRDS = "previewDrawThirds";
 
 	// Applet
 	public static final String APPLET_SHOW_RESIZE = "appletShowResize";

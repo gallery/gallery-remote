@@ -345,6 +345,8 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		} else {
 			pictures.add(index, p);
 		}
+
+		gallery.setDirty(true);
 	}
 
 	public void sortPicturesAlphabetically() {

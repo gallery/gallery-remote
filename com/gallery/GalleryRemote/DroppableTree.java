@@ -144,7 +144,7 @@ public class DroppableTree
 		Rectangle r = getVisibleRect();
 		boolean scrolled = false;
 
-		Log.log(Log.LEVEL_TRACE, MODULE, "row: " + row + " lastRow: " + lastRow + " rowHeight: " + rowHeight);
+		//Log.log(Log.LEVEL_TRACE, MODULE, "row: " + row + " lastRow: " + lastRow + " rowHeight: " + rowHeight);
 		if (y < r.getY() + getRowHeight() && row > 0) {
 			int tmpLastRow = lastRow;
 			//scrollRowToVisible(row - 1);

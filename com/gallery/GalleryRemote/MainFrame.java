@@ -78,7 +78,7 @@ public class MainFrame extends JFrame
 	 * will lose their changes.  If we are clean then there is no possibility
 	 * of losing changes.
 	 */
-	private boolean m_isDirty = false;
+	//private boolean m_isDirty = false;
 
 	public DefaultComboBoxModel galleries = null;
 	//private Gallery currentGallery = null;
@@ -298,7 +298,7 @@ public class MainFrame extends JFrame
 		selectedGalleryChanged();
 
 		// We've been initalized, we are now clean.
-		setDirtyFlag(false);
+		//setDirtyFlag(false);
 	}
 
 
@@ -323,7 +323,7 @@ public class MainFrame extends JFrame
 		// check that we don't have galleries with data
 		if (!shutdownOs) {
 			// todo: save
-			/*if (m_isDirty) {
+			if (isDirty()) {
 				if (JOptionPane.showConfirmDialog(
 						(JFrame) this,
 						GRI18n.getString(MODULE, "quitQuestion"),
@@ -331,7 +331,7 @@ public class MainFrame extends JFrame
 						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;
 				}
-			}*/
+			}
 		}
 
 		if (running) {
@@ -390,15 +390,26 @@ public class MainFrame extends JFrame
 		resetUIState();
 	}
 
-	/**
+	/*
 	 * <p>This method updates the dirty flag and also causes the UI
 	 * to be updated to reflect the new state.
 	 *
 	 * @param newDirtyState the new state (true means the document is dirty).
-	 */
-	private void setDirtyFlag(boolean newDirtyState) {
+
+	/*private void setDirtyFlag(boolean newDirtyState) {
 		m_isDirty = newDirtyState;
 		resetUIState();
+	}*/
+
+	public boolean isDirty() {
+		for (int i = galleries.getSize() - 1; i >= 0; i--) {
+			Gallery g = (Gallery) galleries.getElementAt(i);
+			if (g.isDirty()) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	void resetUIState() {
@@ -619,7 +630,7 @@ public class MainFrame extends JFrame
 		}
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 	public void addPictures(Picture[] pictures, boolean select) {
@@ -650,7 +661,7 @@ public class MainFrame extends JFrame
 		}
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 	private void selectAddedPictures(Object[] objects, int index) {
@@ -708,7 +719,7 @@ public class MainFrame extends JFrame
 		}
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 	public void setSortType(int sortType) {
@@ -789,7 +800,7 @@ public class MainFrame extends JFrame
 		//}.transitionStart();
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 	public void slideshow() {
@@ -884,7 +895,7 @@ public class MainFrame extends JFrame
 		deleteSelectedPictures();
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 	public void doCopy() {
@@ -899,7 +910,7 @@ public class MainFrame extends JFrame
 		}
 
 		// We've been modified, we are now dirty.
-		setDirtyFlag(true);
+		//setDirtyFlag(true);
 	}
 
 
@@ -1318,22 +1329,23 @@ public class MainFrame extends JFrame
 			showAboutBox();
 		} else if (command.equals("Fetch")) {
 			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
-
 				// todo: save
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
-                /*int response = saveOnPermission("logoutQuestion", getCurrentGallery());
-
-                if (JOptionPane.CANCEL_OPTION == response) {
-                    return;
-                }*/
+				if (JOptionPane.showConfirmDialog(
+						(JFrame) this,
+						GRI18n.getString(MODULE, "logoutQuestion"),
+						"Warning",
+						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+					return;
+				}
 
 				getCurrentGallery().logOut();
 
 				lastOpenedFile = null;
 
 				// We've been logged out, we are now clean.
-				setDirtyFlag(false);
+				//setDirtyFlag(false);
 			} else {
 				// login may have failed and caused getComm to be null.
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
@@ -1425,11 +1437,11 @@ public class MainFrame extends JFrame
 
 		updateAlbumCombo();
 		resetUIState();
-	}*/
+	}
 
 
 	// todo: save
-	/*private void saveAsState() {
+	private void saveAsState() {
 		JFileChooser fc = new JFileChooser();
 		fc.setAcceptAllFileFilterUsed(false);
 		fc.setFileFilter(galleryFileFilter);
@@ -1463,9 +1475,9 @@ public class MainFrame extends JFrame
 		}
 
 		saveState(lastOpenedFile);
-	}*/
+	}
 
-	/**
+
 	 * This is an internal worker function to save the state to a file.
 	 * Note that we specifically do *not* set m_isDirty = false in this
 	 * method because we use this to temporarily backup the current state
@@ -1473,9 +1485,9 @@ public class MainFrame extends JFrame
 	 * save the state to a "real" save file if they want to keep it).
 	 *
 	 * @param f the file to store the current dialog data.
-	 */
+
 	// todo: save
-	/*private void saveState(File f) {
+	private void saveState(File f) {
 		try {
 			Log.log(Log.LEVEL_INFO, MODULE,
 					"Saving state to file " + f.getPath());
@@ -1501,13 +1513,13 @@ public class MainFrame extends JFrame
 		} catch (NoClassDefFoundError e) {
 			Log.log(Log.LEVEL_ERROR, MODULE, "JSX not installed, can't save state...");
 		}
-	}*/
+	}
 
-	/**
+
 	 * Reads the properties and constructs the current MRU menu list.
-	 */
+
 	// todo: save
-	/*private void updateMRUItemList() {
+	private void updateMRUItemList() {
 
 		// First, delete all of the existing MRU values
 		for (int i = 0; i < m_MRUFileList.size(); i++) {
@@ -1561,14 +1573,14 @@ public class MainFrame extends JFrame
 			jMenuFile.insert(nextMRUItem, nextInsertPoint++);
 			nextMRUItem.addActionListener(this);
 		}
-	}*/
+	}
 
-	/**
+
 	 * Save the passed mruFile and then write the properties file so that
 	 * we don't lose the changes.  Then force the MRU menu to change.
 	 *
 	 * @param mruFile the file to add to the MRU list
-	 */
+
 	// todo: save
 	/*private void saveMRUItem(File mruFile) {
 		// Wait to here to see if we succeed in loading the file.
@@ -1579,9 +1591,8 @@ public class MainFrame extends JFrame
 
 		// Update the MRU list
 		updateMRUItemList();
-	}*/
+	}
 
-	/**
 	 * OpenState opens a file and loads it into GR.  If a file path is
 	 * passed in, then that file is opened.  If null is passed in then a
 	 * File Open dialog is displayed to allow the user to choose a file to
@@ -1593,9 +1604,9 @@ public class MainFrame extends JFrame
 	 *
 	 * @param fileToOpen The file to open (FQPN) or null if a File Open dialog
 	 *                   should be used.
-	 */
+
 	// todo: save
-	/*private void openState(String fileToOpen) {
+	private void openState(String fileToOpen) {
 		JFileChooser fc = null;
 		if (null == fileToOpen) {
 			fc = new JFileChooser();
@@ -1831,7 +1842,7 @@ public class MainFrame extends JFrame
 			}
 
 			// We've been modified, we are now dirty.
-			setDirtyFlag(true);
+			//setDirtyFlag(true);
 		}
 	}
 
@@ -1889,8 +1900,8 @@ public class MainFrame extends JFrame
      * and mark the document as being dirty.
      */
     public void deleteSelectedPictures() {
-        CoreUtils.deleteSelectedPictures();
-        setDirtyFlag(true);
+		CoreUtils.deleteSelectedPictures();
+		//setDirtyFlag(true);
     }
 
     /*
@@ -1898,8 +1909,8 @@ public class MainFrame extends JFrame
      * and mark the document as being dirty.
      */
     public void movePicturesUp() {
-        CoreUtils.movePicturesUp();
-        setDirtyFlag(true);
+		CoreUtils.movePicturesUp();
+		//setDirtyFlag(true);
     }
 
     /*
@@ -1907,8 +1918,8 @@ public class MainFrame extends JFrame
      * and mark the document as being dirty.
      */
     public void movePicturesDown() {
-        CoreUtils.movePicturesDown();
-        setDirtyFlag(true);
+		CoreUtils.movePicturesDown();
+		//setDirtyFlag(true);
     }
 
 	public void flushMemory() {

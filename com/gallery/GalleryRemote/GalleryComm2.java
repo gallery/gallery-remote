@@ -470,6 +470,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						}
 
 						((UploadProgress) su).setVisible(false);
+						((UploadProgress) su).dispose();
 					}
 				});
 			}
@@ -501,6 +502,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 						GalleryRemote._().getCore().shutdown(true);
 					}
 				}
+
+				g.setDirty(false);
 
 				GalleryRemote._().getCore().flushMemory();
 			} else {
