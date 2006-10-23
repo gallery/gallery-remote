@@ -1,3 +1,9 @@
+2006-10-23  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b23)
+
+	* Re-enabled QuickConfig preference dialog (this was a very
+	  long-standing issue, thanks Neil for bringing it to
+	  my attention).
+
 2006-10-21  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b22)
 
 	* Added warning dialog when quitting if some pictures haven't
