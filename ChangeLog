@@ -1,3 +1,7 @@
+2006-10-24  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b24)
+
+	* Added Norwegian translation (thanks Sverre M. Vikan)
+
 2006-10-23  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b23)
 
 	* Re-enabled QuickConfig preference dialog (this was a very
