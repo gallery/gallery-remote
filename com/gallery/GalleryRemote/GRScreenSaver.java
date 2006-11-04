@@ -91,7 +91,7 @@ public class GRScreenSaver
 
 			Log.log(Log.LEVEL_TRACE, MODULE, "Really Paint!");
 			Component c = getContext().getComponent();
-			Image img = grss.loader.imageShowNow.getImage();
+			Image img = grss.loader.imageShowNow;
 
 			int width = (int) c.getBounds().getWidth();
 			int height = (int) c.getBounds().getHeight();

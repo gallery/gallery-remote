@@ -25,10 +25,16 @@ import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 
 import javax.swing.*;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.IIOException;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
+import java.io.IOException;
 
 /**
  * Thumbnail cache loads and resizes images in the background for display in
@@ -53,21 +59,37 @@ public class ThumbnailCache implements Runnable {
 		//Log.log(Log.TRACE, MODULE, "Starting " + iFilename);
 		while (!toLoad.isEmpty()) {
 			Picture p = (Picture) toLoad.pop();
-			ImageIcon i = null;
+			Image i = null;
 
 			if (!thumbnails.containsKey(p)) {
 				if (p.isOnline()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Fetching thumbnail " + p.getUrlThumbnail());
-					i = new ImageIcon(p.getUrlThumbnail());
+					try {
+						ImageReader reader = (ImageReader) ImageIO.getImageReadersByFormatName("jpeg").next();
+						ImageInputStream inputStream = ImageIO.createImageInputStream(p.getUrlThumbnail().openStream());
+						reader.setInput(inputStream);
 
-					Image scaled = null;
-					Dimension newD = ImageUtils.getSizeKeepRatio(
-							new Dimension(i.getIconWidth(), i.getIconHeight()),
-							GalleryRemote._().properties.getThumbnailSize(), true);
-					if (newD != null) {
-						scaled = i.getImage().getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
-						i.getImage().flush();
-						i.setImage(scaled);
+						i = reader.read(0);
+
+						reader.dispose();
+					} catch (IIOException e) {
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					} catch (IOException e) {
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					}
+
+					if (i != null) {
+						Image scaled;
+						Dimension newD = ImageUtils.getSizeKeepRatio(
+								new Dimension(((BufferedImage) i).getWidth(), ((BufferedImage) i).getHeight()),
+								GalleryRemote._().properties.getThumbnailSize(), true);
+						if (newD != null) {
+							scaled = i.getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
+							i.flush();
+							i = scaled;
+						}
+					} else {
+						i = ImageUtils.unrecognizedThumbnail;
 					}
 				} else {
 					i = ImageUtils.load(
@@ -135,9 +157,9 @@ public class ThumbnailCache implements Runnable {
 	public void flushMemory() {
 		Iterator it = thumbnails.values().iterator();
 		while (it.hasNext()) {
-			ImageIcon i = (ImageIcon) it.next();
-			if (i.getImage() != null) {
-				i.getImage().flush();
+			Image i = (Image) it.next();
+			if (i != null) {
+				i.flush();
 			}
 		}
 
@@ -162,8 +184,8 @@ public class ThumbnailCache implements Runnable {
 	 * 
 	 * @return The thumbnail object
 	 */
-	public ImageIcon getThumbnail(Picture p) {
-		return (ImageIcon) thumbnails.get(p);
+	public Image getThumbnail(Picture p) {
+		return (Image) thumbnails.get(p);
 	}
 }
 

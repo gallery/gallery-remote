@@ -40,6 +40,7 @@ import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.Method;
@@ -853,17 +854,17 @@ public class MainFrame extends JFrame
 	 * @param p picture whose thumbnail is to be fetched
 	 * @return The thumbnail value
 	 */
-	public ImageIcon getThumbnail(Picture p) {
+	public Image getThumbnail(Picture p) {
 		if (p == null) {
 			return null;
 		}
 
-		ImageIcon thumb = thumbnailCache.getThumbnail(p);
+		Image thumb = thumbnailCache.getThumbnail(p);
 
 		if (thumb == null) {
 			thumb = ImageUtils.defaultThumbnail;
 		} else {
-			thumb = ImageUtils.rotateImageIcon(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
+			thumb = ImageUtils.rotateImage(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
 		}
 
 		return thumb;

@@ -6,6 +6,7 @@ import com.gallery.GalleryRemote.model.Album;
 import javax.swing.*;
 import java.util.Arrays;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
@@ -170,10 +171,15 @@ public class CoreUtils {
 					}
 
 					if (GalleryRemote._().properties.getShowThumbnails()) {
-						ImageIcon icon = core.getThumbnail(p);
+						Image icon = core.getThumbnail(p);
 						if (icon != null) {
-							setIcon(icon);
-							setIconTextGap(4 + GalleryRemote._().properties.getThumbnailSize().width - icon.getIconWidth());
+							Icon iicon = getIcon();
+							if (iicon == null || ! (iicon instanceof ImageIcon)) {
+								setIcon((iicon = new ImageIcon()));
+							}
+							((ImageIcon) iicon).setImage(icon);
+
+							setIconTextGap(4 + GalleryRemote._().properties.getThumbnailSize().width - icon.getWidth(this));
 						}
 					}
 

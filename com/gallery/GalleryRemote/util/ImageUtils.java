@@ -86,23 +86,23 @@ public class ImageUtils {
 	public final static String DEFAULT_RESOURCE = "/default.gif";
 	public final static String UNRECOGNIZED_RESOURCE = "/default.gif";
 
-	public static ImageIcon defaultThumbnail = null;
-	public static ImageIcon unrecognizedThumbnail = null;
+	public static BufferedImage defaultThumbnail = null;
+	public static BufferedImage unrecognizedThumbnail = null;
 
 	public static boolean deferredStopUsingIM = false;
 	public static boolean deferredStopUsingJpegtran = false;
 	public static boolean deferredStopUsingJpegtranCrop = false;
 
-	public static ImageIcon load(String filename, Dimension d, int usage) {
+	public static BufferedImage load(String filename, Dimension d, int usage) {
 		return load(filename, d, usage, false);
 	}
 
-	public static ImageIcon load(String filename, Dimension d, int usage, boolean ignoreFailure) {
+	public static BufferedImage load(String filename, Dimension d, int usage, boolean ignoreFailure) {
 		if (!new File(filename).exists()) {
 			return null;
 		}
 
-		ImageIcon r = null;
+		BufferedImage r = null;
 		long start = System.currentTimeMillis();
 
 		if (!GalleryFileFilter.canManipulate(filename)) {
@@ -147,10 +147,18 @@ public class ImageUtils {
 						stopUsingIM();
 					}
 				} else {
-					r = new ImageIcon(temp.getPath());
+					try {
+						r = ImageIO.read(temp);
+					} catch (IOException e) {
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					}
 				}
 			} else {
-				r = new ImageIcon(temp.getPath());
+				try {
+					r = ImageIO.read(temp);
+				} catch (IOException e) {
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				}
 			}
 		}
 
@@ -166,47 +174,41 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static ImageIcon loadJava(URL url, Dimension d, boolean noStretch) {
-		ImageIcon r = new ImageIcon(url);
-
-		return loadJavaInternal(r, d, noStretch);
-		/*try {
-		ImageInputStream iis = ImageIO.createImageInputStream(url.openStream());
-		return loadJavaInternal(iis, d);
+	public static BufferedImage loadJava(URL url, Dimension d, boolean noStretch) {
+		try {
+			BufferedImage r = ImageIO.read(url);
+			return loadJavaInternal(r, d, noStretch);
 		} catch (IOException e) {
-		Log.logException(Log.LEVEL_ERROR, MODULE, e);
-		return null;
-		}*/
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		}
 	}
 
-	public static ImageIcon loadJava(String filename, Dimension d, boolean noStretch) {
-		ImageIcon r = new ImageIcon(filename);
-
-		return loadJavaInternal(r, d, noStretch);
-		/*try {
-		ImageInputStream iis = ImageIO.createImageInputStream(new File(filename));
-		return loadJavaInternal(iis, d);
+	public static BufferedImage loadJava(String filename, Dimension d, boolean noStretch) {
+		try {
+			BufferedImage r = ImageIO.read(new File(filename));
+			return loadJavaInternal(r, d, noStretch);
 		} catch (IOException e) {
-		Log.logException(Log.LEVEL_ERROR, MODULE, e);
-		return null;
-		}*/
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		}
 	}
 
-	private static ImageIcon loadJavaInternal(ImageIcon r, Dimension d, boolean noStretch) {
-		Image scaled = null;
+	private static BufferedImage loadJavaInternal(BufferedImage r, Dimension d, boolean noStretch) {
+		BufferedImage scaled = null;
 		Dimension newD = getSizeKeepRatio(
-				new Dimension(r.getIconWidth(), r.getIconHeight()),
+				new Dimension(r.getWidth(), r.getHeight()),
 				d, noStretch);
 
 		if (newD == null) {
 			return r;
 		}
 
-		scaled = r.getImage().getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
+		scaled = (BufferedImage) r.getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
 
-		r.getImage().flush();
-		r.setImage(scaled);
-		return r;
+		r.flush();
+
+		return scaled;
 		/*Iterator iter = ImageIO.getImageReaders(iis);
 		if (!iter.hasNext()) {
 		return null;
@@ -550,15 +552,15 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static ImageIcon rotateImageIcon(ImageIcon thumb, int angle, boolean flipped, Component c) {
+	public static Image rotateImage(Image thumb, int angle, boolean flipped, Component c) {
 		if (angle != 0 || flipped) {
 			int width;
 			int height;
 			int width1;
 			int height1;
 
-			width = thumb.getImage().getWidth(c);
-			height = thumb.getImage().getHeight(c);
+			width = thumb.getWidth(c);
+			height = thumb.getHeight(c);
 
 			if (angle % 2 == 0) {
 				width1 = width;
@@ -568,15 +570,15 @@ public class ImageUtils {
 				height1 = width;
 			}
 
-			Image vImg = c.createImage(width1, height1);
+			BufferedImage vImg = (BufferedImage) c.createImage(width1, height1);
 
 			Graphics2D g = (Graphics2D) vImg.getGraphics();
 
 			AffineTransform transform = getRotationTransform(width, height, angle, flipped);
 
-			g.drawImage(thumb.getImage(), transform, c);
+			g.drawImage(thumb, transform, c);
 
-			thumb = new ImageIcon(vImg);
+			thumb = vImg;
 		}
 
 		return thumb;
@@ -673,7 +675,6 @@ public class ImageUtils {
 	}
 
 	static class LocalInfo {
-		//String name;
 		String ext;
 		String filename;
 		File file;
@@ -681,7 +682,6 @@ public class ImageUtils {
 		Dimension size;
 
 		public LocalInfo(String ext, String filename, File file, URL url, Dimension size) {
-			//this.name = name;
 			this.ext = ext;
 			this.filename = filename;
 			this.file = file;
@@ -747,6 +747,8 @@ public class ImageUtils {
 				for (int i = 0; i < cookies.length; i++) {
 					conn.addRequestProperty("Cookie", cookies[i].toString());
 				}
+
+				conn.connect();
 
 				int size = conn.getContentLength();
 

@@ -6,6 +6,8 @@ import com.gallery.GalleryRemote.model.Album;
 import javax.swing.*;
 import java.util.Iterator;
 import java.io.File;
+import java.awt.image.BufferedImage;
+import java.awt.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +22,7 @@ public interface GalleryRemoteCore {
 
 	public void flushMemory();
 	public void preloadThumbnails(Iterator pictures);
-	public ImageIcon getThumbnail(Picture p);
+	public Image getThumbnail(Picture p);
 	public StatusUpdate getMainStatusUpdate();
 
 	public void thumbnailLoadedNotify();

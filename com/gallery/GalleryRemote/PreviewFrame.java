@@ -29,6 +29,7 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;
@@ -99,7 +100,7 @@ public class PreviewFrame
 		repaint();
 	}
 
-	public boolean blockPictureReady(ImageIcon image, Picture picture) {
+	public boolean blockPictureReady(BufferedImage image, Picture picture) {
 		return false;
 	}
 
@@ -129,14 +130,14 @@ public class PreviewFrame
 			if (loader.imageShowNow != null && loader.pictureShowWant != null) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "New image: " + loader.imageShowNow);
 
-				ImageIcon tmpImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+				Image tmpImage = ImageUtils.rotateImage(loader.imageShowNow, loader.pictureShowWant.getAngle(),
 						loader.pictureShowWant.isFlipped(), this);
 
-				currentRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getIconWidth()) / 2,
-						getLocation().y + (getHeight() - tmpImage.getIconHeight()) / 2,
-						tmpImage.getIconWidth(), tmpImage.getIconHeight());
+				currentRect = new Rectangle(getLocation().x + (getWidth() - tmpImage.getWidth(this)) / 2,
+						getLocation().y + (getHeight() - tmpImage.getHeight(this)) / 2,
+						tmpImage.getWidth(this), tmpImage.getHeight(this));
 
-				g2.drawImage(tmpImage.getImage(), currentRect.x, currentRect.y, getContentPane());
+				g2.drawImage(tmpImage, currentRect.x, currentRect.y, getContentPane());
 			}
 		}
 	}

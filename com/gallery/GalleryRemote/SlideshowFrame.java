@@ -338,7 +338,7 @@ public class SlideshowFrame extends PreviewFrame
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
-		if (wantIndex + 1< pictures.size() && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
+		if (wantIndex + 1< pictures.size() && (loader.images.get(picture = (Picture) pictures.get(wantIndex + 1))) == null) {
 			wantDownloaded.add(picture);
 			loader.imageLoader.loadPicture(picture, false);
 		}
@@ -392,7 +392,7 @@ public class SlideshowFrame extends PreviewFrame
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
-		if (wantIndex - 1 > 0 && (loader.imageIcons.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
+		if (wantIndex - 1 > 0 && (loader.images.get(picture = (Picture) pictures.get(wantIndex - 1))) == null) {
 			wantDownloaded.add(picture);
 			loader.imageLoader.loadPicture(picture, false);
 		}
@@ -400,7 +400,7 @@ public class SlideshowFrame extends PreviewFrame
 		return true;
 	}
 
-	public boolean blockPictureReady(ImageIcon image, Picture picture) {
+	public boolean blockPictureReady(BufferedImage image, Picture picture) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "blockPictureReady: " + picture + " - pictureShowWant: " + loader.pictureShowWant);
 
 		if (picture == userPicture) {
@@ -612,9 +612,9 @@ public class SlideshowFrame extends PreviewFrame
 		BufferedImage[] previousInfoCache = new BufferedImage[4];
 		Point[] previousInfoLocation = new Point[4];
 
-		ImageIcon currentImage = null;
-		ImageIcon currentImageSrc = null;
-		ImageIcon previousImage = null;
+		Image currentImage = null;
+		Image currentImageSrc = null;
+		Image previousImage = null;
 		Rectangle previousRect = null;
 
 		Timer timer = new Timer(1000/60, this);
@@ -680,12 +680,12 @@ public class SlideshowFrame extends PreviewFrame
 					previousImage = currentImage;
 					previousRect = currentRect;
 
-					currentImage = ImageUtils.rotateImageIcon(loader.imageShowNow, loader.pictureShowWant.getAngle(),
+					currentImage = ImageUtils.rotateImage(loader.imageShowNow, loader.pictureShowWant.getAngle(),
 							loader.pictureShowWant.isFlipped(), this);
 
-					currentRect = new Rectangle(getLocation().x + (getWidth() - currentImage.getIconWidth()) / 2,
-							getLocation().y + (getHeight() - currentImage.getIconHeight()) / 2,
-							currentImage.getIconWidth(), currentImage.getIconHeight());
+					currentRect = new Rectangle(getLocation().x + (getWidth() - currentImage.getWidth(this)) / 2,
+							getLocation().y + (getHeight() - currentImage.getHeight(this)) / 2,
+							currentImage.getWidth(this), currentImage.getHeight(this));
 
 					currentImageSrc = loader.imageShowNow;
 
@@ -702,12 +702,12 @@ public class SlideshowFrame extends PreviewFrame
 
 				if (imageAlpha != 1 && previousImage != null) {
 					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - imageAlpha));
-					g.drawImage(previousImage.getImage(), previousRect.x, previousRect.y, getContentPane());
+					g.drawImage(previousImage, previousRect.x, previousRect.y, getContentPane());
 				}
 
 				if (imageAlpha != 0) {
 					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, imageAlpha));
-					g.drawImage(currentImage.getImage(), currentRect.x, currentRect.y, getContentPane());
+					g.drawImage(currentImage, currentRect.x, currentRect.y, getContentPane());
 				}
 
 				g.setComposite(composite);

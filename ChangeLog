@@ -1,3 +1,8 @@
+2006-11-04  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b25)
+
+	* Refactored image loading code, now using ImageIO for
+	  better performance and lower memory consumption.
+
 2006-10-24  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b24)
 
 	* Added Norwegian translation (thanks Sverre M. Vikan)

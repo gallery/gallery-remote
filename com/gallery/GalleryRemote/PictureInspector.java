@@ -29,6 +29,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -42,7 +43,6 @@ import java.util.Iterator;
  * Bean inspector for Pictures
  *
  * @author paour
- * @created August 16, 2002
  */
 public class PictureInspector extends JPanel
 		implements ActionListener, DocumentListener {
@@ -346,13 +346,13 @@ public class PictureInspector extends JPanel
 	 */
 	public void setMainFrame(MainFrame mf) {
 		this.mf = mf;
-		jIcon.setIcon(ImageUtils.defaultThumbnail);
+		replaceIcon(jIcon, ImageUtils.defaultThumbnail);
 	}
 
 	/**
 	 * Sets the picture attribute of the PictureInspector object
 	 *
-	 * @param p The new picture value
+	 * @param pictures The new picture value
 	 */
 	public void setPictures(Object[] pictures) {
 		//Log.log(Log.TRACE, MODULE, "setPictures " + pictures);
@@ -367,7 +367,7 @@ public class PictureInspector extends JPanel
 
 		if (pictures == null || pictures.length == 0) {
 			jIcon.setText(GRI18n.getString(MODULE, "noPicSel"));
-			jIcon.setIcon(ImageUtils.defaultThumbnail);
+			replaceIcon(jIcon, ImageUtils.defaultThumbnail);
 			jPath.setText("");
 			jAlbum.setText("");
 
@@ -388,7 +388,7 @@ public class PictureInspector extends JPanel
 		} else if (pictures.length == 1) {
 			Picture p = (Picture) pictures[0];
 
-			jIcon.setIcon(mf.getThumbnail(p));
+			replaceIcon(jIcon, mf.getThumbnail(p));
 			if (p.isOnline()) {
 				jPath.setText(GRI18n.getString(MODULE, "onServer"));
 				jIcon.setText(p.getName());
@@ -418,7 +418,7 @@ public class PictureInspector extends JPanel
 
 			Object[] params = {new Integer(pictures.length)};
 			jIcon.setText(GRI18n.getString(MODULE, "countElemSel", params));
-			jIcon.setIcon(ImageUtils.defaultThumbnail);
+			replaceIcon(jIcon, ImageUtils.defaultThumbnail);
 			jPath.setText("");
 			jAlbum.setText(p.getParentAlbum().getTitle());
 			jCaption.setText("");
@@ -540,5 +540,16 @@ public class PictureInspector extends JPanel
 			CoreUtils.selectPrevPicture();
 		}
 	};
+
+	public void replaceIcon(JLabel label, Image icon) {
+		Icon i = label.getIcon();
+
+		if (i == null || !(i instanceof ImageIcon)) {
+			i = new ImageIcon();
+			label.setIcon(i);
+		}
+
+		((ImageIcon) i).setImage(icon);
+	}
 }
 

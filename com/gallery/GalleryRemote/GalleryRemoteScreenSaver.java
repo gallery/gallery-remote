@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -174,7 +175,7 @@ public class GalleryRemoteScreenSaver
 
 	public void preloadThumbnails(Iterator pictures) {}
 
-	public ImageIcon getThumbnail(Picture p) {
+	public Image getThumbnail(Picture p) {
 		return null;
 	}
 
@@ -234,7 +235,7 @@ public class GalleryRemoteScreenSaver
 		}.start();
 	}
 
-	public boolean blockPictureReady(ImageIcon image, Picture picture) {
+	public boolean blockPictureReady(BufferedImage image, Picture picture) {
 		return false;
 	}
 

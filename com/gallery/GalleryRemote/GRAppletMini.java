@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Arrays;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
@@ -123,7 +124,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 	public void preloadThumbnails(Iterator pictures) {}
 
-	public ImageIcon getThumbnail(Picture p) {
+	public Image getThumbnail(Picture p) {
 		return null;
 	}
 
