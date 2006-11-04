@@ -86,23 +86,23 @@ public class ImageUtils {
 	public final static String DEFAULT_RESOURCE = "/default.gif";
 	public final static String UNRECOGNIZED_RESOURCE = "/default.gif";
 
-	public static BufferedImage defaultThumbnail = null;
-	public static BufferedImage unrecognizedThumbnail = null;
+	public static Image defaultThumbnail = null;
+	public static Image unrecognizedThumbnail = null;
 
 	public static boolean deferredStopUsingIM = false;
 	public static boolean deferredStopUsingJpegtran = false;
 	public static boolean deferredStopUsingJpegtranCrop = false;
 
-	public static BufferedImage load(String filename, Dimension d, int usage) {
+	public static Image load(String filename, Dimension d, int usage) {
 		return load(filename, d, usage, false);
 	}
 
-	public static BufferedImage load(String filename, Dimension d, int usage, boolean ignoreFailure) {
+	public static Image load(String filename, Dimension d, int usage, boolean ignoreFailure) {
 		if (!new File(filename).exists()) {
 			return null;
 		}
 
-		BufferedImage r = null;
+		Image r = null;
 		long start = System.currentTimeMillis();
 
 		if (!GalleryFileFilter.canManipulate(filename)) {
@@ -174,7 +174,7 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static BufferedImage loadJava(URL url, Dimension d, boolean noStretch) {
+	public static Image loadJava(URL url, Dimension d, boolean noStretch) {
 		try {
 			BufferedImage r = ImageIO.read(url);
 			return loadJavaInternal(r, d, noStretch);
@@ -184,7 +184,7 @@ public class ImageUtils {
 		}
 	}
 
-	public static BufferedImage loadJava(String filename, Dimension d, boolean noStretch) {
+	public static Image loadJava(String filename, Dimension d, boolean noStretch) {
 		try {
 			BufferedImage r = ImageIO.read(new File(filename));
 			return loadJavaInternal(r, d, noStretch);
@@ -194,8 +194,8 @@ public class ImageUtils {
 		}
 	}
 
-	private static BufferedImage loadJavaInternal(BufferedImage r, Dimension d, boolean noStretch) {
-		BufferedImage scaled = null;
+	private static Image loadJavaInternal(BufferedImage r, Dimension d, boolean noStretch) {
+		Image scaled = null;
 		Dimension newD = getSizeKeepRatio(
 				new Dimension(r.getWidth(), r.getHeight()),
 				d, noStretch);
@@ -204,7 +204,7 @@ public class ImageUtils {
 			return r;
 		}
 
-		scaled = (BufferedImage) r.getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
+		scaled = r.getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
 
 		r.flush();
 

@@ -235,7 +235,7 @@ public class GalleryRemoteScreenSaver
 		}.start();
 	}
 
-	public boolean blockPictureReady(BufferedImage image, Picture picture) {
+	public boolean blockPictureReady(Image image, Picture picture) {
 		return false;
 	}
 

@@ -19,7 +19,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 	public static final String MODULE = "ImgLoadrUtil";
 
 	public SmartHashtable images = new SmartHashtable();
-	public BufferedImage imageShowNow = null;
+	public Image imageShowNow = null;
 	public Picture pictureShowWant = null;
 	public Picture pictureShowNow = null;
 	public ImageLoader imageLoader = new ImageLoader();
@@ -53,7 +53,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 		}
 	}
 
-	public void pictureReady(BufferedImage image, Picture picture) {
+	public void pictureReady(Image image, Picture picture) {
 		if (!imageLoaderUser.blockPictureReady(image, picture)) {
 			imageShowNow = image;
 			pictureShowNow = picture;
@@ -85,7 +85,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 					if (async) {
 						imageLoader.loadPicture(picture, true);
 					} else {
-						BufferedImage sizedIcon = getSizedIconForce(picture);
+						Image sizedIcon = getSizedIconForce(picture);
 						if (sizedIcon != null) {
 							if (notify) {
 								pictureReady(sizedIcon, picture);
@@ -97,8 +97,8 @@ public class ImageLoaderUtil implements PreferenceNames {
 		}
 	}
 
-	public BufferedImage getSizedIconForce(Picture picture) {
-		BufferedImage r = (BufferedImage) images.get(picture);
+	public Image getSizedIconForce(Picture picture) {
+		Image r = (BufferedImage) images.get(picture);
 
 		if (r == null) {
 			synchronized(picture) {
@@ -314,7 +314,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 		public void run() {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Starting " + picture);
 			Picture tmpPicture = null;
-			BufferedImage tmpImage = null;
+			Image tmpImage = null;
 			while (picture != null) {
 				synchronized (picture) {
 					tmpPicture = picture;
@@ -447,7 +447,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 
 	public interface ImageLoaderUser {
 		public void pictureReady();
-		public boolean blockPictureReady(BufferedImage image, Picture picture);
+		public boolean blockPictureReady(Image image, Picture picture);
 		public Dimension getImageSize();
 		public void nullRect();
 		public void pictureStartDownloading(Picture picture);
