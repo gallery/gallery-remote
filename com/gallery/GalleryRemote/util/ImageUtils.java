@@ -179,6 +179,7 @@ public class ImageUtils {
 
 	public static Image loadJava(URL url, Dimension d, boolean noStretch) {
 		try {
+			System.gc();
 			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
 			Image r = ImageIO.read(url);
 			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
@@ -192,11 +193,15 @@ public class ImageUtils {
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
+		} catch (Throwable e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
 		}
 	}
 
 	public static Image loadJava(String filename, Dimension d, boolean noStretch) {
 		try {
+			System.gc();
 			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
 			Image r = ImageIO.read(new File(filename));
 			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
@@ -208,6 +213,9 @@ public class ImageUtils {
 
 			return r;
 		} catch (IOException e) {
+			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return null;
+		} catch (Throwable e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
 		}
