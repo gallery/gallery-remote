@@ -6,7 +6,6 @@ import com.gallery.GalleryRemote.model.Album;
 import javax.swing.*;
 import java.util.Iterator;
 import java.io.File;
-import java.awt.image.BufferedImage;
 import java.awt.*;
 
 /**

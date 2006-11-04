@@ -27,7 +27,6 @@ import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 
-import javax.swing.*;
 import javax.imageio.*;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
@@ -81,8 +80,6 @@ public class ImageUtils {
 	static String[] filterName = new String[3];
 	static String[] format = new String[3];
 
-	//public final static String DEFAULT_IMAGE = "img/default.gif";
-	//public final static String UNRECOGNIZED_IMAGE = "img/default.gif";
 	public final static String DEFAULT_RESOURCE = "/default.gif";
 	public final static String UNRECOGNIZED_RESOURCE = "/default.gif";
 
@@ -92,6 +89,12 @@ public class ImageUtils {
 	public static boolean deferredStopUsingIM = false;
 	public static boolean deferredStopUsingJpegtran = false;
 	public static boolean deferredStopUsingJpegtranCrop = false;
+
+	public static ImageObserver observer = new ImageObserver() {
+		public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+			return false;
+		}
+	};
 
 	public static Image load(String filename, Dimension d, int usage) {
 		return load(filename, d, usage, false);
@@ -176,8 +179,16 @@ public class ImageUtils {
 
 	public static Image loadJava(URL url, Dimension d, boolean noStretch) {
 		try {
-			BufferedImage r = ImageIO.read(url);
-			return loadJavaInternal(r, d, noStretch);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
+			Image r = ImageIO.read(url);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
+			r = loadJavaInternal(r, d, noStretch);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after resize: " + Runtime.getRuntime().freeMemory());
+
+			System.gc();
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after gc: " + Runtime.getRuntime().freeMemory());
+
+			return r;
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
@@ -186,18 +197,26 @@ public class ImageUtils {
 
 	public static Image loadJava(String filename, Dimension d, boolean noStretch) {
 		try {
-			BufferedImage r = ImageIO.read(new File(filename));
-			return loadJavaInternal(r, d, noStretch);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
+			Image r = ImageIO.read(new File(filename));
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
+			r = loadJavaInternal(r, d, noStretch);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after resize: " + Runtime.getRuntime().freeMemory());
+
+			System.gc();
+			Log.log(Log.LEVEL_TRACE, MODULE, "Free after gc: " + Runtime.getRuntime().freeMemory());
+
+			return r;
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
 		}
 	}
 
-	private static Image loadJavaInternal(BufferedImage r, Dimension d, boolean noStretch) {
-		Image scaled = null;
+	private static Image loadJavaInternal(Image r, Dimension d, boolean noStretch) {
+		Image scaled;
 		Dimension newD = getSizeKeepRatio(
-				new Dimension(r.getWidth(), r.getHeight()),
+				new Dimension(r.getWidth(observer), r.getHeight(observer)),
 				d, noStretch);
 
 		if (newD == null) {
@@ -209,25 +228,6 @@ public class ImageUtils {
 		r.flush();
 
 		return scaled;
-		/*Iterator iter = ImageIO.getImageReaders(iis);
-		if (!iter.hasNext()) {
-		return null;
-		}
-
-		ImageReader reader = (ImageReader)iter.next();
-		ImageReadParam param = reader.getDefaultReadParam();
-		reader.setInput(iis, true, false);
-
-		IIOMetadata metadata = reader.getImageMetadata(0);
-		String names[] = metadata.getMetadataFormatNames();
-		for (int i = 0; i < names.length; i++) {
-		displayMetadata(metadata.getAsTree(names[i]));
-		}
-
-		param.setSourceRenderSize(d);
-
-		BufferedImage image = (BufferedImage) reader.readAsRenderedImage(0, param);
-		return new ImageIcon(image);*/
 	}
 
 	public static File resize(String filename, Dimension d) {

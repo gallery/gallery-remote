@@ -40,7 +40,6 @@ import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.Method;

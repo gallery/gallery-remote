@@ -29,7 +29,6 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.NoninvertibleTransformException;

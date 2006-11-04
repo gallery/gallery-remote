@@ -400,7 +400,7 @@ public class SlideshowFrame extends PreviewFrame
 		return true;
 	}
 
-	public boolean blockPictureReady(BufferedImage image, Picture picture) {
+	public boolean blockPictureReady(Image image, Picture picture) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "blockPictureReady: " + picture + " - pictureShowWant: " + loader.pictureShowWant);
 
 		if (picture == userPicture) {

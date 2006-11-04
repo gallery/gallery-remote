@@ -74,7 +74,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 			if (picture != pictureShowWant) {
 				pictureShowWant = picture;
 
-				BufferedImage r = (BufferedImage) images.get(picture);
+				Image r = (Image) images.get(picture);
 				if (r != null) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Cache hit: " + picture);
 					if (notify) {
@@ -98,7 +98,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 	}
 
 	public Image getSizedIconForce(Picture picture) {
-		Image r = (BufferedImage) images.get(picture);
+		Image r = (Image) images.get(picture);
 
 		if (r == null) {
 			synchronized(picture) {
@@ -397,9 +397,9 @@ public class ImageLoaderUtil implements PreferenceNames {
 			// flush images before clearing hastables for quicker deletion
 			Iterator it = values().iterator();
 			while (it.hasNext()) {
-				ImageIcon i = (ImageIcon) it.next();
+				Image i = (Image) it.next();
 				if (i != null) {
-					i.getImage().flush();
+					i.flush();
 				}
 			}
 
