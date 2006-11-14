@@ -113,6 +113,7 @@ public class PreviewFrame
 
 	public void pictureStartDownloading(Picture picture) {}
 	public void pictureStartProcessing(Picture picture) {}
+	public void pictureLoadError(Picture picture) {}
 
 	class ImageContentPane extends JPanel {
 		public void paintComponent(Graphics g) {

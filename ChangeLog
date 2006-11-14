@@ -1,3 +1,12 @@
+2006-11-14  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b26)
+
+	* Fixed multi-line caption alignment.
+	* Now capturing out of memory errors and displaying message
+	  when using Java resize (which leads to high
+	  memory consumption).
+	* Final fix for lower memory consumption while resizing
+	  images in Java code.
+
 2006-11-04  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b25)
 
 	* Refactored image loading code, now using ImageIO for

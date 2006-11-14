@@ -89,6 +89,7 @@ public class ImageUtils {
 	public static boolean deferredStopUsingIM = false;
 	public static boolean deferredStopUsingJpegtran = false;
 	public static boolean deferredStopUsingJpegtranCrop = false;
+	public static boolean deferredOutOfMemory = false;
 
 	public static ImageObserver observer = new ImageObserver() {
 		public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
@@ -154,6 +155,10 @@ public class ImageUtils {
 						r = ImageIO.read(temp);
 					} catch (IOException e) {
 						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					} catch (Throwable e) {
+						Log.logException(Log.LEVEL_ERROR, MODULE, e);
+						Log.log(Log.LEVEL_ERROR, MODULE, "Out of memory while loading image " + temp);
+						outOfMemoryError();
 					}
 				}
 			} else {
@@ -161,6 +166,10 @@ public class ImageUtils {
 					r = ImageIO.read(temp);
 				} catch (IOException e) {
 					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				} catch (Throwable e) {
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+					Log.log(Log.LEVEL_ERROR, MODULE, "Out of memory while loading image " + temp);
+					outOfMemoryError();
 				}
 			}
 		}
@@ -177,65 +186,44 @@ public class ImageUtils {
 		return r;
 	}
 
-	public static Image loadJava(URL url, Dimension d, boolean noStretch) {
+	public static Image loadJava(Object reference, Dimension d, boolean noStretch) {
 		try {
-			System.gc();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
-			Image r = ImageIO.read(url);
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
-			r = loadJavaInternal(r, d, noStretch);
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after resize: " + Runtime.getRuntime().freeMemory());
+			Image r, scaled;
 
-			System.gc();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after gc: " + Runtime.getRuntime().freeMemory());
+			//System.gc();
 
-			return r;
+			if (reference instanceof String) {
+				r = ImageIO.read(new File((String) reference));
+			} else if (reference instanceof URL) {
+				r = ImageIO.read((URL) reference);
+			} else {
+				throw new IllegalArgumentException("loadJava can only be called with a URL or a filename");
+			}
+
+			Dimension newD = getSizeKeepRatio(
+					new Dimension(r.getWidth(observer), r.getHeight(observer)),
+					d, noStretch);
+			if (newD == null) {
+				return r;
+			}
+
+			scaled = createResizedCopy(r, newD.width, newD.height, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+			r.flush();
+			r = null;
+
+			//System.runFinalization();
+			//System.gc();
+
+			return scaled;
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			return null;
 		} catch (Throwable e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			Log.log(Log.LEVEL_ERROR, MODULE, "Out of memory while loading image " + reference);
+			outOfMemoryError();
 			return null;
 		}
-	}
-
-	public static Image loadJava(String filename, Dimension d, boolean noStretch) {
-		try {
-			System.gc();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free before loading: " + Runtime.getRuntime().freeMemory());
-			Image r = ImageIO.read(new File(filename));
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after loading: " + Runtime.getRuntime().freeMemory());
-			r = loadJavaInternal(r, d, noStretch);
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after resize: " + Runtime.getRuntime().freeMemory());
-
-			System.gc();
-			Log.log(Log.LEVEL_TRACE, MODULE, "Free after gc: " + Runtime.getRuntime().freeMemory());
-
-			return r;
-		} catch (IOException e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			return null;
-		} catch (Throwable e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			return null;
-		}
-	}
-
-	private static Image loadJavaInternal(Image r, Dimension d, boolean noStretch) {
-		Image scaled;
-		Dimension newD = getSizeKeepRatio(
-				new Dimension(r.getWidth(observer), r.getHeight(observer)),
-				d, noStretch);
-
-		if (newD == null) {
-			return r;
-		}
-
-		scaled = r.getScaledInstance(newD.width, newD.height, Image.SCALE_FAST);
-
-		r.flush();
-
-		return scaled;
 	}
 
 	public static File resize(String filename, Dimension d) {
@@ -310,7 +298,7 @@ public class ImageUtils {
 	}
 
 	public static File resizeJava(String filename, Dimension d) {
-		File r = null;
+		File r;
 
 		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.USE_JAVA_RESIZE)) {
 			return null;
@@ -350,11 +338,12 @@ public class ImageUtils {
 					d, true);
 
 			if (newD != null) {
-				Image scaled = rim.getScaledInstance(newD.width, newD.height, Image.SCALE_SMOOTH);
+				BufferedImage scaled = createResizedCopy(rim, newD.width, newD.height,
+						RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 				//ImageObserver imageObserver = GalleryRemote._().getMainFrame();
-				ImageObserver imageObserver = null;
-				BufferedImage scaledB = new BufferedImage(scaled.getWidth(imageObserver), scaled.getHeight(imageObserver), rim.getType());
-				scaledB.getGraphics().drawImage(scaled, 0, 0, imageObserver);
+				//ImageObserver imageObserver = null;
+				//BufferedImage scaledB = new BufferedImage(scaled.getWidth(imageObserver), scaled.getHeight(imageObserver), rim.getType());
+				//scaledB.getGraphics().drawImage(scaled, 0, 0, imageObserver);
 
 				/*System.out.println("*** Original");
 				IIOMetadata metadata = image.getMetadata();
@@ -383,7 +372,7 @@ public class ImageUtils {
 				//displayMetadata(metadata.getAsTree(metadata.getNativeMetadataFormatName()));
 
 				// todo: despite my best efforts, I can't get the ImageIO library to keep the metadata.
-				IIOImage image = new IIOImage(scaledB, null, null);
+				IIOImage image = new IIOImage(scaled, null, null);
 
 				//image.getMetadata().mergeTree(metadata.getNativeMetadataFormatName(), root);
 
@@ -397,11 +386,12 @@ public class ImageUtils {
 				ImageWriter writer = ImageIO.getImageWriter(reader);
 
 				if (writer == null) {
-					Log.log(Log.LEVEL_ERROR, MODULE, "No writer to write out " + filename + " ImageIO probably doesn't support it. Resize aborted.");
+					Log.log(Log.LEVEL_ERROR, MODULE, "No writer to write out " + filename +
+							" ImageIO probably doesn't support it. Resize aborted.");
 					return new File(filename);
 				}
 
-				ImageOutputStream ios = null;
+				ImageOutputStream ios;
 				try {
 					r.delete();
 					ios = ImageIO.createImageOutputStream(r);
@@ -469,7 +459,6 @@ public class ImageUtils {
 				/*if (resetExifOrientation) {
 				resetExifOrientation(filename);
 				}*/
-
 			} finally {
 				if (orig != null && dest != null) {
 					dest.renameTo(orig);
@@ -554,6 +543,7 @@ public class ImageUtils {
 					stopUsingJpegtran();
 				}
 			}
+
 			r = null;
 		}
 
@@ -646,8 +636,8 @@ public class ImageUtils {
 	}
 
 	public static LocalInfo getLocalFilenameForPicture(Picture p, boolean full) {
-		URL u = null;
-		Dimension d = null;
+		URL u;
+		Dimension d;
 
 		if (!full && p.getSizeResized() == null) {
 			// no resized version
@@ -703,7 +693,7 @@ public class ImageUtils {
 			return p.getSource();
 		}
 
-		URL pictureUrl = null;
+		URL pictureUrl;
 		File f;
 		String filename;
 		LocalInfo fullInfo = getLocalFilenameForPicture(p, true);
@@ -831,7 +821,7 @@ public class ImageUtils {
 			return null;
 		}
 
-		ImageInputStream iis = null;
+		ImageInputStream iis;
 		try {
 			iis = ImageIO.createImageInputStream(p.getSource());
 
@@ -864,7 +854,7 @@ public class ImageUtils {
 
 		// Making sure ImageMagick works
 		try {
-			PropertiesFile pt = null;
+			PropertiesFile pt;
 			if (new File("imagemagick/im.properties").exists()) {
 				pt = new PropertiesFile("imagemagick/im");
 			} else {
@@ -917,10 +907,10 @@ public class ImageUtils {
 
 						if (retval == 0) {
 							BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), "UTF-16"));
-							String line = null;
+							String line;
 							Pattern pat = Pattern.compile("^\\\"BinPath\\\"=\\\"(.*)\\\"", Pattern.CASE_INSENSITIVE);
 							while ((line = br.readLine()) != null) {
-								Matcher m = pat.matcher(line.toString());
+								Matcher m = pat.matcher(line);
 								if (m.find()) {
 									imPath = m.group(1) + "\\" + imPath;
 
@@ -978,7 +968,7 @@ public class ImageUtils {
 
 		// Making sure jpegtran works
 		try {
-			PropertiesFile pt = null;
+			PropertiesFile pt;
 			if (new File("jpegtran/jpegtran.properties").exists()) {
 				pt = new PropertiesFile("jpegtran/jpegtran");
 			} else {
@@ -1231,7 +1221,7 @@ public class ImageUtils {
 
 		int exitValue = p.waitFor();
 
-		String line = null;
+		String line;
 		while ((line = out.readLine()) != null) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Out: " + line);
 			if (output != null) {
@@ -1266,12 +1256,18 @@ public class ImageUtils {
 
 			stopUsingJpegtranCrop();
 		}
+
+		if (deferredOutOfMemory) {
+			deferredOutOfMemory = false;
+
+			outOfMemoryError();
+		}
 	}
 
 	static void stopUsingIM() {
 		useIM = false;
 
-		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM)) {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_IM, false)) {
 			if (GalleryRemote._().getMainFrame() != null
 					&& GalleryRemote._().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
@@ -1311,7 +1307,7 @@ public class ImageUtils {
 	static void stopUsingJpegtran() {
 		useJpegtran = false;
 
-		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN)) {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN, false)) {
 			if (GalleryRemote._().getMainFrame() != null
 					&& GalleryRemote._().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
@@ -1332,7 +1328,7 @@ public class ImageUtils {
 	static void stopUsingJpegtranCrop() {
 		useJpegtranCrop = false;
 
-		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN_CROP)) {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_JPEGTRAN_CROP, false)) {
 			if (GalleryRemote._().getMainFrame() != null
 					&& GalleryRemote._().getMainFrame().isVisible()) {
 				UrlMessageDialog md = new UrlMessageDialog(
@@ -1346,6 +1342,25 @@ public class ImageUtils {
 				}
 			} else {
 				deferredStopUsingJpegtranCrop = true;
+			}
+		}
+	}
+
+	static void outOfMemoryError() {
+		if (!GalleryRemote._().properties.getBooleanProperty(PreferenceNames.SUPPRESS_WARNING_OUT_OF_MEMORY, false)) {
+			if (GalleryRemote._().getMainFrame() != null
+					&& GalleryRemote._().getMainFrame().isVisible()) {
+				UrlMessageDialog md = new UrlMessageDialog(
+						GRI18n.getString(MODULE, "warningTextOutOfMemory"),
+						GRI18n.getString(MODULE, "warningUrlOutOfMemory"),
+						GRI18n.getString(MODULE, "warningUrlTextOutOfMemory")
+				);
+
+				if (md.dontShow()) {
+					GalleryRemote._().properties.setBooleanProperty(PreferenceNames.SUPPRESS_WARNING_OUT_OF_MEMORY, true);
+				}
+			} else {
+				deferredOutOfMemory = true;
 			}
 		}
 	}
@@ -1385,5 +1400,18 @@ public class ImageUtils {
 		} else {
 			System.out.println("/>");
 		}
+	}
+
+	public static BufferedImage createResizedCopy(Image originalImage,
+	                                int scaledWidth, int scaledHeight, Object hint)
+	{
+		BufferedImage scaledBI = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D g = scaledBI.createGraphics();
+		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
+		g.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight, null);
+		g.dispose();
+
+		return scaledBI;
 	}
 }

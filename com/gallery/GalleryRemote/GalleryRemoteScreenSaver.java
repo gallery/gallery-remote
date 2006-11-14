@@ -249,4 +249,5 @@ public class GalleryRemoteScreenSaver
 	public void nullRect() {}
 	public void pictureStartDownloading(Picture picture) {}
 	public void pictureStartProcessing(Picture picture) {}
+	public void pictureLoadError(Picture picture) {}
 }

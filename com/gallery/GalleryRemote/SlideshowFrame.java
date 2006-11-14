@@ -46,6 +46,7 @@ public class SlideshowFrame extends PreviewFrame
 	public static final int STATE_NEXTREADY = 3;
 	public static final int STATE_SKIPPING = 4;
 	public static final int STATE_SHOWING = 5;
+	public static final int STATE_ERROR = 6;
 
 	public static final int FEEDBACK_NONE = 0;
 	public static final int FEEDBACK_HELP = 1;
@@ -135,6 +136,8 @@ public class SlideshowFrame extends PreviewFrame
 				mainFrame.setVisible(true);
 			}
 		}
+
+		ImageUtils.deferredTasks();
 	}
 
 	public void initComponents() {
@@ -451,6 +454,14 @@ public class SlideshowFrame extends PreviewFrame
 		}
 	}
 
+	public void pictureLoadError(Picture picture) {
+		if (picture == loader.pictureShowWant || picture == userPicture) {
+			updateProgress(picture, STATE_ERROR);
+		}
+
+		loader.reduceMemory();
+	}
+
 	private void updateProgress(Picture picture, int state) {
 		if (picture == null) {
 			return;
@@ -483,6 +494,10 @@ public class SlideshowFrame extends PreviewFrame
 
 			case STATE_NEXTREADY:
 				progress = GRI18n.getString(MODULE, "nextReady", params);
+				break;
+
+			case STATE_ERROR:
+				progress = GRI18n.getString(MODULE, "error", params);
 				break;
 
 			case STATE_SKIPPING:
@@ -878,7 +893,7 @@ public class SlideshowFrame extends PreviewFrame
 				Graphics2D g2 = (Graphics2D) infoCache[id].getGraphics();
 				g2.setFont(g.getFont());
 				infoLocation[id] = ImageLoaderUtil.paintAlignedOutline(
-						g2,	text, x, y, 1, position, d.width, wrapInfo, true);
+						g2, x, y, 1, position, wrapInfo, true);
 				Log.log(Log.LEVEL_TRACE, MODULE, "Cached info " + id + " - " + text);
 			}
 

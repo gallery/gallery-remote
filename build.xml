@@ -64,6 +64,7 @@
  <target name="jar" depends="clean,compile"
   description="create a jar of the source">
 
+  <delete file="GalleryRemote.jar" />
   <jar destfile="GalleryRemote.jar">
    <fileset dir="${build}" />
    <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
@@ -91,6 +92,7 @@
 
  <target name="applet_mini_jar" depends="compile" description="create a jar for the applet version of GR">
 
+  <delete file="GalleryRemoteAppletMini.jar" />
   <jar destfile="GalleryRemoteAppletMini.jar" index="true" >
    <fileset dir="${build}" excludes="HTTPClient/*" excludesfile="AppletMiniExcludes.txt" />
    <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
@@ -105,6 +107,7 @@
 
  <target name="httpclient_jar" depends="compile" description="create a jar for the HTTP library">
 
+  <delete file="GalleryRemoteHTTPClient.jar" />
   <jar destfile="GalleryRemoteHTTPClient.jar" index="true" >
    <fileset dir="${build}" includes="HTTPClient/*" />
    <manifest>

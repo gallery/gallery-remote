@@ -6,9 +6,7 @@ import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -27,7 +25,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 	public static final Color darkGray  = new Color(64, 64, 64, 128);
 	public static Pattern breaker = Pattern.compile("<(br|BR)\\s?\\/?>");
 	public static Pattern stripper = Pattern.compile("<[^<>]*>");
-	//public static Pattern spacer = Pattern.compile("[\r\n]");
+	//public static Pattern mopper = Pattern.compile("\r");
 
 	int cacheSize = 10;
 	boolean ignoreIMFailure = false;
@@ -51,6 +49,19 @@ public class ImageLoaderUtil implements PreferenceNames {
 			preparePicture(pictureShowNow, true, true);
 			pictureShowNow = null;
 		}
+	}
+
+	public void reduceMemory() {
+		Log.log(Log.LEVEL_TRACE, MODULE, "Free memory before reduction: " + Runtime.getRuntime().freeMemory());
+		Log.log(Log.LEVEL_TRACE, MODULE, "Current image cache: " + images.size() + " - cache size " + cacheSize);
+
+		if (images.size() > 1 && cacheSize > 1) {
+			cacheSize = images.size() - 1;
+		}
+
+		images.shrink();
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Free memory after reduction: " + Runtime.getRuntime().freeMemory());
 	}
 
 	public void pictureReady(Image image, Picture picture) {
@@ -130,6 +141,10 @@ public class ImageLoaderUtil implements PreferenceNames {
 							ImageUtils.PREVIEW, ignoreIMFailure);
 				}
 
+				if (r == null) {
+					imageLoaderUser.pictureLoadError(picture);
+				}
+
 				Log.log(Log.LEVEL_TRACE, MODULE, "Adding to cache: " + picture);
 				images.put(picture, r);
 			}
@@ -145,63 +160,79 @@ public class ImageLoaderUtil implements PreferenceNames {
 			int thickness,
 			int position,
 			int wrapWidth) {
-		paintAlignedOutline(g, s, textX, textY, thickness, position, wrapWidth, wrap((Graphics2D) g, s, wrapWidth), false);
+		paintAlignedOutline(g, textX, textY, thickness, position, wrap((Graphics2D) g, s, wrapWidth), false);
 	}
 
 	public static Point paintAlignedOutline(
 			Graphics g,
-			String s,
 			int textX, int textY,
 			int thickness,
 			int position,
-			int wrapWidth,
 			WrapInfo wrapInfo,
-			boolean paintOrigin) {
+			boolean paintAtOrigin) {
 		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D bounds = fm.getStringBounds(s, g);
 
-		Point p = new Point();
+		Point boxPos = new Point();
 
 		switch (position / 10) {
 			case 1:
 			default:
-				p.y = textY;
+				boxPos.y = textY;
 				break;
 
 			case 2:
-				p.y = textY - wrapInfo.height / 2;
+				boxPos.y = textY - wrapInfo.height / 2;
 				break;
 
 			case 3:
-				p.y = textY - wrapInfo.height;
+				boxPos.y = textY - wrapInfo.height;
+				break;
+		}
+
+		switch (position % 10) {
+			case 2:
+			default:
+				boxPos.x = textX;
+				break;
+
+			case 0:
+				boxPos.x = textX - wrapInfo.width / 2;
+				break;
+
+			case 4:
+				boxPos.x = textX - wrapInfo.width;
 				break;
 		}
 
 		for (int i = 0; i < wrapInfo.lines.length; i++) {
-			Rectangle2D bounds1 = fm.getStringBounds(wrapInfo.lines[i], g);
+			Rectangle2D bounds = fm.getStringBounds(wrapInfo.lines[i], g);
+			Point linePos = new Point(boxPos);
+
+			if (paintAtOrigin) {
+				linePos.x = thickness;
+				linePos.y = thickness;
+			}
+
 			switch (position % 10) {
 				case 2:
 				default:
-					p.x = textX;
+					// nothing to do
 					break;
 
 				case 0:
-					p.x = textX - (int) bounds1.getWidth() / 2;
+					linePos.x += (wrapInfo.width - bounds.getWidth()) / 2;
 					break;
 
 				case 4:
-					p.x = textX - (int) bounds1.getWidth();
+					linePos.x += wrapInfo.width - bounds.getWidth();
 					break;
 			}
 
-			if (paintOrigin) {
-				paintOutline(g, wrapInfo.lines[i], thickness, fm.getAscent() + thickness, thickness);
-			} else {
-				paintOutline(g, wrapInfo.lines[i], p.x, p.y + fm.getAscent(), thickness);
-			}
+			paintOutline(g, wrapInfo.lines[i], linePos.x,
+					(int) (linePos.y + fm.getAscent() + bounds.getHeight() * i), thickness);
 		}
 
-		return p;
+		return boxPos;
 	}
 
 	public static WrapInfo wrap(
@@ -300,8 +331,8 @@ public class ImageLoaderUtil implements PreferenceNames {
 		m = stripper.matcher(text);
 		text = m.replaceAll("");
 
-		//m = spacer.matcher(m.replaceAll(""));
-		//text = m.replaceAll(" ");
+		//m = mopper.matcher(text);
+		//text = m.replaceAll("");
 
 		return text;
 	}
@@ -399,6 +430,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 			while (it.hasNext()) {
 				Image i = (Image) it.next();
 				if (i != null) {
+					//i.getGraphics().dispose();
 					i.flush();
 				}
 			}
@@ -406,7 +438,8 @@ public class ImageLoaderUtil implements PreferenceNames {
 			super.clear();
 			touchOrder.clear();
 
-			Runtime.getRuntime().gc();
+			System.runFinalization();
+			System.gc();
 
 			//Log.log(Log.LEVEL_TRACE, MODULE, Runtime.getRuntime().freeMemory() + " - " + Runtime.getRuntime().totalMemory());
 		}
@@ -434,14 +467,19 @@ public class ImageLoaderUtil implements PreferenceNames {
 
 			Image i = (Image) get(key, false);
 			if (i != null) {
+				//i.getGraphics().dispose();
 				i.flush();
 			}
 
 			remove(key);
 
-			Runtime.getRuntime().gc();
-
 			Log.log(Log.LEVEL_TRACE, MODULE, "Shrunk " + key);
+			if (cacheSize > 0 && size() > cacheSize) {
+				shrink();
+			} else {
+				System.runFinalization();
+				System.gc();
+			}
 		}
 	}
 
@@ -452,5 +490,6 @@ public class ImageLoaderUtil implements PreferenceNames {
 		public void nullRect();
 		public void pictureStartDownloading(Picture picture);
 		public void pictureStartProcessing(Picture picture);
+		public void pictureLoadError(Picture picture);
 	}
 }
