@@ -313,7 +313,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 
 	private static Color getDarkGray(int thickness) {
 		if (darkGray[thickness] == null) {
-			darkGray[thickness] = new Color(64, 64, 64, (int) (255 / thickness / thickness));
+			darkGray[thickness] = new Color(64, 64, 64, 255 / thickness / thickness);
 		}
 
 		return darkGray[thickness];
@@ -363,7 +363,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 			Picture tmpPicture = null;
 			Image tmpImage = null;
 			while (picture != null) {
-				synchronized (picture) {
+				synchronized (this) {
 					tmpPicture = picture;
 					picture = null;
 				}

@@ -37,8 +37,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.MalformedURLException;

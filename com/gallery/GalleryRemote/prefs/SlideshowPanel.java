@@ -6,12 +6,10 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.GalleryRemoteCore;
 import com.gallery.GalleryRemote.MainFrame;
-import com.gallery.GalleryRemote.Log;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
-import java.util.Dictionary;
 import java.util.Hashtable;
 import javax.swing.border.*;
 
@@ -50,6 +48,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JCheckBox jLoop = new JCheckBox();
 	JPanel spacerPanel1 = new JPanel();
 	ColorWellButton jBackgroundColor = new ColorWellButton(Color.red);
+	JTabbedPane tabs = new JTabbedPane();
 
 	public JLabel getIcon() {
 		return icon;
@@ -142,17 +141,17 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		setLayout(new GridBagLayout());
 
 		progressionPanel.setLayout(new GridBagLayout());
-		progressionPanel.setBorder(
+		/*progressionPanel.setBorder(
 				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
-						GRI18n.getString(MODULE, "progressionTitle")));
+						GRI18n.getString(MODULE, "progressionTitle")));*/
 		locationPanel.setLayout(new GridBagLayout());
 		locationPanel.setBorder(
 				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
 						GRI18n.getString(MODULE, "locationTitle")));
 		apperancePanel.setLayout(new GridBagLayout());
-		apperancePanel.setBorder(
+		/*apperancePanel.setBorder(
 				new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)),
-						GRI18n.getString(MODULE, "appearanceTitle")));
+						GRI18n.getString(MODULE, "appearanceTitle")));*/
 
 		delay.setText(GRI18n.getString(MODULE, "delay"));
 		delay.setLabelFor(jDelay);
@@ -211,14 +210,20 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lowRezHelp"));
 		jOverride.setText(GRI18n.getString(MODULE, "backgroundColor"));
 
-		this.add(progressionPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+		this.add(tabs,    new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
+				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
+		tabs.add(GRI18n.getString(MODULE, "progressionTitle"), progressionPanel);
+		tabs.add(GRI18n.getString(MODULE, "appearanceTitle"), apperancePanel);
+
+		/*this.add(progressionPanel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(locationPanel,     new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(apperancePanel,     new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));*/
 		this.add(help,   new GridBagConstraints(0, 3, 2, 1, 0.0, 0.0
-				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 0), 0, 0));
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 0), 0, 0));
 		this.add(spacerPanel,    new GridBagConstraints(0, GridBagConstraints.REMAINDER, 1, 1, 1.0, 1.0
 				,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
@@ -236,6 +241,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		progressionPanel.add(jLoop,   new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		progressionPanel.add(new JPanel(),   new GridBagConstraints(0, 5, 2, 1, 0.0, 1.0
+				,GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		apperancePanel.add(jLowRez,  new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -245,6 +252,10 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		apperancePanel.add(jBackgroundColor,  new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
+		apperancePanel.add(locationPanel,  new GridBagConstraints(0, 3, 2, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
+		apperancePanel.add(new JPanel(),   new GridBagConstraints(0, 4, 2, 1, 0.0, 1.0
+				,GridBagConstraints.WEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
 		locationPanel.add(progress,     new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
@@ -278,11 +289,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		}
 
 		public boolean equals(Object o) {
-			if (! (o instanceof LocationItem)) {
-				return false;
-			}
-
-			return id == ((LocationItem) o).id;
+			return o instanceof LocationItem && id == ((LocationItem) o).id;
 		}
 	}
 }

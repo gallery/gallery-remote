@@ -11,7 +11,6 @@
  <property name="img" location="img"/>
  <property name="dist" location="dist"/>
  <property name="install" location="gallery_remote_Build_Output/Web_Installers/InstData"/>
- <property name="docdist" location="${docbase}/dist/grpackage"/>
 
  <!-- define the following properties in build.properties:
    iafolder: the folder where the InstallAnywhere executable is located
@@ -149,32 +148,14 @@
   </condition>
  </target>
 
- <target name="imReg" depends="init,testWin" if="onWin"
-  description="import registry stuff for ImageMagick">
-  <pathconvert dirsep="\\" property="impath">
-   <path>
-    <pathelement path="imagemagick/win32"/>
-   </path>
-  </pathconvert>
-
-  <filter token="PATH" value="${impath}"/>
-  <copy file="magick.reg" toFile="myMagick.reg" filtering="true" overwrite="true"/>
-
-  <exec executable="regedit">
-   <arg value="/s"/>
-   <arg value="myMagick.reg"/>
-  </exec>
- </target>
-
  <target name="clean"
   description="clean up">
   <!-- Delete the ${build} and ${dist} directory trees -->
   <delete dir="${build}"/>
   <delete dir="${dist}"/>
-  <delete dir="${docdist}"/>
  </target>
 
- <target name="installer" depends="jar, docs"
+ <target name="installer" depends="jar"
   description="Build the installer">
   <!--target name="installer"
   description="Build the installer" -->
@@ -190,13 +171,6 @@
     BuildSolarisWithoutVM="true"
     BuildMacOSX="true"
     BuildPureJava="true"/>
- </target>
-
- <target name="docs" description="Build documentation">
-  <exec executable="bash" dir="${docbase}">
-   <arg value="${docbase}/gen"/>
-   <arg value="grpackage"/>
-  </exec>
  </target>
 
  <target name="img_jar"
@@ -255,7 +229,7 @@
   <copy file="jpegtran/macos/jpegtran.properties" tofile="Gallery Remote.app/jpegtran/jpegtran.properties" />
  </target>
 
- <target name="installer_macosx" depends="executable_macosx, docs"
+ <target name="installer_macosx" depends="executable_macosx"
   description="Build a MacOSX package">
 
   <tar destfile="GalleryRemote.MacOSX.NoVM.tgz" compression="gzip">
@@ -266,9 +240,6 @@
    <tarfileset dir="Gallery Remote.app/Contents/MacOS"
     prefix="Gallery Remote/Gallery Remote.app/Contents/MacOS/"
     mode="777">
-    <include name="*"/>
-   </tarfileset>
-   <tarfileset dir="${docdist}" prefix="Gallery Remote/Documentation">
     <include name="*"/>
    </tarfileset>
   </tar>

@@ -1,3 +1,8 @@
+2006-11-19  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b28)
+
+	* More compact slideshow preferences dialog.
+	* Removed old DocBook documentation from build.
+
 2006-11-19  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b27)
 
 	* Made it possible to specify a thickness for fonts in
