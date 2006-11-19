@@ -11,6 +11,8 @@ import com.gallery.GalleryRemote.Log;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Vector;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import javax.swing.border.*;
 
 /**
@@ -27,7 +29,9 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JPanel locationPanel = new JPanel();
 	public JPanel spacerPanel = new JPanel();
 	JLabel delay = new JLabel();
-	JTextField jDelay = new JTextField();
+	JSlider jDelay = new JSlider();
+	JLabel transition = new JLabel();
+	JSlider jTransition = new JSlider();
 	JLabel help = new JLabel();
 	JLabel progress = new JLabel();
 	JLabel caption = new JLabel();
@@ -62,7 +66,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jNoStretch.setSelected(props.getBooleanProperty(SLIDESHOW_NOSTRETCH));
 		jPreloadAll.setSelected(props.getBooleanProperty(SLIDESHOW_PRELOADALL));
 		jLoop.setSelected(props.getBooleanProperty(SLIDESHOW_LOOP));
-		jDelay.setText("" + props.getIntProperty(SLIDESHOW_DELAY));
+		jDelay.setValue(props.getIntProperty(SLIDESHOW_DELAY) * 1000);
+		jTransition.setValue(props.getIntProperty(SLIDESHOW_TRANSITION_DURATION));
 		Color color = props.getColorProperty(SLIDESHOW_COLOR);
 		jOverride.setSelected(color != null);
 		jBackgroundColor.setSelectedColor(color);
@@ -77,6 +82,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jPreloadAll.setEnabled(! props.isOverridden(SLIDESHOW_PRELOADALL));
 		jLoop.setEnabled(! props.isOverridden(SLIDESHOW_LOOP));
 		jDelay.setEnabled(! props.isOverridden(SLIDESHOW_DELAY));
+		jTransition.setEnabled(! props.isOverridden(SLIDESHOW_TRANSITION_DURATION));
 		jOverride.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
 		jBackgroundColor.setEnabled(! props.isOverridden(SLIDESHOW_COLOR));
 	}
@@ -97,14 +103,8 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		props.setBooleanProperty(SLIDESHOW_NOSTRETCH, jNoStretch.isSelected());
 		props.setBooleanProperty(SLIDESHOW_PRELOADALL, jPreloadAll.isSelected());
 		props.setBooleanProperty(SLIDESHOW_LOOP, jLoop.isSelected());
-		int delay;
-		try {
-			delay = (int) Float.parseFloat(jDelay.getText());
-		} catch (NumberFormatException e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			delay = 7;
-		}
-		props.setIntProperty(SLIDESHOW_DELAY, delay);
+		props.setIntProperty(SLIDESHOW_DELAY, jDelay.getValue() / 1000);
+		props.setIntProperty(SLIDESHOW_TRANSITION_DURATION, jTransition.getValue());
 
 		if (jOverride.isSelected()) {
 			props.setColorProperty(SLIDESHOW_COLOR, jBackgroundColor.getSelectedColor());
@@ -157,6 +157,33 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		delay.setText(GRI18n.getString(MODULE, "delay"));
 		delay.setLabelFor(jDelay);
 		delay.setToolTipText(GRI18n.getString(MODULE, "delayHelp"));
+		jDelay.setMinimum(0);
+		jDelay.setMaximum(30000);
+		Hashtable ticks = new Hashtable(4);
+		ticks.put(new Integer(0), new JLabel(GRI18n.getString(MODULE, "delayNone")));
+		ticks.put(new Integer(5000), new JLabel("5s"));
+		ticks.put(new Integer(10000), new JLabel("10s"));
+		ticks.put(new Integer(30000), new JLabel("30s"));
+		jDelay.setLabelTable(ticks);
+		jDelay.setPaintLabels(true);
+		jDelay.setMajorTickSpacing(5000);
+		jDelay.setPaintTicks(true);
+
+		transition.setText(GRI18n.getString(MODULE, "transition"));
+		transition.setLabelFor(jTransition);
+		transition.setToolTipText(GRI18n.getString(MODULE, "transitionHelp"));
+		jTransition.setMinimum(0);
+		jTransition.setMaximum(5000);
+		ticks = new Hashtable(4);
+		ticks.put(new Integer(0), new JLabel(GRI18n.getString(MODULE, "transitionNone")));
+		ticks.put(new Integer(1000), new JLabel("1s"));
+		ticks.put(new Integer(2000), new JLabel("2s"));
+		ticks.put(new Integer(5000), new JLabel("5s"));
+		jTransition.setLabelTable(ticks);
+		jTransition.setPaintLabels(true);
+		jTransition.setMajorTickSpacing(1000);
+		jTransition.setPaintTicks(true);
+
 		help.setText(GRI18n.getString(MODULE, "delayDesc"));
 		jRandom.setText(GRI18n.getString(MODULE, "random"));
 		jRandom.setToolTipText(GRI18n.getString(MODULE, "randomHelp"));
@@ -198,6 +225,10 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		progressionPanel.add(delay,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		progressionPanel.add(jDelay,   new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		progressionPanel.add(transition,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+		progressionPanel.add(jTransition,   new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		progressionPanel.add(jRandom,   new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));

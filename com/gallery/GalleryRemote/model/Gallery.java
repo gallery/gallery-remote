@@ -82,6 +82,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public static final int TYPE_APPLET = 99;
 
 	public static final int TOSTRING_MAXLEN = 40;
+	public String authToken;
 
 	public Gallery(StatusUpdate su) {
 		super(null);
@@ -943,6 +944,14 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
 	}
 
 	class TreeEnumeration implements Enumeration {

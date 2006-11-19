@@ -738,7 +738,7 @@ public class ImageUtils {
 				//conn.addRequestProperty("Connection", "Dont-keep-alive");
 				String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
 				if (userAgent != null) {
-					conn.addRequestProperty("User-Agent", userAgent);
+					conn.setRequestProperty("User-Agent", userAgent);
 				}
 				conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
 				Cookie[] cookies = CookieModule.listAllCookies();

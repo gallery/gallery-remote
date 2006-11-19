@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 import java.util.Properties;
+import java.util.Arrays;
 
 /**
  * This interface is a temporary mechanism to let us use version
@@ -62,8 +63,8 @@ public abstract class GalleryComm implements PreferenceNames {
 
 	/* -------------------------------------------------------------------------
 	 * STATIC INITIALIZATON
-	 */ 
-	
+	 */
+
 	static {
 		/* Enable customized AuthorizePopup */
 		AuthorizePopup.enable();
@@ -152,8 +153,8 @@ public abstract class GalleryComm implements PreferenceNames {
 	 *                    create as a child of the given album
 	 */
 	public String newAlbum(StatusUpdate su, Album parentAlbum,
-						   String newAlbumName, String newAlbumTitle,
-						   String newAlbumDesc, boolean async) {
+	                       String newAlbumName, String newAlbumTitle,
+	                       String newAlbumDesc, boolean async) {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
@@ -211,7 +212,63 @@ public abstract class GalleryComm implements PreferenceNames {
 			String proxyUsername = null;
 			String proxyPassword = null;
 
-			if (proxyList != null && proxyList.length() != 0) {
+			// Prepare to get info from the plugin in Java 4, 5 or 6
+			Class proxyHelperClass = null;
+			Object proxyHelper = null;
+			Class proxyInfoClass = null;
+			Object proxyInfo = null;
+			try {
+				Log.log(Log.LEVEL_TRACE, MODULE,
+						"Trying Java 5 and 6 proxy class (sun.plugin.net.proxy.PluginAutoProxyHandler)");
+
+				proxyHelperClass = Class.forName("sun.plugin.net.proxy.PluginAutoProxyHandler");
+				proxyInfoClass = Class.forName("com.sun.deploy.net.proxy.ProxyInfo");
+
+				proxyHelper = proxyHelperClass.newInstance();
+				Object[] proxyInfoArray = (Object[]) proxyHelperClass.getMethod("getProxyInfo",
+						new Class[] { URL.class }).invoke(proxyHelper, new Object[] { url });
+
+				if (proxyInfoArray != null && proxyInfoArray.length != 0) {
+					proxyInfo = proxyInfoArray[0];
+				}
+			} catch (Exception e) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+			}
+
+			if (proxyHelperClass == null) {
+				try {
+					Log.log(Log.LEVEL_TRACE, MODULE,
+							"Trying Java 4 proxy class (sun.plugin.net.proxy.PluginProxyManager)");
+
+					proxyHelperClass = Class.forName("sun.plugin.net.proxy.PluginProxyManager");
+					proxyInfoClass = Class.forName("sun.plugin.net.proxy.ProxyInfo");
+
+					proxyHelper = proxyHelperClass.newInstance();
+					proxyInfo = proxyHelperClass.getMethod("getProxyInfo",
+							new Class[] { URL.class }).invoke(proxyHelper, new Object[] { url });
+				} catch (Exception e) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+				}
+			}
+
+			if (proxyInfo != null) {
+				try {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Got proxy info from Java plugin: " + proxyInfo);
+
+					proxyPort = ((Integer) proxyInfoClass.getMethod("getPort", null).invoke(proxyInfo, null)).intValue();
+
+					// Plugins 4, 5 and 6 work differently...
+					try {
+						proxyHost = (String) proxyInfoClass.getMethod("getProxy", null).invoke(proxyInfo, null);
+					} catch(NoSuchMethodException e) {
+						proxyHost = (String) proxyInfoClass.getMethod("getHost", null).invoke(proxyInfo, null);
+					}
+				} catch (Exception e) {
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+				}
+			}
+
+			if (proxyHost == null && proxyList != null && proxyList.length() != 0) {
 				try {
 					proxyList = proxyList.toUpperCase();
 					Log.log(Log.LEVEL_TRACE, MODULE, "Plugin Proxy Config List Property: " + proxyList);
@@ -265,6 +322,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				sprops.setProperty("http.proxyPort", ""+proxyPort);
 			} else {
 				HTTPConnection.setProxyServer(null, 0);
+				Log.log(Log.LEVEL_TRACE, MODULE, "No proxy");
 			}
 
 			// create a connection
@@ -342,7 +400,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				return;
 			}
 		}
-		
+
 		AuthorizePopup.hackUsername = null;
 		AuthorizePopup.hackPassword = null;
 	}

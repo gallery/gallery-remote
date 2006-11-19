@@ -32,12 +32,13 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
  * @author Pierre-Luc Paour
  */
 public class GRScreenSaver
-		extends SimpleScreensaver {
+		extends SimpleScreensaver implements PreferenceNames {
 	public static final String MODULE = "ScreenSaver";
 	String coreClass = "com.gallery.GalleryRemote.GalleryRemoteScreenSaver";
 	boolean hasStarted = false;
 	GalleryRemoteScreenSaver grss;
 	int paintPass = 0;
+	int thickness = 1;
 
 	/**
 	 * Initialize this screen saver
@@ -49,6 +50,8 @@ public class GRScreenSaver
 			grss = (GalleryRemoteScreenSaver) GalleryRemote._().getCore();
 			grss.setContext(getContext());
 			GalleryRemote._().initializeGR();
+
+			thickness = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTTHICKNESS, 1);
 		}
 	}
 
@@ -72,7 +75,7 @@ public class GRScreenSaver
 					message,
 					width / 2,
 					height / 2,
-					1,
+					thickness,
 					20,
 					width);
 
@@ -114,7 +117,7 @@ public class GRScreenSaver
 						caption,
 						width / 2,
 						height - 10,
-						1,
+						thickness,
 						30,
 						width);
 			}

@@ -76,6 +76,7 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_LOOP = "slideshowLoop";
 	public static final String SLIDESHOW_FONTNAME = "slideshowFontName";
 	public static final String SLIDESHOW_FONTSIZE = "slideshowFontSize";
+	public static final String SLIDESHOW_FONTTHICKNESS = "slideshowFontThickness";
 	public static final String SLIDESHOW_TRANSITION_DURATION = "slideshowTransitionDuration";
 
 	// Other

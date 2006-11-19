@@ -22,7 +22,7 @@ public class ImageLoaderUtil implements PreferenceNames {
 	public Picture pictureShowNow = null;
 	public ImageLoader imageLoader = new ImageLoader();
 
-	public static final Color darkGray  = new Color(64, 64, 64, 128);
+	public static Color[] darkGray = new Color[11];
 	public static Pattern breaker = Pattern.compile("<(br|BR)\\s?\\/?>");
 	public static Pattern stripper = Pattern.compile("<[^<>]*>");
 	//public static Pattern mopper = Pattern.compile("\r");
@@ -291,23 +291,39 @@ public class ImageLoaderUtil implements PreferenceNames {
 	}
 
 	public static void paintOutline(Graphics g, String s, int textX, int textY, int thickness) {
-		g.setColor(darkGray);
-		g.drawString(s, textX + thickness, textY + thickness);
-		g.drawString(s, textX, textY + thickness);
-		g.drawString(s, textX - thickness, textY + thickness);
-		g.drawString(s, textX + thickness, textY);
-		g.drawString(s, textX, textY);
-		g.drawString(s, textX - thickness, textY);
-		g.drawString(s, textX + thickness, textY - thickness);
-		g.drawString(s, textX, textY - thickness);
-		g.drawString(s, textX - thickness, textY - thickness);
+		if (thickness > 10) {
+			thickness = 10;
+		}
+
+		if (thickness > 0) {
+			g.setColor(getDarkGray(thickness));
+
+			for (int i = -thickness; i <= thickness; i++) {
+				for (int j = -thickness; j <= thickness; j++) {
+					if (i != 0 || j != 0) {
+						g.drawString(s, textX + i, textY + j);
+					}
+				}
+			}
+		}
+
 		g.setColor(Color.white);
 		g.drawString(s, textX, textY);
 	}
 
+	private static Color getDarkGray(int thickness) {
+		if (darkGray[thickness] == null) {
+			darkGray[thickness] = new Color(64, 64, 64, (int) (255 / thickness / thickness));
+		}
+
+		return darkGray[thickness];
+	}
+
 	public static void setSlideshowFont(Component c) {
 		String fontName = GalleryRemote._().properties.getProperty(SLIDESHOW_FONTNAME);
-		int fontSize = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTSIZE, c.getFont().getSize());
+		int defaultFontSize =
+				(int) DialogUtil.findParentWindow(c).getGraphicsConfiguration().getBounds().getHeight() / 40;
+		int fontSize = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTSIZE, defaultFontSize);
 		Font f = null;
 		if (fontName != null) {
 			f = new Font(fontName, 0, fontSize);

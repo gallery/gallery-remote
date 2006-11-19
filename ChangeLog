@@ -1,3 +1,16 @@
+2006-11-19  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b27)
+
+	* Made it possible to specify a thickness for fonts in
+	  slideshow (in reality the thickness of the outline
+	  around the text).
+	* Fixed a regression in setting the user-agent for
+	  the applets (broken since 1.5.1-b7)
+	* Another attempt at finding the proxy automatically for
+	  applets (it works in Java 1.4, but not in 1.5 and 1.6;
+	  Sun really messed up on that stuff!)
+	* Changed the slideshow prefs UI to use sliders for times
+	  and introduced a preference for the transition duration.
+
 2006-11-14  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b26)
 
 	* Fixed multi-line caption alignment.

@@ -18,7 +18,7 @@ import java.net.URL;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class    GalleryComm2_5 extends GalleryComm2 {
+public class GalleryComm2_5 extends GalleryComm2 {
 	private static final String MODULE = "GalComm2";
 
 	/** Remote scriptname that provides version 2 of the protocol on the server. */
@@ -40,25 +40,27 @@ public class    GalleryComm2_5 extends GalleryComm2 {
 		scriptName = "main.php";
 
 		capabilities2 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM*/, CAPA_FETCH_ALBUMS_PRUNE};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_FETCH_ALBUMS_PRUNE};
 		capabilities3 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE};
 		capabilities4 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL/*, CAPA_ALBUM_INFO*/, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-								  CAPA_FETCH_ALBUM_IMAGES};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
+								  CAPA_FETCH_ALBUM_IMAGES, CAPA_FORCE_FILENAME};
 		capabilities6 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-								  CAPA_FETCH_ALBUM_IMAGES};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_IMAGE_MAX_SIZE, CAPA_NEW_ALBUM,
+								  CAPA_FETCH_ALBUMS_PRUNE, CAPA_FETCH_ALBUM_IMAGES, CAPA_FORCE_FILENAME};
 		capabilities7 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_IMAGE_MAX_SIZE, CAPA_NEW_ALBUM,
+								  CAPA_FETCH_ALBUMS_PRUNE, CAPA_FETCH_ALBUM_IMAGES, CAPA_FORCE_FILENAME,
+								  CAPA_INCREMENT_VIEW_COUNT};
 		capabilities8 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_IMAGE_MAX_SIZE, CAPA_NEW_ALBUM,
+								  CAPA_FETCH_ALBUMS_PRUNE, CAPA_FETCH_ALBUM_IMAGES, CAPA_FORCE_FILENAME,
+								  CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS_TOO};
 		capabilities9 = new int[]{CAPA_UPLOAD_FILES, CAPA_FETCH_ALBUMS, CAPA_UPLOAD_CAPTION,
-								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_NEW_ALBUM, CAPA_FETCH_ALBUMS_PRUNE,
-								  CAPA_FETCH_ALBUM_IMAGES, CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS,
-								  CAPA_FETCH_RANDOM};
+								  CAPA_FETCH_HIERARCHICAL, CAPA_ALBUM_INFO, CAPA_IMAGE_MAX_SIZE, CAPA_NEW_ALBUM,
+								  CAPA_FETCH_ALBUMS_PRUNE, CAPA_FETCH_ALBUM_IMAGES, CAPA_FORCE_FILENAME,
+								  CAPA_INCREMENT_VIEW_COUNT, CAPA_FETCH_ALBUMS_TOO, CAPA_FETCH_RANDOM};
 
 		Arrays.sort(capabilities2);
 		Arrays.sort(capabilities3);
@@ -130,9 +132,9 @@ public class    GalleryComm2_5 extends GalleryComm2 {
 	public NVPair[] fudgeFormParameters(NVPair form_data[]) {
 		NVPair[] form_data_modified;
 		if (ZEND_DEBUG) {
-			form_data_modified = new NVPair[form_data.length + 6];
+			form_data_modified = new NVPair[form_data.length + 7];
 		} else {
-			form_data_modified = new NVPair[form_data.length + 1];
+			form_data_modified = new NVPair[form_data.length + 2];
 		}
 
 		for (int i = 0; i < form_data.length; i++) {
@@ -144,15 +146,16 @@ public class    GalleryComm2_5 extends GalleryComm2 {
 		}
 
 		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote.GalleryRemote");
+		form_data_modified[form_data.length + 1] = new NVPair("g2_authToken", g.getAuthToken());
 
 		if (ZEND_DEBUG) {
-			form_data_modified[form_data.length + 1] = new NVPair("start_debug", "1");
-			form_data_modified[form_data.length + 2] = new NVPair("debug_port", "10000");
-			form_data_modified[form_data.length + 3] = new NVPair("debug_host", "172.16.1.35,127.0.0.1");
-			form_data_modified[form_data.length + 4] = new NVPair("send_sess_end", "1");
+			form_data_modified[form_data.length + 2] = new NVPair("start_debug", "1");
+			form_data_modified[form_data.length + 3] = new NVPair("debug_port", "10000");
+			form_data_modified[form_data.length + 4] = new NVPair("debug_host", "172.16.1.35,127.0.0.1");
+			form_data_modified[form_data.length + 5] = new NVPair("send_sess_end", "1");
 			//form_data_modified[form_data.length + 5] = new NVPair("debug_no_cache", "1077182887875");
 			//form_data_modified[form_data.length + 6] = new NVPair("debug_stop", "1");
-			form_data_modified[form_data.length + 5] = new NVPair("debug_url", "1");
+			form_data_modified[form_data.length + 6] = new NVPair("debug_url", "1");
 		}
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Overriding form data: " + Arrays.asList(form_data_modified));

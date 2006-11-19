@@ -1344,19 +1344,16 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		// create a connection
 		HTTPConnection mConnection = new HTTPConnection(galUrl);
+
+		// set the user-agent for all requests
+		// also try to disable pipelining, to help with uploading large numbers of files
 		String userAgent = g.getUserAgent();
-		if (userAgent != null) {
-		    mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent) });
-		}
+		mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent),
+				new NVPair("Connection", "close") });
 
 		if (g.getForceProtocolEncoding() != null) {
 			mConnection.setForceCharset(g.getForceProtocolEncoding());
 		}
-
-		// Valiant thinks this will solve the sometines-reported problem with
-		// uploading large numbers of files.
-		NVPair[] def_hdrs = { new NVPair("Connection", "close") };
-        mConnection.setDefaultHeaders(def_hdrs);
 
 		// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
 		HTTPResponse rsp = null;
@@ -1444,6 +1441,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				//mConnection.stop();
 
 				su.stopProgress(StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "addImgOk"));
+
+				g.setAuthToken(p.getProperty("auth_token"));
 
 				return p;
 			} else {

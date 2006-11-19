@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This script was automatically generated using Macrovision's InstallAnywhere 7.1 Enterprise, Build 2763
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Sun Nov 19 00:37:55 CET 2006 -->
-<InstallAnywhere_Deployment_Project increments="3810">
+     DATE:   Tue Sep 20 21:41:54 CEST 2005 -->
+<InstallAnywhere_Deployment_Project increments="4135">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
 		<versionID major="7" minor="1" revision="-1"/>
@@ -10,9 +10,9 @@
 		<scriptID>12,42,11,77,81,52,52,52,55,77,80,65,80,54,84,55</scriptID>
 		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,53,46,48,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,110,107,110,111,119,110,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,0,-13,96,-32,64,80,112,117,98,89,98,113,97,113,65,81,86,58,65,67,66,70,65,64,69,66,69,48,63,71,5,2,5,15,94,109,14,1,0,0</authorizationID>
+		<authorizationID>1,0,0,0,115,15,112,32,80,112,117,98,89,98,113,97,113,65,81,86,58,65,67,66,70,65,64,69,66,69,48,63,71,5,2,7,11,94,101,6,1,0,0</authorizationID>
 	</essentialScriptInfo>
-	<installationObjects uniqueObjects="201">
+	<installationObjects uniqueObjects="215">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
 			<property name="wizardME">
 				<object class="com.zerog.ia.installer.actions.MakeExecutable" objectID="e14b435a989f">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="10ed0ff5906a">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="888fb898bdb8">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -263,7 +263,7 @@ and any path to a file to read from that file]]></string>
 								<string><![CDATA[GalleryRemote.jar]]></string>
 							</property>
 							<property name="fileSize">
-								<long>602916</long>
+								<long>602921</long>
 							</property>
 							<property name="macBinary">
 								<boolean>false</boolean>
@@ -1130,19 +1130,6 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 									</property>
 								</object>
 							</property>
-							<rules logicalOperation="AND">
-								<object class="com.zerog.ia.installer.rules.CompareVariable" objectID="88d346e68e60">
-									<property name="operation">
-										<string><![CDATA[equals]]></string>
-									</property>
-									<property name="operandOne">
-										<string><![CDATA[1]]></string>
-									</property>
-									<property name="operandTwo">
-										<string><![CDATA[0]]></string>
-									</property>
-								</object>
-							</rules>
 						</object>
 					</method>
 					<method name="addElement">
@@ -1621,67 +1608,7 @@ If the commands above do not work, you should download and install these package
 			<property name="buildSettings">
 				<object class="java.util.Properties">
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[November 19, 2006 12:37:55 AM CET]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
-						<string><![CDATA[false]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.heap.size.max]]></string>
-						<string><![CDATA[50331648]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.vmpack.unix.path]]></string>
-						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.linux.vm]]></string>
-						<string><![CDATA[true]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.named_unix.vm]]></string>
-						<string><![CDATA[false]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.unix.novm]]></string>
-						<string><![CDATA[true]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.cdrom]]></string>
-						<string><![CDATA[true]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.vm.version]]></string>
-						<string><![CDATA[1.4+]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.auto-populate.labels]]></string>
-						<string><![CDATA[true]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.webpage.language]]></string>
-						<string><![CDATA[en]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.named_unix.novm]]></string>
-						<string><![CDATA[false]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.project.build.last.date]]></string>
-						<string><![CDATA[September 20, 2005 11:02:49 PM CEST]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.heap.size.initial]]></string>
-						<string><![CDATA[16777216]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.vmpack.linux.path]]></string>
-						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.authentication]]></string>
+						<string><![CDATA[com.zerog.ia.build.platform.hpux.novm]]></string>
 						<string><![CDATA[false]]></string>
 					</method>
 					<method name="put">
@@ -1689,15 +1616,99 @@ If the commands above do not work, you should download and install these package
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.platform.unix.ui.default]]></string>
-						<string><![CDATA[GUI]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.authentication.gui]]></string>
+						<string><![CDATA[com.zerog.ia.build.platform.linux.vm]]></string>
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.java.novm]]></string>
+						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.authentication]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.macosx.novm]]></string>
+						<string><![CDATA[true]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.aix.novm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.installer.options.heap.size.max]]></string>
+						<string><![CDATA[50331648]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.macos9.vm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.options.auto-populate.labels]]></string>
+						<string><![CDATA[true]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.solaris.vm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.vmpack.windows.path]]></string>
+						<string><![CDATA[SunJRE150_03iWin32.vm]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.installer.options.valid.vm.list]]></string>
+						<string><![CDATA[J2]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.project.build.last.date]]></string>
+						<string><![CDATA[September 20, 2005 9:41:54 PM CEST]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.windows.vm]]></string>
+						<string><![CDATA[true]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.options.output.web]]></string>
+						<string><![CDATA[true]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.web]]></string>
+						<string><![CDATA[true]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.vmpack.linux.path]]></string>
+						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.named_unix.vm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.unix.novm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.options.output.cdrom]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.hpux.vm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.vmpack.unix.path]]></string>
+						<string><![CDATA[SunJRE150_03LinuxINTEL.vm]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.named_unix.novm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.macos9.novm]]></string>
+						<string><![CDATA[false]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.build.platform.solaris.novm]]></string>
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
@@ -1705,39 +1716,39 @@ If the commands above do not work, you should download and install these package
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.solaris.novm]]></string>
-						<string><![CDATA[true]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.vmpack.windows.path]]></string>
-						<string><![CDATA[SunJRE150_03iWin32.vm]]></string>
-					</method>
-					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.macos9.novm]]></string>
+						<string><![CDATA[com.zerog.ia.build.platform.aix.vm]]></string>
 						<string><![CDATA[false]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.installer.options.valid.vm.list]]></string>
-						<string><![CDATA[J2 J1 MRJ MSJ]]></string>
+						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
+						<string><![CDATA[September 20, 2005 9:41:54 PM CEST]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.output.web]]></string>
+						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.cdrom]]></string>
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.macosx.novm]]></string>
+						<string><![CDATA[com.zerog.ia.installer.options.platform.unix.ui.default]]></string>
+						<string><![CDATA[GUI]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.installer.options.heap.size.initial]]></string>
+						<string><![CDATA[16777216]]></string>
+					</method>
+					<method name="put">
+						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.authentication.gui]]></string>
 						<string><![CDATA[true]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.output.cdrom]]></string>
-						<string><![CDATA[false]]></string>
+						<string><![CDATA[com.zerog.ia.installer.options.platform.macosx.vm.version]]></string>
+						<string><![CDATA[1.3+]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.web]]></string>
-						<string><![CDATA[true]]></string>
+						<string><![CDATA[com.zerog.ia.build.options.webpage.language]]></string>
+						<string><![CDATA[en]]></string>
 					</method>
 					<method name="put">
-						<string><![CDATA[com.zerog.ia.build.platform.windows.vm]]></string>
+						<string><![CDATA[com.zerog.ia.build.platform.java.novm]]></string>
 						<string><![CDATA[true]]></string>
 					</method>
 				</object>
@@ -2563,7 +2574,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[ChangeLog]]></string>
 											</property>
 											<property name="fileSize">
-												<long>51122</long>
+												<long>51002</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -2592,7 +2603,7 @@ and any path to a file to read from that file]]></string>
 												<string><![CDATA[defaults.properties]]></string>
 											</property>
 											<property name="fileSize">
-												<long>6785</long>
+												<long>6791</long>
 											</property>
 											<property name="macBinary">
 												<boolean>false</boolean>
@@ -3053,6 +3064,316 @@ and any path to a file to read from that file]]></string>
 												<object refID="ed69f3f5833c"/>
 											</visualChildren>
 										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc66932f">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.faq.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.faq.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>8140</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc659330">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>1458</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc669330">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.intro.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.intro.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>2560</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc659331">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.problems.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.problems.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>6952</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc669331">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.protocol.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.protocol.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>48947</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc659332">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.software.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.software.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>5841</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc669332">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.using.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.using.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>11296</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc659333">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[html.css]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[html.css]]></string>
+											</property>
+											<property name="fileSize">
+												<long>134</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc669336">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[index.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[index.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>12579</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="a66afc669337">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[pretty-html.css]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[pretty-html.css]]></string>
+											</property>
+											<property name="fileSize">
+												<long>417</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.CreateShortcut" objectID="a66c580d9338">
+											<property name="targetAction">
+												<object refID="a66afc669336"/>
+											</property>
+											<property name="useInstalledFile">
+												<boolean>true</boolean>
+											</property>
+											<property name="workingDir">
+												<string><![CDATA[]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[ReadMe.html]]></string>
+											</property>
+											<property name="args">
+												<string><![CDATA[]]></string>
+											</property>
+										</object>
 										<object refID="83eedd7f84b0"/>
 										<object refID="4be96165bf72"/>
 										<object refID="4be96166bf72"/>
@@ -3223,7 +3544,7 @@ it will search for ones in this list]]></string>
 														</object>
 													</method>
 													<method name="addElement">
-														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="10ed10cf90b1">
+														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="888fb972bdfc">
 															<property name="propertyValue">
 																<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 															</property>
@@ -3281,6 +3602,35 @@ and any path to a file to read from that file]]></string>
 											</property>
 											<property name="mainClass">
 												<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="b9742fe8a8d4">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.i18n.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.i18n.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>10908</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
 											</property>
 										</object>
 										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="b97586bda8d9">
@@ -3603,7 +3953,109 @@ and any path to a file to read from that file]]></string>
 												<object refID="83eedd7f84b0"/>
 											</visualChildren>
 										</object>
+										<object class="com.zerog.ia.installer.actions.InstallFile" objectID="af653e7cbdab">
+											<property name="unixPermissions">
+												<string><![CDATA[664]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[gallery-remote.protocol3.html]]></string>
+											</property>
+											<property name="fileSize">
+												<long>25007</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<property name="targetCheckKind">
+												<int>0</int>
+											</property>
+										</object>
 										<object refID="ed69f3f58330"/>
+										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc669333">
+											<property name="unixPermissions">
+												<string><![CDATA[775]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\images]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[images]]></string>
+											</property>
+											<property name="removeRecursively">
+												<boolean>false</boolean>
+											</property>
+											<property name="totalSize">
+												<long>16162</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+										</object>
+										<object class="com.zerog.ia.installer.actions.InstallDirectory" objectID="a66afc65932f">
+											<property name="unixPermissions">
+												<string><![CDATA[775]]></string>
+											</property>
+											<property name="sourceName">
+												<string><![CDATA[]]></string>
+											</property>
+											<property name="overrideUnixPermissions">
+												<boolean>false</boolean>
+											</property>
+											<property name="sourcePath">
+												<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage]]></string>
+											</property>
+											<property name="shouldUninstall">
+												<boolean>true</boolean>
+											</property>
+											<property name="destinationName">
+												<string><![CDATA[Documentation]]></string>
+											</property>
+											<property name="removeRecursively">
+												<boolean>false</boolean>
+											</property>
+											<property name="totalSize">
+												<long>1</long>
+											</property>
+											<property name="macBinary">
+												<boolean>false</boolean>
+											</property>
+											<visualChildren>
+												<object refID="a66afc66932f"/>
+												<object refID="a66afc659330"/>
+												<object refID="b9742fe8a8d4"/>
+												<object refID="a66afc669330"/>
+												<object refID="a66afc659331"/>
+												<object refID="a66afc669331"/>
+												<object refID="af653e7cbdab"/>
+												<object refID="a66afc659332"/>
+												<object refID="a66afc669332"/>
+												<object refID="a66afc659333"/>
+												<object refID="a66afc669333"/>
+												<object refID="a66afc669336"/>
+												<object refID="a66afc669337"/>
+											</visualChildren>
+										</object>
 									</installChildren>
 								</object>
 								<object class="com.zerog.ia.installer.VMComponent" objectID="88610d738e73">
@@ -5377,6 +5829,7 @@ and any path to a file to read from that file]]></string>
 						<object refID="ed69f3f68339"/>
 						<object refID="ad46e39e832e"/>
 						<object refID="ed69f3f58330"/>
+						<object refID="a66afc65932f"/>
 					</visualChildren>
 				</object>
 				<object class="com.zerog.ia.installer.GhostDirectory" objectID="e14b436b98a4">
@@ -5392,6 +5845,7 @@ and any path to a file to read from that file]]></string>
 					<visualChildren>
 						<object refID="e14b436a98a4"/>
 						<object refID="57f452f2a870"/>
+						<object refID="a66c580d9338"/>
 					</visualChildren>
 				</object>
 				<object refID="e14b385e9893"/>
@@ -5401,5 +5855,7 @@ and any path to a file to read from that file]]></string>
 			</installChildren>
 		</object>
 	</installationObjects>
-	<restorationObjects count="0"/>
+	<restorationObjects count="1">
+		<object refID="a66afc669333"/>
+	</restorationObjects>
 </InstallAnywhere_Deployment_Project>

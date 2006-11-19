@@ -187,7 +187,7 @@ public class SlideshowFrame extends PreviewFrame
 						}
 						updateFeedback(FEEDBACK_PAUSE_PLAY);
 
-						updateProgress(loader.pictureShowNow, STATE_SHOWING);
+						updateProgress(loader.pictureShowNow, STATE_SHOWING, false);
 
 						break;
 				}
@@ -199,9 +199,7 @@ public class SlideshowFrame extends PreviewFrame
 		slideshowPane = new SlideshowPane();
 		setContentPane(slideshowPane);
 
-		PropertiesFile pf = GalleryRemote._().properties;
-
-		sleepTime = pf.getIntProperty(SLIDESHOW_DELAY) * 1000;
+		sleepTime = GalleryRemote._().properties.getIntProperty(SLIDESHOW_DELAY) * 1000;
 
 		loader = new ImageLoaderUtil(5, this);
 		loader.setTransferListener(this);
@@ -215,7 +213,11 @@ public class SlideshowFrame extends PreviewFrame
 			this.pictures = pictures;
 		}
 
-		new Thread(this).start();
+		if (sleepTime > 0) {
+			new Thread(this).start();
+		} else {
+			next(false);
+		}
 
 		if (GalleryRemote._().properties.getBooleanProperty(SLIDESHOW_PRELOADALL)) {
 			Thread t = new Thread() {
@@ -240,7 +242,7 @@ public class SlideshowFrame extends PreviewFrame
 
 	public void run() {
 		running = true;
-		while (running && !shutdown) {
+		while (sleepTime > 0 && running && !shutdown) {
 			if (!next(false)) {
 				// the slideshow is over
 				hide();
@@ -250,11 +252,10 @@ public class SlideshowFrame extends PreviewFrame
 			try {
 				long sleep;
 
-				if (sleepTime > 0) {
-					while ((sleep = sleepTime - (System.currentTimeMillis() - pictureShownTime)) > 0) {
-						Thread.sleep(sleep);
-					}
+				while ((sleep = sleepTime - (System.currentTimeMillis() - pictureShownTime)) > 0) {
+					Thread.sleep(sleep);
 				}
+
 				//Log.log(Log.LEVEL_TRACE, MODULE, "sleepTime: " + sleepTime + " - " + (System.currentTimeMillis() - pictureShownTime));
 				//Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -322,7 +323,7 @@ public class SlideshowFrame extends PreviewFrame
 
 		if (user) {
 			userPicture = picture;
-			updateProgress(picture, STATE_SKIPPING);
+			updateProgress(picture, STATE_SKIPPING, false);
 			Log.log(Log.LEVEL_TRACE, MODULE, "Skipping sleep");
 			try {
 				Thread.sleep(skipTime);
@@ -337,7 +338,7 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		wantDownloaded.add(picture);
-		updateProgress(picture, STATE_PREPARING);
+		updateProgress(picture, STATE_PREPARING, false);
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
@@ -375,7 +376,7 @@ public class SlideshowFrame extends PreviewFrame
 		Log.log(Log.LEVEL_TRACE, MODULE, "Previous picture: " + picture);
 		if (user) {
 			userPicture = picture;
-			updateProgress(picture, STATE_SKIPPING);
+			updateProgress(picture, STATE_SKIPPING, false);
 			try {
 				Thread.sleep(skipTime);
 			} catch (InterruptedException e) {}
@@ -391,7 +392,7 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		wantDownloaded.add(picture);
-		updateProgress(picture, STATE_PREPARING);
+		updateProgress(picture, STATE_PREPARING, false);
 		loader.preparePicture(picture, false, true);
 
 		// and cache the one after it
@@ -412,7 +413,7 @@ public class SlideshowFrame extends PreviewFrame
 
 		if (picture != loader.pictureShowWant) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "We wanted " + loader.pictureShowWant + ": ignoring");
-			updateProgress(loader.pictureShowWant, STATE_NEXTREADY);
+			updateProgress(loader.pictureShowWant, STATE_NEXTREADY, false);
 			return true;
 		}
 
@@ -434,7 +435,7 @@ public class SlideshowFrame extends PreviewFrame
 				url = picture.getSource().toString();
 			}
 
-			updateProgress(picture, STATE_SHOWING);
+			updateProgress(picture, STATE_SHOWING, true);
 		}
 
 		pictureShownTime = System.currentTimeMillis();
@@ -444,25 +445,25 @@ public class SlideshowFrame extends PreviewFrame
 
 	public void pictureStartDownloading(Picture picture) {
 		if (picture == loader.pictureShowWant || picture == userPicture) {
-			updateProgress(picture, STATE_DOWNLOADING);
+			updateProgress(picture, STATE_DOWNLOADING, false);
 		}
 	}
 
 	public void pictureStartProcessing(Picture picture) {
 		if (picture == loader.pictureShowWant || picture == userPicture) {
-			updateProgress(picture, STATE_PROCESSING);
+			updateProgress(picture, STATE_PROCESSING, false);
 		}
 	}
 
 	public void pictureLoadError(Picture picture) {
 		if (picture == loader.pictureShowWant || picture == userPicture) {
-			updateProgress(picture, STATE_ERROR);
+			updateProgress(picture, STATE_ERROR, false);
 		}
 
 		loader.reduceMemory();
 	}
 
-	private void updateProgress(Picture picture, int state) {
+	private void updateProgress(Picture picture, int state, boolean repaintLater) {
 		if (picture == null) {
 			return;
 		}
@@ -507,7 +508,9 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "updateProgress: " + progress);
-		repaint();
+		if (!repaintLater) {
+			repaint();
+		}
 
 		hideCursor();
 	}
@@ -635,6 +638,7 @@ public class SlideshowFrame extends PreviewFrame
 		Timer timer = new Timer(1000/60, this);
 		long transitionStart = System.currentTimeMillis() - 5000;
 		float imageAlpha = 0;
+		int thickness = 1;
 
 		public void actionPerformed(ActionEvent e) {
 			long now = System.currentTimeMillis();
@@ -665,6 +669,8 @@ public class SlideshowFrame extends PreviewFrame
 				firstPaint = false;
 				ImageLoaderUtil.setSlideshowFont(this);
 				initTransitionDuration();
+				int defaultThickness = getFont().getSize() / 7;
+				thickness = GalleryRemote._().properties.getIntProperty(SLIDESHOW_FONTTHICKNESS, defaultThickness);
 			}
 
 			if (feedback == FEEDBACK_NONE && feedbackUntil <= System.currentTimeMillis()) {
@@ -888,12 +894,13 @@ public class SlideshowFrame extends PreviewFrame
 
 				ImageLoaderUtil.WrapInfo wrapInfo = ImageLoaderUtil.wrap(g, text, d.width);
 
-				infoCache[id] = new BufferedImage(wrapInfo.width + 2, wrapInfo.height + 2, BufferedImage.TYPE_INT_ARGB);
+				infoCache[id] = new BufferedImage(wrapInfo.width + thickness * 2,
+						wrapInfo.height + thickness * 2, BufferedImage.TYPE_INT_ARGB);
 
 				Graphics2D g2 = (Graphics2D) infoCache[id].getGraphics();
 				g2.setFont(g.getFont());
 				infoLocation[id] = ImageLoaderUtil.paintAlignedOutline(
-						g2, x, y, 1, position, wrapInfo, true);
+						g2, x, y, thickness, position, wrapInfo, true);
 				Log.log(Log.LEVEL_TRACE, MODULE, "Cached info " + id + " - " + text);
 			}
 
