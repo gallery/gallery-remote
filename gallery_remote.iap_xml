@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This script was automatically generated using Macrovision's InstallAnywhere 7.1 Enterprise, Build 2763
      STATUS: Fully Functional LICENSED Edition
-     DATE:   Sun Nov 19 00:37:55 CET 2006 -->
-<InstallAnywhere_Deployment_Project increments="3810">
+     DATE:   Tue Nov 28 10:07:30 CET 2006 -->
+<InstallAnywhere_Deployment_Project increments="3751">
 	<!-- ** DO NOT EDIT ** Essential authorization and configuration data ** DO NOT EDIT ** -->
 	<essentialScriptInfo>
 		<versionID major="7" minor="1" revision="-1"/>
@@ -10,9 +10,9 @@
 		<scriptID>12,42,11,77,81,52,52,52,55,77,80,65,80,54,84,55</scriptID>
 		<buildID>3,13,71,87,105,110,100,111,119,115,32,88,80,44,32,53,46,49,44,32,120,56,54,59,32,74,97,118,97,32,49,46,53,46,48,44,32,83,117,110,32,77,105,99,114,111,115,121,115,116,101,109,115,32,73,110,99,46,44,32,104,116,116,112,58,47,47,106,97,118,97,46,115,117,110,46,99,111,109,47,59,32,101,110,44,32,85,110,107,110,111,119,110,59,32,67,112,49,50,53,50</buildID>
 		<!-- The authorizationID may change between project saves and builds.  This does not effect the integrity of the project, nor do changes in this value represent changes in the actual InstallAnywhere project. -->
-		<authorizationID>1,0,0,0,-13,96,-32,64,80,112,117,98,89,98,113,97,113,65,81,86,58,65,67,66,70,65,64,69,66,69,48,63,71,5,2,5,15,94,109,14,1,0,0</authorizationID>
+		<authorizationID>1,0,0,0,35,-48,-96,-32,80,112,117,98,89,98,113,97,113,65,81,86,58,65,67,66,70,65,64,69,66,69,48,63,71,5,2,0,2,81,109,15,1,0,0</authorizationID>
 	</essentialScriptInfo>
-	<installationObjects uniqueObjects="201">
+	<installationObjects uniqueObjects="198">
 		<object class="com.zerog.ia.installer.Installer" objectID="e14b381f9883">
 			<property name="wizardME">
 				<object class="com.zerog.ia.installer.actions.MakeExecutable" objectID="e14b435a989f">
@@ -179,7 +179,7 @@ it will search for ones in this list]]></string>
 								</object>
 							</method>
 							<method name="addElement">
-								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="10ed0ff5906a">
+								<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="41488e88906a">
 									<property name="propertyValue">
 										<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 									</property>
@@ -1086,66 +1086,6 @@ You may cancel this installation at any time by clicking the 'Cancel' button.]]>
 						</object>
 					</method>
 					<method name="addElement">
-						<object class="com.zerog.ia.installer.actions.ImportantNoteAction" objectID="57e4da60a7c1">
-							<property name="imageOption">
-								<int>1</int>
-							</property>
-							<property name="labelOption">
-								<int>3</int>
-							</property>
-							<property name="labelIndex">
-								<int>0</int>
-							</property>
-							<property name="title">
-								<string><![CDATA[Important Information]]></string>
-							</property>
-							<property name="stepPrompt">
-								<string><![CDATA[]]></string>
-							</property>
-							<property name="resourcePath">
-								<string><![CDATA[$IA_PROJECT_DIR$\..\gallery_docs\dist\grpackage\]]></string>
-							</property>
-							<property name="resourceName">
-								<string><![CDATA[gallery-remote.intro.html]]></string>
-							</property>
-							<property name="sourceFileType">
-								<int>0</int>
-							</property>
-							<property name="requiresUserChoice">
-								<boolean>false</boolean>
-							</property>
-							<property name="agreeWithLicenseByDefault">
-								<boolean>false</boolean>
-							</property>
-							<property name="forceScroll">
-								<boolean>false</boolean>
-							</property>
-							<property name="openExternalLinks">
-								<boolean>true</boolean>
-							</property>
-							<property name="help">
-								<object class="com.zerog.ia.installer.util.Help" objectID="4be532c8bf2b">
-									<property name="showHelp">
-										<boolean>false</boolean>
-									</property>
-								</object>
-							</property>
-							<rules logicalOperation="AND">
-								<object class="com.zerog.ia.installer.rules.CompareVariable" objectID="88d346e68e60">
-									<property name="operation">
-										<string><![CDATA[equals]]></string>
-									</property>
-									<property name="operandOne">
-										<string><![CDATA[1]]></string>
-									</property>
-									<property name="operandTwo">
-										<string><![CDATA[0]]></string>
-									</property>
-								</object>
-							</rules>
-						</object>
-					</method>
-					<method name="addElement">
 						<object class="com.zerog.ia.installer.actions.InstallDirAction" objectID="e14b386e9897">
 							<property name="imageOption">
 								<int>1</int>
@@ -1622,7 +1562,7 @@ If the commands above do not work, you should download and install these package
 				<object class="java.util.Properties">
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.project.save.last.date]]></string>
-						<string><![CDATA[November 19, 2006 12:37:55 AM CET]]></string>
+						<string><![CDATA[November 28, 2006 10:07:30 AM CET]]></string>
 					</method>
 					<method name="put">
 						<string><![CDATA[com.zerog.ia.build.options.optimization.platform.merge]]></string>
@@ -3223,7 +3163,7 @@ it will search for ones in this list]]></string>
 														</object>
 													</method>
 													<method name="addElement">
-														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="10ed10cf90b1">
+														<object class="com.zerog.ia.installer.util.LAXPropertyData" objectID="41488f6290a9">
 															<property name="propertyValue">
 																<string><![CDATA[com.gallery.GalleryRemote.GalleryRemote]]></string>
 															</property>

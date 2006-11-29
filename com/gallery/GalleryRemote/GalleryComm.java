@@ -231,7 +231,7 @@ public abstract class GalleryComm implements PreferenceNames {
 				if (proxyInfoArray != null && proxyInfoArray.length != 0) {
 					proxyInfo = proxyInfoArray[0];
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
 			}
 
@@ -246,7 +246,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					proxyHelper = proxyHelperClass.newInstance();
 					proxyInfo = proxyHelperClass.getMethod("getProxyInfo",
 							new Class[] { URL.class }).invoke(proxyHelper, new Object[] { url });
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
 				}
 			}
@@ -263,7 +263,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					} catch(NoSuchMethodException e) {
 						proxyHost = (String) proxyInfoClass.getMethod("getHost", null).invoke(proxyInfo, null);
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
 				}
 			}

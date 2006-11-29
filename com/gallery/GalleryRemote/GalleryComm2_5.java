@@ -146,7 +146,9 @@ public class GalleryComm2_5 extends GalleryComm2 {
 		}
 
 		form_data_modified[form_data.length] = new NVPair("g2_controller", "remote.GalleryRemote");
-		form_data_modified[form_data.length + 1] = new NVPair("g2_authToken", g.getAuthToken());
+		if (g.getAuthToken() != null) {
+			form_data_modified[form_data.length + 1] = new NVPair("g2_authToken", g.getAuthToken());
+		}
 
 		if (ZEND_DEBUG) {
 			form_data_modified[form_data.length + 2] = new NVPair("start_debug", "1");
