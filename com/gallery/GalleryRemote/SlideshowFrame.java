@@ -37,6 +37,7 @@ public class SlideshowFrame extends PreviewFrame
 	String progress = null;
 	String extra = null;
 	String url = null;
+	String album = null;
 	String skipping = null;
 
 	public static final int STATE_NO_CHANGE = 0;
@@ -430,9 +431,17 @@ public class SlideshowFrame extends PreviewFrame
 				url = picture.safeGetUrlFull().toString();
 
 				// update view count on Gallery
-				picture.getParentAlbum().getGallery().incrementViewCount(picture, GalleryRemote._().getCore().getMainStatusUpdate());
+				picture.getParentAlbum().getGallery().incrementViewCount(picture,
+						GalleryRemote._().getCore().getMainStatusUpdate());
 			} else {
 				url = picture.getSource().toString();
+			}
+
+			if (picture.getParentAlbum().getCaption() != null) {
+				album = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(
+						picture.getParentAlbum().getCaption())).trim();
+			} else {
+				album = null;
 			}
 
 			updateProgress(picture, STATE_SHOWING, true);
@@ -624,11 +633,11 @@ public class SlideshowFrame extends PreviewFrame
 		int feedbackWidth = 535;
 		int feedbackHeight = 220;
 
-		BufferedImage[] infoCache = new BufferedImage[4];
-		String[] cachedInfo = new String[4];
-		Point[] infoLocation = new Point[4];
-		BufferedImage[] previousInfoCache = new BufferedImage[4];
-		Point[] previousInfoLocation = new Point[4];
+		BufferedImage[] infoImage = new BufferedImage[5];
+		String[] infoString = new String[5];
+		Point[] infoLocation = new Point[5];
+		BufferedImage[] previousInfoImage = new BufferedImage[5];
+		Point[] previousInfoLocation = new Point[5];
 
 		Image currentImage = null;
 		Image currentImageSrc = null;
@@ -649,11 +658,11 @@ public class SlideshowFrame extends PreviewFrame
 
 				// flush previous, no longer needed
 				previousImage = null;
-				for (int id = 0; id < previousInfoCache.length; id++) {
-					if (previousInfoCache[id] != null) {
-						previousInfoCache[id].flush();
+				for (int id = 0; id < previousInfoImage.length; id++) {
+					if (previousInfoImage[id] != null) {
+						previousInfoImage[id].flush();
 					}
-					previousInfoCache[id] = null;
+					previousInfoImage[id] = null;
 				}
 			} else {
 				imageAlpha = ((float) (now - transitionStart)) / transitionDuration;
@@ -742,6 +751,7 @@ public class SlideshowFrame extends PreviewFrame
 			paintInfo(g, 1, progress, pf.getIntProperty(SLIDESHOW_PROGRESS), false);
 			paintInfo(g, 2, extra, pf.getIntProperty(SLIDESHOW_EXTRA), true);
 			paintInfo(g, 3, url, pf.getIntProperty(SLIDESHOW_URL), true);
+			paintInfo(g, 4, album, pf.getIntProperty(SLIDESHOW_ALBUM), true);
 		}
 
 		public void paintFeedback(Graphics2D g) {
@@ -850,11 +860,11 @@ public class SlideshowFrame extends PreviewFrame
 			if (position == 0) return;
 			if (text == null) text = "";
 
-			if (!text.equals(cachedInfo[id])) {
-				previousInfoCache[id] = infoCache[id];
+			if (!text.equals(infoString[id])) {
+				previousInfoImage[id] = infoImage[id];
 				previousInfoLocation[id] = infoLocation[id];
 
-				cachedInfo[id] = text;
+				infoString[id] = text;
 
 				Dimension d = getSize();
 				g.setFont(getFont());
@@ -894,10 +904,10 @@ public class SlideshowFrame extends PreviewFrame
 
 				ImageLoaderUtil.WrapInfo wrapInfo = ImageLoaderUtil.wrap(g, text, d.width);
 
-				infoCache[id] = new BufferedImage(wrapInfo.width + thickness * 2,
+				infoImage[id] = new BufferedImage(wrapInfo.width + thickness * 2,
 						wrapInfo.height + thickness * 2, BufferedImage.TYPE_INT_ARGB);
 
-				Graphics2D g2 = (Graphics2D) infoCache[id].getGraphics();
+				Graphics2D g2 = (Graphics2D) infoImage[id].getGraphics();
 				g2.setFont(g.getFont());
 				infoLocation[id] = ImageLoaderUtil.paintAlignedOutline(
 						g2, x, y, thickness, position, wrapInfo, true);
@@ -906,15 +916,20 @@ public class SlideshowFrame extends PreviewFrame
 
 			Composite composite = g.getComposite();
 
-			if (transition && imageAlpha != 1 && previousInfoCache[id] != null) {
+			if (transition && imageAlpha != 1 && previousInfoImage[id] != null) {
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - imageAlpha));
-				g.drawImage(previousInfoCache[id], previousInfoLocation[id].x, previousInfoLocation[id].y, this);
+				g.drawImage(previousInfoImage[id], previousInfoLocation[id].x, previousInfoLocation[id].y, this);
 			}
 
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transition?imageAlpha:1));
-			g.drawImage(infoCache[id], infoLocation[id].x, infoLocation[id].y, this);
+			g.drawImage(infoImage[id], infoLocation[id].x, infoLocation[id].y, this);
 
 			g.setComposite(composite);
+
+			if (imageAlpha >= 1) {
+				previousInfoImage[id] = infoImage[id];
+				previousInfoLocation[id] = infoLocation[id];
+			}
 		}
 
 		private void drawHelp(Graphics g, Color hilight, FontMetrics fm, int x, int y, String text) {

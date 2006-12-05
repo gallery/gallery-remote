@@ -733,20 +733,7 @@ public class ImageUtils {
 
 				long start = System.currentTimeMillis();
 
-				URLConnection conn = pictureUrl.openConnection();
-				conn.setDefaultUseCaches(false);
-				//conn.addRequestProperty("Connection", "Dont-keep-alive");
-				String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
-				if (userAgent != null) {
-					conn.setRequestProperty("User-Agent", userAgent);
-				}
-				conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
-				Cookie[] cookies = CookieModule.listAllCookies();
-				for (int i = 0; i < cookies.length; i++) {
-					conn.addRequestProperty("Cookie", cookies[i].toString());
-				}
-
-				conn.connect();
+				URLConnection conn = openUrlConnection(pictureUrl, p);
 
 				int size = conn.getContentLength();
 
@@ -813,6 +800,24 @@ public class ImageUtils {
 		}
 
 		return f;
+	}
+
+	public static URLConnection openUrlConnection(URL pictureUrl, Picture p) throws IOException {
+		URLConnection conn = pictureUrl.openConnection();
+		conn.setDefaultUseCaches(false);
+		//conn.addRequestProperty("Connection", "Dont-keep-alive");
+		String userAgent = p.getAlbumOnServer().getGallery().getUserAgent();
+		if (userAgent != null) {
+			conn.setRequestProperty("User-Agent", userAgent);
+		}
+		conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
+		Cookie[] cookies = CookieModule.listAllCookies();
+		for (int i = 0; i < cookies.length; i++) {
+			conn.addRequestProperty("Cookie", cookies[i].toString());
+		}
+
+		conn.connect();
+		return conn;
 	}
 
 	public static Dimension getPictureDimension(Picture p) {

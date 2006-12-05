@@ -39,10 +39,6 @@ public abstract class GalleryItem extends DefaultMutableTreeNode implements Clon
 		return (Album) getParent();
 	}
 
-	/*public void setParentAlbum(Album album) {
-		setParent(album);
-	}*/
-
 	public void setCaption(String caption) {
 		this.caption = caption;
 		this.escapedCaption = null;

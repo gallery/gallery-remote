@@ -87,7 +87,6 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 */
 	protected int serverMinorVersion = 0;
 
-	/** The capabilities for 2.1 */
 	private static int[] capabilities1;
 	private static int[] capabilities2;
 	private static int[] capabilities5;
@@ -447,8 +446,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			if (su instanceof UploadProgress) {
 				((UploadProgress) su).setCancelListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						((UploadProgress) su).updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upStop"));
-						((UploadProgress) su).setUndetermined(StatusUpdate.LEVEL_UPLOAD_PROGRESS, true);
+						su.updateProgressStatus(StatusUpdate.LEVEL_UPLOAD_PROGRESS, GRI18n.getString(MODULE, "upStop"));
+						su.setUndetermined(StatusUpdate.LEVEL_UPLOAD_PROGRESS, true);
 						interrupt();
 						long startTime = System.currentTimeMillis();
 
@@ -467,8 +466,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							cleanUp();
 						}
 
-						((UploadProgress) su).setVisible(false);
-						((UploadProgress) su).dispose();
+						((UploadProgress) su).done();
 					}
 				});
 			}
@@ -1013,7 +1011,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "new-album parameters: " + Arrays.asList(form_data));
 
-				Properties p = null;
+				Properties p;
 				if (utf8) {
 					// force using mime-multipart so we can use UTF-8
 					NVPair[] hdrs = new NVPair[1];
@@ -1126,12 +1124,17 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							Log.log(Log.LEVEL_TRACE, MODULE, "Gallery root, baseurl is null");
 						} else {
 							// verify that baseUrl is a valid URL (don't remove)
-							URL tmpUrl = new URL(baseUrl);
+							new URL(baseUrl);
 						}
 					} catch (MalformedURLException e) {
 						Log.log(Log.LEVEL_TRACE, MODULE, "baseurl is relative, tacking on Gallery URL (only works for standalone)");
 						URL tmpUrl = new URL(g.getStUrlString());
 						baseUrl = new URL(tmpUrl.getProtocol(), tmpUrl.getHost(), tmpUrl.getPort(), baseUrl).toString();
+					}
+
+					String caption = p.getProperty("album.caption");
+					if (caption != null) {
+						a.setCaption(caption);
 					}
 
 					int width;
@@ -1314,15 +1317,15 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	/**
 	 * POSTSs a request to the Gallery server with the given form data.
 	 */
-	GalleryProperties requestResponse(NVPair form_data[], StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+	GalleryProperties requestResponse(NVPair form_data[], StatusUpdate su, GalleryTask task) throws ModuleException, IOException {
 		return requestResponse(form_data, null, g.getGalleryUrl(scriptName), true, su, task);
 	}
 
-	GalleryProperties requestResponse(NVPair form_data[], URL galUrl, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+	GalleryProperties requestResponse(NVPair form_data[], URL galUrl, StatusUpdate su, GalleryTask task) throws ModuleException, IOException {
 		return requestResponse(form_data, null, galUrl, true, su, task);
 	}
 
-	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryTask task) throws GR2Exception, ModuleException, IOException {
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryTask task) throws ModuleException, IOException {
 		return requestResponse(form_data, data, galUrl, checkResult, su, task, false);
 	}
 
@@ -1330,7 +1333,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 	 * POSTs a request to the Gallery server with the given form data.  If data is
 	 * not null, a multipart MIME post is performed.
 	 */
-	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws GR2Exception, ModuleException, IOException {
+	GalleryProperties requestResponse(NVPair form_data[], byte[] data, URL galUrl, boolean checkResult, StatusUpdate su, GalleryComm2.GalleryTask task, boolean alreadyRetried) throws ModuleException, IOException {
 		// assemble the URL
 		String urlPath = galUrl.getFile();
 		Log.log(Log.LEVEL_TRACE, MODULE, "Connecting to: " + galUrl);
@@ -1354,7 +1357,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 		}
 
 		// Markus Cozowicz (mc@austrian-mint.at) 2003/08/24
-		HTTPResponse rsp = null;
+		HTTPResponse rsp;
 
 		// post multipart if there is data
 		if (data == null) {
@@ -1392,7 +1395,7 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 			Log.log(Log.LEVEL_TRACE, MODULE, "Content-type: " + rsp.getHeader("Content-type"));
 
 			// load response
-			String response = null;
+			String response;
 			try {
 				response = rsp.getText().trim();
 			} catch (ParseException e) {

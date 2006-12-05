@@ -40,7 +40,6 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 import java.util.Properties;
-import java.util.Arrays;
 
 /**
  * This interface is a temporary mechanism to let us use version
@@ -196,8 +195,7 @@ public abstract class GalleryComm implements PreferenceNames {
 	 * Return true if the last communication attempt failed with authorization error
 	 */
 	public static boolean wasAuthFailure() {
-		boolean result = (lastRespCode == 401);
-		return result;
+		return lastRespCode == 401;
 	}
 
 	public static GalleryComm getCommInstance(StatusUpdate su, URL url, Gallery g) {
@@ -214,7 +212,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 			// Prepare to get info from the plugin in Java 4, 5 or 6
 			Class proxyHelperClass = null;
-			Object proxyHelper = null;
+			Object proxyHelper;
 			Class proxyInfoClass = null;
 			Object proxyInfo = null;
 			try {
@@ -327,7 +325,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 			// create a connection
 			HTTPConnection mConnection = new HTTPConnection(url);
-			addUserInfo(mConnection, url);
+			addUserInfo(url);
 			String userAgent = g.getUserAgent();
 			if (userAgent != null) {
 				mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent) });
@@ -384,7 +382,7 @@ public abstract class GalleryComm implements PreferenceNames {
 		return null;
 	}
 
-	public static void addUserInfo(HTTPConnection conn, URL url) {
+	public static void addUserInfo(URL url) {
 		String userInfo = url.getUserInfo();
 		if (userInfo != null) {
 			StringTokenizer st = new StringTokenizer(userInfo, ":");
@@ -407,7 +405,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 	private static boolean tryComm(StatusUpdate su, HTTPConnection mConnection, String urlPath, StringBuffer content) {
 		try {
-			HTTPResponse rsp = null;
+			HTTPResponse rsp;
 
 			if (content == null) {
 				rsp = mConnection.Head(urlPath);

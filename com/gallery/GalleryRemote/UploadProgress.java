@@ -12,10 +12,12 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Method;
 
 
-public class UploadProgress extends JDialog implements StatusUpdate, ActionListener {
+public class UploadProgress implements StatusUpdate, ActionListener {
 	public static final String MODULE = "UploadProgress";
 
-	JPanel jPanel1 = new JPanel();
+	JDialog dialog = null;
+
+	JPanel jContentPanel = new JPanel();
 	JLabel jComputer1 = new JLabel();
 	JLabel jUploading = new JLabel();
 	JLabel jComputer2 = new JLabel();
@@ -33,8 +35,14 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 	JButton jCancel = new JButton();
 	JCheckBox jShutdown = new JCheckBox();
 
+	public UploadProgress() {
+		this(null);
+	}
+	
 	public UploadProgress(Frame f) {
-		super(f);
+		if (f != null) {
+			dialog = new JDialog(f);
+		}
 
 		jbInit();
 
@@ -43,24 +51,33 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jProgress[LEVEL_UPLOAD_ONE] = jProgressDetail;
 		jProgress[LEVEL_UPLOAD_PROGRESS] = jProgressGlobal;
 
-		// wierd bug prevents upload... this happens on some versions of the VM
-		// apparently 1.4.2_03-b02 Windows.
-		try {
-			pack();
-		} catch (NullPointerException e) {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Wierd VM bug");
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			setSize(400, 300);
-		}
+		if (dialog != null) {
+			// wierd bug prevents upload... this happens on some versions of the VM
+			// apparently 1.4.2_03-b02 Windows.
+			try {
+				dialog.pack();
+			} catch (NullPointerException e) {
+				Log.log(Log.LEVEL_ERROR, MODULE, "Wierd VM bug");
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				dialog.setSize(400, 300);
+			}
 
-		DialogUtil.center(this, f);
-		setVisible(true);
+			DialogUtil.center(dialog, f);
+			dialog.setVisible(true);
+		}
+	}
+
+	public JPanel getContentPanel() {
+		return jContentPanel;
 	}
 
 	private void jbInit() {
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-		this.getContentPane().add(jPanel1, BorderLayout.CENTER);
-		jPanel1.setLayout(new GridBagLayout());
+		if (dialog != null) {
+			dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			dialog.getContentPane().add(jContentPanel, BorderLayout.CENTER);
+		}
+		
+		jContentPanel.setLayout(new GridBagLayout());
 
 		jComputer1.setIcon(GalleryRemote.iComputer);
 		jComputer2.setIcon(GalleryRemote.iComputer);
@@ -75,21 +92,21 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 		jShutdown.setToolTipText(GRI18n.getString(MODULE, "shutDownTip"));
 		jShutdown.setText(GRI18n.getString(MODULE, "shutDown"));
 
-		jPanel1.add(jComputer1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+		jContentPanel.add(jComputer1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
-		jPanel1.add(jUploading, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+		jContentPanel.add(jUploading, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 0, 0, 0), 0, 0));
-		jPanel1.add(jComputer2, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
+		jContentPanel.add(jComputer2, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(10, 0, 0, 10), 0, 0));
-		jPanel1.add(jLabelGlobal, new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
+		jContentPanel.add(jLabelGlobal, new GridBagConstraints(0, 1, 3, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(10, 10, 0, 0), 0, 0));
-		jPanel1.add(jProgressGlobal, new GridBagConstraints(0, 2, 3, 1, 1.0, 0.0
+		jContentPanel.add(jProgressGlobal, new GridBagConstraints(0, 2, 3, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
-		jPanel1.add(jLabelDetail, new GridBagConstraints(0, 3, 3, 1, 1.0, 0.0
+		jContentPanel.add(jLabelDetail, new GridBagConstraints(0, 3, 3, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 0, 0), 0, 0));
-		jPanel1.add(jProgressDetail, new GridBagConstraints(0, 4, 3, 1, 1.0, 0.0
+		jContentPanel.add(jProgressDetail, new GridBagConstraints(0, 4, 3, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 15, 0, 15), 0, 0));
-		jPanel1.add(jPanel2, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
+		jContentPanel.add(jPanel2, new GridBagConstraints(0, 5, 3, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		try {
@@ -162,10 +179,16 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 					jCancel.setText(GRI18n.getString("Common", "OK"));
 					jCancel.setActionCommand("OK");
 				} else {
-					setVisible(false);
-					dispose();
+					done();
 				}
 			}
+		}
+	}
+
+	public void done() {
+		if (dialog != null) {
+			dialog.setVisible(false);
+			dialog.dispose();
 		}
 	}
 
@@ -182,12 +205,14 @@ public class UploadProgress extends JDialog implements StatusUpdate, ActionListe
 			jErrors.setFont(UIManager.getFont("Label.font"));
 			JScrollPane scroll = new JScrollPane(jErrors, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			scroll.setBorder(new TitledBorder(GRI18n.getString(MODULE, "Errors")));
-			jPanel1.add(
+			jContentPanel.add(
 					scroll
 					, new GridBagConstraints(0, 6, 3, 1, 1.0, 1.0
 					, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
-			pack();
+			if (dialog != null) {
+				dialog.pack();
+			}
 		}
 
 		jErrors.append(removeLinefeed(message) + "\n");

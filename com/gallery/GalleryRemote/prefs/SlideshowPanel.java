@@ -35,12 +35,14 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 	JLabel caption = new JLabel();
 	JLabel extra = new JLabel();
 	JLabel url = new JLabel();
+	JLabel album = new JLabel();
 	JCheckBox jOverride = new JCheckBox();
 	JPanel apperancePanel = new JPanel();
 	JComboBox jProgress;
 	JComboBox jCaption;
 	JComboBox jExtra;
 	JComboBox jUrl;
+	JComboBox jAlbum;
 	JCheckBox jLowRez = new JCheckBox();
 	JCheckBox jRandom = new JCheckBox();
 	JCheckBox jNoStretch = new JCheckBox();
@@ -59,6 +61,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jCaption.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_CAPTION)));
 		jExtra.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_EXTRA)));
 		jUrl.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_URL)));
+		jAlbum.setSelectedItem(new LocationItem(props.getIntProperty(SLIDESHOW_ALBUM)));
 
 		jLowRez.setSelected(props.getBooleanProperty(SLIDESHOW_LOWREZ));
 		jRandom.setSelected(props.getBooleanProperty(SLIDESHOW_RANDOM));
@@ -75,6 +78,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jCaption.setEnabled(! props.isOverridden(SLIDESHOW_CAPTION));
 		jExtra.setEnabled(! props.isOverridden(SLIDESHOW_EXTRA));
 		jUrl.setEnabled(! props.isOverridden(SLIDESHOW_URL));
+		jAlbum.setEnabled(! props.isOverridden(SLIDESHOW_ALBUM));
 		jLowRez.setEnabled(! props.isOverridden(SLIDESHOW_LOWREZ));
 		jRandom.setEnabled(! props.isOverridden(SLIDESHOW_RANDOM));
 		jNoStretch.setEnabled(! props.isOverridden(SLIDESHOW_NOSTRETCH));
@@ -96,6 +100,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		props.setIntProperty(SLIDESHOW_CAPTION, ((LocationItem) jCaption.getSelectedItem()).id);
 		props.setIntProperty(SLIDESHOW_EXTRA, ((LocationItem) jExtra.getSelectedItem()).id);
 		props.setIntProperty(SLIDESHOW_URL, ((LocationItem) jUrl.getSelectedItem()).id);
+		props.setIntProperty(SLIDESHOW_ALBUM, ((LocationItem) jAlbum.getSelectedItem()).id);
 
 		props.setBooleanProperty(SLIDESHOW_LOWREZ, jLowRez.isSelected());
 		props.setBooleanProperty(SLIDESHOW_RANDOM, jRandom.isSelected());
@@ -137,6 +142,7 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		jCaption = new JComboBox(locationItems);
 		jExtra = new JComboBox(locationItems);
 		jUrl = new JComboBox(locationItems);
+		jAlbum = new JComboBox(locationItems);
 
 		setLayout(new GridBagLayout());
 
@@ -205,6 +211,9 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 		url.setText(GRI18n.getString(MODULE, "url"));
 		url.setLabelFor(jUrl);
 		url.setToolTipText(GRI18n.getString(MODULE, "urlHelp"));
+		album.setText(GRI18n.getString(MODULE, "album"));
+		album.setLabelFor(jAlbum);
+		album.setToolTipText(GRI18n.getString(MODULE, "albumHelp"));
 
 		jLowRez.setText(GRI18n.getString(MODULE, "lowRez"));
 		jLowRez.setToolTipText(GRI18n.getString(MODULE, "lowRezHelp"));
@@ -267,11 +276,15 @@ public class SlideshowPanel extends PreferencePanel implements PreferenceNames {
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 		locationPanel.add(extra,    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
-		locationPanel.add(url,   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		locationPanel.add(jExtra,    new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		locationPanel.add(url,   new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
 		locationPanel.add(jUrl,    new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+		locationPanel.add(album,   new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
+				,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
+		locationPanel.add(jAlbum,    new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
 				,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 	}
 

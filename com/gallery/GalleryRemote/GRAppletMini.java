@@ -260,11 +260,11 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 					}
 				});
 
-		Class jsobject = null;
+		Class jsObject;
 		try {
-			jsobject = Class.forName("netscape.javascript.JSObject");
-			Method getWindow = jsobject.getMethod("getWindow", new Class[] {Applet.class});
-			call = jsobject.getMethod("call", new Class[] {String.class, Object[].class});
+			jsObject = Class.forName("netscape.javascript.JSObject");
+			Method getWindow = jsObject.getMethod("getWindow", new Class[] {Applet.class});
+			call = jsObject.getMethod("call", new Class[] {String.class, Object[].class});
 			window = getWindow.invoke(null, new Object[] { this });
 		} catch (ClassNotFoundException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
@@ -364,7 +364,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	public void g2Feedback(String method, Object[] params) {
 		if (gallery.getGalleryVersion() == 2) {
 			try {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Invoking Javascript method '" + method + "' with " + params);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Invoking Javascript method '" + method + "' with " +
+						Arrays.asList(params) + " on " + window);
 				call.invoke(window, new Object[] {method, params});
 			} catch (Throwable e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);

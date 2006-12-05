@@ -60,7 +60,7 @@ import java.util.Enumeration;
  * anymore once you've gotten the output stream.
  * So, for large data do:
  * <PRE>
- *   HttpURLConnection con = (HttpURLConnection) url.openConnection();
+ *   HttpURLConnection con = (HttpURLConnection) url.openUrlConnection();
  *
  *   con.setDoOutput(true);
  *   con.setRequestProperty("Content-Length", ...);
@@ -83,7 +83,7 @@ import java.util.Enumeration;
  * problems then you may want to try setting the system property
  * <var>HTTPClient.dontChunkRequests</var> to <var>true</var> (this needs
  * to be done either on the command line or somewhere in the code before
- * the first URLConnection.openConnection() is invoked).
+ * the first URLConnection.openUrlConnection() is invoked).
  *
  * <P>A second potential incompatibility is that the HTTPClient aggresively
  * resuses connections, and can do so more often that Sun's client. This

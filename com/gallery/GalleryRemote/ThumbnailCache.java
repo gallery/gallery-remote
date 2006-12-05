@@ -24,7 +24,6 @@ import com.gallery.GalleryRemote.model.Picture;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 
-import javax.swing.*;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.IIOException;
@@ -35,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
 import java.io.IOException;
+import java.net.URLConnection;
 
 /**
  * Thumbnail cache loads and resizes images in the background for display in
@@ -65,8 +65,11 @@ public class ThumbnailCache implements Runnable {
 				if (p.isOnline()) {
 					Log.log(Log.LEVEL_TRACE, MODULE, "Fetching thumbnail " + p.getUrlThumbnail());
 					try {
+						URLConnection conn = ImageUtils.openUrlConnection(p.getUrlThumbnail(), p);
+						conn.connect();
+						
 						ImageReader reader = (ImageReader) ImageIO.getImageReadersByFormatName("jpeg").next();
-						ImageInputStream inputStream = ImageIO.createImageInputStream(p.getUrlThumbnail().openStream());
+						ImageInputStream inputStream = ImageIO.createImageInputStream(conn.getInputStream());
 						reader.setInput(inputStream);
 
 						i = reader.read(0);
