@@ -242,12 +242,12 @@
   </tar>
  </target>
 
- <target name="upload" 
+ <target name="upload"
   description="Upload to SF.net">
 
   <loadproperties srcfile="defaults.properties"/>
 
-  <move file="${install}/Windows/NoVM/InstallGalleryRemote.exe" 
+  <move file="${install}/Windows/NoVM/InstallGalleryRemote.exe"
 tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
   <move file="${install}/Windows/VM/InstallGalleryRemote.exe" tofile="${install}/staging/GalleryRemote.${version}.Win32.VM.exe"/>
   <!--move file="${install}/MacOSX/InstallGalleryRemote.zip" tofile="${install}/staging/GalleryRemote.${version}.MacOSX.NoVM.zip"/-->
@@ -269,6 +269,12 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
  <target name="create_keystore" description="Creates a self-signed certificate">
   <exec executable="keytool">
    <arg line="-genkey -keyalg RSA -alias gallery -dname &quot;CN=Gallery, OU=Gallery, O=Gallery, L=Menlo Park, ST=California, C=US&quot; -keypass gallery -storepass gallery" />
+  </exec>
+ </target>
+
+ <target name="make_csr" description="Create a Certificate Signing Request from a self-signed certificate">
+  <exec executable="keytool">
+   <arg line="-certreq -alias gallery -keyalg RSA -keypass gallery -storepass gallery -file gallery.csr" />
   </exec>
  </target>
 
