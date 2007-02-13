@@ -268,7 +268,7 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
 
  <target name="create_keystore" description="Creates a self-signed certificate">
   <exec executable="keytool">
-   <arg line="-genkey -keyalg RSA -alias gallery -dname &quot;CN=Gallery, OU=Gallery, O=Gallery, L=Menlo Park, ST=California, C=US&quot; -keypass gallery -storepass gallery" />
+   <arg line="-genkey -keyalg RSA -alias gallery -dname &quot;CN=gallery.sourceforge.net, OU=Gallery, O=Gallery, L=Menlo Park, ST=California, C=US&quot; -keypass gallery -storepass gallery" />
   </exec>
  </target>
 
