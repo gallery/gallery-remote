@@ -452,4 +452,19 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
       <arg line="com.gallery.GalleryRemote.GRAppletSlideshow -width 300 -height 450 gr_url http://www.paour.com/gallery2/ gr_gallery_version 2 gr_album 100401" />
     </java>
   </target>
+
+  <target name="install_applets" depends="applet_jar, applet_mini_jar, httpclient_jar, applet_img_jar">
+    <copy file="GalleryRemoteHTTPClient.jar" tofile="../gallery/java/GalleryRemoteHTTPClient.jar"/>
+    <copy file="GalleryRemoteAppletMini.jar" tofile="../gallery/java/GalleryRemoteAppletMini.jar"/>
+    <copy file="GalleryRemoteApplet.jar" tofile="../gallery/java/GalleryRemoteApplet.jar"/>
+    <copy file="applet_img.jar" tofile="../gallery/java/applet_img.jar"/>
+
+    <copy file="GalleryRemoteHTTPClient.jar" tofile="../gallery2/modules/uploadapplet/applets/GalleryRemoteHTTPClient.jar"/>
+    <copy file="GalleryRemoteAppletMini.jar" tofile="../gallery2/modules/uploadapplet/applets/GalleryRemoteAppletMini.jar"/>
+    <copy file="applet_img.jar" tofile="../gallery2/modules/uploadapplet/applets/applet_img.jar"/>
+
+    <copy file="GalleryRemoteHTTPClient.jar" tofile="../gallery2/modules/slideshowapplet/applets/GalleryRemoteHTTPClient.jar"/>
+    <copy file="GalleryRemoteAppletMini.jar" tofile="../gallery2/modules/slideshowapplet/applets/GalleryRemoteAppletMini.jar"/>
+    <copy file="applet_img.jar" tofile="../gallery2/modules/slideshowapplet/applets/applet_img.jar"/>
+  </target>
 </project>
