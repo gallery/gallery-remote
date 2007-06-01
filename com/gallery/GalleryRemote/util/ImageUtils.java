@@ -859,19 +859,25 @@ public class ImageUtils {
 
 		// Making sure ImageMagick works
 		try {
-			PropertiesFile pt;
+			PropertiesFile pt = null;
+
 			if (new File("imagemagick/im.properties").exists()) {
 				pt = new PropertiesFile("imagemagick/im");
-			} else {
+			} else if (new File("im.properties").exists()) {
 				pt = new PropertiesFile("im");
 			}
 
-			// force exception handling if file is missing
-			pt.read();
+			GalleryProperties p = null;
 
-			// allow overriding from main property file
-			GalleryProperties p = new GalleryProperties(pt);
-			GalleryRemote._().defaults.copyProperties(p);
+			if (pt != null) {
+				pt.read();
+
+				// allow overriding from main property file
+				p = new GalleryProperties(pt);
+				GalleryRemote._().defaults.copyProperties(p);
+			} else {
+				p = GalleryRemote._().defaults;
+			}
 
 			p = GalleryRemote._().properties;
 
@@ -973,20 +979,26 @@ public class ImageUtils {
 
 		// Making sure jpegtran works
 		try {
-			PropertiesFile pt;
+			PropertiesFile pt = null;
+
 			if (new File("jpegtran/jpegtran.properties").exists()) {
 				pt = new PropertiesFile("jpegtran/jpegtran");
-			} else {
+			} else if (new File("jpegtran.properties").exists()) {
 				pt = new PropertiesFile("jpegtran");
 			}
 
-			// force exception handling if file is missing
-			pt.read();
+			GalleryProperties p = null;
 
-			// allow overriding from main property file
-			GalleryProperties p = new GalleryProperties(pt);
-			GalleryRemote._().defaults.copyProperties(p);
+			if (pt != null) {
+				pt.read();
 
+				// allow overriding from main property file
+				p = new GalleryProperties(pt);
+				GalleryRemote._().defaults.copyProperties(p);
+			} else {
+				p = GalleryRemote._().defaults;
+			}
+			
 			p = GalleryRemote._().properties;
 
 			useJpegtran = p.getBooleanProperty("jp.enabled");
@@ -996,14 +1008,18 @@ public class ImageUtils {
 				jpegtranPath = p.getProperty("jp.path");
 				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranPath: " + jpegtranPath);
 
+				if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
+						&& !jpegtranPath.endsWith(".exe")) {
+					jpegtranPath += ".exe";
+				}
+
 				jpegtranIgnoreErrorCode = p.getBooleanProperty("jp.ignoreErrorCode", jpegtranIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
 
 				if (jpegtranPath.indexOf('/') == -1 && jpegtranPath.indexOf('\\') == -1) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran path is not fully qualified, " +
 							"presence won't be tested until later");
-				}
-				if (!new File(jpegtranPath).exists()) {
+				} else if (!new File(jpegtranPath).exists()) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find jpegtran at the above path");
 					stopUsingJpegtran();
 				}

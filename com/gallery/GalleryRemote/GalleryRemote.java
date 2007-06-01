@@ -23,6 +23,7 @@ package com.gallery.GalleryRemote;
 import com.gallery.GalleryRemote.prefs.GalleryProperties;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.model.Gallery;
 
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
@@ -30,13 +31,15 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.applet.Applet;
 import java.util.Enumeration;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Main class and entry point of Gallery Remote
  * 
  * @author paour
  */
-public abstract class GalleryRemote {
+public abstract class GalleryRemote implements PreferenceNames {
 	public static final String MODULE = "GalRem";
 
 	private static GalleryRemote singleton = null;
@@ -185,6 +188,59 @@ public abstract class GalleryRemote {
 		createInstance("com.gallery.GalleryRemote.GalleryRemoteMainFrame", null);
 
 		_().initializeGR();
+
+		// Analyze command-line
+		String url = null;
+		String username = null;
+
+		Iterator i = Arrays.asList(args).iterator();
+		while (i.hasNext()) {
+			String sw = (String) i.next();
+
+			if (sw.equals("-url") && i.hasNext()) {
+				url = (String) i.next();
+				Log.log(Log.LEVEL_TRACE, MODULE, "Command-line switch: url=" + url);
+			} else if (sw.equals("-username") && i.hasNext()) {
+				username = (String) i.next();
+				Log.log(Log.LEVEL_TRACE, MODULE, "Command-line switch: username=" + username);
+			}
+		}
+
+		if (url != null) {
+			// we got a URL on the command-line
+			int j = 0;
+			boolean found = false;
+			while (_().properties.containsKey(GURL + j)) {
+				if (_().properties.getProperty(GURL + j).equals(url)
+						&& _().properties.getProperty(USERNAME + j).equals(username)) {
+					// we have probably already loaded and saved thus URL, nothing to do
+					found = true;
+					break;
+				}
+
+				j++;
+			}
+
+			if (!found) {
+				// add it
+				_().properties.setProperty(GURL + j, url);
+
+				if (username != null) {
+					_().properties.setProperty(USERNAME + j, username);
+				}
+
+				try {
+					Gallery g = Gallery.readFromProperties(_().properties, j, _().getCore().getMainStatusUpdate());
+					if (g != null) {
+						_().getCore().getGalleries().addElement(g);
+					}
+				} catch (Exception e) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "Error trying to load Gallery profile " + i);
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				}
+			}
+		}
+
 		_().runGR();
 	}
 
@@ -201,14 +257,15 @@ public abstract class GalleryRemote {
 		// todo: this should not remain this way
 		//System.setProperty("apple.awt.fakefullscreen", "true");
 
-		try {
+		// this isn't such a good idea, it crashes with some NVidia drivers
+		/*try {
 			if (Float.parseFloat(System.getProperty("java.specification.version")) >= 1.6) {
 				System.setProperty("sun.java2d.opengl", "true");
 			}
 		} catch (RuntimeException e) {
 			Log.log(Log.LEVEL_ERROR, "Couldn't get property java.specification.version: " +
 					System.getProperty("java.specification.version"));
-		}
+		}*/
 	}
 
 	public void createProperties() {

@@ -612,13 +612,15 @@ public class SlideshowFrame extends PreviewFrame
 		Log.log(Log.LEVEL_TRACE, MODULE, "Is graphics accelerated: " + accelerated);
 
 		enableTransitions = accelerated
-				|| GalleryRemote._().properties.getBooleanProperty(UNACCELERATED_TRANSITION, false);
+				|| GalleryRemote._().properties.getBooleanProperty(ALLOW_UNACCELERATED_TRANSITION, false);
 		transitionDuration = enableTransitions?
 				GalleryRemote._().properties.getIntProperty(SLIDESHOW_TRANSITION_DURATION, 3000):0;
 
 		if (transitionDuration == 0) {
 			enableTransitions = false;
 		}
+
+		Log.log(Log.LEVEL_TRACE, MODULE, "Transitions enabled: " + enableTransitions);
 	}
 
 	class SlideshowPane extends JPanel implements ActionListener {
@@ -725,10 +727,14 @@ public class SlideshowFrame extends PreviewFrame
 						if (! timer.isRunning()) {
 							timer.start();
 						}
+					} else {
+						imageAlpha = 1;
 					}
 				}
 
 				Composite composite = g.getComposite();
+
+				Log.log(Log.LEVEL_TRACE, MODULE, "Painting alpha=" + imageAlpha);
 
 				if (imageAlpha != 1 && previousImage != null) {
 					g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1 - imageAlpha));

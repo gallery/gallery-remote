@@ -196,17 +196,8 @@ public class PreviewFrame
 						g.setColor(Color.black);
 						g.drawRect(cacheRect.x,  cacheRect.y, cacheRect.width, cacheRect.height);
 
-						if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
-							g.setColor(background);
-							g.drawLine(cacheRect.x + cacheRect.width / 3, cacheRect.y,
-									cacheRect.x + cacheRect.width / 3, cacheRect.y + cacheRect.height);
-							g.drawLine(cacheRect.x + cacheRect.width *2 / 3, cacheRect.y,
-									cacheRect.x + cacheRect.width * 2 / 3, cacheRect.y + cacheRect.height);
-							g.drawLine(cacheRect.x, cacheRect.y + cacheRect.height / 3,
-									cacheRect.x + cacheRect.width, cacheRect.y  + cacheRect.height / 3);
-							g.drawLine(cacheRect.x, cacheRect.y + cacheRect.height * 2 / 3,
-									cacheRect.x + cacheRect.width, cacheRect.y  + cacheRect.height * 2 / 3);
-						}
+						g.setColor(background);
+						drawThirds(g, cacheRect);
 
 						g.setClip(null);
 					} catch (NoninvertibleTransformException e) {
@@ -254,16 +245,7 @@ public class PreviewFrame
 				g.setXORMode(Color.cyan);
 				g.drawRect(oldRect.x, oldRect.y, oldRect.width, oldRect.height);
 
-				if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
-					g.drawLine(oldRect.x + oldRect.width / 3, oldRect.y,
-							oldRect.x + oldRect.width / 3, oldRect.y + oldRect.height);
-					g.drawLine(oldRect.x + oldRect.width *2 / 3, oldRect.y,
-							oldRect.x + oldRect.width * 2 / 3, oldRect.y + oldRect.height);
-					g.drawLine(oldRect.x, oldRect.y + oldRect.height / 3,
-							oldRect.x + oldRect.width, oldRect.y  + oldRect.height / 3);
-					g.drawLine(oldRect.x, oldRect.y + oldRect.height * 2 / 3,
-							oldRect.x + oldRect.width, oldRect.y  + oldRect.height * 2 / 3);
-				}
+				drawThirds(g, oldRect);
 			}
 
 			if (inDrag) {
@@ -271,16 +253,33 @@ public class PreviewFrame
 				oldRect = getRect(start, end);
 				g.drawRect(oldRect.x, oldRect.y, oldRect.width, oldRect.height);
 
-				if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)) {
-					g.drawLine(oldRect.x + oldRect.width / 3, oldRect.y,
-							oldRect.x + oldRect.width / 3, oldRect.y + oldRect.height);
-					g.drawLine(oldRect.x + oldRect.width *2 / 3, oldRect.y,
-							oldRect.x + oldRect.width * 2 / 3, oldRect.y + oldRect.height);
-					g.drawLine(oldRect.x, oldRect.y + oldRect.height / 3,
-							oldRect.x + oldRect.width, oldRect.y  + oldRect.height / 3);
-					g.drawLine(oldRect.x, oldRect.y + oldRect.height * 2 / 3,
-							oldRect.x + oldRect.width, oldRect.y  + oldRect.height * 2 / 3);
-				}
+				drawThirds(g, oldRect);
+			}
+		}
+
+		private void drawThirds(Graphics g, Rectangle r) {
+			if (GalleryRemote._().properties.getBooleanProperty(PREVIEW_DRAW_THIRDS, false)
+					|| "thirds".equals(GalleryRemote._().properties.getProperty(PREVIEW_DRAW_THIRDS))) {
+				g.drawLine(r.x + r.width / 3, r.y,
+						r.x + r.width / 3, r.y + r.height);
+				g.drawLine(r.x + r.width * 2 / 3, r.y,
+						r.x + r.width * 2 / 3, r.y + r.height);
+				g.drawLine(r.x, r.y + r.height / 3,
+						r.x + r.width, r.y  + r.height / 3);
+				g.drawLine(r.x, r.y + r.height * 2 / 3,
+						r.x + r.width, r.y + r.height * 2 / 3);
+			} else if ("golden".equals(GalleryRemote._().properties.getProperty(PREVIEW_DRAW_THIRDS))) {
+				double p = 1.6180339887499;
+				double gw = r.width * p / (2 * p + 1);
+				double gh = r.height * p / (2 * p + 1);
+				g.drawLine((int) (oldRect.x + gw), oldRect.y,
+						(int) (oldRect.x + gw), oldRect.y + oldRect.height);
+				g.drawLine((int) (oldRect.x + oldRect.width - gw), oldRect.y,
+						(int) (oldRect.x + oldRect.width - gw), oldRect.y + oldRect.height);
+				g.drawLine(oldRect.x, (int) (oldRect.y + gh),
+						oldRect.x + oldRect.width, (int) (oldRect.y + gh));
+				g.drawLine(oldRect.x, (int) (oldRect.y + oldRect.height - gh),
+						oldRect.x + oldRect.width, (int) (oldRect.y + oldRect.height -gh));
 			}
 		}
 

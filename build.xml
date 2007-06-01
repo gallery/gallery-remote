@@ -73,6 +73,8 @@
     <attribute name="Class-Path" value="lib/metadata-extractor-2.1.jar img/" />
    </manifest>
   </jar>
+
+  <signjar jar="GalleryRemote.jar" alias="gallery" storepass="gallery" />
  </target>
 
  <!--target name="applet_jar" depends="clean,compile,mac_img_jar" description="create a jar for the applet version of GR"-->
@@ -178,10 +180,12 @@
 
   <jar destfile="img.jar">
    <fileset dir="${img}"/>
+   <fileset dir="." includes="rar_about_gr1.png"/>
   </jar>
 
   <!--delete file="${img}/im.properties"/>
   <delete file="${img}/jpegtran.properties"/-->
+  <signjar jar="img.jar" alias="gallery" storepass="gallery" />
  </target>
 
  <target name="applet_img_jar"

@@ -1334,7 +1334,7 @@ public class MainFrame extends JFrame
                 // so ask the user if it's OK to log out.
 				if (JOptionPane.showConfirmDialog(
 						(JFrame) this,
-						GRI18n.getString(MODULE, "logoutQuestion"),
+						GRI18n.getString(MODULE, "logoutQuestion", new Object[] {getCurrentGallery()}),
 						"Warning",
 						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
 					return;

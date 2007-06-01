@@ -1,3 +1,19 @@
+2007-06-01  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b32)
+
+	* Fixed detection of ImageMagick and jpegtran when running
+	  from a stripped Jar.
+	* Removed enabling beta support for OpenGL when starting GR,
+	  it was causing some video drivers to crash.
+	* Fixed URL to Codex when IM or jpegtran is missing.
+	* Added signature for some of the Jars so they can be started
+	  by WebStart and still have full permissions.
+	* Added ability to pre-set Gallery to a specific URL by passing
+	  the command-line parameters -url <url> and -username <username>.
+	* Added support for golden section (in addition to rule of thirds)
+	  for cropping.
+	* Fixed slideshow issue when transitions are disabled (the wrong
+	  image would be shown).
+
 2007-02-14  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b31)
 
 	* Fixed missing string for slideshow preferences.

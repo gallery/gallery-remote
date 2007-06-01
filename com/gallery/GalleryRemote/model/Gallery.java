@@ -308,7 +308,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		stUrlString = reformatUrlString(urlString, true);
 
 		if (!blockWrites && stUrlString != null) {
-			GalleryRemote._().properties.setProperty(URL + prefsIndex, stUrlString);
+			GalleryRemote._().properties.setProperty(GURL + prefsIndex, stUrlString);
 		}
 	}
 
@@ -634,7 +634,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public static Gallery readFromProperties(GalleryProperties p, int prefsIndex, StatusUpdate su, boolean mustHaveUsername) {
-		String url = p.getProperty(URL + prefsIndex);
+		String url = p.getProperty(GURL + prefsIndex);
 		String username = p.getProperty(USERNAME + prefsIndex, true);
 
 		if (mustHaveUsername && username == null) {
@@ -688,9 +688,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void writeToProperties(PropertiesFile p) {
-		Log.log(Log.LEVEL_TRACE, MODULE, "Wrote to properties: " + toString());
+		Log.log(Log.LEVEL_TRACE, MODULE, "Writing to properties: " + toString());
 
-		p.setProperty(URL + prefsIndex, stUrlString);
+		p.setProperty(GURL + prefsIndex, stUrlString);
 		p.setProperty(USERNAME + prefsIndex, username);
 		if (getPassword() != null && p.getBooleanProperty(SAVE_PASSWORDS)) {
 			p.setBase64Property(PASSWORD + prefsIndex, password);
@@ -729,7 +729,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	public static void removeFromProperties(PropertiesFile p, int n) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "Removed from properties: " + n);
 
-		p.setProperty(URL + n, null);
+		p.setProperty(GURL + n, null);
 		p.setProperty(USERNAME + n, null);
 		p.setProperty(PASSWORD + n, null);
 		p.setProperty(TYPE + n, null);

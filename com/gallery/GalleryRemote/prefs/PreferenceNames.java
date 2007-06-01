@@ -36,7 +36,7 @@ public interface PreferenceNames {
 	public static final String USERNAME = "username.";
 	public static final String PASSWORD = "password.";
 	public static final String TYPE = "type.";
-	public static final String URL = "url.";
+	public static final String GURL = "url.";
 	public static final String STANDALONE = "Standalone";
 	public static final String POSTNUKE = "PostNuke";
 	public static final String PHPNUKE = "PHPNuke";
@@ -92,7 +92,7 @@ public interface PreferenceNames {
 	public static final String FONT_OVERRIDE_STYLE = "fontOverrideStyle";
 	public static final String FONT_OVERRIDE_SIZE = "fontOverrideSize";
 	public static final String PREVIEW_TRANSITION_DURATION = "previewTransitionDuration";
-	public static final String UNACCELERATED_TRANSITION = "unacceleratedTransition";
+	public static final String ALLOW_UNACCELERATED_TRANSITION = "allowUnacceleratedTransition";
 	public static final String PREVIEW_DRAW_THIRDS = "previewDrawThirds";
 
 	// Applet
