@@ -4,7 +4,6 @@ import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +27,8 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 	JRadioButton setCaptionNone = new JRadioButton();
 	JRadioButton setCaptionWithFilename = new JRadioButton();
 	JCheckBox captionStripExtension = new JCheckBox();
-	JRadioButton setCaptionWithMetadata = new JRadioButton();
+	JRadioButton setCaptionWithMetaComment = new JRadioButton();
+	JRadioButton setCaptionWithMetaDate = new JRadioButton();
 	ButtonGroup buttonGroup2 = new ButtonGroup();
 
 	JPanel jPanel6 = new JPanel();
@@ -64,12 +64,15 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		setupComboValue(size, resizeTo);
 
-		setCaptionNone.setSelected(props.getBooleanProperty(SET_CAPTIONS_NONE));
+		int autoCaption = props.getAutoCaptions();
+		setCaptionNone.setSelected(autoCaption == AUTO_CAPTIONS_NONE);
 
-		setCaptionWithFilename.setSelected(props.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES));
+		setCaptionWithFilename.setSelected(autoCaption == AUTO_CAPTIONS_FILENAME);
 		captionStripExtension.setSelected(props.getBooleanProperty(CAPTION_STRIP_EXTENSION));
 
-		setCaptionWithMetadata.setSelected(props.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT));
+		setCaptionWithMetaComment.setSelected(autoCaption == AUTO_CAPTIONS_COMMENT);
+
+		setCaptionWithMetaComment.setSelected(autoCaption == AUTO_CAPTIONS_DATE);
 
 		htmlEscapeCaptionsNot.setSelected(!props.getBooleanProperty(HTML_ESCAPE_CAPTIONS));
 		exifAutorotate.setSelected(props.getBooleanProperty(EXIF_AUTOROTATE));
@@ -128,12 +131,13 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 			}
 		}
 
-		props.setBooleanProperty(SET_CAPTIONS_NONE, setCaptionNone.isSelected());
+		props.setAutoCaptions(
+				(setCaptionWithFilename.isSelected()?AUTO_CAPTIONS_FILENAME:0) +
+				(setCaptionWithMetaComment.isSelected()?AUTO_CAPTIONS_COMMENT:0) +
+				(setCaptionWithMetaDate.isSelected()?AUTO_CAPTIONS_DATE:0)
+		);
 
-		props.setBooleanProperty(SET_CAPTIONS_WITH_FILENAMES, setCaptionWithFilename.isSelected());
 		props.setBooleanProperty(CAPTION_STRIP_EXTENSION, captionStripExtension.isSelected());
-
-		props.setBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT, setCaptionWithMetadata.isSelected());
 
 		props.setBooleanProperty(HTML_ESCAPE_CAPTIONS, !htmlEscapeCaptionsNot.isSelected());
 		props.setBooleanProperty(EXIF_AUTOROTATE, exifAutorotate.isSelected());
@@ -185,8 +189,10 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		setCaptionWithFilename.setText(GRI18n.getString(MODULE, "capt"));
 		captionStripExtension.setToolTipText(GRI18n.getString(MODULE, "stripExtTip"));
 		captionStripExtension.setText(GRI18n.getString(MODULE, "stripExt"));
-		setCaptionWithMetadata.setToolTipText(GRI18n.getString(MODULE, "captMetadataTip"));
-		setCaptionWithMetadata.setText(GRI18n.getString(MODULE, "captMetadata"));
+		setCaptionWithMetaComment.setToolTipText(GRI18n.getString(MODULE, "captMetadataTip"));
+		setCaptionWithMetaComment.setText(GRI18n.getString(MODULE, "captMetadata"));
+		setCaptionWithMetaDate.setToolTipText(GRI18n.getString(MODULE, "captMetadataTimeTip"));
+		setCaptionWithMetaDate.setText(GRI18n.getString(MODULE, "captMetadataTime"));
 		jPanel2.setBorder(new TitledBorder(BorderFactory.createEtchedBorder(Color.white, new Color(148, 145, 140)), GRI18n.getString(MODULE, "captions")));
 		resizeBeforeUpload.setToolTipText(GRI18n.getString(MODULE, "resBfrUpldTip"));
 		resizeBeforeUpload.setText(GRI18n.getString(MODULE, "resBfrUpld"));
@@ -225,10 +231,12 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 		jPanel2.add(captionStripExtension, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 20, 0, 0), 0, 0));
 
-		jPanel2.add(setCaptionWithMetadata, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+		jPanel2.add(setCaptionWithMetaComment, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+		jPanel2.add(setCaptionWithMetaDate, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-		jPanel2.add(htmlEscapeCaptionsNot, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
+		jPanel2.add(htmlEscapeCaptionsNot, new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 		this.add(jPanel7, new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
@@ -238,7 +246,8 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		buttonGroup2.add(setCaptionNone);
 		buttonGroup2.add(setCaptionWithFilename);
-		buttonGroup2.add(setCaptionWithMetadata);
+		buttonGroup2.add(setCaptionWithMetaComment);
+		buttonGroup2.add(setCaptionWithMetaDate);
 
 		resizeBeforeUpload.addActionListener(this);
 		resizeToForce.addActionListener(this);
@@ -246,7 +255,8 @@ public class UploadPanel extends PreferencePanel implements ActionListener, Pref
 
 		setCaptionNone.addActionListener(this);
 		setCaptionWithFilename.addActionListener(this);
-		setCaptionWithMetadata.addActionListener(this);
+		setCaptionWithMetaComment.addActionListener(this);
+		setCaptionWithMetaDate.addActionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {

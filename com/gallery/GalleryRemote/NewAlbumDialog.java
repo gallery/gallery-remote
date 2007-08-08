@@ -26,13 +26,14 @@ import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.FocusEvent;
 import java.util.Vector;
 
 /**
@@ -42,7 +43,7 @@ import java.util.Vector;
  * @created October 18, 2002
  */
 public class NewAlbumDialog extends JDialog
-		implements ActionListener, ItemListener {
+		implements ActionListener, ItemListener, FocusListener {
 	public final static String MODULE = "NewAlbum";
 
 	Gallery gallery = null;
@@ -64,6 +65,7 @@ public class NewAlbumDialog extends JDialog
 	JButton jOk = new JButton();
 	JButton jCancel = new JButton();
 	GridLayout gridLayout1 = new GridLayout();
+	private static final String ILLEGAL_CHARACTERS = "[ \\\\/*?\"'&|.+#]";
 
 
 	/**
@@ -113,7 +115,11 @@ public class NewAlbumDialog extends JDialog
 		jCancel.setActionCommand("Cancel");
 		jDescription.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white, Color.lightGray, Color.darkGray, Color.gray));
 		jDescription.setLineWrap(true);
-		jDescription.setRows(2);
+		jDescription.setWrapStyleWord(true);
+		JScrollPane descriptionArea = new JScrollPane(
+				jDescription, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		descriptionArea.setPreferredSize(new Dimension(250, 100));
 		jAlbum.setFont(UIManager.getFont("Label.font"));
 		jGalleryName.setText(GRI18n.getString(MODULE, "createAlbm", new String[] { gallery.toString() }));
 		jName.setFont(UIManager.getFont("Label.font"));
@@ -142,7 +148,7 @@ public class NewAlbumDialog extends JDialog
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
 		this.getContentPane().add(jName, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 5), 0, 0));
-		this.getContentPane().add(jDescription, new GridBagConstraints(1, 4, 1, 1, 1.0, 1.0
+		this.getContentPane().add(descriptionArea, new GridBagConstraints(1, 4, 1, 1, 1.0, 1.0
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 5), 0, 0));
 		this.getContentPane().add(jGalleryName, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
@@ -156,6 +162,9 @@ public class NewAlbumDialog extends JDialog
 		jOk.addActionListener(this);
 		jCancel.addActionListener(this);
 		jAlbum.addItemListener(this);
+
+		jName.addFocusListener(this);
+		jTitle.addFocusListener(this);
 
 		getRootPane().setDefaultButton(jOk);
 
@@ -215,6 +224,28 @@ public class NewAlbumDialog extends JDialog
 		jDescription.setEnabled(canCreateSubAlbum);
 	}
 
+	public void focusGained(FocusEvent e) {
+		((JTextField) e.getSource()).selectAll();
+	}
+
+	public void focusLost(FocusEvent e) {
+		if (e.getSource() == jTitle && jName.getText().length() == 0) {
+			jName.setText(getDefaultName(jTitle.getText()));
+		}
+	}
+
+	/**
+	 *
+	 * @param text album title
+	 * @return a reasonable default, safe album name
+	 */
+	static String getDefaultName(final String text) {
+		String r = text.toLowerCase();
+		r = r.replaceAll("[&]", "and");
+		r = r.replaceAll(ILLEGAL_CHARACTERS, "_");
+		return r.replaceAll("_{2,}", "_");
+	}
+
 	public class AlbumListRenderer extends DefaultListCellRenderer {
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 			super.getListCellRendererComponent(
@@ -233,4 +264,3 @@ public class NewAlbumDialog extends JDialog
 		}
 	}
 }
-

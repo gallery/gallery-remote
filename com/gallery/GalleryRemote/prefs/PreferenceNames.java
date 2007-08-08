@@ -25,10 +25,15 @@ public interface PreferenceNames {
 	public static final String RESIZE_BEFORE_UPLOAD = "resizeBeforeUpload";
 	public static final String RESIZE_TO = "resizeTo";
 	public static final String RESIZE_TO_DEFAULT = "resizeToDefault";
-	public static final String SET_CAPTIONS_NONE = "setCaptionsNone";
-	public static final String SET_CAPTIONS_WITH_FILENAMES = "setCaptionsWithFilenames";
+	public static final String AUTO_CAPTIONS = "autoCaptions";
+	public static final int AUTO_CAPTIONS_NONE = 0;
+	public static final int AUTO_CAPTIONS_FILENAME = 1;
+	public static final int AUTO_CAPTIONS_COMMENT = 2;
+	public static final int AUTO_CAPTIONS_DATE = 3;
+	//public static final String SET_CAPTIONS_NONE = "setCaptionsNone";
+	//public static final String SET_CAPTIONS_WITH_FILENAMES = "setCaptionsWithFilenames";
+	//public static final String SET_CAPTIONS_WITH_METADATA_COMMENT = "setCaptionsWithMetadataComment";
 	public static final String CAPTION_STRIP_EXTENSION = "captionStripExtension";
-	public static final String SET_CAPTIONS_WITH_METADATA_COMMENT = "setCaptionsWithMetadataComment";
 	public static final String HTML_ESCAPE_CAPTIONS = "htmlEscapeCaptions";
 	public static final String EXIF_AUTOROTATE = "exifAutorotate";
 

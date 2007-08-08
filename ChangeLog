@@ -1,3 +1,12 @@
+2007-08-08  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b33)
+
+	* Added horizontal scrollbar for albums list (thanks Brian Egge).
+	* Fixed NPE when User-Agent is not provided by Gallery (thanks Brian Egge).
+	* Reworked New Album dialog (thanks Brian Egge).
+	* Fixed permissions on .GalleryRemote folder on Unix (thanks Brian Egge).
+	* Added ability to set caption based on EXIF createdate
+	  (thanks Oliver May).
+
 2007-06-01  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b32)
 
 	* Fixed detection of ImageMagick and jpegtran when running

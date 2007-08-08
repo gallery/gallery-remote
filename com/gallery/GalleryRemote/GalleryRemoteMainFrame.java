@@ -2,6 +2,7 @@ package com.gallery.GalleryRemote;
 
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
 import java.io.File;
@@ -27,7 +28,7 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 				+ File.separator + ".GalleryRemote"
 				+ File.separator);
 
-		f.mkdirs();
+		boolean created = f.mkdirs();
 
 		File pf = new File(f, "GalleryRemote.properties");
 
@@ -37,6 +38,12 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 			} catch (IOException e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
+		}
+
+		// On unix os's try to chmod the properties file because it contains passwords
+		// [ 1738472 ] [GR] Insecure permissions - user/password world readable
+		if (created && OsShutdown.isUnix()) {
+			OsShutdown.exec("chmod -R go-rwx " + f.getPath().replaceAll(" ", "\\ "));
 		}
 
 		properties = new PropertiesFile(properties, pf.getPath(), "user");

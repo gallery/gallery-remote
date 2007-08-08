@@ -29,6 +29,10 @@ public class OsShutdown {
 			Log.log(Log.LEVEL_ERROR, MODULE, "Platform not recognized; shutdown will not be performed");
 		}
 
+		exec(cmd);
+	}
+
+	public static void exec(final String cmd) {
 		try {
 			if (cmd != null) {
 				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmd);

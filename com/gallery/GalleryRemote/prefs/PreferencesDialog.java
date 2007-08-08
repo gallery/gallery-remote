@@ -2,7 +2,6 @@ package com.gallery.GalleryRemote.prefs;
 
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
-import com.gallery.GalleryRemote.MainFrame;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.util.GRI18n;
 
@@ -56,6 +55,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 
 		jIcons.setSelectedIndex(0); // this must be done to call valueChanged
 
+		pack();
 		DialogUtil.center(this, owner);
 	}
 
@@ -65,7 +65,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 			panes.load(getClass().getResourceAsStream("panes.properties"));
 
 			int i = 1;
-			String className = null;
+			String className;
 			while ((className = panes.getProperty("pane." + i++)) != null) {
 				try {
 					PreferencePanel pp = (PreferencePanel) Class.forName(className).newInstance();
@@ -99,7 +99,6 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 	private void jbInit() throws Exception {
 		jPanel1.setLayout(gridBagLayout1);
 		jScrollPane1.setAlignmentY((float) 0.5);
-		jScrollPane1.setPreferredSize(new Dimension(100, 200));
 		jPanels.setLayout(jPanelsLayout);
 		this.setTitle(GRI18n.getString(MODULE, "title"));
 		jOK.setMnemonic('0');

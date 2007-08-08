@@ -1037,7 +1037,7 @@ public class MainFrame extends JFrame
 		jPictureScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jPictureScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "pictures")));
 		jAlbumScroll.setBorder(new TitledBorder(BorderFactory.createEmptyBorder(), GRI18n.getString(MODULE, "albums")));
-		jAlbumScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jAlbumScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		setupKeyboardHandling(jPictureScroll);
 		setupKeyboardHandling(jAlbumScroll);
 
@@ -2044,11 +2044,14 @@ public class MainFrame extends JFrame
 		}
 
 		public Dimension getPreferredSize() {
-			Dimension        retDimension = super.getPreferredSize();
+			Dimension retDimension = super.getPreferredSize();
 
-			if(retDimension != null)
+			// account for the fact that albums with added pictures are drawn in bold
+			if (retDimension != null) {
 				retDimension = new Dimension((int) (retDimension.width * 1.5 + 15),
 						retDimension.height);
+			}
+			
 			return retDimension;
 		}
 	}

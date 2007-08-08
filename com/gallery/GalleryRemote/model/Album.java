@@ -977,6 +977,4 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	transient protected EventListenerList listenerList = new EventListenerList();
-
 }
-

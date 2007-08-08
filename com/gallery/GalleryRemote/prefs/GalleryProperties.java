@@ -283,13 +283,35 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		setDimensionProperty(THUMBNAIL_SIZE, size);
 	}
 
+	public int getAutoCaptions() {
+		// first, clean up legacy preference names
+		if (getBooleanProperty("setCaptionsWithMetadataComment", false)) {
+			setAutoCaptions(AUTO_CAPTIONS_COMMENT);
+			remove("setCaptionsWithMetadataComment");
+		}
+		if (getBooleanProperty("setCaptionsWithFilenames", false)) {
+			setAutoCaptions(AUTO_CAPTIONS_FILENAME);
+			remove("setCaptionsWithFilenames");
+		}
+		if (getBooleanProperty("setCaptionsNone", false)) {
+			setAutoCaptions(AUTO_CAPTIONS_NONE);
+			remove("setCaptionsNone");
+		}
+
+		return getIntProperty(AUTO_CAPTIONS, AUTO_CAPTIONS_FILENAME);
+	}
+
+	public void setAutoCaptions(int mode) {
+		setIntProperty(AUTO_CAPTIONS, mode);
+	}
+
 
 	public Dimension getDimensionProperty(String key) {
 		String value = getProperty(key);
 		if (value == null) return null;
 
 		StringTokenizer st;
-		if (value != null && (st = new StringTokenizer(value, ",")).countTokens() == 2) {
+		if ((st = new StringTokenizer(value, ",")).countTokens() == 2) {
 			return new Dimension(Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()));
 		} else {
@@ -329,7 +351,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		if (value == null) return null;
 
 		StringTokenizer st;
-		if (value != null && (st = new StringTokenizer(value, ",")).countTokens() == 3) {
+		if ((st = new StringTokenizer(value, ",")).countTokens() == 3) {
 			return new Color(Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()));
@@ -340,7 +362,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 	}
 
 	public void setColorProperty(String key, Color c) {
-		setProperty(key, ((int) c.getRed()) + "," + ((int) c.getGreen()) + "," + ((int) c.getBlue()));
+		setProperty(key, c.getRed() + "," + c.getGreen() + "," + c.getBlue());
 	}
 
 
@@ -349,7 +371,7 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		if (value == null) return null;
 
 		StringTokenizer st;
-		if (value != null && (st = new StringTokenizer(value, ",")).countTokens() == 4) {
+		if ((st = new StringTokenizer(value, ",")).countTokens() == 4) {
 			return new Rectangle(Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()),
 					Integer.parseInt(st.nextToken()),

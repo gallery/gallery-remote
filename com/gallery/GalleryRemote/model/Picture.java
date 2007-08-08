@@ -20,11 +20,9 @@
 */
 package com.gallery.GalleryRemote.model;
 
-import com.gallery.GalleryRemote.GalleryAbstractListModel;
 import com.gallery.GalleryRemote.GalleryRemote;
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
-import com.gallery.GalleryRemote.util.HTMLEscaper;
 import com.gallery.GalleryRemote.util.ImageUtils;
 
 import java.awt.*;
@@ -132,7 +130,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	public void setSource(File source) {
 		this.source = source;
 
-		if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_FILENAMES)) {
+		if (GalleryRemote._().properties.getAutoCaptions() == AUTO_CAPTIONS_FILENAME) {
 			String filename = source.getName();
 
 			if (GalleryRemote._().properties.getBooleanProperty(CAPTION_STRIP_EXTENSION)) {
@@ -144,9 +142,12 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			}
 
 			setCaption(filename);
-		} else if (GalleryRemote._().properties.getBooleanProperty(SET_CAPTIONS_WITH_METADATA_COMMENT, false)
+		} else if (GalleryRemote._().properties.getAutoCaptions() == AUTO_CAPTIONS_COMMENT
 				&& getExifData() != null && getExifData().getCaption() != null) {
 			setCaption(getExifData().getCaption());
+		} else if (GalleryRemote._().properties.getAutoCaptions() == AUTO_CAPTIONS_DATE
+				&& getExifData() != null && getExifData().getCreationDate() != null) {
+			setCaption(getExifData().getCreationDate().toString());
 		}
 
 		fileSize = 0;
@@ -270,7 +271,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	}
 
 	public int hashCode() {
-		String path = null;
+		String path;
 
 		if (online) {
 			path = safeGetUrlFull().toString();

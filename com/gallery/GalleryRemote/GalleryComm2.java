@@ -1348,9 +1348,19 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 
 		// set the user-agent for all requests
 		// also try to disable pipelining, to help with uploading large numbers of files
+		ArrayList nvPairs = new ArrayList();
+
+		nvPairs.add(new NVPair("Connection", "close"));
+
+		// If Gallery specified the user agent, then we'll use that.  If not, we'll let
+		// HTTPClient choose a default agent.
 		String userAgent = g.getUserAgent();
-		mConnection.setDefaultHeaders(new NVPair[] { new NVPair("User-Agent", userAgent),
-				new NVPair("Connection", "close") });
+		if (userAgent != null) {
+			nvPairs.add(new NVPair("User-Agent", userAgent));
+		}
+
+		mConnection.setDefaultHeaders((NVPair[]) nvPairs.toArray(new NVPair[nvPairs.size()]));
+		Log.log(Log.LEVEL_TRACE, MODULE, "Extra headers: " + nvPairs);
 
 		if (g.getForceProtocolEncoding() != null) {
 			mConnection.setForceCharset(g.getForceProtocolEncoding());
