@@ -1,3 +1,7 @@
+2007-08-26  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b34)
+
+	* Fixed NPE while drawing the cropped area when using golden section.
+
 2007-08-08  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b33)
 
 	* Added horizontal scrollbar for albums list (thanks Brian Egge).

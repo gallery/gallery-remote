@@ -272,14 +272,14 @@ public class PreviewFrame
 				double p = 1.6180339887499;
 				double gw = r.width * p / (2 * p + 1);
 				double gh = r.height * p / (2 * p + 1);
-				g.drawLine((int) (oldRect.x + gw), oldRect.y,
-						(int) (oldRect.x + gw), oldRect.y + oldRect.height);
-				g.drawLine((int) (oldRect.x + oldRect.width - gw), oldRect.y,
-						(int) (oldRect.x + oldRect.width - gw), oldRect.y + oldRect.height);
-				g.drawLine(oldRect.x, (int) (oldRect.y + gh),
-						oldRect.x + oldRect.width, (int) (oldRect.y + gh));
-				g.drawLine(oldRect.x, (int) (oldRect.y + oldRect.height - gh),
-						oldRect.x + oldRect.width, (int) (oldRect.y + oldRect.height -gh));
+				g.drawLine((int) (r.x + gw), r.y,
+						(int) (r.x + gw), r.y + r.height);
+				g.drawLine((int) (r.x + r.width - gw), r.y,
+						(int) (r.x + r.width - gw), r.y + r.height);
+				g.drawLine(r.x, (int) (r.y + gh),
+						r.x + r.width, (int) (r.y + gh));
+				g.drawLine(r.x, (int) (r.y + r.height - gh),
+						r.x + r.width, (int) (r.y + r.height -gh));
 			}
 		}
 
