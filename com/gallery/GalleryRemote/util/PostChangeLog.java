@@ -107,21 +107,11 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			System.out.println("Got changes: " + changes);
 
 			NVPair form_data_login[] = {
-				new NVPair("edit[name]", changeProps.getProperty("username")),
-				new NVPair("edit[pass]", changeProps.getProperty("password")),
-				new NVPair("edit[form_id]", "user_login"),
+				new NVPair("name", changeProps.getProperty("username")),
+				new NVPair("pass", changeProps.getProperty("password")),
+				new NVPair("form_id", "user_login"),
 				new NVPair("op", "Log in"),
 			};
-
-			NVPair form_data[] = {
-				new NVPair("edit[url]", "galleryremote/beta"),
-				new NVPair("edit[note]", note.toString()),
-				new NVPair("edit[form_id]", "gmc_versioncheck_form"),
-				new NVPair("op", "Update")
-			};
-
-			// update Menalto
-			System.out.println("Uploading to Menalto: " + form_data);
 
 			// set cookie handling
 			CookieModule.setCookiePolicyHandler(new CookiePolicyHandler() {
@@ -145,29 +135,51 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			response = new String(rsp.getData()).trim();
 			System.out.println("Login response: " + response);
 
-			// upload
-			rsp = mConnection.Post("/admin/gmc_versioncheck/save/5", form_data);
+			// get form
+			rsp = mConnection.Get("/admin/gmc_versioncheck/save/5");
 			response = new String(rsp.getData()).trim();
-			System.out.println("Upload response: " + response);
+			System.out.println("Get form response: " + response);
+			
+			Pattern p = Pattern.compile("^<input type=\"hidden\" name=\"form_token\".*value=\"(.*)\".*$", 
+					Pattern.MULTILINE);
+			m = p.matcher(response);
+			
+			if (m.matches()) {
+				String formToken = m.group(1);
 
-			// activate
-			//rsp = mConnection.Get("/admin/galleryremote/current/beta/1");
-			//response = new String(rsp.getData()).trim();
-			//System.out.println("Activate response: " + response);
+				NVPair form_data_submit[] = {
+					new NVPair("url", "galleryremote/beta"),
+					new NVPair("note", note.toString()),
+					new NVPair("id", "5"),
+					new NVPair("form_token", formToken),
+					new NVPair("form_id", "gmc_versioncheck_form"),
+					new NVPair("op", "Update")
+				};
 
-			// test
-			HTTPConnection mConnection1 = new HTTPConnection("gallery.sourceforge.net");
-			rsp = mConnection1.Get("/gallery_remote_version_check_beta.php");
-			response = new String(rsp.getData()).trim();
-			System.out.println("Test response: " + response);
+				// login
+				rsp = mConnection.Post("/admin/gmc_versioncheck/save/5", form_data_submit);
+				response = new String(rsp.getData()).trim();
+				System.out.println("Submit response: " + response);
 
-			if (response.startsWith("version=" + currentBuildS)) {
-				// worked
-				System.out.println("Success: writing to postlogchange properties");
-				changeProps.setIntProperty("siteBetaBuild", currentBetaBuild);
-				changeProps.write();
-			} else {
-				System.out.println("Failed to update Menalto");
+				// activate
+				//rsp = mConnection.Get("/admin/galleryremote/current/beta/1");
+				//response = new String(rsp.getData()).trim();
+				//System.out.println("Activate response: " + response);
+	
+				// test
+				HTTPConnection mConnection1 = new HTTPConnection("gallery.sourceforge.net");
+				rsp = mConnection1.Get("/gallery_remote_version_check_beta.php");
+				response = new String(rsp.getData()).trim();
+				System.out.println("Test response: " + response);
+	
+				if (response.startsWith("version=" + currentBuildS)) {
+					// worked
+					System.out.println("Success: writing to postlogchange properties");
+					changeProps.setIntProperty("siteBetaBuild", currentBetaBuild);
+					changeProps.write();
+				} else {
+					System.out.println("Failed to update Menalto");
+				}
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
