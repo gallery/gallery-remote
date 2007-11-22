@@ -1,12 +1,17 @@
+# gallery_docs is no longer maintained, don't bother updating it...
+#echo -e "Updating docs SVN...\n\n";
+#pushd ../gallery_docs; svn update; popd;
 
-echo -e "Updating CVS...\n\n";
-cvs -q update -d;
+set ANT=/usr/local/bin/ant;
+
+echo -e "Updating SVN...\n\n";
+svn update;
 
 version=`grep version= defaults.properties | awk -F= '{print $2}'`;
 echo -e "\n\nVersion: $version\n\n";
 
 echo -e "Checking nightly site...\n\n";
-if (lynx -dump -head http://jpmullan.com/galleryupdates/remote/gallery_remote_${version}.zip \
+if (lynx -dump -head http://www.gallery2.hu/download/GalleryRemote/gallery_remote_${version}.zip \
 	| grep "HTTP/1.1 404") then
 	echo -e "\n\nWe have a new version.";
 
@@ -14,12 +19,12 @@ if (lynx -dump -head http://jpmullan.com/galleryupdates/remote/gallery_remote_${
 	ant nightly;
 
 	echo -e "\n\nUploading to the nightly site...\n\n";
-	scp gallery_remote.zip paour@jpmullan.com:remote/gallery_remote_${version}.zip;
-	ssh paour@jpmullan.com "cp -pf remote/gallery_remote_${version}.zip remote/current_gallery_remote.zip";
-	scp gallery_remote_applets.zip paour@jpmullan.com:remote/gallery_remote_applets_${version}.zip;
-	ssh paour@jpmullan.com "cp -pf remote/gallery_remote_applets_${version}.zip remote/current_gallery_remote_applets.zip";
-	scp GalleryRemote.MacOSX.NoVM.tgz paour@jpmullan.com:remote/GalleryRemote.${version}.MacOSX.NoVM.tgz;
-	ssh paour@jpmullan.com "cp -pf remote/GalleryRemote.${version}.MacOSX.NoVM.tgz remote/current_GalleryRemote.MacOSX.NoVM.tgz";
+	ncftpput -f gallery2hu.cfg -C gallery_remote.zip gallery_remote_${version}.zip;
+	ncftpput -f gallery2hu.cfg -C gallery_remote.zip current_gallery_remote.zip;
+	ncftpput -f gallery2hu.cfg -C gallery_remote_applets.zip gallery_remote_applets_${version}.zip;
+	ncftpput -f gallery2hu.cfg -C gallery_remote_applets.zip current_gallery_remote_applets.zip;
+	ncftpput -f gallery2hu.cfg -C GalleryRemote.MacOSX.NoVM.tgz GalleryRemote.${version}.MacOSX.NoVM.tgz;
+	ncftpput -f gallery2hu.cfg -C GalleryRemote.MacOSX.NoVM.tgz current_GalleryRemote.MacOSX.NoVM.tgz;
 	
 	echo -e "\n\nPosting new version info on version check site...\n\n";
 	ant post;

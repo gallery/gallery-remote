@@ -110,7 +110,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 				new NVPair("name", changeProps.getProperty("username")),
 				new NVPair("pass", changeProps.getProperty("password")),
 				new NVPair("form_id", "user_login"),
-				new NVPair("op", "Log in"),
+				new NVPair("op", "Log in")
 			};
 
 			// set cookie handling
@@ -129,24 +129,38 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 			HTTPConnection mConnection = new HTTPConnection("gallery.menalto.com");
 			HTTPResponse rsp = null;
 			String response = null;
+			
+			// get login
+                        rsp = mConnection.Get("/user");
+			response = new String(rsp.getData()).trim();
+			System.out.println("Get login response: " + response);
+
+			System.out.println(); System.out.println();
+			System.out.println("*****************************");
 
 			// login
 			rsp = mConnection.Post("/user", form_data_login);
 			response = new String(rsp.getData()).trim();
 			System.out.println("Login response: " + response);
 
+			System.out.println(); System.out.println();
+                        System.out.println("*****************************");
+			
 			// get form
-			rsp = mConnection.Get("/admin/gmc_versioncheck/save/5");
+			rsp = mConnection.Get("/admin/gmc_versioncheck/edit/5");
 			response = new String(rsp.getData()).trim();
 			System.out.println("Get form response: " + response);
 			
-			Pattern p = Pattern.compile("^<input type=\"hidden\" name=\"form_token\".*value=\"(.*)\".*$", 
-					Pattern.MULTILINE);
+			System.out.println(); System.out.println();
+			System.out.println("*****************************");
+			
+			Pattern p = Pattern.compile(".*<input type=\"hidden\" name=\"form_token\" id=\"edit-gmc-versioncheck-form-form-token\" value=\"([0123456789abcdef]*)\"\\s*/>.*", Pattern.DOTALL);
 			m = p.matcher(response);
 			
 			if (m.matches()) {
 				String formToken = m.group(1);
-
+				System.out.println("Form token: " + formToken);
+				
 				NVPair form_data_submit[] = {
 					new NVPair("url", "galleryremote/beta"),
 					new NVPair("note", note.toString()),
@@ -157,7 +171,7 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 				};
 
 				// login
-				rsp = mConnection.Post("/admin/gmc_versioncheck/save/5", form_data_submit);
+				rsp = mConnection.Post("/admin/gmc_versioncheck/edit/5", form_data_submit);
 				response = new String(rsp.getData()).trim();
 				System.out.println("Submit response: " + response);
 
@@ -180,6 +194,9 @@ public class PostChangeLog extends org.apache.tools.ant.Task {
 				} else {
 					System.out.println("Failed to update Menalto");
 				}
+			} else {
+				System.out.println("Could not find the form_token");
+				System.out.println("Failed to update Menalto");
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
