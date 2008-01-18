@@ -150,11 +150,23 @@
   </condition>
  </target>
 
- <target name="clean"
-  description="clean up">
+ <target name="clean" description="clean work files">
   <!-- Delete the ${build} and ${dist} directory trees -->
+ </target>
+
+ <target name="scrub" description="clean up all output files">
   <delete dir="${build}"/>
   <delete dir="${dist}"/>
+  <delete file="GalleryRemote.jar"/>
+  <delete file="GalleryRemoteAppletMini.jar"/>
+  <delete file="GalleryRemote.MacOSX.NoVM.tgz"/>
+  <delete file="GalleryRemoteHTTPClient.jar"/>
+  <delete file="img.jar"/>
+  <delete file="applet_img.jar"/>
+  <delete file="GalleryRemoteApplet.jar"/>
+  <delete file="gallery_remote_applets.zip"/>
+  <delete file="gallery_remote.zip"/>
+  <delete dir="Gallery Remote.app"/>
  </target>
 
  <target name="installer" depends="jar"
