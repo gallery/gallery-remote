@@ -82,7 +82,7 @@
  <target name="applet_jar" depends="compile,applet_img_jar" description="create a jar for the applet version of GR">
 
   <jar destfile="GalleryRemoteApplet.jar" index="true" >
-   <fileset dir="${build}" includesfile="AppletMiniExcludes.txt"/>
+   <fileset dir="${build}" includesfile="AppletMiniExcludes.txt" excludesfile="AppletExcludes.txt"/>
    <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
    <manifest>
     <attribute name="Built-By" value="${user.name}"/>

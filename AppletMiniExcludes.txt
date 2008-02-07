@@ -9,6 +9,7 @@ com/gallery/GalleryRemote/prefs/*Dialog*
 com/gallery/GalleryRemote/util/MacOSXAdapter*
 com/gallery/GalleryRemote/util/NaturalOrderComparator*
 com/gallery/GalleryRemote/util/PostChangeLog*
+com/gallery/GalleryRemote/util/PrivateShutdown*
 
 com/gallery/GalleryRemote/AboutBox*
 com/gallery/GalleryRemote/*Inspector*

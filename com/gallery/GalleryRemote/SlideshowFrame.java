@@ -6,15 +6,14 @@ import com.gallery.GalleryRemote.prefs.PreferenceNames;
 import com.gallery.GalleryRemote.prefs.PropertiesFile;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.image.MemoryImageSource;
 import java.awt.image.BufferedImage;
 import java.awt.geom.Rectangle2D;
 import java.awt.event.*;
+import java.util.*;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 
 public class SlideshowFrame extends PreviewFrame
 		implements Runnable, PreferenceNames, CancellableTransferListener, MouseMotionListener {
@@ -425,7 +424,7 @@ public class SlideshowFrame extends PreviewFrame
 				caption = null;
 			}
 
-			extra = picture.getExtraFieldsString().trim();
+			extra = picture.getExtraFieldsString(false).trim();
 
 			if (picture.isOnline()) {
 				url = picture.safeGetUrlFull().toString();
@@ -629,17 +628,30 @@ public class SlideshowFrame extends PreviewFrame
 		Color hilight = new Color(255, 255, 255, 180);
 		boolean firstPaint = true;
 
+		public static final int LOCATION_TOP_LEFT = 0;
+		public static final int LOCATION_TOP_CENTER = 1;
+		public static final int LOCATION_TOP_RIGHT = 2;
+		public static final int LOCATION_MID_LEFT = 3;
+		public static final int LOCATION_MID_CENTER = 4;
+		public static final int LOCATION_MID_RIGHT = 5;
+		public static final int LOCATION_BOT_LEFT = 6;
+		public static final int LOCATION_BOT_CENTER = 7;
+		public static final int LOCATION_BOT_RIGHT = 8;
+		
+		public final int[] locationToCode = {12, 10, 14, 22, 20, 24, 32, 30, 34};
+		public HashMap codeToLocation = new HashMap(9);
+
 		BufferedImage feedbackCache = null;
 		int cachedFeedback = 0;
 		Point feedbackLocation = new Point();
 		int feedbackWidth = 535;
 		int feedbackHeight = 220;
 
-		BufferedImage[] infoImage = new BufferedImage[5];
-		String[] infoString = new String[5];
-		Point[] infoLocation = new Point[5];
-		BufferedImage[] previousInfoImage = new BufferedImage[5];
-		Point[] previousInfoLocation = new Point[5];
+		BufferedImage[] infoImage = new BufferedImage[9];
+		String[] infoString = new String[9];
+		Point[] infoLocation = new Point[9];
+		BufferedImage[] previousInfoImage = new BufferedImage[9];
+		Point[] previousInfoLocation = new Point[9];
 
 		Image currentImage = null;
 		Image currentImageSrc = null;
@@ -650,6 +662,14 @@ public class SlideshowFrame extends PreviewFrame
 		long transitionStart = System.currentTimeMillis() - 5000;
 		float imageAlpha = 0;
 		int thickness = 1;
+		
+		public SlideshowPane() {
+			super();
+			
+			for (int i = 0; i < 9; i++) {
+				codeToLocation.put(new Integer(locationToCode[i]), new Integer(i));
+			}
+		}
 
 		public void actionPerformed(ActionEvent e) {
 			long now = System.currentTimeMillis();
@@ -752,12 +772,44 @@ public class SlideshowFrame extends PreviewFrame
 
 		public void paintInfo(Graphics2D g) {
 			PropertiesFile pf = GalleryRemote._().properties;
+			
+			String[] locationContent = new String[9];
+			Boolean[] locationTransition = new Boolean[9];
 
-			paintInfo(g, 0, caption, pf.getIntProperty(SLIDESHOW_CAPTION), true);
-			paintInfo(g, 1, progress, pf.getIntProperty(SLIDESHOW_PROGRESS), false);
-			paintInfo(g, 2, extra, pf.getIntProperty(SLIDESHOW_EXTRA), true);
-			paintInfo(g, 3, url, pf.getIntProperty(SLIDESHOW_URL), true);
-			paintInfo(g, 4, album, pf.getIntProperty(SLIDESHOW_ALBUM), true);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_CAPTION), caption, true, 
+					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_PROGRESS), progress, false, 
+					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_EXTRA), extra, true, 
+					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_ALBUM), album, true, 
+					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_URL), url, true, 
+					locationContent, locationTransition);
+
+			for (int i = 0; i < 9; i++) {
+				if (locationContent[i] != null) {
+					paintInfo(g, i, locationContent[i], locationToCode[i], locationTransition[i].booleanValue());
+				}
+			}
+		}
+
+		private void concatLocationContent(int code, String content, boolean transition, String[] locationContent, 
+		                                   Boolean[] locationTransition) {
+			Integer location = (Integer) codeToLocation.get(new Integer(code));
+			if (location != null && content != null) {
+				int l = location.intValue();
+				if (locationContent[l] == null) {
+					locationContent[l] = content;
+					locationTransition[l] = Boolean.valueOf(transition);
+				} else {
+					locationContent[l] += '\n' + content;
+					
+					if (! transition) {
+						locationTransition[l] = Boolean.FALSE;
+					}
+				}
+			}
 		}
 
 		public void paintFeedback(Graphics2D g) {

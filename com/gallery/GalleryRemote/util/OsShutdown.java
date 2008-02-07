@@ -2,6 +2,9 @@ package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.Log;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Shut down the OS. Idea by Nick77.
  * OS names from <http://www.tolstoy.com/samizdat/sysprops.html>
@@ -13,33 +16,24 @@ public class OsShutdown {
 	public static final String osname = System.getProperty("os.name").toLowerCase();
 
 	public static void shutdown() {
-		String win9x = "rundll32 user,exitwindows";
-		String winNT = "shutdown -s -f -t 01";
-		String unix = "shutdown -fh now";
-
-		String cmd = null;
-
-		if (isWin9x()) {
-			cmd = win9x;
-		} else if (isWinNT()) {
-			cmd = winNT;
-		} else if (isUnix()) {
-			cmd = unix;
-		} else {
-			Log.log(Log.LEVEL_ERROR, MODULE, "Platform not recognized; shutdown will not be performed");
-		}
-
-		exec(cmd);
-	}
-
-	public static void exec(final String cmd) {
-		try {
-			if (cmd != null) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Executing " + cmd);
-				Runtime.getRuntime().exec(cmd);
+		Method m = getPrivateShutdown();
+		
+		if (m != null) {
+			try {
+				m.invoke(null, null);
+			} catch (Throwable e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
-		} catch (java.io.IOException io) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, io);
+		}
+	}
+	
+	private static Method getPrivateShutdown() {
+		try {
+			Class c = Class.forName("com.gallery.GalleryRemote.PrivateShutdown");
+			return c.getMethod("shutdown", null);
+		} catch (Throwable e) {
+			Log.log(Log.LEVEL_TRACE, MODULE, "Could not load PrivateShutdown, this is expected for the applet");
+			return null;
 		}
 	}
 
@@ -76,6 +70,6 @@ public class OsShutdown {
 	}
 
 	public static boolean canShutdown() {
-		return isWin9x() || isWinNT() || (isUnix() && !isMacOSX());
+		return (isWin9x() || isWinNT() || (isUnix() && !isMacOSX())) && getPrivateShutdown() != null;
 	}
 }

@@ -1,3 +1,12 @@
+2008-02-06  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b35)
+
+	* No longer including the reboot code in the applets (mini and full).
+	* The slideshow now aggregates the various overlays that should be
+	  displayed in the same location (instead of displaying them on
+	  top of each other).
+	* The protocol now asks for and parses "extrafields" (summaries and 
+	  description).
+
 2007-08-26  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b34)
 
 	* Fixed NPE while drawing the cropped area when using golden section.

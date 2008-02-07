@@ -327,7 +327,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		return (String) extraFields.get(name);
 	}
 
-	public String getExtraFieldsString() {
+	public String getExtraFieldsString(boolean includeKey) {
 		if (extraFields == null) {
 			return "";
 		}
@@ -340,7 +340,10 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			String value = (String) extraFields.get(name);
 
 			if (value != null) {
-				sb.append(name).append(": ").append(value).append(sep);
+				if (includeKey) {
+					sb.append(name).append(": ");
+				}
+				sb.append(value).append(sep);
 			}
 		}
 

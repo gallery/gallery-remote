@@ -1104,7 +1104,8 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					new NVPair("set_albumName", albumName),
 					new NVPair("albums_too", recursive?"yes":"no"),
 					new NVPair("random", random?"yes":"no"),
-					new NVPair("limit", maxPictures + "")
+					new NVPair("limit", maxPictures + ""),
+					new NVPair("extrafields", "yes")
 				};
 
 				Log.log(Log.LEVEL_TRACE, MODULE, "fetch-album-images parameters: " +
@@ -1135,6 +1136,11 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 					String caption = p.getProperty("album.caption");
 					if (caption != null) {
 						a.setCaption(caption);
+					}
+					
+					String extraFieldsString = p.getProperty("album.extrafields");
+					if (extraFieldsString != null) {
+						a.setExtraFieldsString(extraFieldsString);
 					}
 
 					int width;
