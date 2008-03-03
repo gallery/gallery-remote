@@ -763,9 +763,11 @@ public class MainFrame extends JFrame
 		}
 
 		String newAlbumName = getCurrentGallery().doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
-		if (newAlbumName.equals(newAlbum.getName())) {
+		if (!newAlbumName.equals(newAlbum.getName())) {
 			newAlbum.setName(newAlbumName);
 		}
+		
+		newAlbum.fetchAlbumProperties(GalleryRemote._().getCore().getMainStatusUpdate());
 
 		// todo: this is too drastic...
 		getCurrentGallery().reload();
@@ -1877,7 +1879,7 @@ public class MainFrame extends JFrame
 		if (GalleryRemote.IS_MAC_OS_X) {
 			try {
 				Class theMacOSXAdapter;
-				theMacOSXAdapter = Class.forName("com.gallery.GalleryRemote.util.MacOSXAdapter");
+				theMacOSXAdapter = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.MacOSXAdapter");
 
 				Class[] defArgs = {JFrame.class, String.class, String.class, String.class};
 				Method registerMethod = theMacOSXAdapter.getDeclaredMethod("registerMacOSXApplication", defArgs);

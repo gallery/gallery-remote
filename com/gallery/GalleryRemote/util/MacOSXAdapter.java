@@ -71,6 +71,7 @@ public class MacOSXAdapter extends ApplicationAdapter {
 		if (mainApplication != null) {
 			try {
 				ae.setHandled(true);
+				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
 				Method callMethod = caller.getDeclaredMethod(aboutMethod, null);
 				if (callMethod != null) {
@@ -95,6 +96,7 @@ public class MacOSXAdapter extends ApplicationAdapter {
 		if (mainApplication != null) {
 			try {
 				ae.setHandled(false);
+				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
 				Method callMethod = caller.getDeclaredMethod(quitMethod, null);
 				if (callMethod != null) {
@@ -118,6 +120,7 @@ public class MacOSXAdapter extends ApplicationAdapter {
 	public void handlePreferences(ApplicationEvent ae) {
 		if (mainApplication != null) {
 			try {
+				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
 				Method callMethod = caller.getDeclaredMethod(preferencesMethod, null);
 				if (callMethod != null) {

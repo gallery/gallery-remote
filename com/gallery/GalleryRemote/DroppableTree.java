@@ -97,6 +97,8 @@ public class DroppableTree
 
 			lastRow = -1;
 		}
+		
+		//Log.log(Log.LEVEL_TRACE, MODULE, "isDragOk: " + result);		
 
 		return result;
 	}
@@ -134,7 +136,7 @@ public class DroppableTree
 			return;
 		}
 
-		//dropTargetDragEvent.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+		dropTargetDragEvent.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
 		dragOver((int) dropTargetDragEvent.getLocation().getY());
 	}
 

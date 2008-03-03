@@ -1,6 +1,7 @@
 package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.Log;
+import com.gallery.GalleryRemote.GalleryRemote;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -16,7 +17,7 @@ public class OsShutdown {
 	public static final String osname = System.getProperty("os.name").toLowerCase();
 
 	public static void shutdown() {
-		Method m = getPrivateShutdown();
+		Method m = getPrivateShutdownMethod();
 		
 		if (m != null) {
 			try {
@@ -27,9 +28,9 @@ public class OsShutdown {
 		}
 	}
 	
-	private static Method getPrivateShutdown() {
+	private static Method getPrivateShutdownMethod() {
 		try {
-			Class c = Class.forName("com.gallery.GalleryRemote.PrivateShutdown");
+			Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.insecureutil.PrivateShutdown");
 			return c.getMethod("shutdown", null);
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Could not load PrivateShutdown, this is expected for the applet");
@@ -70,6 +71,6 @@ public class OsShutdown {
 	}
 
 	public static boolean canShutdown() {
-		return (isWin9x() || isWinNT() || (isUnix() && !isMacOSX())) && getPrivateShutdown() != null;
+		return (isWin9x() || isWinNT() || (isUnix() && !isMacOSX())) && getPrivateShutdownMethod() != null;
 	}
 }

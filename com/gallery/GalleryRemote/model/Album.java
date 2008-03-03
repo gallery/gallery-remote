@@ -22,7 +22,6 @@ package com.gallery.GalleryRemote.model;
 
 import com.gallery.GalleryRemote.*;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
-import com.gallery.GalleryRemote.util.ExifImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.NaturalOrderComparator;
@@ -31,9 +30,6 @@ import javax.swing.*;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListDataEvent;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeNode;
-import java.awt.*;
 import java.io.File;
 import java.io.Serializable;
 import java.io.IOException;
@@ -113,9 +109,9 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			}
 
 			try {
-				gallery.getComm(su).albumInfo(su, this, false);
+				gallery.getComm(su).albumProperties(su, this, false);
 			} catch (RuntimeException e) {
-				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-info");
+				Log.log(Log.LEVEL_INFO, MODULE, "Server probably doesn't support album-properties");
 				Log.logException(Log.LEVEL_INFO, MODULE, e);
 			}
 		}

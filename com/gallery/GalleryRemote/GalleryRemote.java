@@ -33,6 +33,7 @@ import java.applet.Applet;
 import java.util.Enumeration;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.lang.reflect.Method;
 
 /**
  * Main class and entry point of Gallery Remote
@@ -266,6 +267,54 @@ public abstract class GalleryRemote implements PreferenceNames {
 			Log.log(Log.LEVEL_ERROR, "Couldn't get property java.specification.version: " +
 					System.getProperty("java.specification.version"));
 		}*/
+		
+		/*try {
+			// purposely not using secure class loading...
+			Class unsignedTest = Class.forName("com.gallery.GalleryRemote.insecureutil.UnsignedTest");
+			Log.log(Log.LEVEL_TRACE, MODULE, "isSignedByGallery: " + isSignedByGallery(unsignedTest));
+			
+			if (isSignedByGallery(unsignedTest)) {
+				Log.log(Log.LEVEL_TRACE, MODULE, "Not signed by us, we should not execute method... but do it to test...");
+			}
+			Method createFile = unsignedTest.getMethod("createFile", null);
+			createFile.invoke(null, null);
+			
+			Log.log(Log.LEVEL_TRACE, MODULE, "isSignedByGallery: " + isSignedByGallery(com.gallery.GalleryRemote.Base64.class));
+		} catch (Throwable e) {
+			System.err.println(e);
+		}*/
+	}
+	
+	public static boolean isSignedByGallery(Class c) {
+		if (GalleryRemote.class.getSigners() == null) {
+			// the main class is unsigned so we can't expect others to be signed
+			Log.log(Log.LEVEL_INFO, MODULE, "GalleryRemote is not signed: none of the other classes need to be signed");
+			return true;
+		}
+		
+		Object[] signers = c.getSigners();
+		if (signers != null && signers instanceof java.security.cert.Certificate[]) {
+			java.security.cert.Certificate[] certs = (java.security.cert.Certificate[]) signers;
+			
+			for (int i = 0; i < certs.length; i++) {
+				 if (signers[i].equals(GalleryRemote.class.getSigners()[0])) {
+					 return true;
+				 }
+			}
+		}
+		
+		Log.log(Log.LEVEL_CRITICAL, MODULE, "Could not find matching signature");
+		return false;
+	}
+	
+	public static Class secureClassForName(String name) throws ClassNotFoundException {
+		Log.log(Log.LEVEL_INFO, MODULE, "Trying to securely load " + name);
+		Class c = Class.forName(name);
+		if (isSignedByGallery(c)) {
+			return c;
+		} else {
+			throw new ClassNotFoundException("The class is not signed by Gallery, so we're not going to load it");
+		}
 	}
 
 	public void createProperties() {

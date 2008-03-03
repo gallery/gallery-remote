@@ -98,7 +98,10 @@
 
   <delete file="GalleryRemoteAppletMini.jar" />
   <jar destfile="GalleryRemoteAppletMini.jar" index="true" >
-   <fileset dir="${build}" excludes="HTTPClient/*" excludesfile="AppletMiniExcludes.txt" />
+   <fileset dir="${build}" excludes="HTTPClient/*">
+       <excludesfile name="AppletMiniExcludes.txt" />
+       <excludesfile name="AppletExcludes.txt" />
+   </fileset>
    <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
    <!--fileset dir="${img}" includes="computer.gif, uploading.gif" /-->
    <manifest>
@@ -152,6 +155,8 @@
 
  <target name="clean" description="clean work files">
   <!-- Delete the ${build} and ${dist} directory trees -->
+  <delete dir="${build}"/>
+  <delete dir="${dist}"/>
  </target>
 
  <target name="scrub" description="clean up all output files">

@@ -1,3 +1,17 @@
+2008-02-13  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b36)
+
+	* Fixed DnD to the album tree.
+	* Added support for Summary and Description explicitly (instead of
+	  just lumped together as extrafields).
+	* The upload applet now supports thumbnails.
+	* GR now verifies the signatures of dynamically-loaded classes
+	  to prevent unauthorized modifications (applets only)
+	* The upload applet now supports setting extra fields (Summary and
+	  Description in G2)
+	* GR standalone now fetches info about a newly created album so that
+	  extra fields can be edited for images added to it
+	* More details in upload progress window
+
 2008-02-06  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b35)
 
 	* No longer including the reboot code in the applets (mini and full).

@@ -47,9 +47,9 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 		jbInit();
 
 		jLabel[LEVEL_UPLOAD_ONE] = jLabelDetail;
-		jLabel[LEVEL_UPLOAD_PROGRESS] = jLabelGlobal;
+		jLabel[LEVEL_UPLOAD_ALL] = jLabelGlobal;
 		jProgress[LEVEL_UPLOAD_ONE] = jProgressDetail;
-		jProgress[LEVEL_UPLOAD_PROGRESS] = jProgressGlobal;
+		jProgress[LEVEL_UPLOAD_ALL] = jProgressGlobal;
 
 		if (dialog != null) {
 			// wierd bug prevents upload... this happens on some versions of the VM
@@ -59,7 +59,7 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 			} catch (NullPointerException e) {
 				Log.log(Log.LEVEL_ERROR, MODULE, "Wierd VM bug");
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-				dialog.setSize(400, 300);
+				dialog.setSize(400, 320);
 			}
 
 			DialogUtil.center(dialog, f);
@@ -83,8 +83,8 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 		jComputer2.setIcon(GalleryRemote.iComputer);
 		jUploading.setIcon(GalleryRemote.iUploading);
 
-		jLabelGlobal.setText(GRI18n.getString(MODULE, "upImgNM"));
-		jLabelDetail.setText(GRI18n.getString(MODULE, "upImgGif"));
+		jLabelGlobal.setText(GRI18n.getString(MODULE, "globalProgress"));
+		jLabelDetail.setText(GRI18n.getString(MODULE, "detailProgress"));
 
 		jCancel.setText(GRI18n.getString("Common", "Cancel"));
 		jCancel.addActionListener(this);
@@ -110,7 +110,7 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
 		try {
-			Class osShutdown = Class.forName("com.gallery.GalleryRemote.util.OsShutdown");
+			Class osShutdown = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.OsShutdown");
 			Method canShutdown = osShutdown.getMethod("canShutdown", null);
 			if (((Boolean) canShutdown.invoke(null, null)).booleanValue()) {
 				jPanel2.add(jShutdown, null);
@@ -172,7 +172,7 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 			} catch (Throwable t) {
 			}
 
-			if (level == LEVEL_UPLOAD_PROGRESS) {
+			if (level == LEVEL_UPLOAD_ALL) {
 				// we're done...
 				if (jErrors != null) {
 					// there were errors, don't dismiss the dialog just yet
@@ -261,7 +261,7 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 	}
 
 	boolean checkLevel(int level) {
-		return level == LEVEL_UPLOAD_ONE || level == LEVEL_UPLOAD_PROGRESS;
+		return level == LEVEL_UPLOAD_ONE || level == LEVEL_UPLOAD_ALL;
 	}
 
 	public void actionPerformed(ActionEvent e) {

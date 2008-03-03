@@ -7,8 +7,8 @@ package HTTPClient;
  **/
 
 public interface TransferListener {
-	public void dataTransferred(int transferred, int overall, double kbPerSecond);
+	public void dataTransferred(int transferredThisFile, int sizeThisFile, double kbPerSecond);
 
-	public void transferStart(int overall);
-	public void transferEnd();
+	public void transferStart(int sizeThisFile);
+	public void transferEnd(int sizeThisFile);
 }

@@ -68,7 +68,7 @@ public class PreferencesDialog extends JDialog implements ListSelectionListener,
 			String className;
 			while ((className = panes.getProperty("pane." + i++)) != null) {
 				try {
-					PreferencePanel pp = (PreferencePanel) Class.forName(className).newInstance();
+					PreferencePanel pp = (PreferencePanel) GalleryRemote.secureClassForName(className).newInstance();
 
 					pp.setDialog(this);
 					pp.buildUI();

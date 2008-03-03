@@ -38,6 +38,8 @@ public class SlideshowFrame extends PreviewFrame
 	String url = null;
 	String album = null;
 	String skipping = null;
+	String description;
+	String summary;
 
 	public static final int STATE_NO_CHANGE = 0;
 	public static final int STATE_PREPARING = 0;
@@ -424,7 +426,9 @@ public class SlideshowFrame extends PreviewFrame
 				caption = null;
 			}
 
-			extra = picture.getExtraFieldsString(false).trim();
+			extra = picture.getExtraFieldsString(true).trim();
+			description = picture.getExtraField("Description");
+			summary = picture.getExtraField("Summary");
 
 			if (picture.isOnline()) {
 				url = picture.safeGetUrlFull().toString();
@@ -786,6 +790,10 @@ public class SlideshowFrame extends PreviewFrame
 					locationContent, locationTransition);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_URL), url, true, 
 					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_SUMMARY), summary, true, 
+					locationContent, locationTransition);
+			concatLocationContent(pf.getIntProperty(SLIDESHOW_DESCRIPTION), description, true, 
+					locationContent, locationTransition);
 
 			for (int i = 0; i < 9; i++) {
 				if (locationContent[i] != null) {
@@ -797,7 +805,7 @@ public class SlideshowFrame extends PreviewFrame
 		private void concatLocationContent(int code, String content, boolean transition, String[] locationContent, 
 		                                   Boolean[] locationTransition) {
 			Integer location = (Integer) codeToLocation.get(new Integer(code));
-			if (location != null && content != null) {
+			if (location != null && content != null && content.length() != 0) {
 				int l = location.intValue();
 				if (locationContent[l] == null) {
 					locationContent[l] = content;

@@ -33,7 +33,7 @@ public interface StatusUpdate {
 	public static final int LEVEL_BACKGROUND = 1;
 	public static final int LEVEL_CACHE = 2;
 	public static final int LEVEL_UPLOAD_ONE = 3;
-	public static final int LEVEL_UPLOAD_PROGRESS = 4;
+	public static final int LEVEL_UPLOAD_ALL = 4;
 	public static final int LEVEL_UNINTERUPTIBLE = 5;
 	public static final int NUM_LEVELS = 6;
 

@@ -2,14 +2,13 @@ com/gallery/GalleryRemote/prefs/FilePanel*
 com/gallery/GalleryRemote/prefs/GeneralPanel*
 com/gallery/GalleryRemote/prefs/ProxyPanel*
 com/gallery/GalleryRemote/prefs/QuickConfigPanel*
-com/gallery/GalleryRemote/prefs/UploadgPanel*
+com/gallery/GalleryRemote/prefs/UploadPanel*
 com/gallery/GalleryRemote/prefs/URLPanel*
 com/gallery/GalleryRemote/prefs/*Dialog*
 
 com/gallery/GalleryRemote/util/MacOSXAdapter*
 com/gallery/GalleryRemote/util/NaturalOrderComparator*
 com/gallery/GalleryRemote/util/PostChangeLog*
-com/gallery/GalleryRemote/util/PrivateShutdown*
 
 com/gallery/GalleryRemote/AboutBox*
 com/gallery/GalleryRemote/*Inspector*
@@ -18,7 +17,6 @@ com/gallery/GalleryRemote/GalleryRemoteMainFrame*
 com/gallery/GalleryRemote/MainFrame*
 com/gallery/GalleryRemote/MoveAlbumDialog*
 com/gallery/GalleryRemote/NewAlbumDialog*
-com/gallery/GalleryRemote/ThumbnailCache*
 com/gallery/GalleryRemote/Update*
 
 rar_*

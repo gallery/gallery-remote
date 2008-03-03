@@ -139,7 +139,7 @@ public abstract class GalleryComm implements PreferenceNames {
 	 * 
 	 * @param su an instance that implements the StatusUpdate interface.
 	 */
-	public void albumInfo(StatusUpdate su, Album a, boolean async) {
+	public void albumProperties(StatusUpdate su, Album a, boolean async) {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
@@ -219,7 +219,9 @@ public abstract class GalleryComm implements PreferenceNames {
 				Log.log(Log.LEVEL_TRACE, MODULE,
 						"Trying Java 5 and 6 proxy class (sun.plugin.net.proxy.PluginAutoProxyHandler)");
 
+				// this class is not signed by Gallery, so we can't use the secure instantiation
 				proxyHelperClass = Class.forName("sun.plugin.net.proxy.PluginAutoProxyHandler");
+				// this class is not signed by Gallery, so we can't use the secure instantiation
 				proxyInfoClass = Class.forName("com.sun.deploy.net.proxy.ProxyInfo");
 
 				proxyHelper = proxyHelperClass.newInstance();
@@ -230,7 +232,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					proxyInfo = proxyInfoArray[0];
 				}
 			} catch (Throwable e) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation" + e);
 			}
 
 			if (proxyHelperClass == null) {
@@ -238,14 +240,16 @@ public abstract class GalleryComm implements PreferenceNames {
 					Log.log(Log.LEVEL_TRACE, MODULE,
 							"Trying Java 4 proxy class (sun.plugin.net.proxy.PluginProxyManager)");
 
+					// this class is not signed by Gallery, so we can't use the secure instantiation
 					proxyHelperClass = Class.forName("sun.plugin.net.proxy.PluginProxyManager");
+					// this class is not signed by Gallery, so we can't use the secure instantiation
 					proxyInfoClass = Class.forName("sun.plugin.net.proxy.ProxyInfo");
 
 					proxyHelper = proxyHelperClass.newInstance();
 					proxyInfo = proxyHelperClass.getMethod("getProxyInfo",
 							new Class[] { URL.class }).invoke(proxyHelper, new Object[] { url });
 				} catch (Throwable e) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation" + e);
 				}
 			}
 
@@ -262,7 +266,7 @@ public abstract class GalleryComm implements PreferenceNames {
 						proxyHost = (String) proxyInfoClass.getMethod("getHost", null).invoke(proxyInfo, null);
 					}
 				} catch (Throwable e) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instanciation" + e);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation" + e);
 				}
 			}
 

@@ -1,1 +1,2 @@
-com/gallery/GalleryRemote/util/PrivateShutdown*
+com/gallery/GalleryRemote/insecureutil/*
+com/gallery/GalleryRemote/DummyAppletContext*

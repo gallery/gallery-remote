@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.awt.*;
+import java.lang.reflect.Method;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +44,13 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		// On unix os's try to chmod the properties file because it contains passwords
 		// [ 1738472 ] [GR] Insecure permissions - user/password world readable
 		if (created && OsShutdown.isUnix()) {
-			OsShutdown.exec("chmod -R go-rwx " + f.getPath().replaceAll(" ", "\\ "));
+			try {
+				Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.PrivateShutdown");
+				Method m = c.getMethod("exec", null);
+				m.invoke(null, new Object[] { "chmod -R go-rwx " + f.getPath().replaceAll(" ", "\\ ") });
+			} catch (Throwable e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			}
 		}
 
 		properties = new PropertiesFile(properties, pf.getPath(), "user");

@@ -3209,7 +3209,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 						for (; off + LENGTH < data.length; off += LENGTH) {
 							out.write(data, off, LENGTH);
 
-							// check if 1/2 sec passed by since last status update
+							// check if 1/4 sec passed by since last status update
 							// so we don't use up to much cpu time
 							now = System.currentTimeMillis();
 							if (last == -1 || last + 250 < now) {
@@ -3233,7 +3233,7 @@ public class HTTPConnection implements GlobalConstants, HTTPClientModuleConstant
 							listener.dataTransferred(data.length, data.length, lastKbPerSecond);
 						}
 
-						listener.transferEnd();
+						listener.transferEnd(data.length);
 					} catch(IOException ioe) {}
 				}
 			}).start();

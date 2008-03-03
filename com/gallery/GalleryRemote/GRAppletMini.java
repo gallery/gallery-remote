@@ -17,6 +17,7 @@ import javax.swing.border.TitledBorder;
 import java.io.File;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -44,10 +45,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	DroppableList jPicturesList;
 	//JPanel jContentPanel;
 	JCheckBox jResize;
+	JCheckBox jThumbnails;
 	JPanel jInspector;
 	JLabel captionLabel;
 	JTextArea jCaption;
 	JSplitPane jDivider;
+	ArrayList jExtrafields;
 
 	DefaultComboBoxModel galleries = null;
 	Album album = null;
@@ -56,6 +59,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	boolean hasHadPictures = false;
 	Method call;
 	Object window;
+	ThumbnailCache thumbnailCache = new ThumbnailCache();
 
 	public GRAppletMini() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -90,6 +94,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		//album.setSuppressEvents(true);
 		album.setName(info.albumName);
 		gallery.createRootAlbum().add(album);
+		
+		album.fetchAlbumProperties(getMainStatusUpdate());
+		jbUpdate();
 
 		jPicturesList.setModel(album);
 		jPicturesList.setInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
@@ -98,8 +105,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jPicturesList.setCellRenderer(new CoreUtils.FileCellRenderer());
 
 		jResize.setSelected(GalleryRemote._().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD));
+		jThumbnails.setSelected(GalleryRemote._().properties.getShowThumbnails());
+		setShowThumbnails(GalleryRemote._().properties.getShowThumbnails());
 
-		//jStatusBar.setStatus(GRI18n.getString(MODULE, "DefMessage"));
 		jStatusBar.setStatus(GRI18n.getString("MainFrame", "selPicToAdd"));
 	}
 
@@ -110,6 +118,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				GalleryRemote._().properties.setIntProperty(APPLET_DIVIDER_LOCATION, jDivider.getDividerLocation());
 			}
 
+			ImageUtils.purgeTemp();
 			GalleryRemote._().properties.write();
 			GalleryRemote.shutdownInstance();
 		}
@@ -121,10 +130,24 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 	public void flushMemory() {}
 
-	public void preloadThumbnails(Iterator pictures) {}
+	public void preloadThumbnails(Iterator pictures) {
+		thumbnailCache.preloadThumbnails(pictures);		
+	}
 
 	public Image getThumbnail(Picture p) {
-		return null;
+		if (p == null) {
+			return null;
+		}
+
+		Image thumb = thumbnailCache.getThumbnail(p);
+
+		if (thumb == null) {
+			thumb = ImageUtils.defaultThumbnail;
+		} else {
+			thumb = ImageUtils.rotateImage(thumb, p.getAngle(), p.isFlipped(), getGlassPane());
+		}
+
+		return thumb;
 	}
 
 	public StatusUpdate getMainStatusUpdate() {
@@ -135,7 +158,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		return galleries;
 	}
 
-	public void thumbnailLoadedNotify() {}
+	public void thumbnailLoadedNotify() {
+		jPicturesList.repaint();
+	}
 
 	public void setInProgress(boolean inProgress) {
 		jUpload.setEnabled(!inProgress);
@@ -143,6 +168,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jPicturesList.setEnabled(!inProgress);
 		jCaption.setEnabled(!inProgress);
 		jResize.setEnabled(!inProgress);
+		jThumbnails.setEnabled(!inProgress);
 
 		this.inProgress = inProgress;
 
@@ -165,7 +191,14 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	}
 
 	public void addPictures(File[] files, int index, boolean select) {
-		album.addPictures(files, index);
+		ArrayList newPictures = null;
+		if (index == -1) {
+			newPictures = album.addPictures(files);
+		} else {
+			newPictures = album.addPictures(files, index);
+		}
+
+		preloadThumbnails(newPictures.iterator());
 	}
 
 	public void addPictures(Picture[] pictures, int index, boolean select) {
@@ -188,6 +221,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jPicturesList = new DroppableList();
 		//jContentPanel = new JPanel(new GridBagLayout());
 		jResize = new JCheckBox();
+		jThumbnails = new JCheckBox();
 		jInspector = new JPanel(new GridBagLayout());
 		captionLabel = new JLabel();
 		jCaption = new JTextArea();
@@ -199,13 +233,16 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jAdd.setText(GRI18n.getString(MODULE, "Add"));
 
 		JPanel jButtonPanel = new JPanel();
-		jButtonPanel.setLayout(new GridLayout(1, 2, 5, 0));
+		jButtonPanel.setLayout(new GridLayout(2, 2, 5, 0));
+		jButtonPanel.add(jThumbnails);
+		jButtonPanel.add(jResize);
 		jButtonPanel.add(jAdd);
 		jButtonPanel.add(jUpload);
 
-		jResize.setToolTipText("<html>Resize pictures before uploading them for a faster upload.<br>The " +
-		"high-resolution original will not be available online.</html>");
+		jResize.setToolTipText(GRI18n.getString(MODULE, "ResizeBeforeUploadHelp"));
 		jResize.setText(GRI18n.getString(MODULE, "ResizeBeforeUpload"));
+		jThumbnails.setToolTipText(GRI18n.getString(MODULE, "ThumbnailsHelp"));
+		jThumbnails.setText(GRI18n.getString(MODULE, "Thumbnails"));
 		captionLabel.setText(GRI18n.getString(MODULE, "Caption") + "            ");
 		jScrollPane.getViewport().add(jPicturesList, null);
 
@@ -227,10 +264,6 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jInspector.setMinimumSize(new Dimension(0, 0));
 		jDivider.setLeftComponent(jScrollPane);
 		jDivider.setRightComponent(jInspector);
-//		jContentPanel.add(jScrollPane,           new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
-//            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-//		jContentPanel.add(jInspector,   new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0
-//				,GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		jInspector.add(captionLabel,    new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
 				,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
@@ -240,11 +273,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		this.getContentPane().setLayout(new GridBagLayout());
 		this.getContentPane().add(jDivider,      new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-		this.getContentPane().add(jResize,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-				,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 5, 0, 0), 0, 0));
-		this.getContentPane().add(jButtonPanel,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
-		this.getContentPane().add(jStatusBar,      new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+		this.getContentPane().add(jButtonPanel,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
+		this.getContentPane().add(jStatusBar,      new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		jAdd.addActionListener(this);
@@ -252,6 +283,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jCaption.getDocument().addDocumentListener(this);
 		jPicturesList.addListSelectionListener(this);
 		jResize.addActionListener(this);
+		jThumbnails.addActionListener(this);
 
 		jPicturesList.addKeyListener(
 				new KeyAdapter() {
@@ -262,6 +294,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		Class jsObject;
 		try {
+			// this class is not signed by Gallery, so we can't use the secure instantiation
 			jsObject = Class.forName("netscape.javascript.JSObject");
 			Method getWindow = jsObject.getMethod("getWindow", new Class[] {Applet.class});
 			call = jsObject.getMethod("call", new Class[] {String.class, Object[].class});
@@ -274,6 +307,34 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		} catch (InvocationTargetException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		}
+	}
+	
+	public void jbUpdate() {		
+		ArrayList extrafields = album.getExtraFields();
+		if (extrafields != null) {
+			jExtrafields = new ArrayList(extrafields.size());
+			Iterator i = extrafields.iterator();
+			int j = 2;
+			
+			while (i.hasNext()) {
+				String name = (String) i.next();
+				JTextArea jExtrafield = new JTextArea();
+				jExtrafield.setName(name);
+				jExtrafields.add(jExtrafield);
+				
+				jExtrafield.setLineWrap(true);
+				jExtrafield.setEditable(false);
+				jExtrafield.setFont(UIManager.getFont("Label.font"));
+				jExtrafield.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+
+				jInspector.add(new JLabel(name + ":"),    new GridBagConstraints(0, j++, 1, 1, 1.0, 0.0
+						,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 0, 0), 0, 0));
+				jInspector.add(jExtrafield,    new GridBagConstraints(0, j++, 1, 1, 1.0, 1.0
+						,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));				
+
+				jExtrafield.getDocument().addDocumentListener(this);
+			}
 		}
 	}
 
@@ -322,6 +383,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 			});
 		} else if (source == jResize) {
 			GalleryRemote._().properties.setBooleanProperty(RESIZE_BEFORE_UPLOAD, jResize.isSelected());
+		} else if (source == jThumbnails) {
+			setShowThumbnails(jThumbnails.isSelected());
 		}
 	}
 
@@ -343,6 +406,16 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		if (p != null) {
 			if (e.getDocument() == jCaption.getDocument()) {
 				p.setCaption(jCaption.getText());
+			} else {
+				Iterator i = jExtrafields.iterator();
+				while (i.hasNext()) {
+					JTextArea jExtrafield = (JTextArea) i.next();
+					
+					if (e.getDocument() == jExtrafield.getDocument()) {
+						p.setExtraField(jExtrafield.getName(), jExtrafield.getText());
+						//Log.log("textUpdate: " + jExtrafield.getName() + " - " + jExtrafield.getText());
+					}
+				}
 			}
 		}
 	}
@@ -354,13 +427,50 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 			jCaption.setText("");
 			jCaption.setEditable(false);
 			jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			
+			Iterator i = jExtrafields.iterator();
+			while (i.hasNext()) {
+				JTextArea jExtrafield = (JTextArea) i.next();
+				
+				jExtrafield.setText("");
+				jExtrafield.setEditable(false);
+				jExtrafield.setBackground(UIManager.getColor("TextField.inactiveBackground"));
+			}
 		} else {
 			jCaption.setText(p.getCaption());
 			jCaption.setEditable(true);
 			jCaption.setBackground(UIManager.getColor("TextField.background"));
+
+			Iterator i = jExtrafields.iterator();
+			while (i.hasNext()) {
+				JTextArea jExtrafield = (JTextArea) i.next();
+
+				//Log.log("valueChanged: " + jExtrafield.getName() + " - " + jExtrafield.getText());
+				String extrafield = p.getExtraField(jExtrafield.getName());
+				jExtrafield.setText(extrafield == null ? "" : extrafield);
+				jExtrafield.setEditable(true);
+				jExtrafield.setBackground(UIManager.getColor("TextField.background"));
+			}
 		}
 	}
 
+	public void setShowThumbnails(boolean show) {
+		if (show != GalleryRemote._().properties.getShowThumbnails()) {
+			GalleryRemote._().properties.setShowThumbnails(show);
+		}
+
+		if (show) {
+			preloadThumbnails(album.getPictures());
+
+			jPicturesList.setFixedCellHeight(GalleryRemote._().properties.getThumbnailSize().height + 4);
+		} else {
+			thumbnailCache.cancelLoad();
+			jPicturesList.setFixedCellHeight(-1);
+		}
+		
+		jPicturesList.repaint();
+	}
+	
 	public void g2Feedback(String method, Object[] params) {
 		if (gallery.getGalleryVersion() == 2) {
 			try {

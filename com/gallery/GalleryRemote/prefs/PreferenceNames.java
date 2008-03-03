@@ -71,6 +71,8 @@ public interface PreferenceNames {
 	public static final String SLIDESHOW_EXTRA = "slideshowExtraLocation";
 	public static final String SLIDESHOW_URL = "slideshowUrlLocation";
 	public static final String SLIDESHOW_ALBUM = "slideshowAlbumLocation";
+	public static final String SLIDESHOW_SUMMARY = "slideshowSummaryLocation";
+	public static final String SLIDESHOW_DESCRIPTION = "slideshowDescriptionLocation";
 	public static final String SLIDESHOW_DELAY = "slideshowDelay";
 	public static final String SLIDESHOW_LOWREZ = "slideshowLowRez";
 	public static final String SLIDESHOW_RANDOM = "slideshowRandom";

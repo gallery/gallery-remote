@@ -1093,7 +1093,7 @@ public class ImageUtils {
 
 	public static ExifData getExifData(String filename) {
 		try {
-			Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+			Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.ExifImageUtils");
 			Method m = c.getMethod("getExifData", new Class[]{String.class});
 			return (ExifData) m.invoke(null, new Object[]{filename});
 		} catch (Throwable e) {
@@ -1129,7 +1129,7 @@ public class ImageUtils {
 	public static boolean isExifAvailable() {
 		if (exifAvailable == null) {
 			try {
-				Class c = Class.forName("com.gallery.GalleryRemote.util.ExifImageUtils");
+				Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.ExifImageUtils");
 				c.getMethod("getExifData", new Class[]{String.class});
 				exifAvailable = Boolean.TRUE;
 			} catch (Throwable e) {
