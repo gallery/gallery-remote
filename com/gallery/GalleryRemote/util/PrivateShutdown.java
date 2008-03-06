@@ -1,4 +1,4 @@
-package com.gallery.GalleryRemote.insecureutil;
+package com.gallery.GalleryRemote.util;
 
 import com.gallery.GalleryRemote.Log;
 import com.gallery.GalleryRemote.util.OsShutdown;
