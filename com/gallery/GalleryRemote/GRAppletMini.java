@@ -131,7 +131,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	public void flushMemory() {}
 
 	public void preloadThumbnails(Iterator pictures) {
-		thumbnailCache.preloadThumbnails(pictures);		
+		if (thumbnailCache != null) {
+			thumbnailCache.preloadThumbnails(pictures);
+		}
 	}
 
 	public Image getThumbnail(Picture p) {
@@ -466,7 +468,9 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 			jPicturesList.setFixedCellHeight(GalleryRemote._().properties.getThumbnailSize().height + 4);
 		} else {
-			thumbnailCache.cancelLoad();
+			if (thumbnailCache != null) {
+				thumbnailCache.cancelLoad();
+			}
 			jPicturesList.setFixedCellHeight(-1);
 		}
 		
