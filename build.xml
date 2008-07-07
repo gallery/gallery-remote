@@ -52,7 +52,7 @@
  <target name="run" depends="compile"
   description="compile then run">
 
-  <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true">
+  <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true" maxmemory="256M">
    <classpath>
     <pathelement location="lib/metadata-extractor-2.1.jar"/>
     <pathelement path="${build}"/>

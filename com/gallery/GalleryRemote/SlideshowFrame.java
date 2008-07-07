@@ -779,42 +779,48 @@ public class SlideshowFrame extends PreviewFrame
 			
 			String[] locationContent = new String[9];
 			Boolean[] locationTransition = new Boolean[9];
+			Boolean[] locationMaybePresent = new Boolean[9];
 
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_CAPTION), caption, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_PROGRESS), progress, false, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_EXTRA), extra, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_ALBUM), album, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_URL), url, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_SUMMARY), summary, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 			concatLocationContent(pf.getIntProperty(SLIDESHOW_DESCRIPTION), description, true, 
-					locationContent, locationTransition);
+					locationContent, locationTransition, locationMaybePresent);
 
 			for (int i = 0; i < 9; i++) {
-				if (locationContent[i] != null) {
+				if (locationMaybePresent[i] == Boolean.TRUE) {
 					paintInfo(g, i, locationContent[i], locationToCode[i], locationTransition[i].booleanValue());
 				}
 			}
 		}
 
-		private void concatLocationContent(int code, String content, boolean transition, String[] locationContent, 
-		                                   Boolean[] locationTransition) {
+		private void concatLocationContent(int code, String content, boolean transition, String[] locationContent,
+		                                   Boolean[] locationTransition, Boolean[] locationMaybePresent) {
 			Integer location = (Integer) codeToLocation.get(new Integer(code));
-			if (location != null && content != null && content.length() != 0) {
+			if (location != null) {
 				int l = location.intValue();
-				if (locationContent[l] == null) {
-					locationContent[l] = content;
+				locationMaybePresent[l] = Boolean.TRUE;
+				
+				if (locationTransition[l] == null) {
 					locationTransition[l] = Boolean.valueOf(transition);
-				} else {
-					locationContent[l] += '\n' + content;
-					
-					if (! transition) {
-						locationTransition[l] = Boolean.FALSE;
+				} else if (!transition) {
+					locationTransition[l] = Boolean.FALSE;
+				}
+				
+				if (content != null && content.length() != 0) {
+					if (locationContent[l] == null) {
+						locationContent[l] = content;
+					} else {
+						locationContent[l] += '\n' + content;
 					}
 				}
 			}

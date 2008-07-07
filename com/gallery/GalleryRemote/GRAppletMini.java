@@ -59,7 +59,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	boolean hasHadPictures = false;
 	Method call;
 	Object window;
-	ThumbnailCache thumbnailCache = new ThumbnailCache();
+	ThumbnailCache thumbnailCache = null;
 
 	public GRAppletMini() {
 		coreClass = "com.gallery.GalleryRemote.GalleryRemoteMini";
@@ -308,6 +308,8 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		} catch (InvocationTargetException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
 		}
+		
+		thumbnailCache = new ThumbnailCache();
 	}
 	
 	public void jbUpdate() {		
