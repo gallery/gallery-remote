@@ -57,6 +57,7 @@ public interface PreferenceNames {
 	public static final String FORCE_GALLERY_VERSION = "forceGalleryVersion.";
 	public static final String FORCE_PROTOCOL_ENCODING = "forceProtocolEncoding.";
 	public static final String RESIZE_JPEG_QUALITY = "resizeJpegQuality.";
+	public static final String AUTO_LOAD_ON_STARTUP = "autoLoadOnStartup.";
 
 	// Proxy panel
 	public static final String USE_PROXY = "useProxy";

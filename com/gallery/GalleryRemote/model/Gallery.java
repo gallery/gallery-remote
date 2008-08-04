@@ -59,6 +59,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	String alias;
 	String userAgent = "Gallery Remote " + GalleryRemote._().properties.getProperty("version");
 	int type = TYPE_STANDALONE;
+	boolean autoLoadOnStartup = false;
 
 	transient GalleryComm comm = null;
 
@@ -680,6 +681,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		g.forceGalleryVersion = p.getIntProperty(FORCE_GALLERY_VERSION + prefsIndex, 0);
 		g.forceProtocolEncoding = p.getProperty(FORCE_PROTOCOL_ENCODING + prefsIndex);
 		g.resizeJpegQuality = p.getIntProperty(RESIZE_JPEG_QUALITY + prefsIndex, -1);
+		g.autoLoadOnStartup = p.getBooleanProperty(AUTO_LOAD_ON_STARTUP + prefsIndex, false);
 
 		g.setPrefsIndex(prefsIndex);
 
@@ -724,6 +726,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (glGalleryUrlString != null) {
 			p.setProperty(GL_GALLERY_URL + prefsIndex, glGalleryUrlString);
 		}
+		if (autoLoadOnStartup) {
+			p.setBooleanProperty(AUTO_LOAD_ON_STARTUP + prefsIndex, autoLoadOnStartup);
+		}
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {
@@ -738,6 +743,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		p.setProperty(PHPN_LOGIN_URL + n, null);
 		p.setProperty(PHPN_GALLERY_URL + n, null);
 		p.setProperty(ALIAS + n, null);
+		p.setProperty(FORCE_GALLERY_VERSION + n, null);
+		p.setProperty(FORCE_PROTOCOL_ENCODING + n, null);
+		p.setProperty(RESIZE_JPEG_QUALITY + n, null);
+		p.setProperty(AUTO_LOAD_ON_STARTUP + n, null);
 	}
 
 	public void setPrefsIndex(int prefsIndex) {
@@ -952,6 +961,18 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 
 	public void setAuthToken(String authToken) {
 		this.authToken = authToken;
+	}
+
+	public boolean isAutoLoadOnStartup() {
+		return autoLoadOnStartup;
+	}
+
+	public void setAutoLoadOnStartup(boolean autoLoadOnStartup) {
+		this.autoLoadOnStartup = autoLoadOnStartup;
+		
+		if (!blockWrites) {
+			GalleryRemote._().properties.setBooleanProperty(AUTO_LOAD_ON_STARTUP + prefsIndex, autoLoadOnStartup);
+		}
 	}
 
 	class TreeEnumeration implements Enumeration {

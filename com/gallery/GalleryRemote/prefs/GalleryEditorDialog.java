@@ -60,6 +60,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 	JPanel jStandalone = new JPanel();
 	JTextField jStandaloneUrl = new JTextField();
+	
+	JCheckBox jAutoLogin = new JCheckBox();
 
 	JPanel jButtonPanel = new JPanel();
 	JButton jOk = new JButton();
@@ -139,17 +141,17 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 		jGlHelpLabel.setPreferredSize(new Dimension(300, 80));
 		jGlHelpLabel.setText(GRI18n.getString(MODULE, "glHelp"));
 		jGlHelpLabel.setVerticalAlignment(SwingConstants.TOP);
+		
+		jAutoLogin.setText(GRI18n.getString(MODULE, "autoLogin"));
 
 		this.getContentPane().add(jMainPanel, BorderLayout.CENTER);
-		jMainPanel.add(jStylePanel, new GridBagConstraints(0, 4, 4, 1, 1.0, 1.0
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
 		jMainPanel.add(jUsernameLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
 		jMainPanel.add(jAliasLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 0, 0));
 		jMainPanel.add(jPasswordLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
-		jMainPanel.add(jTypeLabel, new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
+		jMainPanel.add(jTypeLabel, new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 5, 5), 0, 0));
 		jMainPanel.add(jAlias, new GridBagConstraints(1, 0, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 0, 5, 5), 0, 0));
@@ -157,9 +159,13 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
 		jMainPanel.add(jPassword, new GridBagConstraints(1, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jMainPanel.add(jType, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+		jMainPanel.add(jAutoLogin, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
+				, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
+		jMainPanel.add(jType, new GridBagConstraints(1, 4, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 5, 5), 0, 0));
-		jMainPanel.add(jButtonPanel, new GridBagConstraints(0, 5, 2, 1, 0.0, 0.0
+		jMainPanel.add(jStylePanel, new GridBagConstraints(0, 5, 4, 1, 1.0, 1.0
+				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
+		jMainPanel.add(jButtonPanel, new GridBagConstraints(0, 6, 2, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 10, 10, 10), 0, 0));
 		jButtonPanel.add(jOk, null);
 		jButtonPanel.add(jCancel, null);
@@ -234,6 +240,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 		jGlGalleryUrl.setText(gallery.getGlGalleryUrlString());
 		jGlLoginUrl.setText(gallery.getGlLoginUrlString());
+		
+		jAutoLogin.setSelected(gallery.isAutoLoadOnStartup());
 	}
 
 	public void readUIState() {
@@ -253,6 +261,8 @@ public class GalleryEditorDialog extends JDialog implements ActionListener {
 
 		gallery.setGlLoginUrlString(jGlLoginUrl.getText());
 		gallery.setGlGalleryUrlString(jGlGalleryUrl.getText());
+		
+		gallery.setAutoLoadOnStartup(jAutoLogin.isSelected());
 	}
 
 	public void actionPerformed(ActionEvent e) {

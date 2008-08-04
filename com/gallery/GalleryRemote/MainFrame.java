@@ -295,6 +295,28 @@ public class MainFrame extends JFrame
 
 		jGalleryCombo.setModel(galleries);
 		galleries.addListDataListener(this);
+
+		boolean foundAutoLoad = false;
+		for (int i = 0; i < galleries.getSize(); i++) {
+			Gallery g = (Gallery) galleries.getElementAt(i);
+			
+			if (g.isAutoLoadOnStartup()) {
+				// load the Gallery
+				// login may have failed and caused getComm to be null.
+				GalleryComm comm = g.getComm(jStatusBar);
+
+				// may have tried to connect and failed
+				if (comm != null && !GalleryComm.wasAuthFailure()) {
+					fetchAlbums();
+				}
+				
+				if (!foundAutoLoad) {
+					jGalleryCombo.setSelectedIndex(i);
+					foundAutoLoad = true;
+				}				
+			}
+		}
+		
 		selectedGalleryChanged();
 
 		// We've been initalized, we are now clean.
@@ -1053,8 +1075,12 @@ public class MainFrame extends JFrame
 				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 2, 2, 2), 0, 0));
 		jInspectorDivider.add(jInspectorPanel, JSplitPane.RIGHT);
 		jInspectorDivider.add(jAlbumPictureDivider, JSplitPane.LEFT);
-		jInspectorPanel.add(new JScrollPane(jPictureInspector), CARD_PICTURE);
-		jInspectorPanel.add(new JScrollPane(jAlbumInspector), CARD_ALBUM);
+		JScrollPane pictureInspectorScroll = new JScrollPane(jPictureInspector);
+		pictureInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jInspectorPanel.add(pictureInspectorScroll, CARD_PICTURE);
+		JScrollPane albumInspectorScroll = new JScrollPane(jAlbumInspector);
+		albumInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jInspectorPanel.add(albumInspectorScroll, CARD_ALBUM);
 		jAlbumPictureDivider.add(jPictureScroll, JSplitPane.RIGHT);
 		jAlbumPictureDivider.add(jAlbumPanel, JSplitPane.LEFT);
 		jAlbumPanel.add(jAlbumScroll, BorderLayout.CENTER);

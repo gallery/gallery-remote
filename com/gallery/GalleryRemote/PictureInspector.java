@@ -49,7 +49,7 @@ public class PictureInspector extends JPanel
 
 	HashMap extraLabels = new HashMap();
 	HashMap extraTextAreas = new HashMap();
-	String currentExtraFields = null;
+	ArrayList currentExtraFields = null;
 
 	JLabel jLabel5 = new JLabel();
 	JLabel jLabel6 = new JLabel();
@@ -113,6 +113,7 @@ public class PictureInspector extends JPanel
 		jSize.setFont(UIManager.getFont("Label.font"));
 		jSize.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 		jCaption.setLineWrap(true);
+		jCaption.setWrapStyleWord(true);
 		jCaption.setEditable(false);
 		jCaption.setFont(UIManager.getFont("Label.font"));
 		jCaption.setBackground(UIManager.getColor("TextField.inactiveBackground"));
@@ -183,8 +184,8 @@ public class PictureInspector extends JPanel
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(1, 0, 0, 0), 2, 0));
 		add(jLabel2, new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0
 				, GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 2, 0));
-		add(jSpacer, new GridBagConstraints(0, 20, 2, 1, 1.0, 0.1
-				, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+		add(jSpacer, new GridBagConstraints(0, 99, 2, 1, 1.0, 0.1
+				, GridBagConstraints.CENTER, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
 
 		add(jIconAreaPanel, new GridBagConstraints(0, 0, 2, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
@@ -460,6 +461,8 @@ public class PictureInspector extends JPanel
 					JTextArea field = new JTextArea();
 					extraTextAreas.put(name, field);
 					field.setFont(UIManager.getFont("Label.font"));
+					field.setLineWrap(true);
+					field.setWrapStyleWord(true);
 					add(field, new GridBagConstraints(1, FIRST_ROW_EXTRA + i, 1, 1, 1.0, 1.0
 							, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 0, 0, 0), 0, 0));
 					field.getDocument().addDocumentListener(this);
@@ -467,13 +470,14 @@ public class PictureInspector extends JPanel
 
 					i++;
 				}
+				
+				currentExtraFields = newExtraFields;
 			}
 
 			Iterator it = newExtraFields.iterator();
 			while (it.hasNext()) {
 				String name = (String) it.next();
 				String value = p.getExtraField(name);
-
 				JTextArea field = (JTextArea) extraTextAreas.get(name);
 				if (value == null) {
 					field.setText("");
@@ -499,6 +503,8 @@ public class PictureInspector extends JPanel
 
 		extraLabels.clear();
 		extraTextAreas.clear();
+		
+		currentExtraFields = null;
 	}
 
 	public void setEnabled(boolean enabled) {

@@ -202,6 +202,10 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				username = "&lt;Not set&gt;";
 			}
 			sb.append(GRI18n.getString(MODULE, "username")).append(username).append("<br>");
+			
+			if (selectedGallery.isAutoLoadOnStartup()) {
+				sb.append(GRI18n.getString(MODULE, "autoLogin")).append("<br>");
+			}
 
 			sb.append("</HTML>");
 
@@ -235,6 +239,12 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 			Gallery g = (Gallery) value;
 
 			setText(g.toString());
+			
+			if (g.isAutoLoadOnStartup()) {
+				setFont(getFont().deriveFont(Font.BOLD));
+			} else {
+				setFont(getFont().deriveFont(Font.PLAIN));
+			}
 
 			return this;
 		}

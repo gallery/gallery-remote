@@ -1,3 +1,9 @@
+2008-07-31  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b39)
+
+	* Users can select Gallery URLs that GR should automatically
+	  log into on startup (thanks Brian Egge).
+	* Fixed minor issues with editing image properties and extra fields.
+
 2008-07-07  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b38)
 
 	* No longer loading thumbnails in the slideshow applet.
