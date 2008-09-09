@@ -98,6 +98,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		newPicture.source = source;
 
 		newPicture.extraFields = extraFields;
+		
+		newPicture.hidden = hidden;
 
 		newPicture.angle = angle;
 		newPicture.flipped = flipped;
@@ -110,13 +112,14 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		newPicture.sizeResized = sizeResized;
 		newPicture.urlThumbnail = urlThumbnail;
 		newPicture.sizeThumbnail = sizeThumbnail;
+		newPicture.cropTo = cropTo;
+		
+		newPicture.albumOnServer = albumOnServer;
+		newPicture.indexOnServer = indexOnServer;
 
 		newPicture.fileSize = fileSize;
 		newPicture.escapedCaption = escapedCaption;
 		newPicture.indexCache = indexCache;
-
-		newPicture.albumOnServer = albumOnServer;
-		newPicture.indexOnServer = indexOnServer;
 
 		return newPicture;
 	}

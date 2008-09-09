@@ -49,17 +49,29 @@
   </copy>
  </target>
 
- <target name="run" depends="compile"
-  description="compile then run">
+    <target name="run" depends="compile"
+     description="compile then run">
 
-  <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true" maxmemory="256M">
-   <classpath>
-    <pathelement location="lib/metadata-extractor-2.1.jar"/>
-    <pathelement path="${build}"/>
-    <pathelement path="img"/>
-   </classpath>
-  </java>
- </target>
+     <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true" maxmemory="256M">
+      <classpath>
+       <pathelement location="lib/metadata-extractor-2.1.jar"/>
+       <pathelement path="${build}"/>
+       <pathelement path="img"/>
+      </classpath>
+     </java>
+    </target>
+
+    <target name="debug" depends="compile"
+     description="compile then run">
+
+     <java classname="com.gallery.GalleryRemote.GalleryRemote" fork="true" maxmemory="256M" jvmargs="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005">
+      <classpath>
+       <pathelement location="lib/metadata-extractor-2.1.jar"/>
+       <pathelement path="${build}"/>
+       <pathelement path="img"/>
+      </classpath>
+     </java>
+    </target>
 
  <target name="jar" depends="clean,compile"
   description="create a jar of the source">

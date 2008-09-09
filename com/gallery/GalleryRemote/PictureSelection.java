@@ -44,12 +44,15 @@ public class PictureSelection extends ArrayList implements Transferable, Clipboa
 	public PictureSelection() {
 	}
 
-	public PictureSelection(JList list) {
+	public PictureSelection(JList list, boolean clone) {
 		int[] selIndices = list.getSelectedIndices();
 		for (int i = 0; i < selIndices.length; i++) {
 			int selIndex = selIndices[i];
 			if (selIndex != -1) {
 				Picture p = (Picture) list.getModel().getElementAt(selIndex);
+				if (clone) {
+					p = (Picture) p.clone();
+				}
 				add(p);
 			}
 		}

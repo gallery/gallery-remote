@@ -1,3 +1,7 @@
+2008-09-09  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b40)
+
+	* Fixed issue with copy/paste.
+
 2008-07-31  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b39)
 
 	* Users can select Gallery URLs that GR should automatically

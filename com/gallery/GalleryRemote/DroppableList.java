@@ -289,7 +289,7 @@ public class DroppableList
 	/* ********* DragGestureListener ********** */
 	public void dragGestureRecognized(DragGestureEvent event) {
 		Log.log(Log.LEVEL_TRACE, MODULE, "dragGestureRecognized");
-		PictureSelection ps = new PictureSelection(this);
+		PictureSelection ps = new PictureSelection(this, false);
 
 		//pull out existing pictures
 		if (!ps.isEmpty()) {

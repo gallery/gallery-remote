@@ -313,7 +313,7 @@ public class MainFrame extends JFrame
 				if (!foundAutoLoad) {
 					jGalleryCombo.setSelectedIndex(i);
 					foundAutoLoad = true;
-				}				
+				}
 			}
 		}
 		
@@ -915,16 +915,18 @@ public class MainFrame extends JFrame
 	}
 
 	public void doCut() {
-		doCopy();
-		deleteSelectedPictures();
+		if (jPicturesList.isEnabled() && jPicturesList.getSelectedIndices().length > 0) {
+			ps = new PictureSelection(jPicturesList, false);
+			deleteSelectedPictures();
 
-		// We've been modified, we are now dirty.
-		//setDirtyFlag(true);
+			// We've been modified, we are now dirty.
+			//setDirtyFlag(true);
+		}
 	}
 
 	public void doCopy() {
 		if (jPicturesList.isEnabled() && jPicturesList.getSelectedIndices().length > 0) {
-			ps = new PictureSelection(jPicturesList);
+			ps = new PictureSelection(jPicturesList, true);
 		}
 	}
 
@@ -1053,7 +1055,6 @@ public class MainFrame extends JFrame
 		jMenuItemAbout.setText(GRI18n.getString(MODULE, "menuAbout"));
 		jMenuItemAbout.setIcon(GalleryRemote.iAbout);
 
-		//jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		jNewGalleryButton.setText(GRI18n.getString(MODULE, "newGalleryBtn"));
 		jNewGalleryButton.setActionCommand("NewGallery");
 		jNewGalleryButton.setIcon(GalleryRemote.iNewGallery);
@@ -1076,10 +1077,10 @@ public class MainFrame extends JFrame
 		jInspectorDivider.add(jInspectorPanel, JSplitPane.RIGHT);
 		jInspectorDivider.add(jAlbumPictureDivider, JSplitPane.LEFT);
 		JScrollPane pictureInspectorScroll = new JScrollPane(jPictureInspector);
-		pictureInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		pictureInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jInspectorPanel.add(pictureInspectorScroll, CARD_PICTURE);
 		JScrollPane albumInspectorScroll = new JScrollPane(jAlbumInspector);
-		albumInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		albumInspectorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jInspectorPanel.add(albumInspectorScroll, CARD_ALBUM);
 		jAlbumPictureDivider.add(jPictureScroll, JSplitPane.RIGHT);
 		jAlbumPictureDivider.add(jAlbumPanel, JSplitPane.LEFT);
