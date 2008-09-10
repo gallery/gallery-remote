@@ -1,3 +1,8 @@
+2008-09-10  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b41)
+
+	* Fixed issue with quit and logout warning messages (thanks to Guillemette
+	  for complaining loudly about this).
+
 2008-09-09  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b40)
 
 	* Fixed issue with copy/paste.

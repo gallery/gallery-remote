@@ -346,11 +346,12 @@ public class MainFrame extends JFrame
 		if (!shutdownOs) {
 			// todo: save
 			if (isDirty()) {
-				if (JOptionPane.showConfirmDialog(
+				int result = JOptionPane.showConfirmDialog(
 						(JFrame) this,
 						GRI18n.getString(MODULE, "quitQuestion"),
 						"Warning",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
 					return;
 				}
 			}
@@ -1361,11 +1362,12 @@ public class MainFrame extends JFrame
 				// todo: save
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
-				if (JOptionPane.showConfirmDialog(
+				int result = JOptionPane.showConfirmDialog(
 						(JFrame) this,
-						GRI18n.getString(MODULE, "logoutQuestion", new Object[] {getCurrentGallery()}),
+						GRI18n.getString(MODULE, "logoutQuestion", new Object[]{getCurrentGallery()}),
 						"Warning",
-						JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
 					return;
 				}
 
