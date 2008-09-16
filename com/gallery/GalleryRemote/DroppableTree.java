@@ -75,6 +75,8 @@ public class DroppableTree
 		if (dropTargetEvent instanceof DropTargetDragEvent) {
 			Point dropLocation = ((DropTargetDragEvent) dropTargetEvent).getLocation();
 			if (getPathForLocation((int) dropLocation.getX(), (int) dropLocation.getY()) == null) {
+				// Java 1.6 bug: getPathForLocation inexplicably returns false at the top or bottom of the component
+				//Log.log(Log.LEVEL_TRACE, MODULE, "getPathForLocation" + dropLocation + " is false");
 				result = false;
 			} else {
 				result = ((DropTargetDragEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
@@ -83,6 +85,7 @@ public class DroppableTree
 		} else {
 			Point dropLocation = ((DropTargetDropEvent) dropTargetEvent).getLocation();
 			if (getPathForLocation((int) dropLocation.getX(), (int) dropLocation.getY()) == null) {
+				//Log.log(Log.LEVEL_TRACE, MODULE, "getPathForLocation" + dropLocation + " is false");
 				result = false;
 			} else {
 				result = ((DropTargetDropEvent) dropTargetEvent).isDataFlavorSupported(DataFlavor.javaFileListFlavor)
@@ -98,7 +101,7 @@ public class DroppableTree
 			lastRow = -1;
 		}
 		
-		//Log.log(Log.LEVEL_TRACE, MODULE, "isDragOk: " + result);		
+		//Log.log(Log.LEVEL_TRACE, MODULE, "isDragOk: " + result);
 
 		return result;
 	}
@@ -170,15 +173,15 @@ public class DroppableTree
 		g.setXORMode(Color.cyan);
 		int xStart = 0;
 		int xStop = getWidth() - xStart;
-		if (lastRow != -1) {
+		if (lastRow != -1 && lastRow != row) {
 			g.drawRect(xStart, lastRow * rowHeight, xStop, rowHeight);
+		}
+
+		if (row != -1 && lastRow != row) {
+			g.drawRect(xStart, row * rowHeight, xStop, rowHeight);
 		}
 
 		lastRow = row;
-
-		if (lastRow != -1) {
-			g.drawRect(xStart, lastRow * rowHeight, xStop, rowHeight);
-		}
 
 		if (scrolled) {
 			scrollPace++;
