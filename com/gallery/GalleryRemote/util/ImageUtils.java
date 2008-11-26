@@ -96,6 +96,7 @@ public class ImageUtils {
 			return false;
 		}
 	};
+	public static final String APERTURE_TO_GALLERY_SCPT = "ApertureToGallery.applescript";
 
 	public static Image load(String filename, Dimension d, int usage) {
 		return load(filename, d, usage, false);
@@ -848,6 +849,90 @@ public class ImageUtils {
 		}
 	}
 
+	public static ArrayList importApertureSelection() {
+		File script = new File(System.getProperty("java.io.tmpdir"), APERTURE_TO_GALLERY_SCPT);
+
+		if (!script.exists()) {
+			// copy the script file from our bundle to /tmp
+			InputStream scriptResource = GalleryRemote.class.getResourceAsStream("/" + APERTURE_TO_GALLERY_SCPT);
+			if (scriptResource == null) {
+				try {
+					scriptResource = new FileInputStream(APERTURE_TO_GALLERY_SCPT);
+				} catch (FileNotFoundException e) {
+					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+				}
+
+				if (scriptResource == null) {
+					Log.log(Log.LEVEL_ERROR, MODULE, "Can't find " + APERTURE_TO_GALLERY_SCPT);
+					return null;
+				}
+			}
+			
+			BufferedReader scriptInStream = new BufferedReader(new InputStreamReader(
+					scriptResource));
+			BufferedWriter scriptOutStream = null;
+
+			try {
+				String line;
+				scriptOutStream = new BufferedWriter(new FileWriter(script));
+				while ((line = scriptInStream.readLine()) != null) {
+					scriptOutStream.write(line);
+					scriptOutStream.write("\n");
+				}
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			} finally {
+				try {
+					scriptInStream.close();
+					if (scriptOutStream != null) {
+						scriptOutStream.close();
+					}
+				} catch (IOException f) {}
+			}
+
+			toDelete.add(script);
+		}
+
+		// run script
+		if (exec("osascript " + script.getAbsolutePath()) != 0) {
+			return null;
+		}
+
+		// load results
+		File resultFile = new File(System.getProperty("java.io.tmpdir"), "ApertureToGallery.txt");
+		ArrayList resultList = new ArrayList();
+
+		if (!resultFile.exists()) {
+			return null;
+		} else {
+			BufferedReader resultReader = null;
+			try {
+				resultReader = new BufferedReader(new FileReader(resultFile));
+				String line = null;
+
+				while ((line = resultReader.readLine()) != null) {
+					resultList.add(line);
+				}
+			} catch (IOException e) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			} finally {
+				if (resultReader != null) {
+					try {
+						resultReader.close();
+						resultFile.delete();
+					} catch (IOException e) {
+					}
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	public static void addToDelete(File f) {
+		toDelete.add(f);
+	}
+
 	static {
 		tmpDir = new File(System.getProperty("java.io.tmpdir"), "thumbs-" + System.getProperty("user.name"));
 
@@ -890,61 +975,71 @@ public class ImageUtils {
 				imIgnoreErrorCode = p.getBooleanProperty("im.ignoreErrorCode", imIgnoreErrorCode);
 				Log.log(Log.LEVEL_INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
 
-				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1
-						&& System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
+				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1) {
+					// unqualified path, let's investigate
+
+					if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1) {
 					// we're on Windows with an abbreviated path: look up IM in the registry
-					StringBuffer output = new StringBuffer();
-					int retval = exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
-					
-					if (retval == 0) {
-						Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-						//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
-						Matcher m = pat.matcher(output.toString());
-						if (m.find()) {
-							imPath = m.group(1) + "\\" + imPath;
 
-							if (!imPath.endsWith(".exe")) {
-								imPath += ".exe";
-							}
-
-							Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
-						}
-					} else {
-						// most likely, we don't have reg.exe, try regedit.exe
-
-						File tempFile = File.createTempFile("gr_regdump", null);
-
-						retval = exec("regedit /E \"" + tempFile.getPath() + "\" \"HKEY_LOCAL_MACHINE\\Software\\ImageMagick\\Current\"", output);
+						StringBuffer output = new StringBuffer();
+						int retval = exec("reg query HKLM\\Software\\ImageMagick\\Current /v BinPath", output);
 
 						if (retval == 0) {
-							BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), "UTF-16"));
-							String line;
-							Pattern pat = Pattern.compile("^\\\"BinPath\\\"=\\\"(.*)\\\"", Pattern.CASE_INSENSITIVE);
-							while ((line = br.readLine()) != null) {
-								Matcher m = pat.matcher(line);
-								if (m.find()) {
-									imPath = m.group(1) + "\\" + imPath;
+							Pattern pat = Pattern.compile("^\\s*BinPath\\s*REG_SZ\\s*(.*)", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+							//Pattern pat = Pattern.compile("BinPath", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+							Matcher m = pat.matcher(output.toString());
+							if (m.find()) {
+								imPath = m.group(1) + "\\" + imPath;
 
-									if (!imPath.endsWith(".exe")) {
-										imPath += ".exe";
-									}
-
-									Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
-
-									break;
+								if (!imPath.endsWith(".exe")) {
+									imPath += ".exe";
 								}
+
+								Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+							}
+						} else {
+							// most likely, we don't have reg.exe, try regedit.exe
+
+							File tempFile = File.createTempFile("gr_regdump", null);
+
+							retval = exec("regedit /E \"" + tempFile.getPath() + "\" \"HKEY_LOCAL_MACHINE\\Software\\ImageMagick\\Current\"", output);
+
+							if (retval == 0) {
+								BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), "UTF-16"));
+								String line;
+								Pattern pat = Pattern.compile("^\\\"BinPath\\\"=\\\"(.*)\\\"", Pattern.CASE_INSENSITIVE);
+								while ((line = br.readLine()) != null) {
+									Matcher m = pat.matcher(line);
+									if (m.find()) {
+										imPath = m.group(1) + "\\" + imPath;
+
+										if (!imPath.endsWith(".exe")) {
+											imPath += ".exe";
+										}
+
+										Log.log(Log.LEVEL_INFO, MODULE, "Found ImageMagick in registry. imPath is now " + imPath);
+
+										break;
+									}
+								}
+
+								br.close();
 							}
 
-							br.close();
+							tempFile.delete();
 						}
-
-						tempFile.delete();
 					}
-				}
 
-				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1) {
-					Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick path is not fully qualified, " +
-							"presence won't be tested until later");
+					// try to validate that IM works
+					int exitValue = exec(new String[] {imPath});
+
+					if ((exitValue != 0 && !imIgnoreErrorCode)) {
+						if (exitValue != -1) {
+							// don't kill IM if it's just an InterruptedException
+							Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
+							stopUsingIM();
+						}
+					}
 				} else if (!new File(imPath).exists()) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
 					stopUsingIM();

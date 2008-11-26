@@ -79,7 +79,7 @@
   <delete file="GalleryRemote.jar" />
   <jar destfile="GalleryRemote.jar">
    <fileset dir="${build}" />
-   <fileset dir="." includes="*.properties" excludes="postchangelog.properties" />
+   <fileset dir="." includes="*.properties,ApertureToGallery.applescript" excludes="postchangelog.properties" />
    <manifest>
     <attribute name="Built-By" value="${user.name}" />
     <attribute name="Main-Class" value="com.gallery.GalleryRemote.GalleryRemote" />

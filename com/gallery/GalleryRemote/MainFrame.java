@@ -110,6 +110,7 @@ public class MainFrame extends JFrame
 	JSplitPane jAlbumPictureDivider = new JSplitPane();
 	JButton jUploadButton = new JButton();
 	JButton jBrowseButton = new JButton();
+	JButton jApertureImport = new JButton();
 	JButton jSortButton = new JButton();
     JComboBox jSortCombo = new JComboBox();
 	JButton jNewAlbumButton = new JButton();
@@ -157,6 +158,7 @@ public class MainFrame extends JFrame
 
 	public static final String CARD_PICTURE = "picture";
 	public static final String CARD_ALBUM = "album";
+	private File source;
 
 	public void initMainFrame() {
 		macOSXRegistration();
@@ -499,6 +501,7 @@ public class MainFrame extends JFrame
 				// if the selected album is uploading, disable everything
 				boolean enabled = !inProgress && currentAlbum != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
 				jBrowseButton.setEnabled(enabled && currentAlbum.getCanAdd());
+				jApertureImport.setEnabled(enabled && currentAlbum.getCanAdd());
 				jPictureInspector.setEnabled(enabled);
 				jPicturesList.setEnabled(enabled && currentAlbum.getCanAdd());
 				jNewAlbumButton.setEnabled(!inProgress && currentGallery != null && currentGallery.hasComm()
@@ -618,6 +621,45 @@ public class MainFrame extends JFrame
 		if (files != null) {
 			addPictures(files, false);
 		}
+	}
+
+	public void importApertureSelection() {
+		jStatusBar.startProgress(StatusUpdate.LEVEL_UNINTERUPTIBLE, 0, 100, GRI18n.getString(MODULE, "apertureStartImport"), true);
+		jStatusBar.setInProgress(true);
+		new Thread() {
+			public void run() {
+				ArrayList resultList = ImageUtils.importApertureSelection();
+				if (resultList == null || resultList.size() == 0) {
+					jStatusBar.stopProgress(StatusUpdate.LEVEL_UNINTERUPTIBLE, GRI18n.getString(MODULE, "apertureCancelImport"));
+					jStatusBar.setInProgress(false);
+					return;
+				}
+
+				ArrayList pictures = new ArrayList();
+
+				Iterator i = resultList.iterator();
+				while (i.hasNext()) {
+					String line = (String) i.next();
+					int j = line.indexOf('\t');
+					if (j != -1) {
+						String imagePath = line.substring(0, j);
+						String caption = line.substring(j + 1);
+
+						source = new File(imagePath);
+						ImageUtils.addToDelete(source);
+						Picture p = new Picture(getCurrentGallery(), source);
+						p.setCaption(caption);
+						pictures.add(p);
+					}
+				}
+
+				getCurrentAlbum().addPictures(pictures);
+				preloadThumbnails(pictures.iterator());
+
+				jStatusBar.stopProgress(StatusUpdate.LEVEL_UNINTERUPTIBLE, GRI18n.getString(MODULE, "apertureDoneImport"));
+				jStatusBar.setInProgress(false);
+			}
+		}.start();
 	}
 
 	public void addPictures(File[] files, boolean select) {
@@ -975,6 +1017,9 @@ public class MainFrame extends JFrame
 		jBrowseButton.setText(GRI18n.getString(MODULE, "brwsBtnTxt"));
 		jBrowseButton.setActionCommand("Browse");
 		jBrowseButton.setToolTipText(GRI18n.getString(MODULE, "brwsBtnTip"));
+		jApertureImport.setText(GRI18n.getString(MODULE, "apertureBtnTxt"));
+		jApertureImport.setActionCommand("ApertureImport");
+		jApertureImport.setToolTipText(GRI18n.getString(MODULE, "apertureBtnTip"));
 		//jSortAlternativesButton.setText(GRI18n.getString(MODULE, "sortBtnTxt"));
 		jSortCombo.setActionCommand("SortAlternative");
 		jSortCombo.setToolTipText(GRI18n.getString(MODULE, "sortAlternativesBtnTip"));
@@ -1092,6 +1137,9 @@ public class MainFrame extends JFrame
 		this.getContentPane().add(jBottomPanel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0
 				, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 5, 5), 0, 0));
 		jBottomPanel.add(jBrowseButton, null);
+		if (GalleryRemote.IS_MAC_OS_X) {
+			jBottomPanel.add(jApertureImport, null);
+		}
 		JPanel sortPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
 		sortPanel.add(jSortButton);
 		sortPanel.add(jSortCombo);
@@ -1173,6 +1221,7 @@ public class MainFrame extends JFrame
 		jSortButton.addActionListener(this);
 		jSortCombo.addActionListener(this);
 		jBrowseButton.addActionListener(this);
+		jApertureImport.addActionListener(this);
 		jNewGalleryButton.addActionListener(this);
 		//jGalleryCombo.addActionListener( this );
 		jAlbumTree.addTreeSelectionListener(this);
@@ -1390,6 +1439,8 @@ public class MainFrame extends JFrame
 			newAlbum();
 		} else if (command.equals("Browse")) {
 			browseAddPictures();
+		} else if (command.equals("ApertureImport")) {
+			importApertureSelection();
 		} else if (command.equals("Upload")) {
 			uploadPictures();
         } else if (command.equals("SortAlternative")) {

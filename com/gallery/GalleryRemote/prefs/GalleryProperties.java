@@ -55,6 +55,16 @@ public class GalleryProperties extends Properties implements PreferenceNames {
 		super(p);
 	}
 
+	public GalleryProperties(Map p) {
+		super();
+
+		Iterator names = p.keySet().iterator();
+		while (names.hasNext()) {
+			String name = (String) names.next();
+			super.setProperty(name, (String) p.get(name));
+		}
+	}
+
 	public GalleryProperties() {
 	}
 

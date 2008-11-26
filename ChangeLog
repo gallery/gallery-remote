@@ -1,3 +1,11 @@
+2008-11-25  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b43)
+
+	* Fixed finding ImageMagick (convert) on Mac and presumably Linux.
+	* Added support for importing from Aperture: the user must first
+	  select the pictures to be imported in Aperture, and GR will use
+	  AppleScript to tell Aperture to export them, along with the captions,
+	  then GR will load the pictures.
+
 2008-09-16  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b42)
 
 	* Fixed blinking when dropping to the album tree.

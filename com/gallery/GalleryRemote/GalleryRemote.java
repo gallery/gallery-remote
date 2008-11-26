@@ -33,6 +33,7 @@ import java.applet.Applet;
 import java.util.Enumeration;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Properties;
 import java.lang.reflect.Method;
 
 /**
@@ -99,6 +100,9 @@ public abstract class GalleryRemote implements PreferenceNames {
 
 			// log system properties
 			new GalleryProperties(System.getProperties()).logProperties(Log.LEVEL_INFO, "SysProps");
+
+			// log system environment
+			new GalleryProperties(System.getenv()).logProperties(Log.LEVEL_INFO, "SysEnv");
 
 			// log properties
 			properties.logProperties(Log.LEVEL_TRACE, "UsrProps");
