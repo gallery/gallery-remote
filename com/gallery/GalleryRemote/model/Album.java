@@ -316,6 +316,8 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			}
 		}
 
+		gallery.setDirty(true);
+
 		fireContentsChanged(this, 0, pictures.size() - 1);
 	}
 

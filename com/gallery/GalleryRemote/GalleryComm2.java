@@ -1104,7 +1104,9 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 				fetch(a, a.getName(), newPictures);
 
 				a.setHasFetchedImages(true);
+				boolean isDirty = a.getGallery().isDirty();
 				a.addPictures(newPictures);
+				a.getGallery().setDirty(isDirty);
 				GalleryRemote._().getCore().preloadThumbnails(newPictures.iterator());
 
 				su.stopProgress(StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "fetchAlbImagesDone",

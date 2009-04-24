@@ -486,7 +486,7 @@ public class MainFrame extends JFrame
 					jMenuItemSave.setEnabled(false);
 					jMenuItemSaveAs.setEnabled(false);
 				}*/
-
+Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() + " - " + currentGallery.hasComm() + " - " + currentGallery.getComm(jStatusBar).isLoggedIn());
 				if (currentGallery != null
 						&& currentGallery.getUsername() != null
 						&& currentGallery.hasComm()
@@ -496,16 +496,20 @@ public class MainFrame extends JFrame
 					jLoginButton.setText(GRI18n.getString(MODULE, "Log_in"));
 				}
 
-				jAlbumTree.setEnabled(!inProgress && jAlbumTree.getModel().getRoot() != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
+				jAlbumTree.setEnabled(!inProgress && jAlbumTree.getModel().getRoot() != null
+						&& jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1);
 
 				// if the selected album is uploading, disable everything
-				boolean enabled = !inProgress && currentAlbum != null && jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
+				boolean enabled = !inProgress && currentAlbum != null
+						&& jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
 				jBrowseButton.setEnabled(enabled && currentAlbum.getCanAdd());
 				jApertureImport.setEnabled(enabled && currentAlbum.getCanAdd());
 				jPictureInspector.setEnabled(enabled);
 				jPicturesList.setEnabled(enabled && currentAlbum.getCanAdd());
 				jNewAlbumButton.setEnabled(!inProgress && currentGallery != null && currentGallery.hasComm()
-						&& currentGallery.getComm(jStatusBar).hasCapability(jStatusBar, GalleryCommCapabilities.CAPA_NEW_ALBUM));
+						&& currentGallery.getComm(jStatusBar).isLoggedIn()
+						&& currentGallery.getComm(jStatusBar).hasCapability(jStatusBar, GalleryCommCapabilities.CAPA_NEW_ALBUM)
+						&& currentAlbum != null && currentAlbum.getCanCreateSubAlbum());
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
@@ -1407,22 +1411,27 @@ public class MainFrame extends JFrame
 		} else if (command.equals("Help.About")) {
 			showAboutBox();
 		} else if (command.equals("Fetch")) {
-			if (getCurrentGallery().hasComm() && getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
+			if (getCurrentGallery().hasComm()
+					&& getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
 				// todo: save
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
-				int result = JOptionPane.showConfirmDialog(
-						(JFrame) this,
-						GRI18n.getString(MODULE, "logoutQuestion", new Object[]{getCurrentGallery()}),
-						"Warning",
-						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-				if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
-					return;
+				if (getCurrentGallery().isDirty()) {
+					int result = JOptionPane.showConfirmDialog(
+							(JFrame) this,
+							GRI18n.getString(MODULE, "logoutQuestion", new Object[]{getCurrentGallery()}),
+							"Warning",
+							JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
+						return;
+					}
 				}
 
 				getCurrentGallery().logOut();
 
 				lastOpenedFile = null;
+
+				resetUIState();
 
 				// We've been logged out, we are now clean.
 				//setDirtyFlag(false);

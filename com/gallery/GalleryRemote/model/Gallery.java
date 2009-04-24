@@ -179,6 +179,8 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		comm = null;
 
 		setRoot(null);
+
+		dirty = false;
 	}
 
 	/*

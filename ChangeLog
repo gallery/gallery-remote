@@ -1,3 +1,10 @@
+2009-04-24  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b44)
+
+	* Signed with new cert, expiring in 2010.
+	* Cleaned up dirty detection (the alerts when trying to quit and
+	  log out should now be accurate.
+	* Fixed ImageMagick detection on Windows.
+
 2008-11-25  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b43)
 
 	* Fixed finding ImageMagick (convert) on Mac and presumably Linux.

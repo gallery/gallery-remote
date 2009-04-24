@@ -967,13 +967,13 @@ public class ImageUtils {
 			p = GalleryRemote._().properties;
 
 			useIM = p.getBooleanProperty("im.enabled");
-			Log.log(Log.LEVEL_INFO, MODULE, "useIM: " + useIM);
+			Log.log(Log.LEVEL_INFO, MODULE, "im.enabled: " + useIM);
 			if (useIM) {
 				imPath = p.getProperty("im.convertPath");
-				Log.log(Log.LEVEL_INFO, MODULE, "imPath: " + imPath);
+				Log.log(Log.LEVEL_INFO, MODULE, "im.convertPath: " + imPath);
 
 				imIgnoreErrorCode = p.getBooleanProperty("im.ignoreErrorCode", imIgnoreErrorCode);
-				Log.log(Log.LEVEL_INFO, MODULE, "imIgnoreErrorCode: " + imIgnoreErrorCode);
+				Log.log(Log.LEVEL_INFO, MODULE, "im.ignoreErrorCode: " + imIgnoreErrorCode);
 
 				if (imPath.indexOf('/') == -1 && imPath.indexOf('\\') == -1) {
 					// unqualified path, let's investigate
@@ -1033,15 +1033,12 @@ public class ImageUtils {
 					// try to validate that IM works
 					int exitValue = exec(new String[] {imPath});
 
-					if ((exitValue != 0 && !imIgnoreErrorCode)) {
-						if (exitValue != -1) {
-							// don't kill IM if it's just an InterruptedException
-							Log.log(Log.LEVEL_CRITICAL, MODULE, "ImageMagick doesn't seem to be working. Disabling");
-							stopUsingIM();
-						}
+					if (exitValue == -2) {
+						Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick in the system Path. Disabling");
+						stopUsingIM();
 					}
 				} else if (!new File(imPath).exists()) {
-					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path");
+					Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick Convert at the above path. Disabling");
 					stopUsingIM();
 				}
 			}
@@ -1098,10 +1095,10 @@ public class ImageUtils {
 
 			useJpegtran = p.getBooleanProperty("jp.enabled");
 			useJpegtranCrop = p.getBooleanProperty("jp.crop.enabled");
-			Log.log(Log.LEVEL_INFO, MODULE, "useJpegtran: " + useJpegtran);
+			Log.log(Log.LEVEL_INFO, MODULE, "jp.enabled: " + useJpegtran);
 			if (useJpegtran) {
 				jpegtranPath = p.getProperty("jp.path");
-				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranPath: " + jpegtranPath);
+				Log.log(Log.LEVEL_INFO, MODULE, "jp.path: " + jpegtranPath);
 
 				if (System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
 						&& !jpegtranPath.endsWith(".exe")) {
@@ -1109,7 +1106,7 @@ public class ImageUtils {
 				}
 
 				jpegtranIgnoreErrorCode = p.getBooleanProperty("jp.ignoreErrorCode", jpegtranIgnoreErrorCode);
-				Log.log(Log.LEVEL_INFO, MODULE, "jpegtranIgnoreErrorCode: " + jpegtranIgnoreErrorCode);
+				Log.log(Log.LEVEL_INFO, MODULE, "jp.ignoreErrorCode: " + jpegtranIgnoreErrorCode);
 
 				if (jpegtranPath.indexOf('/') == -1 && jpegtranPath.indexOf('\\') == -1) {
 					Log.log(Log.LEVEL_CRITICAL, MODULE, "jpegtran path is not fully qualified, " +
@@ -1326,9 +1323,8 @@ public class ImageUtils {
 			return -1;
 		} catch (IOException e) {
 			Log.logException(Log.LEVEL_ERROR, MODULE, e);
+			return -2;
 		}
-
-		return 1;
 	}
 
 	private static int pumpExec(Process p, StringBuffer output) throws InterruptedException, IOException {
