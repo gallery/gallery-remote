@@ -1031,7 +1031,7 @@ public class ImageUtils {
 					}
 
 					// try to validate that IM works
-					int exitValue = exec(new String[] {imPath});
+					int exitValue = exec(new String[] {imPath, "-version"});
 
 					if (exitValue == -2) {
 						Log.log(Log.LEVEL_CRITICAL, MODULE, "Can't find ImageMagick in the system Path. Disabling");

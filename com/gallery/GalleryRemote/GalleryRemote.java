@@ -234,6 +234,8 @@ public abstract class GalleryRemote implements PreferenceNames {
 					_().properties.setProperty(USERNAME + j, username);
 				}
 
+				_().properties.setBooleanProperty(AUTO_LOAD_ON_STARTUP + j, true);
+
 				try {
 					Gallery g = Gallery.readFromProperties(_().properties, j, _().getCore().getMainStatusUpdate());
 					if (g != null) {
