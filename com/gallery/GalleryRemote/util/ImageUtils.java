@@ -900,6 +900,11 @@ public class ImageUtils {
 
 		// load results
 		File resultFile = new File(System.getProperty("java.io.tmpdir"), "ApertureToGallery.txt");
+
+		if (!resultFile.exists()) {
+			resultFile = new File("/tmp/ApertureToGallery.txt");
+		}
+		
 		ArrayList resultList = new ArrayList();
 
 		if (!resultFile.exists()) {

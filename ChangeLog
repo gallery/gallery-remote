@@ -1,3 +1,7 @@
+2009-06-24  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b45)
+
+	* Fixed tmp directory location on Mac with new security update.
+
 2009-04-24  Pierre-Luc Paour <gallery@paour.com> (1.5.1-b44)
 
 	* Signed with new cert, expiring in 2010.
