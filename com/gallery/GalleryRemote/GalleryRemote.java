@@ -124,10 +124,6 @@ public abstract class GalleryRemote implements PreferenceNames {
 			int style = properties.getIntProperty(PreferenceNames.FONT_OVERRIDE_STYLE);
 			int size = properties.getIntProperty(PreferenceNames.FONT_OVERRIDE_SIZE);
 
-			if (!IS_MAC_OS_X && isAppletMode()) {
-				size = (int) (size * .75);
-			}
-
 			FontUIResource fur = new FontUIResource(name, style, size);
 			UIManager.put("Label.font", fur);
 			UIManager.put("List.font", fur);

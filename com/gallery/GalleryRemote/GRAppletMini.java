@@ -70,11 +70,12 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		SwingUtilities.updateComponentTreeUI(this);
 		if (GalleryRemote.IS_MAC_OS_X) {
 			// the default font for many components is too big on Mac
-			UIManager.put("Label.font", UIManager.getFont("TitledBorder.font"));
-			UIManager.put("TextField.font", UIManager.getFont("TitledBorder.font"));
-			UIManager.put("Button.font", UIManager.getFont("TitledBorder.font"));
-			UIManager.put("CheckBox.font", UIManager.getFont("TitledBorder.font"));
-			UIManager.put("ComboBox.font", UIManager.getFont("TitledBorder.font"));
+			Font f = UIManager.getFont("TitledBorder.font").deriveFont(12);
+			UIManager.put("Label.font", f);
+			UIManager.put("TextField.font", f);
+			UIManager.put("Button.font", f);
+			UIManager.put("CheckBox.font", f);
+			UIManager.put("ComboBox.font", f);
 		}
 
 		jbInit();
