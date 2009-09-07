@@ -232,7 +232,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					proxyInfo = proxyInfoArray[0];
 				}
 			} catch (Throwable e) {
-				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation" + e);
+				Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation " + e);
 			}
 
 			if (proxyHelperClass == null) {
@@ -249,7 +249,7 @@ public abstract class GalleryComm implements PreferenceNames {
 					proxyInfo = proxyHelperClass.getMethod("getProxyInfo",
 							new Class[] { URL.class }).invoke(proxyHelper, new Object[] { url });
 				} catch (Throwable e) {
-					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation" + e);
+					Log.log(Log.LEVEL_TRACE, MODULE, "Failed instantiation " + e);
 				}
 			}
 

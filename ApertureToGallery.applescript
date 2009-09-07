@@ -23,21 +23,23 @@ on run argv
 		end if
 	end try
 	
-	tell application "Aperture"
-		set myselected to the selection
-		set captions to {}
-		repeat with imageversion in myselected
-			if exists the value of the IPTC tag named "Caption/Abstract" of imageversion then
-				set myCaption to the value of the IPTC tag named "Caption/Abstract" of imageversion
-				copy myCaption to the end of captions
-			else
-				copy "" to the end of captions
-			end if
-		end repeat
-		export myselected using export setting "JPEG - Original size" to destination
-		set exportedFiles to the result
-		
-	end tell
+	with timeout of (30 * 60) seconds
+		tell application "Aperture"
+			set myselected to the selection
+			set captions to {}
+			repeat with imageversion in myselected
+				if exists the value of the IPTC tag named "Caption/Abstract" of imageversion then
+					set myCaption to the value of the IPTC tag named "Caption/Abstract" of imageversion
+					copy myCaption to the end of captions
+				else
+					copy "" to the end of captions
+				end if
+			end repeat
+			export myselected using export setting "JPEG - Original size" to destination
+			set exportedFiles to the result
+			
+		end tell
+	end timeout
 	
 	set fileRef to open for access (POSIX file (destination & outputFile)) with write permission
 	set eof fileRef to 0

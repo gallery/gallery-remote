@@ -728,9 +728,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		if (glGalleryUrlString != null) {
 			p.setProperty(GL_GALLERY_URL + prefsIndex, glGalleryUrlString);
 		}
-		if (autoLoadOnStartup) {
-			p.setBooleanProperty(AUTO_LOAD_ON_STARTUP + prefsIndex, autoLoadOnStartup);
-		}
+		p.setBooleanProperty(AUTO_LOAD_ON_STARTUP + prefsIndex, autoLoadOnStartup);
 	}
 
 	public static void removeFromProperties(PropertiesFile p, int n) {

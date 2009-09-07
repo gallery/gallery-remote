@@ -79,8 +79,8 @@ public class SlideshowFrame extends PreviewFrame
 	}
 
 	public void showSlideshow() {
-		//try {
-			/*if (GalleryRemote.IS_MAC_OS_X) {
+		try {
+			if (GalleryRemote.IS_MAC_OS_X) {
 				// on the Mac, using a maximized window doesn't take care of the menu bar
 
 				// Java 1.4 only
@@ -95,17 +95,17 @@ public class SlideshowFrame extends PreviewFrame
 				setVisible(true);
 
 				// unfortunately, this doesn't work on Mac 1.4.2...
-				// gd.setFullScreenWindow(this);
-			} else {*/
+				gd.setFullScreenWindow(this);
+			} else {
 				DialogUtil.maxSize(this);
 				//setBounds(600, 100, 1000, 1000);
 				setVisible(true);
-			//}
-		/*} catch (Throwable e) {
+			}
+		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "No full-screen mode: using maximized window");
 			DialogUtil.maxSize(this);
 			setVisible(true);
-		}*/
+		}
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "Showing slideshow frame");
 
@@ -128,8 +128,11 @@ public class SlideshowFrame extends PreviewFrame
 
 		showCursor();
 
-		//GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-		//gd.setFullScreenWindow(null);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		if (gd.getFullScreenWindow() == this) {
+			gd.setFullScreenWindow(null);
+		}
+		
 		super.hide();
 
 		if (GalleryRemote._() != null) {
