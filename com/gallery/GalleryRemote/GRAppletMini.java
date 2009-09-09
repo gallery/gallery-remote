@@ -7,6 +7,7 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
+import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -68,14 +69,20 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 	public void initUI() {
 		// update the look and feel
 		SwingUtilities.updateComponentTreeUI(this);
-		if (GalleryRemote.IS_MAC_OS_X) {
-			// the default font for many components is too big on Mac
-			Font f = UIManager.getFont("TitledBorder.font").deriveFont(12);
+		int appletFontSize = GalleryRemote._().properties.getIntProperty(APPLET_FONTSIZE, 0);
+		if (appletFontSize != 0) {
+			// the default font for many components is too big on Mac and Linux
+			Log.log(Log.LEVEL_TRACE, MODULE, "Overriding font size to " + appletFontSize);
+			Log.log(Log.LEVEL_TRACE, MODULE, "Default font size " + UIManager.getFont("TitledBorder.font").getSize());
+			Font f = UIManager.getFont("TitledBorder.font").deriveFont((float) appletFontSize);
+                        Log.log(Log.LEVEL_TRACE, MODULE, "Checking font size " + f.getSize());
 			UIManager.put("Label.font", f);
 			UIManager.put("TextField.font", f);
 			UIManager.put("Button.font", f);
 			UIManager.put("CheckBox.font", f);
 			UIManager.put("ComboBox.font", f);
+			UIManager.put("TitledBorder.font", f);
+			UIManager.put("TabbedPane.font", f);
 		}
 
 		jbInit();
