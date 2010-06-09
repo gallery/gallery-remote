@@ -1221,6 +1221,14 @@ public class GalleryComm2 extends GalleryComm implements GalleryComm2Consts,
 							height = p.getIntProperty("image.thumb_height." + i);
 							picture.setSizeThumbnail(new Dimension(width, height));
 
+							int resizedNum = p.getIntProperty("image.resizedNum." + i, 0);
+							for (int j = 1; j <= resizedNum; j++) {
+								resizedName = p.getProperty("image.resized." + j + ".name." + i);
+								width = p.getIntProperty("image.resized." + j + ".width." + i);
+								height = p.getIntProperty("image.resized." + j + ".height." + i);
+								picture.addResizedDerivative(new URL(baseUrl + resizedName), new Dimension(width, height));
+							}
+
 							picture.setCaption(p.getProperty("image.caption." + i));
 
 							String title = p.getProperty("image.title." + i);

@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Picture model
@@ -43,6 +44,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 	File source = null;
 
 	HashMap extraFields;
+	ArrayList resizedDerivatives;
 
 	boolean hidden;
 
@@ -98,7 +100,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		newPicture.source = source;
 
 		newPicture.extraFields = extraFields;
-		
+		newPicture.resizedDerivatives = resizedDerivatives;
+
 		newPicture.hidden = hidden;
 
 		newPicture.angle = angle;
@@ -459,6 +462,9 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setSizeResized(Dimension sizeResized) {
 		this.sizeResized = sizeResized;
+
+		// also add the new-style derivative info
+		addResizedDerivative(getUrlResized(), sizeResized);
 	}
 
 	public URL getUrlThumbnail() {
@@ -622,6 +628,24 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setItemId(String itemId) {
 		this.itemId = itemId;
+	}
+
+	public void addResizedDerivative(URL url, Dimension d) {
+		if (resizedDerivatives == null) {
+			resizedDerivatives = new ArrayList();
+		}
+
+		resizedDerivatives.add(new ResizedDerivative(url, d));
+	}
+
+	public class ResizedDerivative {
+		public URL url;
+		public Dimension d;
+
+		public ResizedDerivative(URL url, Dimension d) {
+			this.url = url;
+			this.d = d;
+		}
 	}
 }
 
