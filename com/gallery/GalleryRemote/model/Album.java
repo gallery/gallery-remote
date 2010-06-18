@@ -73,13 +73,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	Boolean overrideAddToBeginning = null;
 
 	int autoResize = 0;
-	// permissions -- default to true for the sake of old protocols ...
-	boolean canRead = true;
-	boolean canAdd = true;
-	boolean canWrite = true;
-	boolean canDeleteFrom = true;
-	boolean canDeleteThisAlbum = true;
-	boolean canCreateSubAlbum = true;
 
 	boolean hasFetchedInfo = false;
 	boolean hasFetchedImages = false;
@@ -595,10 +588,10 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 			ret.append(" (" + pictures.size() + ")");
 		}
 		
-		// using canAdd here, since that's the only operation we perform 
+		// using canEdit here, since that's the only operation we perform
 		// currently.  eventually, when we start changing things
 		// on the server, permission support will get more ... interesting.
-		if (!canAdd) {
+		if (!canEdit) {
 			ret.append(" ").append(GRI18n.getString(MODULE, "ro"));
 		}
 
@@ -678,58 +671,6 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		} else {
 			extraFields = null;
 		}
-	}
-
-	public void setCanRead(boolean b) {
-		canRead = b;
-	}
-
-	public boolean getCanRead() {
-		return canRead;
-	}
-
-	public void setCanAdd(boolean b) {
-		canAdd = b;
-	}
-
-	public boolean getCanAdd() {
-		return canAdd;
-	}
-
-
-	public void setCanWrite(boolean b) {
-		canWrite = b;
-	}
-
-	public boolean getCanWrite() {
-		return canWrite;
-	}
-
-
-	public void setCanDeleteFrom(boolean b) {
-		canDeleteFrom = b;
-	}
-
-	public boolean getCanDeleteFrom() {
-		return canDeleteFrom;
-	}
-
-
-	public void setCanDeleteThisAlbum(boolean b) {
-		canDeleteThisAlbum = b;
-	}
-
-	public boolean getCanDeleteThisAlbum() {
-		return canDeleteThisAlbum;
-	}
-
-
-	public void setCanCreateSubAlbum(boolean b) {
-		canCreateSubAlbum = b;
-	}
-
-	public boolean getCanCreateSubAlbum() {
-		return canCreateSubAlbum;
 	}
 
 	public String getSummary() {

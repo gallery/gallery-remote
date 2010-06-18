@@ -195,8 +195,8 @@ public class CoreUtils {
 						}
 					}
 
-					if (p.getCaption() != null && getIcon() != null) {
-						text.append("<p><font color=\"gray\">").append(p.getEscapedCaption()).append("</font></p>");
+					if (p.getDescription() != null && getIcon() != null) {
+						text.append("<p><font color=\"gray\">").append(p.getEscapedDescription()).append("</font></p>");
 					}
 
 					text.append("</html>");

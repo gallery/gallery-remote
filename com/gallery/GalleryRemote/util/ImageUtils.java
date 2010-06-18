@@ -811,7 +811,7 @@ public class ImageUtils {
 		if (userAgent != null) {
 			conn.setRequestProperty("User-Agent", userAgent);
 		}
-		conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getGalleryUrl("").toString());
+		conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getUrl().toString());
 		Cookie[] cookies = CookieModule.listAllCookies();
 		for (int i = 0; i < cookies.length; i++) {
 			conn.addRequestProperty("Cookie", cookies[i].toString());

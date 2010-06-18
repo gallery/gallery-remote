@@ -167,31 +167,19 @@ public class MainFrame extends JFrame
 
 		// load galleries
 		galleries = new DefaultComboBoxModel();
-		if (! GalleryRemote._().isAppletMode()) {
-			int i = 0;
-			while (true) {
-				try {
-					Gallery g = Gallery.readFromProperties(p, i++, jStatusBar);
-					if (g == null) {
-						break;
-					}
-					//g.addListDataListener(this);
-					galleries.addElement(g);
-				} catch (Exception e) {
-					Log.log(Log.LEVEL_ERROR, MODULE, "Error trying to load Gallery profile " + i);
-					Log.logException(Log.LEVEL_ERROR, MODULE, e);
+		int i = 0;
+		while (true) {
+			try {
+				Gallery g = Gallery.readFromProperties(p, i++, jStatusBar);
+				if (g == null) {
+					break;
 				}
+				//g.addListDataListener(this);
+				galleries.addElement(g);
+			} catch (Exception e) {
+				Log.log(Log.LEVEL_ERROR, MODULE, "Error trying to load Gallery profile " + i);
+				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
-		} else {
-			//Gallery g = new Gallery(jStatusBar);
-			Applet applet = GalleryRemote._().getApplet();
-
-			GRApplet.AppletInfo info = ((GRApplet) applet).getGRAppletInfo();
-
-			info.gallery.addTreeModelListener(this);
-			galleries.addElement(info.gallery);
-
-			//CookieModule.addCookie(new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false));
 		}
 
 		setIconImage(iconImage);
@@ -502,14 +490,14 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 				// if the selected album is uploading, disable everything
 				boolean enabled = !inProgress && currentAlbum != null
 						&& jAlbumTree.getModel().getChildCount(jAlbumTree.getModel().getRoot()) >= 1;
-				jBrowseButton.setEnabled(enabled && currentAlbum.getCanAdd());
-				jApertureImport.setEnabled(enabled && currentAlbum.getCanAdd());
+				jBrowseButton.setEnabled(enabled && currentAlbum.getCanEdit());
+				jApertureImport.setEnabled(enabled && currentAlbum.getCanEdit());
 				jPictureInspector.setEnabled(enabled);
-				jPicturesList.setEnabled(enabled && currentAlbum.getCanAdd());
+				jPicturesList.setEnabled(enabled && currentAlbum.getCanEdit());
 				jNewAlbumButton.setEnabled(!inProgress && currentGallery != null && currentGallery.hasComm()
 						&& currentGallery.getComm(jStatusBar).isLoggedIn()
 						&& currentGallery.getComm(jStatusBar).hasCapability(jStatusBar, GalleryCommCapabilities.CAPA_NEW_ALBUM)
-						&& currentAlbum != null && currentAlbum.getCanCreateSubAlbum());
+						&& currentAlbum != null && currentAlbum.getCanEdit());
 
 				// change image displayed
 				int sel = jPicturesList.getSelectedIndex();
@@ -652,7 +640,7 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 						source = new File(imagePath);
 						ImageUtils.addToDelete(source);
 						Picture p = new Picture(getCurrentGallery(), source);
-						p.setCaption(caption);
+						p.setDescription(caption);
 						pictures.add(p);
 					}
 				}

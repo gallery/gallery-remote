@@ -40,20 +40,10 @@ public interface PreferenceNames {
 	// URL panel
 	public static final String USERNAME = "username.";
 	public static final String PASSWORD = "password.";
-	public static final String TYPE = "type.";
 	public static final String GURL = "url.";
-	public static final String STANDALONE = "Standalone";
-	public static final String POSTNUKE = "PostNuke";
-	public static final String PHPNUKE = "PHPNuke";
-	public static final String GEEKLOG = "GeekLog";
 	public static final String APPLET = "Applet";
-	public static final String PN_GALLERY_URL = "pnGalleryUrl.";
-	public static final String PN_LOGIN_URL = "pnLoginUrl.";
-	public static final String PHPN_GALLERY_URL = "phpnGalleryUrl.";
-	public static final String PHPN_LOGIN_URL = "phpnLoginUrl.";
-	public static final String GL_GALLERY_URL = "glGalleryUrl.";
-	public static final String GL_LOGIN_URL = "glLoginUrl.";
 	public static final String ALIAS = "alias.";
+	public static final String KEY = "key.";
 	public static final String FORCE_GALLERY_VERSION = "forceGalleryVersion.";
 	public static final String FORCE_PROTOCOL_ENCODING = "forceProtocolEncoding.";
 	public static final String RESIZE_JPEG_QUALITY = "resizeJpegQuality.";

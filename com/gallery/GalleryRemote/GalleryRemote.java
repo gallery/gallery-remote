@@ -176,7 +176,7 @@ public abstract class GalleryRemote implements PreferenceNames {
 
 			return true;
 		} else {
-			System.err.println("Trying to instanciate Gallery Remote more than once...");
+			System.err.println("Trying to instantiate Gallery Remote more than once...");
 			Thread.dumpStack();
 
 			return false;

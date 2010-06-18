@@ -10,9 +10,6 @@ import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Locale;
 
-import HTTPClient.CookieModule;
-import HTTPClient.Cookie;
-
 /**
  * Created by IntelliJ IDEA.
  * User: paour
@@ -202,7 +199,7 @@ public class GRApplet extends JApplet {
 		if (urlFull == null) {
 			// old versions of Gallery, or bad urlFull
 			info.gallery.setType(Gallery.TYPE_STANDALONE);
-			info.gallery.setStUrlString(url);
+			info.gallery.setUrlString(url);
 		}
 
 		info.gallery.setUserAgent(userAgent);
@@ -216,7 +213,7 @@ public class GRApplet extends JApplet {
 		}
 		info.slideshowFrom = slideshowFrom;
 
-		CookieModule.discardAllCookies();
+		/*CookieModule.discardAllCookies();
 		if (cookieName != null) {
 			Cookie cookie = new Cookie(cookieName, cookieValue, cookieDomain, cookiePath, null, false);
 			Log.log(Log.LEVEL_TRACE, MODULE, "Adding cookie: " + cookie);
@@ -231,7 +228,7 @@ public class GRApplet extends JApplet {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Adding cookie: " + cookie1);
 			CookieModule.addCookie(cookie1);
 			cookieNum++;
-		}
+		}*/
 
 		return info;
 	}

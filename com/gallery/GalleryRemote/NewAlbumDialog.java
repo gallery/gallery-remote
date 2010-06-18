@@ -188,7 +188,7 @@ public class NewAlbumDialog extends JDialog
 			//newAlbum.setSuppressEvents(true);
 			newAlbum.setName(jName.getText());
 			newAlbum.setTitle(jTitle.getText());
-			newAlbum.setCaption(jDescription.getText());
+			newAlbum.setDescription(jDescription.getText());
 
 			//newAlbum.setSuppressEvents(false);
 
@@ -216,7 +216,7 @@ public class NewAlbumDialog extends JDialog
 	void resetUIState() {
 		Album a = (Album) jAlbum.getSelectedItem();
 
-		boolean canCreateSubAlbum = a.getCanCreateSubAlbum();
+		boolean canCreateSubAlbum = a.getCanEdit();
 
 		jOk.setEnabled(canCreateSubAlbum);
 		jName.setEnabled(canCreateSubAlbum);
@@ -252,7 +252,7 @@ public class NewAlbumDialog extends JDialog
 					list, value, index,
 					isSelected, cellHasFocus);
 
-			if (((Album) value).getCanCreateSubAlbum()) {
+			if (((Album) value).getCanEdit()) {
 				if (! isSelected) {
 					setForeground(Color.BLACK);
 				}

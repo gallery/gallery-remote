@@ -316,7 +316,7 @@ public class PictureInspector extends JPanel
 			Picture p = ((Picture) pictures[0]);
 
 			if (e.getDocument() == jCaption.getDocument()) {
-				p.setCaption(jCaption.getText());
+				p.setDescription(jCaption.getText());
 			}
 
 			Iterator it = extraTextAreas.keySet().iterator();
@@ -398,7 +398,7 @@ public class PictureInspector extends JPanel
 			}
 			jAlbum.setText(p.getParentAlbum().getTitle());
 			if (p.getParentAlbum().getGallery().getComm(mf.jStatusBar).hasCapability(mf.jStatusBar, GalleryCommCapabilities.CAPA_UPLOAD_CAPTION)) {
-				jCaption.setText(p.getCaption());
+				jCaption.setText(p.getDescription());
 				jCaption.setEditable(true);
 				jCaption.setBackground(UIManager.getColor("TextField.background"));
 			}

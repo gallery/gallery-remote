@@ -7,7 +7,6 @@ import com.gallery.GalleryRemote.util.ImageUtils;
 import com.gallery.GalleryRemote.util.GRI18n;
 import com.gallery.GalleryRemote.util.DialogUtil;
 import com.gallery.GalleryRemote.prefs.PreferenceNames;
-import com.gallery.GalleryRemote.util.OsShutdown;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -181,23 +180,6 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 		jThumbnails.setEnabled(!inProgress);
 
 		this.inProgress = inProgress;
-
-		if (! inProgress && hasHadPictures) {
-			// probably finished uploading...
-			try {
-				// no update for G2 and for embedded applets (non-embedded applets are TYPE_STANDALONE)
-				if (! (gallery.getComm(null) instanceof GalleryComm2_5) && gallery.getType() != Gallery.TYPE_APPLET) {
-					getAppletContext().showDocument(new URL(getCodeBase().toString() + "add_photos_refresh.php"), "hack");
-				}
-
-				// use Java to Javascript scripting
-				g2Feedback("doneUploading", new Object[] {});
-			} catch (MalformedURLException e) {
-				Log.logException(Log.LEVEL_ERROR, MODULE, e);
-			}
-
-			hasHadPictures = false;
-		}
 	}
 
 	public void addPictures(File[] files, int index, boolean select) {
@@ -417,7 +399,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 
 		if (p != null) {
 			if (e.getDocument() == jCaption.getDocument()) {
-				p.setCaption(jCaption.getText());
+				p.setDescription(jCaption.getText());
 			} else {
 				Iterator i = jExtrafields.iterator();
 				while (i.hasNext()) {
@@ -449,7 +431,7 @@ public class GRAppletMini extends GRApplet implements GalleryRemoteCore, ActionL
 				jExtrafield.setBackground(UIManager.getColor("TextField.inactiveBackground"));
 			}
 		} else {
-			jCaption.setText(p.getCaption());
+			jCaption.setText(p.getDescription());
 			jCaption.setEditable(true);
 			jCaption.setBackground(UIManager.getColor("TextField.background"));
 

@@ -121,7 +121,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		newPicture.indexOnServer = indexOnServer;
 
 		newPicture.fileSize = fileSize;
-		newPicture.escapedCaption = escapedCaption;
+		newPicture.escapedDescription = escapedDescription;
 		newPicture.indexCache = indexCache;
 
 		return newPicture;
@@ -147,13 +147,13 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 				}
 			}
 
-			setCaption(filename);
+			setDescription(filename);
 		} else if (GalleryRemote._().properties.getAutoCaptions() == AUTO_CAPTIONS_COMMENT
 				&& getExifData() != null && getExifData().getCaption() != null) {
-			setCaption(getExifData().getCaption());
+			setDescription(getExifData().getCaption());
 		} else if (GalleryRemote._().properties.getAutoCaptions() == AUTO_CAPTIONS_DATE
 				&& getExifData() != null && getExifData().getCreationDate() != null) {
-			setCaption(getExifData().getCreationDate().toString());
+			setDescription(getExifData().getCreationDate().toString());
 		}
 
 		fileSize = 0;

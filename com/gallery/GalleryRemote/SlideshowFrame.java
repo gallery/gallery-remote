@@ -423,8 +423,8 @@ public class SlideshowFrame extends PreviewFrame
 		}
 
 		if (picture != null) {
-			if (picture.getCaption() != null) {
-				caption = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(picture.getCaption())).trim();
+			if (picture.getDescription() != null) {
+				caption = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(picture.getDescription())).trim();
 			} else {
 				caption = null;
 			}
@@ -443,9 +443,9 @@ public class SlideshowFrame extends PreviewFrame
 				url = picture.getSource().toString();
 			}
 
-			if (picture.getParentAlbum().getCaption() != null) {
+			if (picture.getParentAlbum().getDescription() != null) {
 				album = ImageLoaderUtil.stripTags(HTMLEscaper.unescape(
-						picture.getParentAlbum().getCaption())).trim();
+						picture.getParentAlbum().getDescription())).trim();
 			} else {
 				album = null;
 			}

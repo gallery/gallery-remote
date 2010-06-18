@@ -137,7 +137,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 				resetUIState();
 			}
 		} else if (cmd.equals("Delete")) {
-			Object[] params = {g.getGalleryUrl("")};
+			Object[] params = {g.getUrl()};
 			int n = JOptionPane.showConfirmDialog(this, GRI18n.getString(MODULE, "delConfirm", params),
 					GRI18n.getString(MODULE, "delete"),
 					JOptionPane.WARNING_MESSAGE,
@@ -184,18 +184,7 @@ public class URLPanel extends PreferencePanel implements ListSelectionListener, 
 		if (selectedGallery != null) {
 			sb.append("<HTML>");
 
-			if (selectedGallery.getType() == Gallery.TYPE_STANDALONE) {
-				sb.append(GRI18n.getString(MODULE, "gllryURL")).append(selectedGallery.getStUrlString()).append("<br>");
-			} else if (selectedGallery.getType() == Gallery.TYPE_POSTNUKE) {
-				sb.append(GRI18n.getString(MODULE, "pnLoginURL")).append(selectedGallery.getPnLoginUrlString()).append("<br>");
-				sb.append(GRI18n.getString(MODULE, "pnGllryURL")).append(selectedGallery.getPnGalleryUrlString()).append("<br>");
-			} else if (selectedGallery.getType() == Gallery.TYPE_PHPNUKE) {
-				sb.append(GRI18n.getString(MODULE, "phpnLoginURL")).append(selectedGallery.getPhpnLoginUrlString()).append("<br>");
-				sb.append(GRI18n.getString(MODULE, "phpnGllryURL")).append(selectedGallery.getPhpnGalleryUrlString()).append("<br>");
-			} else if (selectedGallery.getType() == Gallery.TYPE_GEEKLOG) {
-				sb.append(GRI18n.getString(MODULE, "glLoginURL")).append(selectedGallery.getGlLoginUrlString()).append("<br>");
-				sb.append(GRI18n.getString(MODULE, "glGllryURL")).append(selectedGallery.getGlGalleryUrlString()).append("<br>");
-			}
+			sb.append(GRI18n.getString(MODULE, "gllryURL")).append(selectedGallery.getUrlString()).append("<br>");
 
 			String username = selectedGallery.getUsername();
 			if (username == null || username.length() == 0) {

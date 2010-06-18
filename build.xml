@@ -294,13 +294,6 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
   <move file="${install}/Java/InstallGalleryRemote.jar" tofile="${install}/staging/GalleryRemote.${version}.jar"/>
  </target>
 
- <target name="post" description="Posts ChangeLog to menalto.com">
-  <taskdef name="postchangelog"
-   classpath="GalleryRemote.jar"
-   classname="com.gallery.GalleryRemote.util.PostChangeLog"/>
-  <postchangelog/>
- </target>
-
  <target name="create_keystore" description="Creates a self-signed certificate">
   <exec executable="keytool">
    <arg line="-genkey -keyalg RSA -alias gallery -dname &quot;CN=gallery.sourceforge.net, OU=Gallery, O=Gallery, L=Menlo Park, ST=California, C=US&quot; -keypass gallery -storepass gallery" />
@@ -316,26 +309,6 @@ tofile="${install}/staging/GalleryRemote.${version}.Win32.NoVM.exe"/>
  <target name="nightly" depends="zip, installer_macosx, applet_zip"
   description="Run all the tasks for a nightly build" />
 
-
- <!-- SaverBeans screensaver -->
-  <target name="sbproperties">
-    <property file="defaults.properties"/>
-
-    <property name="sbbuild" value="build/sb" />
-
-    <property name="screensaver" value="Gallery" />
-    <property name="screensaverez" value="Gallery" />
-    <property name="screensavershort" value="gallery" />
-    <property name="screensavershortfull" value="gallery_screensaver" />
-    <property name="screensaver.class"
-        value="com.gallery.GalleryRemote.GRScreenSaver" />
-
-    <!-- Values for the Windows installer -->
-    <property name="productName" value="Gallery Remote Screensaver" />
-    <property name="productVersion" value="${version}" />
-    <property name="productPublisher" value="The Gallery project" />
-    <property name="productWebSite" value="http://gallery.sf.net/" />
-  </target>
 
   <target name="sbcheck-nsis" description="Check if NSIS is present">
     <fail unless="nsis.path">
