@@ -52,7 +52,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	/* -------------------------------------------------------------------------
 	 * LOCAL STORAGE
 	 */
-	ArrayList pictures = new ArrayList();
+	ArrayList<Picture> pictures = new ArrayList<Picture>();
 
 
 	/* -------------------------------------------------------------------------
@@ -62,9 +62,9 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	//ArrayList subAlbums = new ArrayList();
 
 	//Album parent; // parent Album
-	String title = GRI18n.getString(MODULE, "title");
+	//String title = GRI18n.getString(MODULE, "title");
 	String name;
-	ArrayList extraFields;
+	ArrayList<String> extraFields;
 	String summary;
 
 	Boolean overrideResize = null;
@@ -81,8 +81,8 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	transient private Integer albumDepth;
 	transient private boolean suppressEvents = false;
 
-	public static List extraFieldsNoShow = Arrays.asList(new String[]{"Capture date", "Upload date", "Description"});
-	public static List extraFieldsNoShowG2 = Arrays.asList(new String[]{"Capture date", "Upload date"});
+	public static List extraFieldsNoShow = Arrays.asList("Capture date", "Upload date", "Description");
+	public static List extraFieldsNoShowG2 = Arrays.asList("Capture date", "Upload date");
 
 
 	public Album(Gallery gallery) {
@@ -95,7 +95,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	 * Retrieves the album properties from the server.
 	 */
 	public void fetchAlbumProperties(StatusUpdate su) {
-		if (!hasFetchedInfo && getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
+		if (!hasFetchedInfo && getGallery().getComm().hasCapability(GalleryCommCapabilities.CAPA_ALBUM_INFO)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};
@@ -115,7 +115,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	public void fetchAlbumImages(StatusUpdate su, boolean recursive, int maxPictures, boolean random) {
-		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
+		if (getGallery().getComm().hasCapability(GalleryCommCapabilities.CAPA_FETCH_ALBUM_IMAGES)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};
@@ -145,7 +145,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	public void moveAlbumTo(StatusUpdate su, Album newParent) {
-		if (getGallery().getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_MOVE_ALBUM)) {
+		if (getGallery().getComm().hasCapability(GalleryCommCapabilities.CAPA_MOVE_ALBUM)) {
 			if (su == null) {
 				su = new StatusUpdateAdapter() {
 				};
@@ -209,7 +209,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	 * 
 	 * @return The pictures value
 	 */
-	public Iterator getPictures() {
+	public Iterator<Picture> getPictures() {
 		return pictures.iterator();
 	}
 
@@ -247,7 +247,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	 * 
 	 * @param files the files to create the pictures from
 	 */
-	public ArrayList addPictures(File[] files) {
+	public ArrayList<Picture> addPictures(File[] files) {
 		return addPictures(files, -1);
 	}
 
@@ -257,8 +257,8 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	 * @param files the files to create the pictures from
 	 * @param index the index in the list at which to begin adding
 	 */
-	public ArrayList addPictures(File[] files, int index) {
-		List expandedFiles = Arrays.asList(files);
+	public ArrayList<Picture> addPictures(File[] files, int index) {
+		List<File> expandedFiles = Arrays.asList(files);
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "addPictures: " + expandedFiles);
 
@@ -270,11 +270,9 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 		Log.log(Log.LEVEL_TRACE, MODULE, "addPictures (expanded): " + expandedFiles);
 
-		ArrayList pictures = new ArrayList(expandedFiles.size());
+		ArrayList<Picture> pictures = new ArrayList<Picture>(expandedFiles.size());
 
-		for (Iterator it = expandedFiles.iterator(); it.hasNext();) {
-			File f = (File) it.next();
-
+		for (File f : expandedFiles) {
 			Picture p = new Picture(gallery, f);
 			p.setParent(this);
 			if (index == -1) {
@@ -294,13 +292,12 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	/**
 	 * Adds picturesA to the album
 	 */
-	public void addPictures(List picturesL) {
+	public void addPictures(List<Picture> picturesL) {
 		addPictures(picturesL, -1);
 	}
 
-	public void addPictures(List picturesL, int index) {
-		for (Iterator it = picturesL.iterator(); it.hasNext();) {
-			Picture p = (Picture) it.next();
+	public void addPictures(List<Picture> picturesL, int index) {
+		for (Picture p : picturesL) {
 			p.setParent(this);
 			if (index == -1) {
 				pictures.add(p);
@@ -341,7 +338,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	public void sortPicturesAlphabetically() {
-		Collections.sort(pictures, new NaturalOrderComparator());
+		Collections.sort(pictures, new NaturalOrderComparator<Picture>());
 		fireContentsChanged(this, 0, pictures.size() - 1);
 	}
 
@@ -350,13 +347,10 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
      * date, then fall to the bottom.
      */
     public void sortPicturesCreated() {
-        Collections.sort(pictures, new Comparator() {
+        Collections.sort(pictures, new Comparator<Picture>() {
 
-            public int compare(Object o1, Object o2) {
+            public int compare(Picture p1, Picture p2) {
 				Date d1 = null, d2 = null;
-
-                Picture p1 = (Picture) o1;
-                Picture p2 = (Picture) o2;
 
 				if (p1.getExifData() != null) {
                 	d1 = p1.getExifData().getCreationDate();
@@ -385,7 +379,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	public void sortSubAlbums() {
 		if (children != null) {
-			Collections.sort(children, new NaturalOrderComparator());
+			Collections.sort(children, new NaturalOrderComparator<Album>());
 		}
 
 		fireContentsChanged(this, 0, pictures.size() - 1);
@@ -531,25 +525,16 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	}
 
 	/**
-	 * Gets the title attribute of the Album object
-	 * 
-	 * @return The title
-	 */
-	public String getTitle() {
-		return title;
-	}
-
-	/**
 	 * Gets the aggregated file size of all the pictures in the album
 	 * 
 	 * @return The file size (bytes)
 	 */
 	public long getPictureFileSize() {
 		if (pictureFileSize == null) {
-			pictureFileSize = new Long(getPictureFileSize((Picture[]) pictures.toArray(new Picture[0])));
+			pictureFileSize = getPictureFileSize((Picture[]) pictures.toArray(new Picture[0]));
 		}
 
-		return pictureFileSize.longValue();
+		return pictureFileSize;
 	}
 
 	/**
@@ -572,8 +557,8 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 	public static long getObjectFileSize(Object[] pictures) {
 		long total = 0;
 
-		for (int i = 0; i < pictures.length; i++) {
-			total += ((Picture) pictures[i]).getFileSize();
+		for (Object picture : pictures) {
+			total += ((Picture) picture).getFileSize();
 		}
 
 		return total;
@@ -585,7 +570,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		ret.append(title);
 
 		if (pictures.size() != 0) {
-			ret.append(" (" + pictures.size() + ")");
+			ret.append(" (").append(pictures.size()).append(")");
 		}
 		
 		// using canEdit here, since that's the only operation we perform
@@ -647,13 +632,13 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		super.setParent(a);
 	}*/
 
-	public ArrayList getExtraFields() {
+	public ArrayList<String> getExtraFields() {
 		return extraFields;
 	}
 
 	public void setExtraFieldsString(String extraFieldsString) {
 		if (extraFieldsString != null && extraFieldsString.length() > 0) {
-			extraFields = new ArrayList();
+			extraFields = new ArrayList<String>();
 			StringTokenizer st = new StringTokenizer(extraFieldsString, ",");
 			List noShow = null;
 			if (getGallery().getGalleryVersion() == 1) {
@@ -681,15 +666,14 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		this.summary = summary;
 	}
 
-	public ArrayList getPicturesList() {
+	public ArrayList<Picture> getPicturesList() {
 		return pictures;
 	}
 
-	ArrayList getUploadablePicturesList() {
-		ArrayList uploadable = new ArrayList();
+	ArrayList<Picture> getUploadablePicturesList() {
+		ArrayList<Picture> uploadable = new ArrayList<Picture>();
 
-		for (Iterator it = pictures.iterator(); it.hasNext();) {
-			Picture picture = (Picture) it.next();
+		for (Picture picture : pictures) {
 			if (!picture.isOnline()) {
 				uploadable.add(picture);
 			}
@@ -698,11 +682,11 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 		return uploadable;
 	}
 
-	void setPicturesList(ArrayList pictures) {
+	void setPicturesList(ArrayList<Picture> pictures) {
 		this.pictures = pictures;
 
-		for (Iterator e = pictures.iterator(); e.hasNext();) {
-			((Picture) e.next()).setParent(this);
+		for (Picture picture : pictures) {
+			picture.setParent(this);
 		}
 
 		fireContentsChanged(this, 0, pictures.size() - 1);
@@ -710,10 +694,10 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	public int getAlbumDepth() throws IllegalArgumentException {
 		if (albumDepth == null) {
-			albumDepth = new Integer(depthHelper(0));
+			albumDepth = depthHelper(0);
 		}
 
-		return albumDepth.intValue();
+		return albumDepth;
 	}
 
 	int depthHelper(int depth) throws IllegalArgumentException {
@@ -811,7 +795,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	public boolean getResize() {
 		if (overrideResize != null) {
-			return overrideResize.booleanValue();
+			return overrideResize;
 		} else {
 			return GalleryRemote._().properties.getBooleanProperty(RESIZE_BEFORE_UPLOAD);
 		}
@@ -819,7 +803,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	public boolean getResizeDefault() {
 		if (overrideResizeDefault != null) {
-			return overrideResizeDefault.booleanValue();
+			return overrideResizeDefault;
 		} else {
 			return GalleryRemote._().properties.getIntDimensionProperty(RESIZE_TO) == 0;
 		}
@@ -835,7 +819,7 @@ public class Album extends GalleryItem implements ListModel, Serializable, Prefe
 
 	public boolean getAddToBeginning() {
 		if (overrideAddToBeginning != null) {
-			return overrideAddToBeginning.booleanValue();
+			return overrideAddToBeginning;
 		} else {
 			// todo
 			return false;

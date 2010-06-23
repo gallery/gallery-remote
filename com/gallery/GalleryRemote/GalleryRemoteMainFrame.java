@@ -46,8 +46,8 @@ public class GalleryRemoteMainFrame extends GalleryRemote {
 		if (created && OsShutdown.isUnix()) {
 			try {
 				Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.PrivateShutdown");
-				Method m = c.getMethod("exec", null);
-				m.invoke(null, new Object[] { "chmod -R go-rwx " + f.getPath().replaceAll(" ", "\\ ") });
+				Method m = c.getMethod("exec");
+				m.invoke(null, "chmod -R go-rwx " + f.getPath().replaceAll(" ", "\\ "));
 			} catch (Throwable e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}

@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class NaturalOrderComparator implements Comparator {
+public class NaturalOrderComparator<T> implements Comparator<T> {
 	int compareRight(String a, String b) {
 		int bias = 0;
 		int ia = 0;
@@ -63,7 +63,7 @@ public class NaturalOrderComparator implements Comparator {
 		}
 	}
 
-	public int compare(Object o1, Object o2) {
+	public int compare(T o1, T o2) {
 		String a = o1.toString();
 		String b = o2.toString();
 

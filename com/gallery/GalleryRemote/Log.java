@@ -53,9 +53,9 @@ public class Log implements PreferenceNames, Runnable {
 	static Log singleton = new Log();
 	static boolean started = false;
 
-	List logLines = Collections.synchronizedList(new LinkedList());
+	List<String> logLines = Collections.synchronizedList(new LinkedList<String>());
 	boolean running = false;
-	List moduleList = null;
+	List<String> moduleList = null;
 
 	private Log() {}
 
@@ -150,7 +150,7 @@ public class Log implements PreferenceNames, Runnable {
 			singleton.loggerThread.join();
 		} catch (InterruptedException ee) {
 			System.err.println("Logger thread killed");
-		} catch (Throwable t) {}
+		} catch (Throwable ignored) {}
 
 		started = false;
 		singleton = new Log();
@@ -171,7 +171,7 @@ public class Log implements PreferenceNames, Runnable {
 			while (running) {
 				Thread.sleep(sleepInterval);
 				while (!logLines.isEmpty()) {
-					String s = (String) logLines.remove(0);
+					String s = logLines.remove(0);
 					writer.write(s);
 					writer.newLine();
 
@@ -214,10 +214,10 @@ public class Log implements PreferenceNames, Runnable {
 
 		try {
 		String modules = System.getenv("GR_LOG_MODULES");
-		if (modules != null) {
-			singleton.moduleList = Arrays.asList(modules.split(","));
-		}
-		} catch (Throwable e) {}
+			if (modules != null) {
+				singleton.moduleList = Arrays.asList(modules.split(","));
+			}
+		} catch (Throwable ignored) {}
 
 		singleton.loggerThread = new Thread(singleton);
 		singleton.loggerThread.setPriority(threadPriority);

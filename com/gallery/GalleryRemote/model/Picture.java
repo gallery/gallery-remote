@@ -43,8 +43,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	File source = null;
 
-	HashMap extraFields;
-	ArrayList resizedDerivatives;
+	HashMap<String,String> extraFields;
+	ArrayList<ResizedDerivative> resizedDerivatives;
 
 	boolean hidden;
 
@@ -330,7 +330,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 			return null;
 		}
 
-		return (String) extraFields.get(name);
+		return extraFields.get(name);
 	}
 
 	public String getExtraFieldsString(boolean includeKey) {
@@ -341,9 +341,8 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 		StringBuffer sb = new StringBuffer();
 		String sep = System.getProperty("line.separator");
 
-		for (Iterator it = getParentAlbum().getExtraFields().iterator(); it.hasNext();) {
-			String name = (String) it.next();
-			String value = (String) extraFields.get(name);
+		for (String name : getParentAlbum().getExtraFields()) {
+			String value = extraFields.get(name);
 
 			if (value != null) {
 				if (includeKey) {
@@ -358,7 +357,7 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void setExtraField(String name, String value) {
 		if (extraFields == null) {
-			extraFields = new HashMap();
+			extraFields = new HashMap<String,String>();
 		}
 
 		extraFields.put(name, value);
@@ -366,13 +365,13 @@ public class Picture extends GalleryItem implements Serializable, PreferenceName
 
 	public void removeExtraField(String name) {
 		if (extraFields == null) {
-			extraFields = new HashMap();
+			extraFields = new HashMap<String,String>();
 		}
 
 		extraFields.remove(name);
 	}
 
-	public HashMap getExtraFieldsMap() {
+	public HashMap<String,String> getExtraFieldsMap() {
 		return extraFields;
 	}
 

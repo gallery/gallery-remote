@@ -111,8 +111,8 @@ public class UploadProgress implements StatusUpdate, ActionListener {
 
 		try {
 			Class osShutdown = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.OsShutdown");
-			Method canShutdown = osShutdown.getMethod("canShutdown", null);
-			if (((Boolean) canShutdown.invoke(null, null)).booleanValue()) {
+			Method canShutdown = osShutdown.getMethod("canShutdown");
+			if ((Boolean) canShutdown.invoke(null)) {
 				jPanel2.add(jShutdown, null);
 			}
 		} catch (Exception e) {

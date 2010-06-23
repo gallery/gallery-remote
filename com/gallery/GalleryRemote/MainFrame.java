@@ -296,7 +296,7 @@ public class MainFrame extends JFrame
 				GalleryComm comm = g.getComm(jStatusBar);
 
 				// may have tried to connect and failed
-				if (comm != null && !GalleryComm.wasAuthFailure()) {
+				if (comm != null && comm.checkAuth()) {
 					fetchAlbums();
 				}
 				
@@ -474,11 +474,11 @@ public class MainFrame extends JFrame
 					jMenuItemSave.setEnabled(false);
 					jMenuItemSaveAs.setEnabled(false);
 				}*/
-Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() + " - " + currentGallery.hasComm() + " - " + currentGallery.getComm(jStatusBar).isLoggedIn());
+Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() + " - " + currentGallery.hasComm());
 				if (currentGallery != null
 						&& currentGallery.getUsername() != null
 						&& currentGallery.hasComm()
-						&& currentGallery.getComm(jStatusBar).isLoggedIn()) {
+						&& currentGallery.getRoot() != null) {
 					jLoginButton.setText(GRI18n.getString(MODULE, "Log_out"));
 				} else {
 					jLoginButton.setText(GRI18n.getString(MODULE, "Log_in"));
@@ -495,8 +495,8 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 				jPictureInspector.setEnabled(enabled);
 				jPicturesList.setEnabled(enabled && currentAlbum.getCanEdit());
 				jNewAlbumButton.setEnabled(!inProgress && currentGallery != null && currentGallery.hasComm()
-						&& currentGallery.getComm(jStatusBar).isLoggedIn()
-						&& currentGallery.getComm(jStatusBar).hasCapability(jStatusBar, GalleryCommCapabilities.CAPA_NEW_ALBUM)
+						&& currentGallery.getRoot() != null
+						&& currentGallery.getComm().hasCapability(GalleryCommCapabilities.CAPA_NEW_ALBUM)
 						&& currentAlbum != null && currentAlbum.getCanEdit());
 
 				// change image displayed
@@ -531,13 +531,13 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 					int selN = jPicturesList.getSelectedIndices().length;
 
 					if (sel == -1) {
-						Object[] params = {new Integer(currentAlbum.sizePictures()),
-										   new Integer((int) (currentAlbum.getPictureFileSize() / 1024))};
+						Object[] params = {currentAlbum.sizePictures(),
+										   (int) (currentAlbum.getPictureFileSize() / 1024)};
 						jStatusBar.setStatus(GRI18n.getString(MODULE, "statusBarNoSel", params));
 					} else {
-						Object[] params = {new Integer(selN),
+						Object[] params = {selN,
 										   GRI18n.getString(MODULE, (selN == 1) ? "oneSel" : "manySel"),
-										   new Integer((int) Album.getObjectFileSize(jPicturesList.getSelectedValues()) / 1024)};
+										   (int) Album.getObjectFileSize(jPicturesList.getSelectedValues()) / 1024};
 
 						jStatusBar.setStatus(GRI18n.getString(MODULE, "statusBarSel", params));
 					}
@@ -1400,7 +1400,7 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 			showAboutBox();
 		} else if (command.equals("Fetch")) {
 			if (getCurrentGallery().hasComm()
-					&& getCurrentGallery().getComm(jStatusBar).isLoggedIn()) {
+					&& getCurrentGallery().getRoot() != null) {
 				// todo: save
 				// We're currently logged in, but we might be dirty
                 // so ask the user if it's OK to log out.
@@ -1428,7 +1428,7 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 				GalleryComm comm = getCurrentGallery().getComm(jStatusBar);
 
 				// may have tried to connect and failed
-				if (comm != null && !GalleryComm.wasAuthFailure()) {
+				if (comm != null && comm.checkAuth()) {
 					fetchAlbums();
 				}
 			}
@@ -2002,7 +2002,10 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
     }
 
 	public void flushMemory() {
-		thumbnailCache.flushMemory();
+		if (thumbnailCache != null)
+			thumbnailCache.flushMemory();
+
+		if (previewFrame != null && previewFrame.loader != null)
 		previewFrame.loader.flushMemory();
 
 		for (int i = 0; i < galleries.getSize(); i++) {

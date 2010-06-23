@@ -14,6 +14,7 @@ public abstract class GalleryItem extends DefaultMutableTreeNode implements Clon
 	public static final String MODULE = "GalleryItem";
 
 	transient Gallery gallery = null;
+	String title = null;
 	String description = null;
 	String url = null;
 	boolean canEdit = true;
@@ -39,13 +40,21 @@ public abstract class GalleryItem extends DefaultMutableTreeNode implements Clon
 		return (Album) getParent();
 	}
 
-	public void setDescription(String caption) {
-		this.description = caption;
+	public void setDescription(String description) {
+		this.description = description;
 		this.escapedDescription = null;
 	}
 
 	public String getDescription() {
 		return description;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 
 	public String getUrl() {

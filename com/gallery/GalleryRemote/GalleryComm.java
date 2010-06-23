@@ -61,54 +61,15 @@ public abstract class GalleryComm implements PreferenceNames {
 	private static final String MODULE = "GalComm";
 
 	int[] capabilities = null;
-	private static int lastRespCode = 0;
+	//private static int lastRespCode = 0;
 
 	/** Flag to hold logged in status.  Only need to log in once. */
-	protected boolean isLoggedIn = false;
-	protected boolean triedLogin = false;
+	//protected boolean isLoggedIn = false;
+	//protected boolean triedLogin = false;
 
 	DefaultHttpClient httpclient;
 	Gallery g;
 	StatusUpdate su;
-
-	/* -------------------------------------------------------------------------
-	 * STATIC INITIALIZATON
-	 */
-
-	static {
-		/* Enable customized AuthorizePopup */
-		AuthorizePopup.enable();
-
-
-		// http://cvs.sourceforge.net/viewcvs.py/jameleon/jameleon/src/java/net/sf/jameleon/util/JsseSettings.java?rev=1.4&view=markup
-		// http://tp.its.yale.edu/pipermail/cas/2004-March/000348.html
-		// Create a trust manager that does not validate certificate chains
-		TrustManager[] trustAllCerts = new TrustManager[]{
-			new X509TrustManager() {
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.getAcceptedIssuers");
-					return new java.security.cert.X509Certificate[0];
-				}
-				public void checkClientTrusted(
-						java.security.cert.X509Certificate[] certs, String authType) {
-					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.checkClientTrusted");
-				}
-				public void checkServerTrusted(
-						java.security.cert.X509Certificate[] certs, String authType) {
-					Log.log(Log.LEVEL_INFO, MODULE, "TrustManager.checkServerTrusted");
-				}
-			}
-		};
-
-		// Install the all-trusting trust manager
-		try {
-			SSLContext sc = SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, new java.security.SecureRandom());
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-		} catch (Exception e) {
-			Log.logException(Log.LEVEL_ERROR, MODULE, e);
-		}
-	}
 
 	protected GalleryComm(Gallery g, StatusUpdate su) {
 		if (g == null) {
@@ -120,6 +81,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 		SingleClientConnManager cm = null;
 
+		// Set all-trusting SSL manager, if necessary
 		if (g.getUrl().getProtocol().equals("https")) {
 			try {
 				SSLSocketFactory sf = new SSLSocketFactory(SSLContext.getInstance("TLS"), SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
@@ -133,10 +95,12 @@ public abstract class GalleryComm implements PreferenceNames {
 
 		httpclient = new DefaultHttpClient(cm);
 
+		// Use default proxy (as defined by the JVM)
 		ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
 				httpclient.getConnectionManager().getSchemeRegistry(), ProxySelector.getDefault());
 		httpclient.setRoutePlanner(routePlanner);
 
+		// use GR User-Agent
 		httpclient.removeRequestInterceptorByClass(RequestUserAgent.class);
 		final String ua = g.getUserAgent();
 		httpclient.addRequestInterceptor(new HttpRequestInterceptor() {
@@ -144,7 +108,10 @@ public abstract class GalleryComm implements PreferenceNames {
 				request.setHeader(HTTP.USER_AGENT, ua);
 			}
 		});
+	}
 
+	public boolean checkAuth() {
+		throw new RuntimeException("This method is not available on this protocol");
 	}
 
 	/**
@@ -207,54 +174,34 @@ public abstract class GalleryComm implements PreferenceNames {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 
-	public void logOut() {
-		Log.log(Log.LEVEL_INFO, MODULE, "Logging out and clearing cookies");
-		isLoggedIn = false;
-		httpclient.getCookieStore().clear();
-	}
+//	public void logOut() {
+//		Log.log(Log.LEVEL_INFO, MODULE, "Logging out and clearing cookies");
+//		//isLoggedIn = false;
+//		httpclient.getCookieStore().clear();
+//	}
 
-	public boolean isLoggedIn() {
-		return isLoggedIn;
-	}
+//	public boolean isLoggedIn() {
+//		return isLoggedIn;
+//	}
 
-	public boolean hasCapability(StatusUpdate su, int capability) {
-		if (! isLoggedIn() && !triedLogin) {
+	public boolean hasCapability(int capability) {
+		/*if (! isLoggedIn() && !triedLogin) {
 			login(su);
 		}
 
-		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;
+		return java.util.Arrays.binarySearch(capabilities, capability) >= 0;*/
+		return true;
 	}
 
 	/**
 	 * Return true if the last communication attempt failed with authorization error
 	 */
-	public static boolean wasAuthFailure() {
-		return lastRespCode == 401;
-	}
+//	public static boolean wasAuthFailure() {
+//		return lastRespCode == 401;
+//	}
 
 	public static GalleryComm getCommInstance(StatusUpdate su, Gallery g) {
 		return new GalleryComm3(g, su);
-	}
-
-	public static void addUserInfo(URL url) {
-		String userInfo = url.getUserInfo();
-		if (userInfo != null) {
-			StringTokenizer st = new StringTokenizer(userInfo, ":");
-			if (st.countTokens() == 2) {
-				String username = st.nextToken();
-				String password = st.nextToken();
-
-				Log.log(Log.LEVEL_TRACE, MODULE, "Added basic auth params: " + username + " - " + password);
-
-				AuthorizePopup.hackUsername = username;
-				AuthorizePopup.hackPassword = password;
-
-				return;
-			}
-		}
-
-		AuthorizePopup.hackUsername = null;
-		AuthorizePopup.hackPassword = null;
 	}
 
 	/*private static boolean tryComm(StatusUpdate su, HttpClient mConnection, String urlPath, StringBuffer content) {
@@ -269,7 +216,7 @@ public abstract class GalleryComm implements PreferenceNames {
 
 			// handle 30x redirects
 			// (and authorization failure)
-			int rspCode = rsp.getStatusCode();   // try actual communcation
+			int rspCode = rsp.getStatusCode();   // try actual communication
 			lastRespCode = rspCode;
 			if (rspCode >= 300 && rspCode < 400) {
 				// retry, the library will have fixed the URL

@@ -21,7 +21,7 @@ public class OsShutdown {
 		
 		if (m != null) {
 			try {
-				m.invoke(null, null);
+				m.invoke(null);
 			} catch (Throwable e) {
 				Log.logException(Log.LEVEL_ERROR, MODULE, e);
 			}
@@ -31,7 +31,7 @@ public class OsShutdown {
 	private static Method getPrivateShutdownMethod() {
 		try {
 			Class c = GalleryRemote.secureClassForName("com.gallery.GalleryRemote.util.PrivateShutdown");
-			return c.getMethod("shutdown", null);
+			return c.getMethod("shutdown");
 		} catch (Throwable e) {
 			Log.log(Log.LEVEL_TRACE, MODULE, "Could not load PrivateShutdown, this is expected for the applet");
 			return null;

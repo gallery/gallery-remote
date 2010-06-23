@@ -45,8 +45,6 @@ import java.util.regex.Matcher;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
-import HTTPClient.CookieModule;
-import HTTPClient.Cookie;
 
 /**
  * Interface to common image manipulation routines
@@ -812,10 +810,10 @@ public class ImageUtils {
 			conn.setRequestProperty("User-Agent", userAgent);
 		}
 		conn.addRequestProperty("Referer", p.getAlbumOnServer().getGallery().getUrl().toString());
-		Cookie[] cookies = CookieModule.listAllCookies();
-		for (int i = 0; i < cookies.length; i++) {
-			conn.addRequestProperty("Cookie", cookies[i].toString());
-		}
+//		Cookie[] cookies = CookieModule.listAllCookies();
+//		for (int i = 0; i < cookies.length; i++) {
+//			conn.addRequestProperty("Cookie", cookies[i].toString());
+//		}
 
 		conn.connect();
 		return conn;
@@ -1236,17 +1234,15 @@ public class ImageUtils {
 			}
 		}
 
-		return exifAvailable.booleanValue();
+		return exifAvailable;
 	}
 
 	/* ********* Utilities ********** */
-	public static List expandDirectories(List filesAndFolders)
+	public static List<File> expandDirectories(List<File> filesAndFolders)
 			throws IOException {
-		ArrayList allFilesList = new ArrayList();
+		ArrayList<File> allFilesList = new ArrayList<File>();
 
-		Iterator iter = filesAndFolders.iterator();
-		while (iter.hasNext()) {
-			File f = (File) iter.next();
+		for (File f : filesAndFolders) {
 			if (f.isDirectory()) {
 				allFilesList.addAll(listFilesRecursive(f));
 			} else {
@@ -1257,9 +1253,9 @@ public class ImageUtils {
 		return allFilesList;
 	}
 
-	public static java.util.List listFilesRecursive(File dir)
+	public static List<File> listFilesRecursive(File dir)
 			throws IOException {
-		ArrayList ret = new ArrayList();
+		ArrayList<File> ret = new ArrayList<File>();
 
 		/* File.listFiles: stupid call returns null if there's an
 				i/o exception *or* if the file is not a directory, making a mess.
@@ -1276,11 +1272,9 @@ public class ImageUtils {
 			}
 		}
 
-		java.util.List files = Arrays.asList(fileArray);
+		List<File> files = Arrays.asList(fileArray);
 
-		Iterator iter = files.iterator();
-		while (iter.hasNext()) {
-			File f = (File) iter.next();
+		for (File f : files) {
 			if (f.isDirectory()) {
 				ret.addAll(listFilesRecursive(f));
 			} else {

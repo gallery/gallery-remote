@@ -155,7 +155,7 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void incrementViewCount(Picture p, StatusUpdate su) {
-		if (getComm(su).hasCapability(su, GalleryCommCapabilities.CAPA_INCREMENT_VIEW_COUNT)) {
+		if (getComm().hasCapability(GalleryCommCapabilities.CAPA_INCREMENT_VIEW_COUNT)) {
 			Log.log(Log.LEVEL_INFO, MODULE, "Incrementing viewCount on " + p.toString());
 
 			getComm(su).incrementViewCount(su, p);
@@ -163,9 +163,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void logOut() {
-		if (comm != null) {
-			comm.logOut();
-		}
+		//if (comm != null) {
+		//	comm.logOut();
+		//}
 		comm = null;
 
 		setRoot(null);
@@ -193,23 +193,20 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		return (new File(defaultFilePath.toString()));
 	}
 
-	public ArrayList getAllPictures() {
+	public ArrayList<Picture> getAllPictures() {
 		return getAllPictures(false);
 	}
 
-	public ArrayList getAllUploadablePictures() {
+	public ArrayList<Picture> getAllUploadablePictures() {
 		return getAllPictures(true);
 	}
 
-	public ArrayList getAllPictures(boolean onlyUploadable) {
-		ArrayList pictures = new ArrayList();
-		ArrayList albumList = getFlatAlbumList();
+	public ArrayList<Picture> getAllPictures(boolean onlyUploadable) {
+		ArrayList<Picture> pictures = new ArrayList<Picture>();
+		ArrayList<Album> albumList = getFlatAlbumList();
 
 		if (albumList != null) {
-			Iterator i = albumList.iterator();
-			while (i.hasNext()) {
-				Album a = (Album) i.next();
-
+			for (Album a : albumList) {
 				if (onlyUploadable) {
 					pictures.addAll(a.getUploadablePicturesList());
 				} else {
@@ -389,8 +386,9 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 	}
 
 	public void setKey(String key) {
-		if (!key.equals(this.key)) {
-
+		if (key == null) {
+			this.key = null;
+		} else if (!key.equals(this.key)) {
 			this.key = key;
 
 			logOut();
@@ -594,20 +592,21 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		return comm;
 	}
 
+	public GalleryComm getComm() {
+		return comm;
+	}
+
 	public boolean hasComm() {
 		return comm != null;
 	}
 
 	public Album getAlbumByName(String name) {
-		ArrayList albumList = getFlatAlbumList();
+		ArrayList<Album> albumList = getFlatAlbumList();
 		if (albumList == null || name == null) {
 			return null;
 		}
 
-		Iterator it = albumList.iterator();
-		while (it.hasNext()) {
-			Album a = (Album) it.next();
-
+		for (Album a : albumList) {
 			if (name.equals(a.getName())) {
 				return a;
 			}
@@ -620,16 +619,11 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		this.blockWrites = blockWrites;
 	}
 
-	ArrayList flatAlbumList = null;
-	public ArrayList getFlatAlbumList() {
+	ArrayList<Album> flatAlbumList = null;
+	public ArrayList<Album> getFlatAlbumList() {
 		if (flatAlbumList == null) {
 			if (getRoot() != null) {
 				flatAlbumList = Collections.list(new TreeEnumeration((TreeNode) getRoot()));
-			}
-
-			// G2 root is a normal album, don't add a fake root...
-			if (getGalleryVersion() == 2 && flatAlbumList != null) {
-				flatAlbumList.remove(getRoot());
 			}
 		}
 
@@ -646,6 +640,10 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		album.setName("root.album");
 		setRoot(album);
 
+		return (Album) getRoot();
+	}
+
+	public Album getRootAlbum() {
 		return (Album) getRoot();
 	}
 

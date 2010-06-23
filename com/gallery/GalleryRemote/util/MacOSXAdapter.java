@@ -73,9 +73,9 @@ public class MacOSXAdapter extends ApplicationAdapter {
 				ae.setHandled(true);
 				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
-				Method callMethod = caller.getDeclaredMethod(aboutMethod, null);
+				Method callMethod = caller.getDeclaredMethod(aboutMethod);
 				if (callMethod != null) {
-					callMethod.invoke(mainApplication, null);
+					callMethod.invoke(mainApplication);
 				}
 
 			} catch (NoClassDefFoundError e) {
@@ -98,9 +98,9 @@ public class MacOSXAdapter extends ApplicationAdapter {
 				ae.setHandled(false);
 				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
-				Method callMethod = caller.getDeclaredMethod(quitMethod, null);
+				Method callMethod = caller.getDeclaredMethod(quitMethod);
 				if (callMethod != null) {
-					callMethod.invoke(mainApplication, null);
+					callMethod.invoke(mainApplication);
 				}
 
 			} catch (NoClassDefFoundError e) {
@@ -122,9 +122,9 @@ public class MacOSXAdapter extends ApplicationAdapter {
 			try {
 				// this may happen outside of main application flow
 				Class caller = Class.forName(mainApplication.getClass().getName());
-				Method callMethod = caller.getDeclaredMethod(preferencesMethod, null);
+				Method callMethod = caller.getDeclaredMethod(preferencesMethod);
 				if (callMethod != null) {
-					callMethod.invoke(mainApplication, null);
+					callMethod.invoke(mainApplication);
 				}
 				ae.setHandled(true);
 
