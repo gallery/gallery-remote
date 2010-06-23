@@ -149,12 +149,8 @@ public abstract class GalleryComm implements PreferenceNames {
 	 * the specified album (or at the root if album is null)
 	 * 
 	 * @param su          an instance that implements the StatusUpdate interface.
-	 * @param parentAlbum if null, create the album in the root of the gallery; otherwise
-	 *                    create as a child of the given album
 	 */
-	public String newAlbum(StatusUpdate su, Album parentAlbum,
-	                       String newAlbumName, String newAlbumTitle,
-	                       String newAlbumDesc, boolean async) {
+	public void newAlbum(StatusUpdate su, Album album, boolean async) {
 		throw new RuntimeException("This method is not available on this protocol");
 	}
 

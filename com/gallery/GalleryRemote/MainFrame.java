@@ -819,10 +819,10 @@ Log.log(Log.LEVEL_TRACE, currentGallery + " - " + currentGallery.getUsername() +
 			return;
 		}
 
-		String newAlbumName = getCurrentGallery().doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
-		if (!newAlbumName.equals(newAlbum.getName())) {
-			newAlbum.setName(newAlbumName);
-		}
+		getCurrentGallery().doNewAlbum(newAlbum, GalleryRemote._().getCore().getMainStatusUpdate());
+//		if (!newAlbumName.equals(newAlbum.getName())) {
+//			newAlbum.setName(newAlbumName);
+//		}
 		
 		newAlbum.fetchAlbumProperties(GalleryRemote._().getCore().getMainStatusUpdate());
 

@@ -133,25 +133,24 @@ public class Gallery extends DefaultTreeModel implements Serializable, Preferenc
 		}
 	}
 
-	public String doNewAlbum(Album a, StatusUpdate su) {
+	public void doNewAlbum(Album a, StatusUpdate su) {
 		Log.log(Log.LEVEL_INFO, MODULE, "Creating new album " + a.toString());
 
 		// create album synchronously
-		String newAlbumName = getComm(su).newAlbum(su, a.getParentAlbum(), a.getName(),
-				a.getTitle(), a.getDescription(), false);
+		getComm(su).newAlbum(su, a, false);
 
 		// refresh album list asynchronously
         //fetchAlbums(su);
 
-		if (!newAlbumName.equals(a.getName())) {
-			//Log.log(Log.LEVEL_INFO, MODULE, "Album name probably conflicted on the server, need to reload album list");
-			//getComm(su).fetchAlbums(su, false);
-			a.setName(newAlbumName);
-		}
+//		if (!newAlbumName.equals(a.getName())) {
+//			//Log.log(Log.LEVEL_INFO, MODULE, "Album name probably conflicted on the server, need to reload album list");
+//			//getComm(su).fetchAlbums(su, false);
+//			a.setName(newAlbumName);
+//		}
 
 		//addAlbum(a);
 
-		return newAlbumName;
+		//return newAlbumName;
 	}
 
 	public void incrementViewCount(Picture p, StatusUpdate su) {

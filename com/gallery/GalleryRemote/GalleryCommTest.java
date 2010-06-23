@@ -84,6 +84,21 @@ public class GalleryCommTest {
 		assertNotNull(p.getUrl());
 	}
 
+	@Test
+	public void testCreateAlbumToRoot() {
+		Album a = new Album(g);
+		a.setUrl(g.getUrlString() + "index.php/rest/item/1");
+		Album na = new Album(g);
+		a.add(na);
+		g.setRoot(a);
+		na.setName("New Album");
+		na.setTitle("New Album Title");
+		na.setDescription("Created by testCreateNewAlbum");
+		assertNull(na.getUrl());
+		comm.newAlbum(su, na, false);
+		assertNotNull(na.getUrl());
+	}
+
 	@BeforeClass
 	public static void setupAll() {
 		GalleryRemote.createInstance("com.gallery.GalleryRemote.GalleryRemoteMainFrame", null);

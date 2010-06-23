@@ -54,6 +54,11 @@ public class GalleryComm3 extends GalleryComm {
 		doTask(uploadTask, async);
 	}
 	
+	public void newAlbum(StatusUpdate su, Album album, boolean async) {
+		NewAlbumTask newAlbumTask = new NewAlbumTask(su, album);
+		doTask(newAlbumTask, async);
+	}
+
 	public boolean checkAuth() {
 		try {
 			sendRequest(g.getUrlString() + api + "item/1", "get", (HttpEntity) null);
@@ -508,9 +513,9 @@ public class GalleryComm3 extends GalleryComm {
 				ContentBody body = new FileBody(p.getUploadSource());
 				entity.addPart("file", body);
 
-				BufferedReader r = sendRequest(p.getParentAlbum().getUrl(), "post", entity);
+				BufferedReader entityReader = sendRequest(p.getParentAlbum().getUrl(), "post", entity);
 
-				String url = ((JSONObject) JSONValue.parse(r)).get("url").toString();
+				String url = ((JSONObject) JSONValue.parse(entityReader)).get("url").toString();
 				status(su, StatusUpdate.LEVEL_UPLOAD_ONE, GRI18n.getString(MODULE, "upSucc"));
 				p.setUrl(url);
 
@@ -563,6 +568,44 @@ public class GalleryComm3 extends GalleryComm {
 			}
 
 			return false;
+		}
+	}
+
+	class NewAlbumTask extends GalleryTask {
+		Album album;
+
+		NewAlbumTask(StatusUpdate su, Album album) {
+			super(su);
+			this.album = album;
+		}
+
+		void runTask() {
+			status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "newAlbm", new Object[] { album.getName(), g.toString() }));
+
+			try {
+				List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+				JSONObject jsonEntity = new JSONObject();
+				jsonEntity.put("type", "album");
+				if (album.getName() != null)
+					jsonEntity.put("name", album.getName());
+				if (album.getTitle() != null)
+					jsonEntity.put("title", album.getTitle());
+				if (album.getDescription() != null)
+					jsonEntity.put("description", album.getDescription());
+				formparams.add(new BasicNameValuePair("entity", jsonEntity.toJSONString()));
+
+				BufferedReader entityReader = sendRequest(album.getParentAlbum().getUrl(), "post", formparams);
+
+				String url = ((JSONObject) JSONValue.parse(entityReader)).get("url").toString();
+				status(su, StatusUpdate.LEVEL_GENERIC, GRI18n.getString(MODULE, "crateAlbmOk"));
+				album.setUrl(url);
+
+				Log.log(Log.LEVEL_INFO, "Created album " + album.toString());
+			} catch (IOException ioe) {
+				Log.logException(Log.LEVEL_ERROR, MODULE, ioe);
+				Object[] params2 = {ioe.toString()};
+				error(su, GRI18n.getString(MODULE, "error", params2));
+			}
 		}
 	}
 
